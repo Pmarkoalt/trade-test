@@ -45,6 +45,8 @@ repos:
       - id: isort
         args: [--profile=black, --line-length=127]
         name: isort (sort imports)
+        # Explicitly check trading_system and tests directories to match CI
+        files: ^(trading_system|tests)/
 
   # Black - Code formatter
   - repo: https://github.com/psf/black
@@ -54,18 +56,21 @@ repos:
         language_version: python3
         args: [--line-length=127]
         name: black (format code)
+        # Explicitly check trading_system and tests directories to match CI
+        files: ^(trading_system|tests)/
 
   # =============================================================================
   # STAGE 3: Linters (check for issues, may fail commit)
   # =============================================================================
 
-  # Flake8 - Style checker (uses .flake8 config file)
+  # Flake8 - Style checker (uses .flake8 config file automatically)
   - repo: https://github.com/pycqa/flake8
     rev: 7.0.0
     hooks:
       - id: flake8
         name: flake8 (lint)
-        # Uses configuration from .flake8 file
+        # Explicitly check trading_system and tests directories to match CI
+        files: ^(trading_system|tests)/
 
   # =============================================================================
   # STAGE 4: Type checking (strict - will block commits with type errors)

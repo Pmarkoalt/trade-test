@@ -163,9 +163,11 @@ line_length = 127
 skip_gitignore = true
 
 # Flake8 configuration (via setup.cfg or .flake8 would be alternative)
+# Note: Flake8 doesn't natively read pyproject.toml - use .flake8 file instead
+# This section is kept for reference/documentation only
 [tool.flake8]
 max-line-length = 127
-extend-ignore = ["E203", "E266", "E501", "W503"]
+extend-ignore = ["E203", "E266", "E501", "W503", "F541"]
 max-complexity = 10
 exclude = [
     ".git",
@@ -312,4 +314,3 @@ ignore = ["E501", "E203", "W503"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["trading_system"]
-

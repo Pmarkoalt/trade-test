@@ -1,7 +1,7 @@
 """Configuration documentation generator."""
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, cast
 
 from pydantic import BaseModel
 
@@ -29,7 +29,9 @@ def get_field_info(model_class: type[BaseModel]) -> Dict[str, Any]:
             if default_factory is not None and callable(default_factory):
                 try:
                     # default_factory is a callable that takes no arguments
-                    default = default_factory()
+                    # Cast to tell mypy the signature
+                    factory = cast(Callable[[], Any], default_factory)
+                    default = factory()
                 except Exception:
                     default = "<default_factory>"
 
