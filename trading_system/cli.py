@@ -1262,7 +1262,6 @@ def cmd_strategy_create(args: argparse.Namespace) -> int:
     """
     try:
         from .strategies.strategy_template_generator import generate_strategy_template
-        from .cli.strategy_wizard import run_strategy_wizard
         
         # If name is provided, use non-interactive mode
         # Otherwise, run interactive wizard
@@ -1274,7 +1273,15 @@ def cmd_strategy_create(args: argparse.Namespace) -> int:
             output_path = getattr(args, 'output', None)
             directory = getattr(args, 'directory', None)
         else:
-            # Interactive wizard mode
+            # Interactive wizard mode - import wizard only when needed
+            # Use importlib to handle the namespace conflict between cli.py and cli/
+            import importlib.util
+            wizard_path = Path(__file__).parent / 'cli' / 'strategy_wizard.py'
+            spec = importlib.util.spec_from_file_location("strategy_wizard", wizard_path)
+            wizard_module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(wizard_module)
+            run_strategy_wizard = wizard_module.run_strategy_wizard
+            
             print_banner("Strategy Creation Wizard", "Interactive strategy template generator")
             wizard_params = run_strategy_wizard()
             strategy_name = wizard_params['strategy_name']
@@ -1400,13 +1407,23 @@ def cmd_report(args: argparse.Namespace) -> int:
         print_section("Generating Reports")
         with progress_context("Generating summary report", total=None):
             summary_path = report_gen.generate_summary_report()
-        print_success(f"Summary report: {Path(summary_path).relative_to(Path.cwd())}")
+        # Try to get relative path, but fall back to absolute if not possible
+        try:
+            summary_display = Path(summary_path).relative_to(Path.cwd())
+        except ValueError:
+            summary_display = summary_path
+        print_success(f"Summary report: {summary_display}")
         
         # Generate comparison report (if multiple periods available)
         try:
             with progress_context("Generating comparison report", total=None):
                 comparison_path = report_gen.generate_comparison_report()
-            print_success(f"Comparison report: {Path(comparison_path).relative_to(Path.cwd())}")
+            # Try to get relative path, but fall back to absolute if not possible
+            try:
+                comparison_display = Path(comparison_path).relative_to(Path.cwd())
+            except ValueError:
+                comparison_display = comparison_path
+            print_success(f"Comparison report: {comparison_display}")
         except ValueError as e:
             print_warning(f"Could not generate comparison report: {e}")
         

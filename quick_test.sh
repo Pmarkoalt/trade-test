@@ -29,18 +29,34 @@ echo ""
 echo "2. Checking dependencies..."
 MISSING_DEPS=()
 
+# Check NumPy first with special handling for macOS segfault
+NUMPY_OK=false
+if python -c "import numpy; print('NumPy version:', numpy.__version__)" 2>&1 | grep -q "Segmentation fault\|Fatal Python error"; then
+    echo -e "   ${RED}✗${NC} NumPy segmentation fault detected!"
+    echo "   This is a known macOS issue. Run: ./scripts/setup_environment.sh"
+    echo "   Or use Docker: docker-compose run --rm trading-system pytest tests/ -v"
+    exit 1
+elif python -c "import numpy" 2>/dev/null; then
+    NUMPY_VERSION=$(python -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
+    echo "   NumPy version: $NUMPY_VERSION"
+    NUMPY_OK=true
+else
+    MISSING_DEPS+=("numpy")
+fi
+
 python -c "import pandas" 2>/dev/null || MISSING_DEPS+=("pandas")
-python -c "import numpy" 2>/dev/null || MISSING_DEPS+=("numpy")
 python -c "import pydantic" 2>/dev/null || MISSING_DEPS+=("pydantic")
 python -c "import yaml" 2>/dev/null || MISSING_DEPS+=("pyyaml")
 python -c "import pytest" 2>/dev/null || MISSING_DEPS+=("pytest")
 
-if [ ${#MISSING_DEPS[@]} -eq 0 ]; then
+if [ ${#MISSING_DEPS[@]} -eq 0 ] && [ "$NUMPY_OK" = true ]; then
     echo -e "   ${GREEN}✓${NC} All dependencies installed"
 else
-    echo -e "   ${RED}✗${NC} Missing dependencies: ${MISSING_DEPS[*]}"
-    echo "   Install with: pip install ${MISSING_DEPS[*]}"
-    exit 1
+    if [ ${#MISSING_DEPS[@]} -gt 0 ]; then
+        echo -e "   ${RED}✗${NC} Missing dependencies: ${MISSING_DEPS[*]}"
+        echo "   Install with: pip install ${MISSING_DEPS[*]}"
+        exit 1
+    fi
 fi
 echo ""
 

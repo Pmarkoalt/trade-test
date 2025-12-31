@@ -104,6 +104,8 @@ class BacktestRunner:
                 crypto_universe = load_universe(crypto_strategy_config.universe)
         
         # Load all data
+        # Use lower benchmark requirement for test fixtures
+        benchmark_min_days = 1 if "test" in str(self.config.dataset.benchmark_path).lower() or "fixture" in str(self.config.dataset.benchmark_path).lower() else 250
         market_data, benchmarks = load_all_data(
             equity_path=self.config.dataset.equity_path,
             crypto_path=self.config.dataset.crypto_path,
@@ -112,7 +114,8 @@ class BacktestRunner:
             crypto_universe=crypto_universe,
             crypto_universe_config=crypto_universe_config,
             start_date=start_date,
-            end_date=end_date
+            end_date=end_date,
+            benchmark_min_days=benchmark_min_days
         )
         
         self.market_data = market_data

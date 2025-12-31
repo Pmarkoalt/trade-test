@@ -66,7 +66,8 @@ class MeanReversionBaseStrategy(StrategyInterface):
             # Return a placeholder - actual trigger type handled in generate_signal
             return BreakoutType.FAST_20D, features.zscore  # Reuse enum for compatibility
         
-        return None, 0.0
+        # Return zscore even when no trigger (for informational purposes)
+        return None, features.zscore
     
     def get_required_history_days(self) -> int:
         """Get minimum lookback period needed for indicators.

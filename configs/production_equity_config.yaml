@@ -1,0 +1,69 @@
+# Production Equity Momentum Strategy Configuration
+# For NASDAQ-100 or S&P 500 universe
+# Based on EXAMPLE_CONFIGS/equity_config.yaml with production-ready settings
+
+name: "equity_momentum"
+asset_class: "equity"
+universe: "NASDAQ-100"  # or "SP500" or explicit list: ["AAPL", "MSFT", ...]
+benchmark: "SPY"
+
+# Indicator calculation parameters
+indicators:
+  ma_periods: [20, 50, 200]
+  atr_period: 14
+  roc_period: 60
+  breakout_fast: 20
+  breakout_slow: 55
+  adv_lookback: 20
+  corr_lookback: 20
+
+# Eligibility filter (trend qualification)
+eligibility:
+  trend_ma: 50  # Must be above MA50
+  ma_slope_lookback: 20  # Days to compute MA slope
+  ma_slope_min: 0.005  # Minimum 0.5% rise over 20 days
+  require_close_above_trend_ma: true
+  require_close_above_ma200: false  # Not used for equity
+  relative_strength_enabled: false  # MVP: off, v1.1: test on/off
+  relative_strength_min: 0.0  # Must outperform SPY if enabled
+
+# Entry trigger configuration
+entry:
+  fast_clearance: 0.005  # 0.5% above prior 20D high
+  slow_clearance: 0.010  # 1.0% above prior 55D high
+
+# Exit configuration
+exit:
+  mode: "ma_cross"  # "ma_cross" for equity (not "staged")
+  exit_ma: 20  # 20 or 50 (test both during validation)
+  hard_stop_atr_mult: 2.5  # Stop = entry - 2.5 * ATR14
+  tightened_stop_atr_mult: null  # Not used for equity
+
+# Risk management (FROZEN - DO NOT CHANGE)
+risk:
+  risk_per_trade: 0.0075  # 0.75% of equity per trade (FROZEN)
+  max_positions: 8  # Maximum positions per strategy (FROZEN)
+  max_exposure: 0.80  # 80% maximum gross exposure (FROZEN)
+  max_position_notional: 0.15  # 15% maximum per position (FROZEN)
+
+# Capacity constraints (FROZEN - DO NOT CHANGE)
+capacity:
+  max_order_pct_adv: 0.005  # 0.5% of 20D average dollar volume (FROZEN)
+
+# Execution costs
+costs:
+  fee_bps: 1  # 1 basis point per side
+  slippage_base_bps: 8  # Base slippage (8 bps for equity)
+  slippage_std_mult: 0.75  # Standard deviation multiplier
+  weekend_penalty: 1.0  # Not used for equity (always 1.0)
+  stress_threshold: -0.03  # SPY weekly return < -3% triggers stress
+  stress_slippage_mult: 2.0  # Double slippage during stress
+
+# ML model integration (optional)
+ml:
+  enabled: false  # Set to true to enable ML signal enhancement
+  model_path: null  # Path to saved ML model directory (required if enabled)
+  prediction_mode: "score_enhancement"  # Options: "score_enhancement", "filter", "replace"
+  ml_weight: 0.3  # Weight for ML prediction in score_enhancement mode (0.0-1.0)
+  confidence_threshold: 0.5  # Minimum confidence for filtering mode (0.0-1.0)
+

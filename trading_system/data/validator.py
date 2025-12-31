@@ -64,7 +64,9 @@ def validate_ohlcv(df: pd.DataFrame, symbol: str) -> bool:
         returns = df['close'].pct_change().dropna()
         extreme_moves = abs(returns) > 0.50
         if extreme_moves.any():
-            extreme_dates = df.index[extreme_moves].tolist()
+            # Align extreme_moves with df.index (extreme_moves is indexed by returns.index)
+            # Get the dates where extreme moves occurred
+            extreme_dates = returns.index[extreme_moves].tolist()
             logger.warning(
                 f"{symbol}: Extreme moves (>50%) at dates: {extreme_dates[:10]} "
                 f"(showing first 10 of {extreme_moves.sum()} total). "

@@ -265,7 +265,7 @@ class TestLoadBenchmark:
     
     def test_benchmark_file_not_found(self):
         """Test error handling when benchmark file is missing."""
-        with pytest.raises(ValueError, match="Benchmark file not found"):
+        with pytest.raises(ValueError, match="Benchmark.*not in loaded data|Benchmark file not found"):
             load_benchmark("NONEXISTENT", FIXTURES_DIR)
     
     def test_benchmark_insufficient_data(self):
@@ -303,7 +303,7 @@ class TestCalendarFunctions:
         
         assert len(trading_days) <= 5
         assert all(isinstance(d, pd.Timestamp) for d in trading_days)
-        assert all(d.weekday < 5 for d in trading_days)  # Mon-Fri only
+        assert all(d.weekday() < 5 for d in trading_days)  # Mon-Fri only
     
     def test_get_crypto_days(self):
         """Test get_crypto_days function."""

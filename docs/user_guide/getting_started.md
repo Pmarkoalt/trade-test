@@ -14,22 +14,57 @@ This guide will walk you through installing, configuring, and running your first
 
 ## Installation
 
-### Prerequisites
+### Docker Installation (Recommended) ⭐
+
+**Docker is the recommended installation method** as it provides a consistent environment across all systems and avoids environment-specific issues.
+
+#### Prerequisites
+
+- Docker Desktop installed ([Download here](https://www.docker.com/products/docker-desktop/))
+- Docker Compose 2.0+ (included with Docker Desktop)
+
+#### Step 1: Build the Docker Image
+
+Navigate to the project directory and build the Docker image:
+
+```bash
+cd trade-test
+make docker-build
+```
+
+#### Step 2: Verify Installation
+
+Run unit tests to verify everything is working:
+
+```bash
+make docker-test-unit
+```
+
+For more detailed Docker setup instructions, see [DOCKER_SETUP.md](../../DOCKER_SETUP.md).
+
+---
+
+### Native Python Installation (Alternative)
+
+If you prefer not to use Docker, you can install natively. However, this may lead to environment-specific issues, especially on macOS.
+
+#### Prerequisites
 
 - Python 3.9+ (3.11+ recommended)
 - pip or conda package manager
 - Git (optional, for cloning the repository)
 
-### Step 1: Install Dependencies
+#### Step 1: Install Dependencies
 
 Navigate to the project directory and install required packages:
 
 ```bash
 cd trade-test
 pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 
-### Step 2: Verify Installation
+#### Step 2: Verify Installation
 
 Run the quick test script to verify everything is working:
 
@@ -43,7 +78,7 @@ Or manually check:
 python -c "import pandas, numpy, pydantic, yaml; print('Dependencies OK')"
 ```
 
-### Step 3: Run Unit Tests (Optional)
+#### Step 3: Run Unit Tests (Optional)
 
 Verify the system is functioning correctly:
 
@@ -117,17 +152,23 @@ The system comes with example configurations in `EXAMPLE_CONFIGS/`. Let's start 
 cp EXAMPLE_CONFIGS/run_config.yaml my_config.yaml
 ```
 
-Or use the test configuration directly for your first run:
-
-```bash
-python -m trading_system backtest \
-    --config tests/fixtures/configs/run_test_config.yaml \
-    --period train
-```
-
 ### Step 3: Run Your First Backtest
 
-Using the CLI command:
+**Using Docker (Recommended):**
+
+```bash
+# Basic backtest on training period
+docker-compose run --rm trading-system backtest \
+    --config /app/tests/fixtures/configs/run_test_config.yaml \
+    --period train
+
+# Or use the shorter alias
+docker-compose run --rm trading-system bt \
+    --config /app/tests/fixtures/configs/run_test_config.yaml \
+    -p train
+```
+
+**Using Native Installation:**
 
 ```bash
 # Basic backtest on training period
@@ -140,6 +181,8 @@ python -m trading_system bt \
     --config tests/fixtures/configs/run_test_config.yaml \
     -p train
 ```
+
+**Note:** When using Docker, config paths should be relative to `/app/` (e.g., `/app/tests/fixtures/configs/run_test_config.yaml`).
 
 ### Step 4: Check the Results
 
@@ -284,6 +327,21 @@ This will guide you through creating a configuration file step-by-step.
 
 The system supports three backtest periods:
 
+**Using Docker (Recommended):**
+
+```bash
+# Training period (parameter optimization)
+docker-compose run --rm trading-system backtest -c /app/my_config.yaml -p train
+
+# Validation period (out-of-sample testing)
+docker-compose run --rm trading-system backtest -c /app/my_config.yaml -p validation
+
+# Holdout period (final evaluation - LOCKED)
+docker-compose run --rm trading-system backtest -c /app/my_config.yaml -p holdout
+```
+
+**Using Native Installation:**
+
 ```bash
 # Training period (parameter optimization)
 python -m trading_system backtest -c my_config.yaml -p train
@@ -302,6 +360,20 @@ python -m trading_system backtest -c my_config.yaml -p holdout
 ## Running Validation Suite
 
 Before deploying a strategy, run the validation suite to check robustness:
+
+**Using Docker (Recommended):**
+
+```bash
+docker-compose run --rm trading-system validate --config /app/my_config.yaml
+```
+
+Or use the alias:
+
+```bash
+docker-compose run --rm trading-system val -c /app/my_config.yaml
+```
+
+**Using Native Installation:**
 
 ```bash
 python -m trading_system validate --config my_config.yaml
@@ -323,7 +395,19 @@ This runs:
 
 ## Programmatic Usage
 
-You can also use the system programmatically:
+You can also use the system programmatically. For Docker, use an interactive shell:
+
+**Using Docker (Recommended):**
+
+```bash
+# Start an interactive shell in Docker
+docker-compose run --rm trading-system /bin/bash
+
+# Then run your Python code inside the container
+python your_script.py
+```
+
+**Using Native Installation:**
 
 ```python
 from trading_system.integration.runner import run_backtest, run_validation

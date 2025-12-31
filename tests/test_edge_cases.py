@@ -21,7 +21,7 @@ from trading_system.portfolio import (
     compute_correlation_to_portfolio,
 )
 from trading_system.models.positions import Position, ExitReason
-from trading_system.models.signals import Signal, SignalSide, BreakoutType
+from trading_system.models.signals import Signal, SignalSide, SignalType, BreakoutType
 from trading_system.strategies.queue import violates_correlation_guard
 from trading_system.data.validator import validate_ohlcv, detect_missing_data
 from trading_system.execution.slippage import compute_slippage_bps
@@ -83,7 +83,8 @@ class TestExtremePriceMoves:
         extreme_moves = abs(returns) > 0.50
         
         assert extreme_moves.any(), "Should detect extreme move"
-        extreme_date = df.index[extreme_moves][0]
+        # Use returns.index to align with extreme_moves boolean array
+        extreme_date = returns.index[extreme_moves][0]
         assert extreme_date == pd.Timestamp("2023-01-02")
         
         # Per EDGE_CASES.md, extreme moves should be treated as missing data
@@ -188,6 +189,8 @@ class TestCorrelationGuardWithFewPositions:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason='test_breakout',
             entry_price=105.0,
             stop_price=100.0,
             atr_mult=2.5,
@@ -225,6 +228,8 @@ class TestCorrelationGuardWithFewPositions:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason='test_breakout',
             entry_price=105.0,
             stop_price=100.0,
             atr_mult=2.5,
@@ -279,6 +284,8 @@ class TestCorrelationGuardWithFewPositions:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason='test_breakout',
             entry_price=105.0,
             stop_price=100.0,
             atr_mult=2.5,
@@ -336,6 +343,8 @@ class TestCorrelationGuardWithFewPositions:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason='test_breakout',
             entry_price=105.0,
             stop_price=100.0,
             atr_mult=2.5,
@@ -495,34 +504,36 @@ class TestInvalidStopPrice:
     
     def test_stop_price_above_entry_rejects_signal(self):
         """Test that stop price above entry price rejects signal."""
-        from trading_system.models.signals import Signal, SignalSide, BreakoutType
+        from trading_system.models.signals import Signal, SignalSide, SignalType, BreakoutType
         
         # Create signal with invalid stop (stop > entry)
-        signal = Signal(
-            symbol='AAPL',
-            asset_class='equity',
-            date=pd.Timestamp('2024-01-01'),
-            side=SignalSide.BUY,
-            entry_price=100.0,
-            stop_price=105.0,  # Invalid: stop > entry
-            atr_mult=2.5,
-            triggered_on=BreakoutType.FAST_20D,
-            breakout_clearance=0.01,
-            breakout_strength=0.0,
-            momentum_strength=0.0,
-            diversification_bonus=0.0,
-            score=0.0,
-            passed_eligibility=True,
-            eligibility_failures=[],
-            order_notional=10000.0,
-            adv20=5000000.0,
-            capacity_passed=True,
-        )
+        # Note: This will fail validation in __post_init__, so we expect ValueError
+        with pytest.raises(ValueError, match="stop_price.*>=.*entry_price|Invalid stop_price"):
+            signal = Signal(
+                symbol='AAPL',
+                asset_class='equity',
+                date=pd.Timestamp('2024-01-01'),
+                side=SignalSide.BUY,
+                signal_type=SignalType.ENTRY_LONG,
+                trigger_reason='test_breakout',
+                entry_price=100.0,
+                stop_price=105.0,  # Invalid: stop > entry
+                atr_mult=2.5,
+                triggered_on=BreakoutType.FAST_20D,
+                breakout_clearance=0.01,
+                breakout_strength=0.0,
+                momentum_strength=0.0,
+                diversification_bonus=0.0,
+                score=0.0,
+                passed_eligibility=True,
+                eligibility_failures=[],
+                order_notional=10000.0,
+                adv20=5000000.0,
+                capacity_passed=True,
+            )
         
-        # Signal should be rejected before position opening
-        # This would be checked in the strategy or position sizing logic
-        assert signal.stop_price > signal.entry_price, "Stop should be invalid"
-        # In actual implementation, this signal would be rejected
+        # Signal creation should have raised ValueError, so we never get here
+        # This test verifies that invalid stop prices are caught at signal creation
 
 
 class TestMultipleExitSignals:
@@ -572,7 +583,7 @@ class TestPositionQueueAllFail:
     
     def test_all_signals_rejected_returns_empty_list(self):
         """Test that when all signals fail constraints, empty list is returned."""
-        from trading_system.models.signals import Signal, SignalSide, BreakoutType
+        from trading_system.models.signals import Signal, SignalSide, SignalType, BreakoutType
         from trading_system.models.portfolio import Portfolio
         
         # Create signals that will all fail
@@ -583,6 +594,8 @@ class TestPositionQueueAllFail:
                 asset_class='equity',
                 date=pd.Timestamp('2024-01-01'),
                 side=SignalSide.BUY,
+                signal_type=SignalType.ENTRY_LONG,
+                trigger_reason='test_breakout',
                 entry_price=100.0,
                 stop_price=95.0,
                 atr_mult=2.5,

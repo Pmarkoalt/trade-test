@@ -13,8 +13,12 @@ The simplest possible backtest using minimal test data. Perfect for first-time u
 - Simple programmatic execution
 - Quick results overview
 
-**Run it:**
+**Run it (Docker Recommended):**
 ```bash
+# Using Docker (recommended)
+docker-compose run --rm trading-system python examples/quick_start_example.py
+
+# Or using native installation
 python examples/quick_start_example.py
 ```
 
@@ -36,8 +40,12 @@ Demonstrates how to load and configure all available strategy types.
 - Strategy configuration overview
 - How to use strategies in backtests
 
-**Run it:**
+**Run it (Docker Recommended):**
 ```bash
+# Using Docker (recommended)
+docker-compose run --rm trading-system python examples/all_strategies_example.py
+
+# Or using native installation
 python examples/all_strategies_example.py
 ```
 
@@ -61,8 +69,12 @@ Demonstrates how to run a simple backtest using the trading system.
 - Computing detailed metrics
 - CLI usage examples
 
-**Run it:**
+**Run it (Docker Recommended):**
 ```bash
+# Using Docker (recommended)
+docker-compose run --rm trading-system python examples/basic_backtest.py
+
+# Or using native installation
 python examples/basic_backtest.py
 ```
 
@@ -83,8 +95,12 @@ Demonstrates how to train and use ML models for signal enhancement.
 - Configuring ML integration in strategy configs
 - Model versioning
 
-**Run it:**
+**Run it (Docker Recommended):**
 ```bash
+# Using Docker (recommended)
+docker-compose run --rm trading-system python examples/ml_workflow.py
+
+# Or using native installation
 python examples/ml_workflow.py
 ```
 
@@ -112,8 +128,12 @@ Demonstrates how to create a custom trading strategy.
 - Registering custom strategies
 - Using custom strategies in backtests
 
-**Run it:**
+**Run it (Docker Recommended):**
 ```bash
+# Using Docker (recommended)
+docker-compose run --rm trading-system python examples/custom_strategy.py
+
+# Or using native installation
 python examples/custom_strategy.py
 ```
 
@@ -140,8 +160,12 @@ Demonstrates how to run the comprehensive validation suite.
 - Correlation analysis
 - Interpreting validation results
 
-**Run it:**
+**Run it (Docker Recommended):**
 ```bash
+# Using Docker (recommended)
+docker-compose run --rm trading-system python examples/validation_suite.py
+
+# Or using native installation
 python examples/validation_suite.py
 ```
 
@@ -170,8 +194,12 @@ Demonstrates how to run parameter sensitivity analysis.
 - Finding optimal parameters
 - Interpreting results and heatmaps
 
-**Run it:**
+**Run it (Docker Recommended):**
 ```bash
+# Using Docker (recommended)
+docker-compose run --rm trading-system python examples/sensitivity_analysis.py
+
+# Or using native installation
 python examples/sensitivity_analysis.py
 ```
 
@@ -190,41 +218,69 @@ python examples/sensitivity_analysis.py
 
 **New users should start here:**
 
-1. **Run the quick start example (minimal data):**
+**Using Docker (Recommended):**
+
+1. **Build the Docker image (if not already built):**
    ```bash
-   python examples/quick_start_example.py
+   make docker-build
+   ```
+
+2. **Run the quick start example (minimal data):**
+   ```bash
+   docker-compose run --rm trading-system python examples/quick_start_example.py
    ```
    This uses test fixtures and runs in seconds - perfect for your first backtest!
 
-2. **See all available strategies:**
+3. **See all available strategies:**
    ```bash
-   python examples/all_strategies_example.py
+   docker-compose run --rm trading-system python examples/all_strategies_example.py
    ```
    Learn about all 6 strategy types and how to use them.
 
-3. **Run a detailed backtest:**
+4. **Run a detailed backtest:**
    ```bash
-   python examples/basic_backtest.py
+   docker-compose run --rm trading-system python examples/basic_backtest.py
    ```
    More detailed example with advanced features.
 
-4. **Create a custom strategy:**
+5. **Create a custom strategy:**
    ```bash
-   python examples/custom_strategy.py
+   docker-compose run --rm trading-system python examples/custom_strategy.py
    ```
    Learn how to build your own strategies.
 
-5. **Run validation suite:**
+6. **Run validation suite:**
    ```bash
-   python examples/validation_suite.py
+   docker-compose run --rm trading-system python examples/validation_suite.py
    ```
    Test strategy robustness with statistical tests and stress tests.
+
+**Using Native Installation (Alternative):**
+
+If you prefer not to use Docker, replace `docker-compose run --rm trading-system` with direct Python commands:
+
+```bash
+# Run the quick start example
+python examples/quick_start_example.py
+
+# See all available strategies
+python examples/all_strategies_example.py
+
+# Run a detailed backtest
+python examples/basic_backtest.py
+
+# Create a custom strategy
+python examples/custom_strategy.py
+
+# Run validation suite
+python examples/validation_suite.py
+```
 
 ## Prerequisites
 
 All examples require:
-- Python 3.9+
-- Dependencies from `requirements.txt`
+- **Docker and Docker Compose** (Recommended) - See [DOCKER_SETUP.md](../DOCKER_SETUP.md)
+- OR Python 3.9+ with dependencies from `requirements.txt` (Alternative)
 - Configuration files in `EXAMPLE_CONFIGS/`
 - Test data (for backtests)
 

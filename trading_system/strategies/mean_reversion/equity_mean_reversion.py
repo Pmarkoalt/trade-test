@@ -109,7 +109,8 @@ class EquityMeanReversionStrategy(MeanReversionBaseStrategy):
             # Use FAST_20D as placeholder (mean reversion doesn't use BreakoutType)
             return BreakoutType.FAST_20D, features.zscore
         
-        return None, 0.0
+        # Return zscore even when no trigger (for informational purposes)
+        return None, features.zscore
     
     def generate_signal(
         self,

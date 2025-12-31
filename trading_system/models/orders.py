@@ -114,14 +114,24 @@ class Fill:
                 f"Invalid asset_class: {self.asset_class}, must be 'equity' or 'crypto'"
             )
         
-        if self.quantity <= 0:
-            raise ValueError(f"Invalid quantity: {self.quantity}, must be positive")
+        # Allow quantity=0 for rejected fills (when fill_price=0)
+        if self.quantity < 0:
+            raise ValueError(f"Invalid quantity: {self.quantity}, must be non-negative")
         
-        if self.fill_price <= 0:
-            raise ValueError(f"Invalid fill_price: {self.fill_price}, must be positive")
+        if self.quantity == 0 and self.fill_price > 0:
+            raise ValueError(f"Invalid quantity: {self.quantity}, must be positive when fill_price > 0")
         
-        if self.open_price <= 0:
-            raise ValueError(f"Invalid open_price: {self.open_price}, must be positive")
+        if self.fill_price < 0:
+            raise ValueError(f"Invalid fill_price: {self.fill_price}, must be non-negative")
+        
+        # Allow fill_price=0 for rejected fills, but require positive for actual fills
+        if self.fill_price > 0 and self.quantity == 0:
+            raise ValueError(f"Invalid: fill_price > 0 but quantity = 0")
+        
+        if self.fill_price > 0 and self.open_price <= 0:
+            raise ValueError(f"Invalid open_price: {self.open_price}, must be positive when fill_price > 0")
+        
+        # For rejected fills (fill_price=0), open_price can be 0
         
         if self.slippage_bps < 0:
             raise ValueError(f"Invalid slippage_bps: {self.slippage_bps}, must be >= 0")

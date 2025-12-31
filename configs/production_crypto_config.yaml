@@ -1,0 +1,80 @@
+# Production Crypto Momentum Strategy Configuration
+# For fixed 10-asset universe: BTC, ETH, BNB, XRP, ADA, SOL, DOT, MATIC, LTC, LINK
+# Based on EXAMPLE_CONFIGS/crypto_config.yaml with production-ready settings
+
+name: "crypto_momentum"
+asset_class: "crypto"
+universe: ["BTC", "ETH", "BNB", "XRP", "ADA", "SOL", "DOT", "MATIC", "LTC", "LINK"]  # Fixed list (backward compatible)
+benchmark: "BTC"
+
+# Optional: Dynamic universe configuration (uncomment to enable)
+# If universe_config is provided, it overrides the universe list above
+# universe_config:
+#   mode: "fixed"  # Options: "fixed", "custom", "dynamic"
+#   symbols: ["BTC", "ETH", "BNB", "XRP", "ADA", "SOL", "DOT", "MATIC", "LTC", "LINK"]  # For "fixed" or "custom" mode
+# 
+#   # For "dynamic" mode - filter by:
+#   # min_market_cap_usd: 1000000000  # Minimum $1B market cap (requires market_cap column in data)
+#   # min_volume_usd: 10000000  # Minimum $10M daily dollar volume
+#   # min_liquidity_score: 0.5  # Minimum liquidity score (0-1, normalized percentile)
+#   # max_symbols: 10  # Maximum number of symbols to select
+# 
+#   # Rebalancing (only applies in dynamic mode)
+#   # rebalance_frequency: "monthly"  # Options: "monthly", "quarterly", "never"
+#   # rebalance_lookback_days: 30  # Days to look back for metrics
+# 
+#   # For "custom" mode - load from file
+#   # universe_file_path: "data/crypto/universe/custom_universe.csv"  # CSV with 'symbol' column or first column
+
+# Indicator calculation parameters
+indicators:
+  ma_periods: [20, 50, 200]
+  atr_period: 14
+  roc_period: 60
+  breakout_fast: 20
+  breakout_slow: 55
+  adv_lookback: 20
+  corr_lookback: 20
+
+# Eligibility filter (trend qualification)
+eligibility:
+  trend_ma: 200  # Not used for crypto (use require_close_above_ma200 instead)
+  ma_slope_lookback: 20  # Not used for crypto
+  ma_slope_min: 0.005  # Not used for crypto
+  require_close_above_trend_ma: false  # Not used for crypto
+  require_close_above_ma200: true  # STRICT: Must be above MA200
+  relative_strength_enabled: false  # MVP: off, v1.1: test on/off
+  relative_strength_min: 0.0  # Must outperform BTC if enabled
+
+# Entry trigger configuration
+entry:
+  fast_clearance: 0.005  # 0.5% above prior 20D high
+  slow_clearance: 0.010  # 1.0% above prior 55D high
+
+# Exit configuration
+exit:
+  mode: "staged"  # "staged" for crypto (default), or "ma_cross" for testing
+  exit_ma: 50  # Used in staged mode: MA50 triggers exit
+  hard_stop_atr_mult: 3.0  # Initial stop = entry - 3.0 * ATR14 (wider than equity)
+  tightened_stop_atr_mult: 2.0  # After MA20 break: tighten to 2.0 * ATR14
+
+# Risk management (FROZEN - DO NOT CHANGE)
+risk:
+  risk_per_trade: 0.0075  # 0.75% of equity per trade (FROZEN)
+  max_positions: 8  # Maximum positions per strategy (FROZEN)
+  max_exposure: 0.80  # 80% maximum gross exposure (FROZEN)
+  max_position_notional: 0.15  # 15% maximum per position (FROZEN)
+
+# Capacity constraints (stricter than equity) (FROZEN - DO NOT CHANGE)
+capacity:
+  max_order_pct_adv: 0.0025  # 0.25% of 20D average dollar volume (FROZEN)
+
+# Execution costs
+costs:
+  fee_bps: 8  # 8 basis points per side (higher than equity)
+  slippage_base_bps: 10  # Base slippage (10 bps for crypto, higher than equity)
+  slippage_std_mult: 0.75  # Standard deviation multiplier
+  weekend_penalty: 1.5  # 1.5x slippage on weekends (Sat/Sun UTC)
+  stress_threshold: -0.05  # BTC weekly return < -5% triggers stress
+  stress_slippage_mult: 2.0  # Double slippage during stress
+

@@ -251,6 +251,7 @@ class TestEligibilityFilters:
             ma20=103.0,
             ma50=100.0,
             ma200=95.0,
+            ma50_slope=0.01,  # 1% slope (above 0.005 minimum)
             atr14=2.0,
             roc60=0.05,  # 5% return
             highest_close_20d=104.0,
@@ -262,7 +263,7 @@ class TestEligibilityFilters:
         )
         
         is_eligible, failures = strategy_with_rs.check_eligibility(features)
-        assert is_eligible
+        assert is_eligible, f"Expected eligible but got failures: {failures}"
         
         # Features with insufficient relative strength
         features.benchmark_roc60 = 0.06  # 6% return (relative strength = -1%)

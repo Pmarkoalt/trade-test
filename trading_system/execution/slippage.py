@@ -96,8 +96,8 @@ def compute_weekend_penalty(
         return 1.0  # No weekend penalty for equity
     
     # Crypto: 1.5x on Saturday (5) or Sunday (6) UTC
-    # pandas Timestamp has weekday as a property (0=Monday, 6=Sunday)
-    weekday = date.weekday
+    # pandas Timestamp.weekday() returns 0=Monday, 6=Sunday
+    weekday = date.weekday()
     
     if weekday == 5 or weekday == 6:  # Saturday or Sunday
         return 1.5

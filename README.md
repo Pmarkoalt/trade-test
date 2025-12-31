@@ -52,53 +52,30 @@ This trading system implements a systematic momentum strategy that:
 
 ## Installation
 
-### Prerequisites
-- Python 3.9+ (3.11+ recommended)
-- pip or conda package manager
+### Docker Installation (Recommended) ⭐
 
-### Install Dependencies
-
-```bash
-# Clone or navigate to the repository
-cd trade-test
-
-# Install required packages
-pip install -r requirements.txt
-```
-
-### Verify Installation
-
-```bash
-# Quick verification
-./quick_test.sh
-
-# Or manually check
-python -c "import pandas, numpy, pydantic, yaml; print('Dependencies OK')"
-```
-
-### Docker Installation (Alternative)
-
-The trading system can also be run using Docker, which ensures a consistent environment across different systems.
+**Docker is the recommended installation method** as it provides a consistent environment across all systems, avoids environment-specific issues (like NumPy segfaults on macOS), and ensures reproducible results.
 
 #### Prerequisites
-- Docker 20.10+ installed
-- Docker Compose 2.0+ (optional, for easier management)
+- Docker Desktop installed ([Download here](https://www.docker.com/products/docker-desktop/))
+  - **macOS/Windows**: Docker Desktop includes Docker Compose
+  - **Linux**: Install Docker and Docker Compose separately
+- Docker Compose 2.0+ (included with Docker Desktop)
 
-#### Build and Run with Docker
+#### Quick Start with Docker
 
 ```bash
-# Build the Docker image
-docker build -t trading-system:latest .
+# 1. Clone or navigate to the repository
+cd trade-test
 
-# Run a command directly
-docker run --rm -v $(pwd)/EXAMPLE_CONFIGS:/app/configs:ro \
-  -v $(pwd)/results:/app/results \
-  trading-system:latest backtest --config /app/configs/run_config.yaml
+# 2. Build the Docker image
+make docker-build
 
-# Or use docker-compose (recommended)
-docker-compose build
-docker-compose run --rm trading-system backtest --config /app/configs/run_config.yaml
+# 3. Verify installation by running unit tests
+make docker-test-unit
 ```
+
+See [DOCKER_SETUP.md](DOCKER_SETUP.md) for detailed instructions.
 
 #### Docker Compose Examples
 
@@ -111,8 +88,10 @@ docker-compose run --rm trading-system backtest \
 docker-compose run --rm trading-system validate \
   --config /app/configs/run_config.yaml
 
-# Run tests
-docker-compose run --rm trading-system pytest tests/ -v
+# Run tests (unit, integration, validation)
+make docker-test-unit
+make docker-test-integration
+make docker-test-validation
 
 # Interactive shell
 docker-compose run --rm trading-system /bin/bash
@@ -128,6 +107,58 @@ The `docker-compose.yml` includes pre-configured volume mounts:
 - `./configs` → `/app/custom_configs` (read-only) - Custom configs (optional)
 
 Ensure your data files and configs are in the correct directories on your host machine before running Docker commands.
+
+---
+
+### Native Python Installation (Alternative)
+
+If you prefer not to use Docker, you can install the system natively. However, this may lead to environment-specific issues, especially on macOS.
+
+#### Prerequisites
+- Python 3.9+ (3.11+ recommended)
+- pip or conda package manager
+
+#### Install Dependencies
+
+**Option A: Automated Setup (Recommended)**
+
+```bash
+# Clone or navigate to the repository
+cd trade-test
+
+# Run automated setup script (detects and fixes common issues)
+./scripts/setup_environment.sh
+```
+
+**Option B: Manual Installation**
+
+```bash
+# Clone or navigate to the repository
+cd trade-test
+
+# Install required packages
+pip install --upgrade pip
+pip install -e ".[dev]"
+
+# Or using requirements files
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
+```
+
+**macOS Users**: If you encounter NumPy segmentation faults, see [ENVIRONMENT_ISSUE.md](ENVIRONMENT_ISSUE.md). **Docker is strongly recommended for macOS.**
+
+#### Verify Installation
+
+```bash
+# Quick verification
+./quick_test.sh
+
+# Or run environment check
+./scripts/setup_environment.sh --check
+
+# Or manually check
+python -c "import pandas, numpy, pydantic, yaml; print('Dependencies OK')"
+```
 
 ### Environment Variables
 
@@ -161,24 +192,54 @@ For backtesting, no API credentials are needed as the system uses local CSV/Parq
 
 ## Quick Start
 
-### 1. Run Unit Tests
+### 1. Run Tests (Docker Recommended)
+
+The easiest way to run tests is using Docker with the Makefile:
 
 ```bash
-# Run all unit tests
-pytest tests/ -v
+# Run unit tests only
+make docker-test-unit
 
-# Run specific test file
-pytest tests/test_data_loading.py -v
+# Run integration tests only
+make docker-test-integration
+
+# Run validation suite
+make docker-test-validation
+
+# Run all tests (unit + integration)
+make docker-test-all
 ```
 
-### 2. Run Integration Test
+**Alternative: Native Installation**
+
+If you installed natively (not recommended), use:
 
 ```bash
-# End-to-end integration test
-pytest tests/integration/test_end_to_end.py -v
+# Run unit tests only
+make test-unit
+
+# Run integration tests only
+make test-integration
+
+# Run validation suite
+make test-validation
+
+# Run all tests (unit + integration)
+make test-all
 ```
 
-### 3. Run a Backtest
+### 2. Run a Backtest (Docker Recommended)
+
+```bash
+# Using Docker with test configuration
+docker-compose run --rm trading-system backtest \
+    --config /app/tests/fixtures/configs/run_test_config.yaml \
+    --period train
+```
+
+Results will be saved to `tests/results/{run_id}/train/` on your host machine.
+
+**Alternative: Native Installation**
 
 ```bash
 # Using test configuration
@@ -187,12 +248,24 @@ python -m trading_system backtest \
     --period train
 ```
 
-Results will be saved to `tests/results/{run_id}/train/`
-
-### 4. Run Validation Suite
+### 3. Run Validation Suite (Docker Recommended)
 
 ```bash
-# Run validation suite (bootstrap, permutation, stress tests)
+# Using Docker
+make docker-test-validation
+
+# Or directly via Docker CLI
+docker-compose run --rm trading-system validate \
+    --config /app/tests/fixtures/configs/run_test_config.yaml
+```
+
+**Alternative: Native Installation**
+
+```bash
+# Using Makefile
+make test-validation
+
+# Or directly via CLI
 python -m trading_system validate \
     --config tests/fixtures/configs/run_test_config.yaml
 ```
@@ -201,7 +274,23 @@ python -m trading_system validate \
 
 ### CLI Commands
 
-The system provides several CLI commands:
+**Using Docker (Recommended):**
+
+```bash
+# Run backtest
+docker-compose run --rm trading-system backtest --config /app/<config_path> [--period train|validation|holdout]
+
+# Run validation suite
+docker-compose run --rm trading-system validate --config /app/<config_path>
+
+# Run holdout evaluation
+docker-compose run --rm trading-system holdout --config /app/<config_path>
+
+# Generate report (future)
+docker-compose run --rm trading-system report --run-id <run_id>
+```
+
+**Using Native Installation:**
 
 ```bash
 # Run backtest
@@ -217,6 +306,8 @@ python -m trading_system holdout --config <config_path>
 python -m trading_system report --run-id <run_id>
 ```
 
+**Note:** When using Docker, config paths should be relative to `/app/` (e.g., `/app/configs/run_config.yaml` or `/app/tests/fixtures/configs/run_test_config.yaml`).
+
 ### Configuration Files
 
 The system uses YAML configuration files:
@@ -229,6 +320,18 @@ Example configurations are in:
 - `tests/fixtures/configs/` - Test configurations
 
 ### Programmatic Usage
+
+**Using Docker (Interactive Shell):**
+
+```bash
+# Start an interactive shell in Docker
+docker-compose run --rm trading-system /bin/bash
+
+# Then run Python code inside the container
+python -c "from trading_system.integration.runner import run_backtest; ..."
+```
+
+**Using Native Installation:**
 
 ```python
 from trading_system.integration.runner import run_backtest, run_validation

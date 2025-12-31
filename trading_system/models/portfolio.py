@@ -53,21 +53,29 @@ class Portfolio:
         Args:
             current_prices: Dictionary mapping symbol to current price
         """
-        # Update unrealized P&L for all positions
+        # Update unrealized P&L for all open positions
         total_unrealized = 0.0
         total_exposure = 0.0
+        open_count = 0
         
         for symbol, position in self.positions.items():
+            # Only process open positions
+            if not position.is_open():
+                continue
+            
+            open_count += 1
+            
             if symbol in current_prices:
-                position.update_unrealized_pnl(current_prices[symbol])
+                current_price = current_prices[symbol]
+                position.update_unrealized_pnl(current_price)
                 total_unrealized += position.unrealized_pnl
-                total_exposure += current_prices[symbol] * position.quantity
+                total_exposure += current_price * position.quantity
         
         self.unrealized_pnl = total_unrealized
         self.gross_exposure = total_exposure
         self.gross_exposure_pct = total_exposure / self.equity if self.equity > 0 else 0.0
         self.equity = self.cash + total_exposure
-        self.open_trades = len(self.positions)
+        self.open_trades = open_count
     
     def compute_portfolio_returns(self, lookback: Optional[int] = None) -> List[float]:
         """Compute portfolio returns for volatility calculation.

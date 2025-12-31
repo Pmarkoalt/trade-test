@@ -6,6 +6,7 @@ import numpy as np
 import logging
 from pathlib import Path
 import pickle
+import bisect
 
 try:
     from tqdm import tqdm
@@ -220,6 +221,9 @@ class BacktestEngine:
                 benchmark_returns=benchmark_returns
             )
         
+        # Cache all dates once for performance (get_next_trading_day is called many times)
+        _cached_all_dates = self._get_all_dates()
+        
         def get_next_trading_day(date: pd.Timestamp) -> pd.Timestamp:
             """Get next trading day.
             
@@ -230,12 +234,11 @@ class BacktestEngine:
             # In production, use trading calendar
             next_day = date + pd.Timedelta(days=1)
             
-            # Check if next_day exists in data
-            all_dates = self._get_all_dates()
-            available_dates = [d for d in all_dates if d > date]
-            
-            if available_dates:
-                return min(available_dates)
+            # Use cached dates for efficient lookup
+            # Use binary search to find next available date
+            idx = bisect.bisect_right(_cached_all_dates, date)
+            if idx < len(_cached_all_dates):
+                return _cached_all_dates[idx]
             else:
                 return next_day
         

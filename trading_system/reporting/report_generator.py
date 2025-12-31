@@ -76,14 +76,30 @@ class ReportGenerator:
         # Load trade log
         trade_log_file = period_dir / "trade_log.csv"
         if trade_log_file.exists():
-            data['trade_log_df'] = pd.read_csv(trade_log_file, parse_dates=['entry_date', 'exit_date'])
+            try:
+                # Check if file is empty (has no content or only headers)
+                if trade_log_file.stat().st_size == 0:
+                    data['trade_log_df'] = pd.DataFrame()
+                else:
+                    data['trade_log_df'] = pd.read_csv(trade_log_file, parse_dates=['entry_date', 'exit_date'])
+            except (pd.errors.EmptyDataError, ValueError):
+                # Handle empty CSV files gracefully
+                data['trade_log_df'] = pd.DataFrame()
         else:
             data['trade_log_df'] = pd.DataFrame()
         
         # Load weekly summary
         weekly_file = period_dir / "weekly_summary.csv"
         if weekly_file.exists():
-            data['weekly_summary_df'] = pd.read_csv(weekly_file, parse_dates=['week_start', 'week_end'])
+            try:
+                # Check if file is empty
+                if weekly_file.stat().st_size == 0:
+                    data['weekly_summary_df'] = pd.DataFrame()
+                else:
+                    data['weekly_summary_df'] = pd.read_csv(weekly_file, parse_dates=['week_start', 'week_end'])
+            except (pd.errors.EmptyDataError, ValueError):
+                # Handle empty CSV files gracefully
+                data['weekly_summary_df'] = pd.DataFrame()
         else:
             data['weekly_summary_df'] = pd.DataFrame()
         

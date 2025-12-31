@@ -205,7 +205,8 @@ def load_benchmark(
     start_date: Optional[pd.Timestamp] = None,
     end_date: Optional[pd.Timestamp] = None,
     use_cache: bool = False,
-    cache_dir: str = ".cache"
+    cache_dir: str = ".cache",
+    min_days: int = 250
 ) -> pd.DataFrame:
     """
     Load benchmark data (SPY for equity, BTC for crypto).
@@ -244,11 +245,11 @@ def load_benchmark(
     
     benchmark_df = data[benchmark_symbol]
     
-    # Validate minimum history (250 days as per spec)
-    if len(benchmark_df) < 250:
+    # Validate minimum history (default 250 days as per spec, configurable for tests)
+    if len(benchmark_df) < min_days:
         raise ValueError(
             f"Benchmark {benchmark_symbol} has insufficient data: "
-            f"{len(benchmark_df)} days (minimum 250 required)"
+            f"{len(benchmark_df)} days (minimum {min_days} required)"
         )
     
     return benchmark_df
@@ -267,7 +268,8 @@ def load_all_data(
     cache_dir: str = ".cache",
     optimize_memory: bool = True,
     chunk_size: Optional[int] = None,
-    profile_memory: bool = False
+    profile_memory: bool = False,
+    benchmark_min_days: int = 250
 ) -> Tuple[MarketData, Dict[str, pd.DataFrame]]:
     """
     Load all data for backtest.
@@ -388,7 +390,8 @@ def load_all_data(
         start_date=start_date,
         end_date=end_date,
         use_cache=use_cache,
-        cache_dir=cache_dir
+        cache_dir=cache_dir,
+        min_days=benchmark_min_days
     )
     
     btc_benchmark = load_benchmark(
@@ -397,7 +400,8 @@ def load_all_data(
         start_date=start_date,
         end_date=end_date,
         use_cache=use_cache,
-        cache_dir=cache_dir
+        cache_dir=cache_dir,
+        min_days=benchmark_min_days
     )
     
     # Combine into MarketData

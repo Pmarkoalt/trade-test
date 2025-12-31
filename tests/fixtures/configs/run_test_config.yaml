@@ -16,12 +16,13 @@ dataset:
   min_lookback_days: 250
 
 # Data splits (for testing, using all data)
+# Train: Oct-Nov, Validation: first half of Dec, Holdout: second half of Dec
 splits:
   train_start: "2023-10-01"
-  train_end: "2023-12-31"
-  validation_start: "2023-10-01"
-  validation_end: "2023-12-31"
-  holdout_start: "2023-10-01"
+  train_end: "2023-11-30"
+  validation_start: "2023-12-01"
+  validation_end: "2023-12-15"
+  holdout_start: "2023-12-16"
   holdout_end: "2023-12-31"
 
 # Strategy configurations to load

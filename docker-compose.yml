@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   trading-system:
     build:
@@ -14,6 +12,8 @@ services:
       - ./EXAMPLE_CONFIGS:/app/configs:ro
       # Mount results directory for output (read-write)
       - ./results:/app/results
+      # Mount coverage output directory for test coverage reports
+      - ./htmlcov:/app/htmlcov
       # Mount test fixtures if you want to run tests
       - ./tests/fixtures:/app/tests/fixtures:ro
       # Optional: Mount custom config directory

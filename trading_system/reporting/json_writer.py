@@ -49,20 +49,38 @@ class JSONWriter:
                 f"dates length ({len(dates)})"
             )
         
+        # Align daily_returns to match dates/equity_curve length
+        # If daily_returns is one shorter (typical), prepend 0.0 for first day
+        if len(daily_returns) == len(dates) - 1:
+            daily_returns_aligned = [0.0] + daily_returns
+        elif len(daily_returns) == len(dates):
+            daily_returns_aligned = daily_returns
+        else:
+            # Handle mismatched lengths: pad or truncate
+            if len(daily_returns) < len(dates):
+                # Pad with zeros at the beginning
+                daily_returns_aligned = [0.0] * (len(dates) - len(daily_returns)) + daily_returns
+            else:
+                # Truncate to match dates length
+                daily_returns_aligned = daily_returns[:len(dates)]
+        
         # Create DataFrame with daily data
         df = pd.DataFrame({
             "date": dates,
             "equity": equity_curve,
-            "daily_return": [0.0] + daily_returns  # First day has no return
+            "daily_return": daily_returns_aligned
         })
         
         # Add month identifier
         df["month"] = df["date"].dt.to_period("M").astype(str)
         
         # Calculate overall metrics
+        # MetricsCalculator expects daily_returns to be one shorter than equity_curve
+        # (returns are computed from differences, so n equity values = n-1 returns)
+        daily_returns_for_metrics = daily_returns_aligned[1:] if len(daily_returns_aligned) == len(equity_curve) else daily_returns
         metrics_calc = MetricsCalculator(
             equity_curve=equity_curve,
-            daily_returns=daily_returns,
+            daily_returns=daily_returns_for_metrics,
             closed_trades=closed_trades,
             dates=dates,
             benchmark_returns=benchmark_returns

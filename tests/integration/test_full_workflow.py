@@ -7,7 +7,8 @@ import numpy as np
 from pathlib import Path
 
 # Get test fixtures directory
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "fixtures")
+# Use path relative to working directory (works in both local and Docker)
+FIXTURES_DIR = os.path.normpath(os.path.join(os.path.dirname(__file__), "..", "fixtures"))
 CONFIGS_DIR = os.path.join(FIXTURES_DIR, "configs")
 
 
@@ -17,7 +18,15 @@ class TestFullWorkflow:
     @pytest.fixture
     def test_config_path(self):
         """Path to test run config."""
-        return os.path.join(CONFIGS_DIR, "run_test_config.yaml")
+        # Use path relative to /app (Docker working directory) or current directory
+        config_path = os.path.join(CONFIGS_DIR, "run_test_config.yaml")
+        config_path = os.path.normpath(config_path)
+        # Try absolute path if relative doesn't exist
+        if not os.path.exists(config_path):
+            abs_path = os.path.join("/app", "tests", "fixtures", "configs", "run_test_config.yaml")
+            if os.path.exists(abs_path):
+                return abs_path
+        return config_path
     
     def test_backtest_to_validation_workflow(self, test_config_path):
         """Test complete workflow: backtest -> validation."""
@@ -86,22 +95,13 @@ class TestFullWorkflow:
         # Note: This requires results to be saved to disk first
         # In a real scenario, runner.save_results() would be called
         
-        # For testing, create a minimal report structure
-        report_gen = ReportGenerator()
+        # For testing, verify backtest results structure directly
+        # (ReportGenerator requires saved results on disk, which we skip for this test)
         
-        # Create summary report
-        summary = {
-            'total_trades': backtest_results.get('total_trades', 0),
-            'total_return': backtest_results.get('total_return', 0.0),
-            'sharpe_ratio': backtest_results.get('sharpe_ratio', 0.0),
-            'max_drawdown': backtest_results.get('max_drawdown', 0.0),
-            'win_rate': backtest_results.get('win_rate', 0.0)
-        }
-        
-        # Verify report structure
-        assert 'total_trades' in summary
-        assert 'total_return' in summary
-        assert 'sharpe_ratio' in summary
+        # Verify backtest results structure
+        assert 'total_trades' in backtest_results
+        assert 'total_return' in backtest_results
+        assert 'sharpe_ratio' in backtest_results
     
     def test_validation_suite_workflow(self, test_config_path):
         """Test complete validation suite workflow."""
@@ -262,7 +262,15 @@ class TestEndToEndWorkflow:
     @pytest.fixture
     def test_config_path(self):
         """Path to test run config."""
-        return os.path.join(CONFIGS_DIR, "run_test_config.yaml")
+        # Use path relative to /app (Docker working directory) or current directory
+        config_path = os.path.join(CONFIGS_DIR, "run_test_config.yaml")
+        config_path = os.path.normpath(config_path)
+        # Try absolute path if relative doesn't exist
+        if not os.path.exists(config_path):
+            abs_path = os.path.join("/app", "tests", "fixtures", "configs", "run_test_config.yaml")
+            if os.path.exists(abs_path):
+                return abs_path
+        return config_path
     
     def test_complete_system_workflow(self, test_config_path):
         """Test complete system workflow from config to results."""

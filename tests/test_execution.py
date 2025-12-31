@@ -361,9 +361,12 @@ class TestWeeklyReturn:
         current_date = dates[-1]
         weekly_return = compute_weekly_return(benchmark_bars, current_date, "crypto")
         
-        # Should be (close[t] / close[t-6]) - 1 (7 days total including t)
-        # = (109 / 103) - 1 = 0.05825...
-        expected = (closes[-1] / closes[-6]) - 1
+        # Function uses end_date - 6 days for start_date (7 days total including end_date)
+        # If end_date is dates[-1] (2024-01-10), start_date is 2024-01-04
+        # So we need to find the close for 2024-01-04, which is dates[3] (closes[3] = 103)
+        start_date = current_date - pd.Timedelta(days=6)
+        start_close = benchmark_bars.loc[start_date, 'close']
+        expected = (closes[-1] / start_close) - 1
         assert abs(weekly_return - expected) < 1e-6
     
     def test_weekly_return_insufficient_data(self):
@@ -537,7 +540,7 @@ class TestFillSimulator:
             quantity=10,
             signal_date=pd.Timestamp("2024-01-15"),
             expected_fill_price=50000.0,
-            stop_price=0.0  # Not used for SELL validation in Order
+            stop_price=49000.0  # Use valid stop price (Order validation requires positive)
         )
         
         open_bar = Bar(

@@ -214,7 +214,8 @@ class DailyEventLoop:
         
         # Serialize positions for correlation analysis
         positions_dict = {}
-        for symbol, position in self.portfolio.positions.items():
+        # Create a copy of positions to avoid RuntimeError if positions are modified during iteration
+        for symbol, position in list(self.portfolio.positions.items()):
             if position.is_open():
                 positions_dict[symbol] = {
                     'symbol': position.symbol,
@@ -773,7 +774,8 @@ class DailyEventLoop:
         current_prices = {}
         features_data = {}
         
-        for symbol, position in self.portfolio.positions.items():
+        # Create a copy of positions to avoid RuntimeError if positions are modified during iteration
+        for symbol, position in list(self.portfolio.positions.items()):
             if not position.is_open():
                 continue
             
@@ -810,7 +812,8 @@ class DailyEventLoop:
         if date in self.crash_dates:
             # Force exit all positions at stops
             forced_exits = []
-            for symbol, position in self.portfolio.positions.items():
+            # Create a copy of positions to avoid RuntimeError if positions are modified during iteration
+            for symbol, position in list(self.portfolio.positions.items()):
                 if position.is_open() and symbol not in [s[0] for s in exit_signals]:
                     # Force stop at worst possible price
                     forced_exits.append((symbol, ExitReason.HARD_STOP))
@@ -1166,14 +1169,18 @@ class DailyEventLoop:
         """
         consecutive_count = len(missing_dates)
         
-        if consecutive_count == 1:
-            # Single day missing: skip signal generation, log warning
-            logger.warning(f"MISSING_DATA_1DAY: {symbol} {date}")
-            self.missing_data_counts[symbol] = 1
-        else:
+        # Update missing count to reflect the actual consecutive gap length
+        # Use the maximum of current count and consecutive_count to handle incremental detection
+        # This ensures we don't overwrite a higher count with a lower one
+        current_count = self.missing_data_counts.get(symbol, 0)
+        final_count = max(current_count, consecutive_count)
+        self.missing_data_counts[symbol] = final_count
+        
+        # Use final_count to determine if we should close position
+        # This handles the case where _find_consecutive_missing_dates doesn't find the full gap
+        if final_count >= 2:
             # 2+ consecutive days: mark as unhealthy, close position if exists
-            logger.error(f"DATA_UNHEALTHY: {symbol}, missing {consecutive_count} days")
-            self.missing_data_counts[symbol] = consecutive_count
+            logger.error(f"DATA_UNHEALTHY: {symbol}, missing {final_count} consecutive days")
             
             # Close position if exists
             position = self.portfolio.get_position(symbol)
@@ -1183,20 +1190,49 @@ class DailyEventLoop:
                 next_bar = self.market_data.get_bar(symbol, next_date)
                 if next_bar:
                     # Create exit order for next day
-                    exit_order = Order(
-                        order_id=str(uuid.uuid4()),
-                        symbol=symbol,
-                        asset_class=position.asset_class,
-                        date=date,
-                        execution_date=next_date,
-                        side=SignalSide.SELL,
-                        quantity=position.quantity,
-                        signal_date=date,
-                        expected_fill_price=next_bar.open,
-                        stop_price=0.0,
-                        status=OrderStatus.PENDING
-                    )
-                    self.pending_exit_orders.append((exit_order, ExitReason.DATA_MISSING))
+                    # For SELL orders (exits), stop_price validation is different
+                    # Use expected_fill_price - 1 to ensure stop < expected_fill_price for validation
+                    try:
+                        exit_order = Order(
+                            order_id=str(uuid.uuid4()),
+                            symbol=symbol,
+                            asset_class=position.asset_class,
+                            date=date,
+                            execution_date=next_date,
+                            side=SignalSide.SELL,
+                            quantity=position.quantity,
+                            signal_date=date,
+                            expected_fill_price=next_bar.open,
+                            stop_price=max(0.01, next_bar.open - 1.0),  # Ensure stop < expected_fill_price
+                            status=OrderStatus.PENDING
+                        )
+                        self.pending_exit_orders.append((exit_order, ExitReason.DATA_MISSING))
+                    except Exception as e:
+                        # If order creation fails, force exit at last known close
+                        logger.warning(f"Failed to create exit order for {symbol}: {e}, forcing immediate exit")
+                        last_bar = self.market_data.bars[symbol].iloc[-1]
+                        exit_price = last_bar['close']
+                        from ..models.orders import Fill
+                        exit_fill = Fill(
+                            fill_id=str(uuid.uuid4()),
+                            order_id=str(uuid.uuid4()),
+                            symbol=symbol,
+                            asset_class=position.asset_class,
+                            date=date,
+                            side=SignalSide.SELL,
+                            quantity=position.quantity,
+                            fill_price=exit_price,
+                            open_price=exit_price,
+                            slippage_bps=0.0,
+                            fee_bps=0.0,
+                            total_cost=0.0,
+                            vol_mult=1.0,
+                            size_penalty=1.0,
+                            weekend_penalty=1.0,
+                            stress_mult=1.0,
+                            notional=exit_price * position.quantity
+                        )
+                        self.portfolio.close_position(symbol, exit_fill, ExitReason.DATA_MISSING)
                 else:
                     # Force exit at last known close
                     last_bar = self.market_data.bars[symbol].iloc[-1]
@@ -1223,6 +1259,9 @@ class DailyEventLoop:
                         notional=exit_price * position.quantity
                     )
                     self.portfolio.close_position(symbol, exit_fill, ExitReason.DATA_MISSING)
+        elif consecutive_count == 1:
+            # Single day missing: skip signal generation, log warning
+            logger.warning(f"MISSING_DATA_1DAY: {symbol} {date}")
     
     def _find_consecutive_missing_dates(
         self, 
