@@ -9,12 +9,7 @@ import pandas as pd
 from ..models.market_data import MarketData
 from .memory_profiler import MemoryProfiler, optimize_dataframe_dtypes
 from .sources import BaseDataSource, CachedDataSource, CSVDataSource, DataCache
-from .universe import (
-    FIXED_CRYPTO_UNIVERSE,
-    CryptoUniverseManager,
-    UniverseConfig,
-    create_universe_config_from_dict,
-)
+from .universe import FIXED_CRYPTO_UNIVERSE, CryptoUniverseManager, UniverseConfig, create_universe_config_from_dict
 from .validator import detect_missing_data, validate_ohlcv
 
 logger = logging.getLogger(__name__)

@@ -5,9 +5,7 @@ from typing import Dict, List, Optional
 import numpy as np
 import pandas as pd
 
-from trading_system.ml_refinement.features.extractors.base_extractor import (
-    OHLCVExtractor,
-)
+from trading_system.ml_refinement.features.extractors.base_extractor import OHLCVExtractor
 
 
 class MarketRegimeFeatures(OHLCVExtractor):

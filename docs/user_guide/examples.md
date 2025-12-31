@@ -710,4 +710,3 @@ comparison = compare_multiple_runs('results')
 - See [Best Practices Guide](best_practices.md) for recommendations
 - Explore example configs in `EXAMPLE_CONFIGS/`
 - Review technical documentation in `agent-files/`
-

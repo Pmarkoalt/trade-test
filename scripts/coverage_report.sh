@@ -82,4 +82,3 @@ echo "  2. Check for uncovered code paths"
 echo "  3. Add tests for uncovered areas if needed"
 echo "  4. Update README with coverage badge"
 echo ""
-

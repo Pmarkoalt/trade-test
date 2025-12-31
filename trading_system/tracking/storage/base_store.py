@@ -4,12 +4,7 @@ from abc import ABC, abstractmethod
 from datetime import date, datetime
 from typing import Dict, List, Optional
 
-from trading_system.tracking.models import (
-    PerformanceMetrics,
-    SignalOutcome,
-    SignalStatus,
-    TrackedSignal,
-)
+from trading_system.tracking.models import PerformanceMetrics, SignalOutcome, SignalStatus, TrackedSignal
 
 
 class BaseTrackingStore(ABC):

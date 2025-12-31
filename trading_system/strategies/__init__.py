@@ -17,10 +17,7 @@ from .momentum.crypto_momentum import CryptoMomentumStrategy
 from .momentum.equity_momentum import EquityMomentumStrategy
 from .multi_timeframe.equity_mtf_strategy import EquityMultiTimeframeStrategy
 from .pairs.pairs_strategy import PairsTradingStrategy
-from .queue import (
-    select_signals_from_queue,
-    violates_correlation_guard,
-)
+from .queue import select_signals_from_queue, violates_correlation_guard
 
 # Signal scoring and queue selection
 from .scoring import (
@@ -30,19 +27,10 @@ from .scoring import (
     rank_normalize,
     score_signals,
 )
-from .strategy_loader import (
-    load_strategies_from_configs,
-    load_strategies_from_run_config,
-    load_strategy_from_config,
-)
+from .strategy_loader import load_strategies_from_configs, load_strategies_from_run_config, load_strategy_from_config
 
 # Strategy factory and loader
-from .strategy_registry import (
-    create_strategy,
-    get_strategy_class,
-    list_available_strategies,
-    register_strategy,
-)
+from .strategy_registry import create_strategy, get_strategy_class, list_available_strategies, register_strategy
 
 # Backward compatibility aliases
 EquityStrategy = EquityMomentumStrategy

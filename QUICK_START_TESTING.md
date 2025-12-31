@@ -90,4 +90,3 @@ pip install -r requirements.txt
 - Normal with 3-month test data
 - System needs 20+ days for signals
 - Use longer date range for more trades
-

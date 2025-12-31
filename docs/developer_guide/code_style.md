@@ -179,4 +179,3 @@ mypy trading_system/
 ---
 
 For more details, see [PEP 8](https://www.python.org/dev/peps/pep-0008/) and [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html).
-

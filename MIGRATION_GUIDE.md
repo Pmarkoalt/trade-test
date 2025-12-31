@@ -557,4 +557,3 @@ See `scripts/` directory for migration utilities (when available).
 
 **Last Updated**: 2024-12-19
 **Maintained By**: Trading System Contributors
-

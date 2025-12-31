@@ -131,4 +131,3 @@ metrics:
     max_drawdown_max: 0.30
     sharpe_ratio_min: 0.5
     calmar_ratio_min: 0.8
-

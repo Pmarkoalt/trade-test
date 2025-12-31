@@ -127,4 +127,3 @@ echo "  2. Run integration test: pytest tests/integration/ -v"
 echo "  3. Run backtest: python -m trading_system backtest --config tests/fixtures/configs/run_test_config.yaml"
 echo ""
 echo "See TESTING_GUIDE.md for detailed instructions."
-

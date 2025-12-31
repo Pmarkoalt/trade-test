@@ -4,12 +4,7 @@ import logging
 from datetime import date, datetime
 from typing import List, Optional
 
-from trading_system.tracking.models import (
-    ExitReason,
-    SignalOutcome,
-    SignalStatus,
-    TrackedSignal,
-)
+from trading_system.tracking.models import ExitReason, SignalOutcome, SignalStatus, TrackedSignal
 from trading_system.tracking.storage.base_store import BaseTrackingStore
 
 logger = logging.getLogger(__name__)

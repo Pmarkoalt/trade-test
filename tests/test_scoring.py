@@ -10,10 +10,7 @@ from trading_system.models.features import FeatureRow
 from trading_system.models.portfolio import Portfolio
 from trading_system.models.positions import Position
 from trading_system.models.signals import BreakoutType, Signal, SignalSide, SignalType
-from trading_system.strategies.queue import (
-    select_signals_from_queue,
-    violates_correlation_guard,
-)
+from trading_system.strategies.queue import select_signals_from_queue, violates_correlation_guard
 from trading_system.strategies.scoring import (
     compute_breakout_strength,
     compute_diversification_bonus,

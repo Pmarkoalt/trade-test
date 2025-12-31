@@ -93,4 +93,3 @@ master_doc = "index"
 
 # Language
 language = "en"
-

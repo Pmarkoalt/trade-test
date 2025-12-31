@@ -4,11 +4,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from trading_system.ml.ensemble import (
-    BoostingEnsemble,
-    StackingEnsemble,
-    VotingEnsemble,
-)
+from trading_system.ml.ensemble import BoostingEnsemble, StackingEnsemble, VotingEnsemble
 from trading_system.ml.models import MLModel, ModelType, SklearnMLModel
 
 

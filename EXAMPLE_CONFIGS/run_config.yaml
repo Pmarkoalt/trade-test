@@ -144,4 +144,3 @@ metrics:
     max_drawdown_max: 0.20  # >20% = reject
     sharpe_ratio_min: 0.75  # <0.75 = reject
     calmar_ratio_min: 1.0  # <1.0 = reject
-

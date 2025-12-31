@@ -310,9 +310,7 @@ def test_feature_registry():
 
 def test_feature_registry_register_custom():
     """Test registering custom extractor."""
-    from trading_system.ml_refinement.features.extractors.base_extractor import (
-        BaseFeatureExtractor,
-    )
+    from trading_system.ml_refinement.features.extractors.base_extractor import BaseFeatureExtractor
 
     class CustomExtractor(BaseFeatureExtractor):
         @property

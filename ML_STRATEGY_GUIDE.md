@@ -393,4 +393,3 @@ learner.update(new_features, new_labels)  # Incrementally update
 - `docs/` - Additional documentation
 
 For questions or issues, review the code examples and documentation.
-

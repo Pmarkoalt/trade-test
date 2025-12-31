@@ -1134,4 +1134,3 @@ Once all items are checked:
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Troubleshooting guide
 - [README.md](README.md) - Getting started guide
 - [docs/user_guide/getting_started.md](docs/user_guide/getting_started.md) - User guide
-
