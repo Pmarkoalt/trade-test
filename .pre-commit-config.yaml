@@ -39,11 +39,11 @@ repos:
   # =============================================================================
 
   # isort - Sort imports (runs BEFORE black)
+  # Configuration is read from pyproject.toml [tool.isort] section
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2
     hooks:
       - id: isort
-        args: [--profile=black, --line-length=127]
         name: isort (sort imports)
         # Explicitly check trading_system and tests directories to match CI
         files: ^(trading_system|tests)/

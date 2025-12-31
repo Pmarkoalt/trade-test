@@ -2,9 +2,7 @@
 
 from typing import Any, Dict, List
 
-from trading_system.ml_refinement.features.extractors.base_extractor import (
-    BaseFeatureExtractor,
-)
+from trading_system.ml_refinement.features.extractors.base_extractor import BaseFeatureExtractor
 
 
 class SignalMetadataFeatures(BaseFeatureExtractor):

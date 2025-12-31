@@ -1,7 +1,6 @@
 """Tests for ML refinement feature pipeline."""
 
 import pandas as pd
-import pytest
 
 from trading_system.ml_refinement import FeatureConfig, FeatureSet, FeatureVector
 from trading_system.ml_refinement.features import FeaturePipeline, FeatureRegistry, FeatureScaler
@@ -310,9 +309,7 @@ def test_feature_registry():
 
 def test_feature_registry_register_custom():
     """Test registering custom extractor."""
-    from trading_system.ml_refinement.features.extractors.base_extractor import (
-        BaseFeatureExtractor,
-    )
+    from trading_system.ml_refinement.features.extractors.base_extractor import BaseFeatureExtractor
 
     class CustomExtractor(BaseFeatureExtractor):
         @property

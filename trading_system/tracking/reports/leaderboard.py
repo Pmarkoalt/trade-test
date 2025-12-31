@@ -4,9 +4,7 @@ from dataclasses import dataclass, field
 from datetime import date, timedelta
 from typing import List, Optional
 
-from trading_system.tracking.analytics.strategy_analytics import (
-    StrategyAnalyzer,
-)
+from trading_system.tracking.analytics.strategy_analytics import StrategyAnalyzer
 from trading_system.tracking.storage.base_store import BaseTrackingStore
 
 

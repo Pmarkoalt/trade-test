@@ -14,12 +14,7 @@ Modules:
     feature_store: Feature caching, versioning, and validation
 """
 
-from trading_system.ml.ensemble import (
-    BoostingEnsemble,
-    EnsembleModel,
-    StackingEnsemble,
-    VotingEnsemble,
-)
+from trading_system.ml.ensemble import BoostingEnsemble, EnsembleModel, StackingEnsemble, VotingEnsemble
 from trading_system.ml.evaluation import (
     ModelPerformanceTracker,
     compute_backtest_metrics,
@@ -27,21 +22,9 @@ from trading_system.ml.evaluation import (
     compute_feature_importance,
 )
 from trading_system.ml.feature_engineering import MLFeatureEngineer
-from trading_system.ml.feature_store import (
-    FeatureStore,
-    FeatureVersionManager,
-)
-from trading_system.ml.models import (
-    MLModel,
-    ModelType,
-    hyperparameter_tuning,
-    random_search_tuning,
-)
-from trading_system.ml.online_learning import (
-    ConceptDriftDetector,
-    IncrementalLearner,
-    ModelRetrainingPipeline,
-)
+from trading_system.ml.feature_store import FeatureStore, FeatureVersionManager
+from trading_system.ml.models import MLModel, ModelType, hyperparameter_tuning, random_search_tuning
+from trading_system.ml.online_learning import ConceptDriftDetector, IncrementalLearner, ModelRetrainingPipeline
 from trading_system.ml.online_learning import ModelVersionManager as OnlineModelVersionManager
 from trading_system.ml.predictor import MLPredictor
 from trading_system.ml.training import MLTrainer
