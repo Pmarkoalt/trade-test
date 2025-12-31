@@ -41,14 +41,21 @@ def ma(series: pd.Series, window: int, use_cache: bool = True) -> pd.Series:
     
     # Optimized: Use vectorized rolling mean (already fast in pandas)
     # min_periods=window ensures NaN until window values are available
+    # This automatically sets first window-1 values to NaN
     ma_series = series.rolling(window=window, min_periods=window).mean()
     
-    # Explicitly set NaN for insufficient lookback (first window-1 values)
-    # This ensures we never use partial windows
-    # Note: pandas rolling with min_periods already does this, but we're explicit
-    if len(ma_series) > 0 and len(ma_series) >= window:
-        # Use vectorized assignment instead of iloc loop
-        ma_series.iloc[:window-1] = np.nan
+    # Ensure first window-1 values are NaN (defensive check)
+    # When min_periods=window, pandas sets first window-1 to NaN, but we verify
+    if len(ma_series) >= window and window > 1:
+        # First window-1 values should be NaN
+        ma_series = ma_series.copy()  # Ensure we have a copy to modify
+        # Explicitly set first window-1 values to NaN
+        if window > 1:
+            ma_series.iloc[:window-1] = np.nan
+    elif len(ma_series) > 0 and len(ma_series) < window:
+        # If series is shorter than window, all values should be NaN
+        ma_series = ma_series.copy()
+        ma_series.iloc[:] = np.nan
     
     # Cache result if enabled
     if use_cache:
