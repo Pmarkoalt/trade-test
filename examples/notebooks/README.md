@@ -57,6 +57,24 @@ Run statistical validation tests on your strategy.
 - Stress tests
 - Sensitivity analysis
 
+### 7. Short Selling Example (`07_Short_Selling_Example.ipynb`)
+Learn how to use short selling strategies in the trading system.
+
+**Topics:**
+- Mean reversion strategy (shorts overbought assets)
+- Short position mechanics and P&L
+- Risk management for short positions
+- Analyzing short vs long trade performance
+
+### 8. ML Workflow Example (`08_ML_Workflow_Example.ipynb`)
+Integrate machine learning models into your trading strategies.
+
+**Topics:**
+- Training ML models on backtest data
+- Using models for signal prediction/enhancement
+- ML integration modes (score enhancement, filter, replace)
+- Model versioning and management
+
 ## Setup
 
 ### Prerequisites

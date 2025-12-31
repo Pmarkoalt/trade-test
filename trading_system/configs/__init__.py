@@ -1,16 +1,16 @@
 """Trading system configuration models."""
 
+from .run_config import RunConfig
 from .strategy_config import (
-    StrategyConfig,
+    CapacityConfig,
+    CostsConfig,
     EligibilityConfig,
     EntryConfig,
     ExitConfig,
-    RiskConfig,
-    CapacityConfig,
-    CostsConfig,
     IndicatorsConfig,
+    RiskConfig,
+    StrategyConfig,
 )
-from .run_config import RunConfig
 
 __all__ = [
     "StrategyConfig",
@@ -23,4 +23,3 @@ __all__ = [
     "IndicatorsConfig",
     "RunConfig",
 ]
-

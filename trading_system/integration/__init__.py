@@ -1,6 +1,6 @@
 """Integration module for running backtests from configuration."""
 
-from .runner import BacktestRunner, run_backtest, run_validation, run_holdout
+from .runner import BacktestRunner, run_backtest, run_holdout, run_validation
 
 __all__ = [
     "BacktestRunner",
@@ -8,4 +8,3 @@ __all__ = [
     "run_validation",
     "run_holdout",
 ]
-

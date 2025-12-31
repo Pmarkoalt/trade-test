@@ -1,6 +1,7 @@
 """Market data container for bars, features, and benchmarks."""
 
 from typing import Dict, Optional
+
 import pandas as pd
 
 from .bar import Bar
@@ -36,11 +37,11 @@ class MarketData:
     def get_bar(self, symbol: str, date: pd.Timestamp) -> Optional[Bar]:
         """
         Get bar for symbol at date.
-        
+
         Args:
             symbol: Symbol name
             date: Date timestamp
-        
+
         Returns:
             Bar object or None if not found
         """
@@ -53,22 +54,22 @@ class MarketData:
         return Bar(
             date=date,
             symbol=symbol,
-            open=row['open'],
-            high=row['high'],
-            low=row['low'],
-            close=row['close'],
-            volume=row['volume'],
-            dollar_volume=row.get('dollar_volume', row['close'] * row['volume'])
+            open=row["open"],
+            high=row["high"],
+            low=row["low"],
+            close=row["close"],
+            volume=row["volume"],
+            dollar_volume=row.get("dollar_volume", row["close"] * row["volume"]),
         )
-    
+
     def get_features(self, symbol: str, date: pd.Timestamp) -> Optional[FeatureRow]:
         """
         Get features for symbol at date.
-        
+
         Args:
             symbol: Symbol name
             date: Date timestamp
-        
+
         Returns:
             FeatureRow object or None if not found
         """
@@ -80,8 +81,8 @@ class MarketData:
         row = df.loc[date]
         # Convert Series to dict and add required fields if not present
         row_dict = row.to_dict()
-        if 'date' not in row_dict:
-            row_dict['date'] = date
-        if 'symbol' not in row_dict:
-            row_dict['symbol'] = symbol
+        if "date" not in row_dict:
+            row_dict["date"] = date
+        if "symbol" not in row_dict:
+            row_dict["symbol"] = symbol
         return FeatureRow(**row_dict)

@@ -9,8 +9,8 @@ Each adapter implements the BaseAdapter interface and can work in paper trading
 mode (simulated execution) or with real broker accounts.
 """
 
-from .base_adapter import BaseAdapter, AdapterConfig, AccountInfo
 from .alpaca_adapter import AlpacaAdapter
+from .base_adapter import AccountInfo, AdapterConfig, BaseAdapter
 from .ib_adapter import IBAdapter
 
 __all__ = [
@@ -20,4 +20,3 @@ __all__ = [
     "AlpacaAdapter",
     "IBAdapter",
 ]
-

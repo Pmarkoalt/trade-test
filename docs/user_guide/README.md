@@ -10,8 +10,8 @@ Welcome to the Trading System User Guide. This section contains comprehensive gu
 ### Guides
 - **[Examples Guide](examples.md)** - Common use cases and examples
 - **[Best Practices Guide](best_practices.md)** - Best practices for backtesting and strategy development
-- **[Troubleshooting Guide](troubleshooting.md)** - Common issues and solutions (Coming Soon)
-- **[FAQ](faq.md)** - Frequently asked questions (Coming Soon)
+- **[Troubleshooting Guide](troubleshooting.md)** - Common issues and solutions
+- **[FAQ](../../FAQ.md)** - Frequently asked questions
 
 ## 🚀 Quick Start
 

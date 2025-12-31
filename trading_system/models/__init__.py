@@ -2,11 +2,11 @@
 
 from .bar import Bar
 from .features import FeatureRow
-from .signals import Signal, SignalSide, SignalType, BreakoutType
-from .orders import Order, Fill, OrderStatus
-from .positions import Position, ExitReason
-from .portfolio import Portfolio
 from .market_data import MarketData
+from .orders import Fill, Order, OrderStatus
+from .portfolio import Portfolio
+from .positions import ExitReason, Position
+from .signals import BreakoutType, Signal, SignalSide, SignalType
 
 __all__ = [
     "Bar",
@@ -23,4 +23,3 @@ __all__ = [
     "Portfolio",
     "MarketData",
 ]
-

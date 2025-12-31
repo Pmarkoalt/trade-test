@@ -257,6 +257,110 @@ The portfolio manager handles positions from both strategies with correlation gu
 
 ---
 
+## Strategy Customization
+
+### Creating Custom Strategies
+
+You can create your own trading strategies by implementing the `StrategyInterface` class.
+
+#### Step 1: Generate Strategy Template
+
+Use the CLI to generate a strategy template:
+
+```bash
+# Interactive wizard
+python -m trading_system strategy create
+
+# Or specify options directly
+python -m trading_system strategy create \
+    --name my_custom_strategy \
+    --type custom \
+    --asset-class equity \
+    --output trading_system/strategies/custom/my_custom_strategy_equity.py
+```
+
+This creates a template with all required methods that you need to implement.
+
+#### Step 2: Implement Required Methods
+
+All strategies must implement these methods:
+
+1. **`check_eligibility(features: FeatureRow) -> Tuple[bool, List[str]]`**
+   - Check if symbol is eligible for entry
+   - Returns: (is_eligible, list_of_failure_reasons)
+
+2. **`check_entry_triggers(features: FeatureRow) -> Tuple[Optional[BreakoutType], float]`**
+   - Check if entry triggers are met
+   - Returns: (breakout_type, clearance) or (None, 0.0)
+
+3. **`check_exit_signals(position: Position, features: FeatureRow) -> Optional[ExitReason]`**
+   - Check if exit signals are met
+   - Returns: ExitReason or None
+
+4. **`compute_stop_price(entry_price, entry_date, features) -> Optional[float]`**
+   - Compute stop loss price for new position
+   - Returns: stop_price or None
+
+#### Step 3: Register Your Strategy
+
+```python
+from trading_system.strategies.strategy_registry import register_strategy
+from trading_system.strategies.custom.my_custom_strategy_equity import MyCustomStrategyEquity
+
+register_strategy(
+    strategy_type="my_custom_strategy",
+    asset_class="equity",
+    strategy_class=MyCustomStrategyEquity
+)
+```
+
+#### Step 4: Create Strategy Config
+
+Create a YAML config file for your strategy:
+
+```yaml
+name: "my_custom_strategy_equity"
+asset_class: "equity"
+universe: ["AAPL", "MSFT", "GOOGL"]
+benchmark: "SPY"
+
+indicators:
+  ma_periods: [20, 50]
+  atr_period: 14
+  adv_lookback: 20
+
+entry:
+  fast_clearance: 0.005  # Your custom entry parameters
+
+exit:
+  mode: "ma_cross"
+  exit_ma: 20
+  hard_stop_atr_mult: 2.0
+
+risk:
+  risk_per_trade: 0.0075
+  max_positions: 8
+```
+
+#### Step 5: Use in Backtest
+
+Reference your strategy config in `run_config.yaml`:
+
+```yaml
+strategies:
+  equity:
+    config_path: "configs/my_custom_strategy_config.yaml"
+    enabled: true
+```
+
+Then run the backtest normally.
+
+#### Example: Simple MA Crossover Strategy
+
+See `examples/custom_strategy.py` for a complete example of a simple moving average crossover strategy.
+
+---
+
 ## Custom Strategy Types
 
 ### Example 12: Mean Reversion Strategy

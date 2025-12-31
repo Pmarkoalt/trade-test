@@ -1,19 +1,20 @@
 """Database schema definitions for results storage."""
 
-from typing import List, Optional
 import sqlite3
+from typing import List, Optional
 
 
 def create_schema(conn: sqlite3.Connection) -> None:
     """Create all database tables.
-    
+
     Args:
         conn: SQLite database connection
     """
     cursor = conn.cursor()
-    
+
     # Backtest runs table - stores metadata about each backtest run
-    cursor.execute("""
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS backtest_runs (
             run_id INTEGER PRIMARY KEY AUTOINCREMENT,
             config_path TEXT,
@@ -27,10 +28,12 @@ def create_schema(conn: sqlite3.Connection) -> None:
             notes TEXT,
             UNIQUE(config_path, strategy_name, split_name, period, start_date, end_date)
         )
-    """)
-    
+    """
+    )
+
     # Results metrics table - stores computed metrics for each run
-    cursor.execute("""
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS run_metrics (
             metric_id INTEGER PRIMARY KEY AUTOINCREMENT,
             run_id INTEGER NOT NULL,
@@ -59,10 +62,12 @@ def create_schema(conn: sqlite3.Connection) -> None:
             FOREIGN KEY (run_id) REFERENCES backtest_runs(run_id) ON DELETE CASCADE,
             UNIQUE(run_id)
         )
-    """)
-    
+    """
+    )
+
     # Trades table - stores individual closed trades
-    cursor.execute("""
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS trades (
             trade_id INTEGER PRIMARY KEY AUTOINCREMENT,
             run_id INTEGER NOT NULL,
@@ -88,10 +93,12 @@ def create_schema(conn: sqlite3.Connection) -> None:
             adv20_at_entry REAL,
             FOREIGN KEY (run_id) REFERENCES backtest_runs(run_id) ON DELETE CASCADE
         )
-    """)
-    
+    """
+    )
+
     # Equity curve table - stores daily equity values
-    cursor.execute("""
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS equity_curve (
             equity_id INTEGER PRIMARY KEY AUTOINCREMENT,
             run_id INTEGER NOT NULL,
@@ -103,10 +110,12 @@ def create_schema(conn: sqlite3.Connection) -> None:
             FOREIGN KEY (run_id) REFERENCES backtest_runs(run_id) ON DELETE CASCADE,
             UNIQUE(run_id, date)
         )
-    """)
-    
+    """
+    )
+
     # Daily returns table - stores daily return values
-    cursor.execute("""
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS daily_returns (
             return_id INTEGER PRIMARY KEY AUTOINCREMENT,
             run_id INTEGER NOT NULL,
@@ -115,10 +124,12 @@ def create_schema(conn: sqlite3.Connection) -> None:
             FOREIGN KEY (run_id) REFERENCES backtest_runs(run_id) ON DELETE CASCADE,
             UNIQUE(run_id, date)
         )
-    """)
-    
+    """
+    )
+
     # Monthly summary table - stores aggregated monthly metrics
-    cursor.execute("""
+    cursor.execute(
+        """
         CREATE TABLE IF NOT EXISTS monthly_summary (
             monthly_id INTEGER PRIMARY KEY AUTOINCREMENT,
             run_id INTEGER NOT NULL,
@@ -139,8 +150,9 @@ def create_schema(conn: sqlite3.Connection) -> None:
             FOREIGN KEY (run_id) REFERENCES backtest_runs(run_id) ON DELETE CASCADE,
             UNIQUE(run_id, month)
         )
-    """)
-    
+    """
+    )
+
     # Create indexes for better query performance
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_runs_config ON backtest_runs(config_path)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_runs_strategy ON backtest_runs(strategy_name)")
@@ -153,16 +165,16 @@ def create_schema(conn: sqlite3.Connection) -> None:
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_returns_run ON daily_returns(run_id)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_monthly_run ON monthly_summary(run_id)")
     cursor.execute("CREATE INDEX IF NOT EXISTS idx_monthly_month ON monthly_summary(month)")
-    
+
     conn.commit()
 
 
 def get_schema_version(conn: sqlite3.Connection) -> int:
     """Get current schema version.
-    
+
     Args:
         conn: SQLite database connection
-        
+
     Returns:
         Schema version number (1 for initial schema)
     """
@@ -178,7 +190,7 @@ def get_schema_version(conn: sqlite3.Connection) -> int:
 
 def migrate_schema(conn: sqlite3.Connection, from_version: int, to_version: int) -> None:
     """Migrate database schema from one version to another.
-    
+
     Args:
         conn: SQLite database connection
         from_version: Current schema version
@@ -187,4 +199,3 @@ def migrate_schema(conn: sqlite3.Connection, from_version: int, to_version: int)
     # For now, we only have version 1, so no migrations needed
     # This is a placeholder for future schema migrations
     pass
-

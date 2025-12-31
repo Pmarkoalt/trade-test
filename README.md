@@ -2,7 +2,9 @@
 
 [![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Coverage](https://img.shields.io/badge/coverage-To%20be%20generated-lightgrey)](./htmlcov/index.html)
+[![Coverage](https://img.shields.io/badge/coverage-37.71%25-yellow)](./htmlcov/index.html)
+
+> **Note**: Test coverage badge shows current coverage. Generate coverage report with `./scripts/coverage_report.sh` or `pytest --cov=trading_system --cov-report=html`. View detailed coverage in `htmlcov/index.html`.
 
 A config-driven daily momentum trading system for equities and cryptocurrency with walk-forward backtesting, realistic execution costs, and comprehensive validation suite.
 
@@ -427,7 +429,12 @@ pytest --cov=trading_system --cov-report=html --cov-report=term-missing
 Coverage reports:
 - **HTML Report**: `htmlcov/index.html` - Interactive coverage browser
 - **Terminal Report**: Shows coverage summary and missing lines
-- **Target**: >90% coverage
+- **Target**: >90% coverage (Current: ~37.71%)
+
+**Coverage Badge**: The README badge shows current coverage. To update the badge URL with dynamic coverage:
+1. Run coverage report: `./scripts/coverage_report.sh`
+2. Check coverage percentage in terminal output
+3. Update badge URL in README if using a coverage service, or use static badge shown above
 
 ### Test Data
 Test fixtures include 3 months of sample data (Oct-Dec 2023) for:
@@ -503,6 +510,66 @@ Comprehensive documentation is organized across multiple locations:
 - **[Quick Start Testing](QUICK_START_TESTING.md)** - Quick testing reference
 
 See [DOCUMENTATION.md](DOCUMENTATION.md) for the complete documentation index.
+
+## Performance Benchmarks
+
+The trading system includes comprehensive performance benchmarks for monitoring and optimization. See [Performance Characteristics](docs/PERFORMANCE_CHARACTERISTICS.md) for detailed benchmarks.
+
+### Quick Performance Overview
+
+| Operation | Expected Time | Configuration |
+|-----------|--------------|---------------|
+| Full Backtest | < 5 min | 100 symbols, 5 years, single strategy |
+| Indicator Computation | < 50ms | Full feature set per symbol |
+| Portfolio Update | < 5ms | 50 positions |
+| Validation Suite | < 5 min | 1000 trades, full statistical tests |
+
+### Running Benchmarks
+
+```bash
+# Run all performance benchmarks
+pytest tests/performance/ -m performance --benchmark-only
+
+# Compare against baseline (regression detection)
+pytest tests/performance/ -m performance --benchmark-only --benchmark-compare
+```
+
+For production-scale benchmarks, see [Performance Characteristics](docs/PERFORMANCE_CHARACTERISTICS.md).
+
+## Architecture
+
+The trading system follows a modular, event-driven architecture:
+
+```mermaid
+graph TB
+    A[Data Loader] --> B[Feature Engine]
+    B --> C[Strategy Evaluator]
+    C --> D[Signal Queue]
+    D --> E[Portfolio Manager]
+    E --> F[Execution Engine]
+    F --> G[Backtest Engine]
+    G --> H[Reporting]
+    
+    I[Config] --> C
+    I --> E
+    I --> F
+    
+    J[Validation Suite] --> G
+    K[Risk Manager] --> E
+```
+
+### Key Components
+
+- **Data Pipeline**: CSV loading with validation and preprocessing
+- **Feature Engine**: Technical indicator computation (MA, ATR, ROC, breakouts)
+- **Strategy Evaluator**: Generates signals based on strategy rules
+- **Signal Queue**: Ranks and selects signals with correlation guards
+- **Portfolio Manager**: Position tracking, risk limits, exposure management
+- **Execution Engine**: Realistic fills with slippage and fees
+- **Backtest Engine**: Event-driven loop with walk-forward splits
+- **Reporting**: CSV/JSON outputs with comprehensive metrics
+
+For detailed architecture documentation, see [Architecture Overview](agent-files/01_ARCHITECTURE_OVERVIEW.md).
 
 ## Status
 

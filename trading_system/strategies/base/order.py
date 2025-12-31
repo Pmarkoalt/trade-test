@@ -5,7 +5,6 @@ Strategies should import from here or directly from models.
 """
 
 # Re-export from models (order is a data model used throughout the system)
-from ...models.orders import Order, OrderStatus, Fill
+from ...models.orders import Fill, Order, OrderStatus
 
 __all__ = ["Order", "OrderStatus", "Fill"]
-

@@ -1,8 +1,7 @@
 """Strategy template generator for creating new strategy classes."""
 
 from pathlib import Path
-from typing import Optional, Dict
-
+from typing import Dict, Optional
 
 # Template for strategy class file
 STRATEGY_TEMPLATE = '''"""{{strategy_name}} strategy implementation."""
@@ -171,43 +170,40 @@ def generate_strategy_template(
     strategy_type: str = "custom",
     asset_class: str = "equity",
     output_path: Optional[str] = None,
-    directory: Optional[str] = None
+    directory: Optional[str] = None,
 ) -> str:
     """Generate a strategy class template file.
-    
+
     Args:
         strategy_name: Name of the strategy (e.g., "my_custom_strategy")
-        strategy_type: Type of strategy (momentum, mean_reversion, factor, 
+        strategy_type: Type of strategy (momentum, mean_reversion, factor,
                       multi_timeframe, pairs, or custom)
         asset_class: Asset class (equity or crypto)
         output_path: Optional path to save the template. If None, returns as string.
         directory: Optional directory to create the strategy in. If None, uses
                    strategy_type directory (or "custom" for custom strategies)
-    
+
     Returns:
         Template Python code as string
-    
+
     Raises:
         ValueError: If strategy_type or asset_class is invalid
     """
     if strategy_type not in BASE_CLASS_MAP:
-        raise ValueError(
-            f"Invalid strategy_type: {strategy_type}. "
-            f"Must be one of: {', '.join(BASE_CLASS_MAP.keys())}"
-        )
-    
+        raise ValueError(f"Invalid strategy_type: {strategy_type}. " f"Must be one of: {', '.join(BASE_CLASS_MAP.keys())}")
+
     if asset_class not in ["equity", "crypto"]:
         raise ValueError(f"asset_class must be 'equity' or 'crypto', got '{asset_class}'")
-    
+
     # Get base class info
     base_import_path, base_class_name = BASE_CLASS_MAP[strategy_type][asset_class]
-    
+
     # Generate class name from strategy name
     # Pattern: {AssetClass}{StrategyType}Strategy (e.g., EquityMomentumStrategy)
     # Convert "my_custom_strategy" -> "MyCustomStrategy"
-    class_name_parts = strategy_name.split('_')
-    strategy_name_camel = ''.join(word.capitalize() for word in class_name_parts)
-    
+    class_name_parts = strategy_name.split("_")
+    strategy_name_camel = "".join(word.capitalize() for word in class_name_parts)
+
     # Build class name following the pattern: {AssetClass}{StrategyType}Strategy
     if strategy_type == "custom":
         # For custom strategies, use: {AssetClass}{StrategyName}Strategy
@@ -215,29 +211,29 @@ def generate_strategy_template(
     else:
         # For typed strategies, use: {AssetClass}{StrategyType}Strategy
         # But if strategy_name is not the default, incorporate it
-        strategy_type_camel = ''.join(word.capitalize() for word in strategy_type.split('_'))
+        strategy_type_camel = "".join(word.capitalize() for word in strategy_type.split("_"))
         if strategy_name_camel.lower() != strategy_type.lower():
             # Custom name provided, use: {AssetClass}{StrategyName}{StrategyType}Strategy
             class_name = f"{asset_class.capitalize()}{strategy_name_camel}{strategy_type_camel}Strategy"
         else:
             # Default name, use: {AssetClass}{StrategyType}Strategy
             class_name = f"{asset_class.capitalize()}{strategy_type_camel}Strategy"
-    
+
     # Format template
     template_vars = {
-        "strategy_name": strategy_name.replace('_', ' ').title(),
+        "strategy_name": strategy_name.replace("_", " ").title(),
         "class_name": class_name,
         "base_import": f"from {base_import_path} import {base_class_name}",
         "base_class": base_class_name,
         "asset_class": asset_class,
         "asset_class_actual": "{config.asset_class}",  # For error message formatting
     }
-    
+
     # Replace template variables
     content = STRATEGY_TEMPLATE
     for key, value in template_vars.items():
         content = content.replace(f"{{{{{key}}}}}", str(value))
-    
+
     # Determine output path
     if output_path:
         file_path = Path(output_path)
@@ -250,18 +246,17 @@ def generate_strategy_template(
                 strategy_dir = Path("trading_system/strategies/custom")
             else:
                 strategy_dir = Path(f"trading_system/strategies/{strategy_type}")
-        
+
         # Create directory if it doesn't exist
         strategy_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Generate filename
         filename = f"{strategy_name}_{asset_class}.py"
         file_path = strategy_dir / filename
-    
+
     # Save file
     file_path.parent.mkdir(parents=True, exist_ok=True)
-    with open(file_path, 'w') as f:
+    with open(file_path, "w") as f:
         f.write(content)
-    
-    return content
 
+    return content

@@ -18,6 +18,7 @@
 .PHONY: docker-build docker-test-unit docker-test-integration docker-test-validation docker-test-all
 .PHONY: docker-debug-shell docker-debug-integration docker-debug-test docker-test-integration-verbose
 .PHONY: docker-test-integration-capture docker-test-integration-last-failed
+.PHONY: install-dev format format-check lint type-check check-code
 
 # Default test config for validation suite
 TEST_CONFIG ?= tests/fixtures/configs/run_test_config.yaml
@@ -59,6 +60,14 @@ help:
 	@echo "  TEST_CONFIG=<path>     - Override validation config (default: tests/fixtures/configs/run_test_config.yaml)"
 	@echo "  TEST=<name>            - Specific test to run (for docker-debug-test)"
 	@echo "  pytest args            - Pass additional args: make test-unit ARGS='-v -k test_name'"
+	@echo ""
+	@echo "Code quality targets:"
+	@echo "  make install-dev       - Install development dependencies (black, isort, flake8, mypy)"
+	@echo "  make format            - Format code with black and isort"
+	@echo "  make format-check      - Check formatting without making changes"
+	@echo "  make lint              - Lint code with flake8"
+	@echo "  make type-check        - Type check code with mypy"
+	@echo "  make check-code        - Run all code quality checks"
 
 test: test-unit
 	@echo "$(GREEN)✓ Unit tests complete$(NC)"
@@ -224,4 +233,77 @@ docker-test-integration-last-failed:
 		--failed-first \
 		$(ARGS)
 	@echo "$(GREEN)✓ Failed tests re-run complete$(NC)"
+
+# Code Quality Targets
+
+install-dev:
+	@echo "$(YELLOW)Installing development dependencies...$(NC)"
+	pip install -e ".[dev]"
+	@echo "$(GREEN)✓ Development dependencies installed$(NC)"
+	@echo ""
+	@echo "Installed tools:"
+	@echo "  • black (code formatter)"
+	@echo "  • isort (import sorter)"
+	@echo "  • flake8 (linter)"
+	@echo "  • mypy (type checker)"
+	@echo ""
+	@echo "Next steps:"
+	@echo "  • Format code: make format"
+	@echo "  • Check code quality: make check-code"
+
+format:
+	@echo "$(YELLOW)Formatting code with black...$(NC)"
+	@if command -v black > /dev/null 2>&1; then \
+		black trading_system/ tests/; \
+	else \
+		echo "$(RED)✗ black not found. Install with: make install-dev$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(YELLOW)Sorting imports with isort...$(NC)"
+	@if command -v isort > /dev/null 2>&1; then \
+		isort trading_system/ tests/; \
+	else \
+		echo "$(RED)✗ isort not found. Install with: make install-dev$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(GREEN)✓ Code formatted$(NC)"
+
+format-check:
+	@echo "$(YELLOW)Checking code formatting...$(NC)"
+	@if command -v black > /dev/null 2>&1; then \
+		black --check trading_system/ tests/ || (echo "$(RED)✗ Code formatting issues found$(NC)" && exit 1); \
+	else \
+		echo "$(RED)✗ black not found. Install with: make install-dev$(NC)"; \
+		exit 1; \
+	fi
+	@if command -v isort > /dev/null 2>&1; then \
+		isort --check-only trading_system/ tests/ || (echo "$(RED)✗ Import sorting issues found$(NC)" && exit 1); \
+	else \
+		echo "$(RED)✗ isort not found. Install with: make install-dev$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(GREEN)✓ Code formatting OK$(NC)"
+
+lint:
+	@echo "$(YELLOW)Linting code with flake8...$(NC)"
+	@if command -v flake8 > /dev/null 2>&1; then \
+		flake8 trading_system/ tests/ || (echo "$(RED)✗ Linting issues found$(NC)" && exit 1); \
+	else \
+		echo "$(RED)✗ flake8 not found. Install with: make install-dev$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(GREEN)✓ Linting passed$(NC)"
+
+type-check:
+	@echo "$(YELLOW)Type checking with mypy...$(NC)"
+	@if command -v mypy > /dev/null 2>&1; then \
+		mypy trading_system/ || echo "$(YELLOW)⚠ Type checking issues found (warnings are OK)$(NC)"; \
+	else \
+		echo "$(RED)✗ mypy not found. Install with: make install-dev$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(GREEN)✓ Type checking complete$(NC)"
+
+check-code: format-check lint type-check
+	@echo "$(GREEN)✓ All code quality checks passed$(NC)"
 

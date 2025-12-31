@@ -4,4 +4,3 @@ from .feed import LiveDataFeed
 from .monitor import LiveMonitor
 
 __all__ = ["LiveDataFeed", "LiveMonitor"]
-

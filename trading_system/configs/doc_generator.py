@@ -1,63 +1,65 @@
 """Configuration documentation generator."""
 
-from pathlib import Path
-from typing import Optional, Dict, Any
 import inspect
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
+
 from .run_config import RunConfig
 from .strategy_config import StrategyConfig
 
 
 def get_field_info(model_class: type[BaseModel]) -> Dict[str, Any]:
     """Extract field information from a Pydantic model.
-    
+
     Args:
         model_class: Pydantic model class
-        
+
     Returns:
         Dictionary with field information
     """
     fields_info = {}
     model_fields = model_class.model_fields
-    
+
     for field_name, field_info in model_fields.items():
         field_type = field_info.annotation
         default = field_info.default if field_info.default is not ... else None
-        description = field_info.description if hasattr(field_info, 'description') else None
-        
+        description = field_info.description if hasattr(field_info, "description") else None
+
         # Get default from default_factory if present
-        if default is None and hasattr(field_info, 'default_factory'):
+        if default is None and hasattr(field_info, "default_factory"):
             default_factory = field_info.default_factory
             if default_factory is not ...:
                 try:
                     default = default_factory()
-                except:
+                except Exception:
                     default = "<default_factory>"
-        
+
         fields_info[field_name] = {
             "type": field_type,
             "default": default,
             "description": description,
-            "required": field_info.default is ...
+            "required": field_info.default is ...,
         }
-    
+
     return fields_info
 
 
 def format_type(type_hint) -> str:
     """Format a type hint as a string.
-    
+
     Args:
         type_hint: Type hint object
-        
+
     Returns:
         Formatted type string
     """
-    if hasattr(type_hint, '__origin__'):
+    if hasattr(type_hint, "__origin__"):
         # Handle generic types like List[int], Optional[str], etc.
         origin = type_hint.__origin__
-        args = type_hint.__args__ if hasattr(type_hint, '__args__') else []
-        
+        args = type_hint.__args__ if hasattr(type_hint, "__args__") else []
+
         if origin is list or origin is List:
             arg_str = format_type(args[0]) if args else "Any"
             return f"List[{arg_str}]"
@@ -65,47 +67,47 @@ def format_type(type_hint) -> str:
             key_str = format_type(args[0]) if len(args) > 0 else "Any"
             val_str = format_type(args[1]) if len(args) > 1 else "Any"
             return f"Dict[{key_str}, {val_str}]"
-        elif hasattr(type_hint, '__name__'):
+        elif hasattr(type_hint, "__name__"):
             return type_hint.__name__
-    
+
     # Handle Literal types
-    if hasattr(type_hint, '__args__'):
+    if hasattr(type_hint, "__args__"):
         args = type_hint.__args__
         if all(isinstance(arg, str) for arg in args):
             return f"Literal[{', '.join(repr(arg) for arg in args)}]"
-    
+
     # Regular type
-    if hasattr(type_hint, '__name__'):
+    if hasattr(type_hint, "__name__"):
         return type_hint.__name__
-    
+
     return str(type_hint)
 
 
 def generate_config_docs(output_path: Optional[str] = None) -> str:
     """Generate documentation for all configuration models.
-    
+
     Args:
         output_path: Optional path to save the documentation. If None, returns as string.
-        
+
     Returns:
         Markdown documentation as string
     """
     lines = []
-    
+
     lines.append("# Configuration Documentation")
     lines.append("")
     lines.append("Complete reference for all configuration options in the trading system.")
     lines.append("")
-    
+
     # Run Config Documentation
     lines.append("## Run Configuration (`run_config.yaml`)")
     lines.append("")
     lines.append("Main configuration file for backtest runs. Used by CLI commands: `backtest`, `validate`, `holdout`.")
     lines.append("")
-    
+
     # Import config classes
-    from .run_config import DatasetConfig, SplitsConfig, PortfolioConfig, VolatilityScalingConfig
-    
+    from .run_config import DatasetConfig, PortfolioConfig, SplitsConfig, VolatilityScalingConfig
+
     # DatasetConfig
     lines.append("### Dataset Configuration")
     lines.append("")
@@ -113,14 +115,14 @@ def generate_config_docs(output_path: Optional[str] = None) -> str:
     lines.append("dataset:")
     fields = get_field_info(DatasetConfig)
     for field_name, info in fields.items():
-        default_str = f"  # Default: {info['default']}" if info['default'] is not None and not info['required'] else ""
-        req_str = " (required)" if info['required'] else ""
-        type_str = format_type(info['type'])
-        desc_str = f" - {info['description']}" if info['description'] else ""
+        default_str = f"  # Default: {info['default']}" if info["default"] is not None and not info["required"] else ""
+        req_str = " (required)" if info["required"] else ""
+        type_str = format_type(info["type"])
+        desc_str = f" - {info['description']}" if info["description"] else ""
         lines.append(f"  {field_name}: <{type_str}>{req_str}{desc_str}{default_str}")
     lines.append("```")
     lines.append("")
-    
+
     # SplitsConfig
     lines.append("### Splits Configuration")
     lines.append("")
@@ -130,7 +132,7 @@ def generate_config_docs(output_path: Optional[str] = None) -> str:
     lines.append("splits:")
     fields = get_field_info(SplitsConfig)
     for field_name, info in fields.items():
-        type_str = format_type(info['type'])
+        type_str = format_type(info["type"])
         lines.append(f"  {field_name}: <{type_str}>  # Required, format: YYYY-MM-DD")
     lines.append("```")
     lines.append("")
@@ -139,7 +141,7 @@ def generate_config_docs(output_path: Optional[str] = None) -> str:
     lines.append("- `validation_start` < `validation_end` < `holdout_start`")
     lines.append("- `holdout_start` < `holdout_end`")
     lines.append("")
-    
+
     # StrategiesConfig
     lines.append("### Strategies Configuration")
     lines.append("")
@@ -155,7 +157,7 @@ def generate_config_docs(output_path: Optional[str] = None) -> str:
     lines.append("")
     lines.append("**Note:** At least one strategy must be enabled.")
     lines.append("")
-    
+
     # PortfolioConfig
     lines.append("### Portfolio Configuration")
     lines.append("")
@@ -163,12 +165,12 @@ def generate_config_docs(output_path: Optional[str] = None) -> str:
     lines.append("portfolio:")
     fields = get_field_info(PortfolioConfig)
     for field_name, info in fields.items():
-        default_str = f"  # Default: {info['default']}" if info['default'] is not None else ""
-        type_str = format_type(info['type'])
+        default_str = f"  # Default: {info['default']}" if info["default"] is not None else ""
+        type_str = format_type(info["type"])
         lines.append(f"  {field_name}: <{type_str}>{default_str}")
     lines.append("```")
     lines.append("")
-    
+
     # VolatilityScalingConfig
     lines.append("### Volatility Scaling Configuration")
     lines.append("")
@@ -176,12 +178,12 @@ def generate_config_docs(output_path: Optional[str] = None) -> str:
     lines.append("volatility_scaling:")
     fields = get_field_info(VolatilityScalingConfig)
     for field_name, info in fields.items():
-        default_str = f"  # Default: {info['default']}" if info['default'] is not None else ""
-        type_str = format_type(info['type'])
+        default_str = f"  # Default: {info['default']}" if info["default"] is not None else ""
+        type_str = format_type(info["type"])
         lines.append(f"  {field_name}: <{type_str}>{default_str}")
     lines.append("```")
     lines.append("")
-    
+
     # Continue with other configs...
     lines.append("### Other Configurations")
     lines.append("")
@@ -192,13 +194,13 @@ def generate_config_docs(output_path: Optional[str] = None) -> str:
     lines.append("- `validation`: Validation suite settings (optional)")
     lines.append("- `metrics`: Metrics targets for evaluation (optional)")
     lines.append("")
-    
+
     # Strategy Config Documentation
     lines.append("## Strategy Configuration (`*_config.yaml`)")
     lines.append("")
     lines.append("Strategy-specific configuration files for equity or crypto strategies.")
     lines.append("")
-    
+
     lines.append("### Required Fields")
     lines.append("")
     lines.append("```yaml")
@@ -208,7 +210,7 @@ def generate_config_docs(output_path: Optional[str] = None) -> str:
     lines.append("benchmark: <str>         # Benchmark symbol (e.g., 'SPY' or 'BTC')")
     lines.append("```")
     lines.append("")
-    
+
     lines.append("### Configuration Sections")
     lines.append("")
     lines.append("- `indicators`: Technical indicator calculation parameters")
@@ -219,7 +221,7 @@ def generate_config_docs(output_path: Optional[str] = None) -> str:
     lines.append("- `capacity`: Capacity constraints (FROZEN - do not change)")
     lines.append("- `costs`: Execution cost model parameters")
     lines.append("")
-    
+
     lines.append("## Validation Rules")
     lines.append("")
     lines.append("The configuration system validates:")
@@ -232,7 +234,7 @@ def generate_config_docs(output_path: Optional[str] = None) -> str:
     lines.append("6. **Required fields**: All required fields must be present")
     lines.append("7. **Enum values**: String fields with limited options must match allowed values")
     lines.append("")
-    
+
     lines.append("## Getting Help")
     lines.append("")
     lines.append("### Configuration Tools")
@@ -255,15 +257,12 @@ def generate_config_docs(output_path: Optional[str] = None) -> str:
     lines.append("- **Generate documentation**: `python -m trading_system config docs`")
     lines.append("  - Generates complete configuration reference documentation")
     lines.append("")
-    
+
     doc_content = "\n".join(lines)
-    
+
     if output_path:
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-        with open(output_path, 'w') as f:
+        with open(output_path, "w") as f:
             f.write(doc_content)
-    
+
     return doc_content
-
-
-
