@@ -3,7 +3,6 @@
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Dict, List, Optional, Tuple
-from trading_system.tracking.models import SignalOutcome
 
 import numpy as np
 

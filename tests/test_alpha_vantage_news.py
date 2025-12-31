@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from trading_system.data_pipeline.sources.news.models import NewsArticle, SentimentLabel
 from trading_system.data_pipeline.sources.news.alpha_vantage_news import AlphaVantageNewsClient
+from trading_system.data_pipeline.sources.news.models import NewsArticle, SentimentLabel
 
 
 @pytest.fixture
@@ -343,7 +343,7 @@ class TestAlphaVantageNewsClient:
             mock_get.return_value = mock_response
 
             # Request 10 symbols (should batch into groups of 5)
-            result = await alpha_vantage_client.fetch_articles(
+            await alpha_vantage_client.fetch_articles(
                 symbols=["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA", "JPM", "V", "JNJ"]
             )
 

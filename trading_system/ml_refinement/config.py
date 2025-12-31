@@ -1,8 +1,8 @@
 """Configuration for ML refinement module."""
 
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional
 from enum import Enum
+from typing import Dict, List, Optional
 
 
 class ModelType(str, Enum):

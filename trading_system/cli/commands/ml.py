@@ -1,13 +1,11 @@
 """CLI commands for ML functionality."""
 
-import argparse
-from datetime import datetime, timedelta
-from typing import Optional
+from datetime import datetime
 
-from rich.console import Console
-from rich.table import Table
-from rich.panel import Panel
 from rich import box
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
 
 from trading_system.ml_refinement.config import MLConfig, ModelType
 from trading_system.ml_refinement.storage.feature_db import FeatureDatabase

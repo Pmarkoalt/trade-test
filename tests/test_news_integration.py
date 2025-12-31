@@ -1,9 +1,9 @@
 """Integration tests for news analysis and signal generation."""
 
-from datetime import date, datetime
 from dataclasses import dataclass
+from datetime import date, datetime
 from typing import Dict, List, Optional
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock
 
 import pandas as pd
 import pytest
@@ -213,12 +213,10 @@ class TestNewsIntegration:
         """Test that positive news increases signal score."""
         signal_config = SignalConfig(news_enabled=True, technical_weight=0.6, news_weight=0.4, min_news_score_for_boost=7.0)
 
-        generator = LiveSignalGenerator(
-            strategies=[mock_strategy], signal_config=signal_config, news_analyzer=mock_news_analyzer
-        )
+        _ = LiveSignalGenerator(strategies=[mock_strategy], signal_config=signal_config, news_analyzer=mock_news_analyzer)
 
-        # Create a mock signal
-        signal = Signal(
+        # Create a mock signal (for testing signal enhancement)
+        _ = Signal(
             symbol="AAPL",
             asset_class="equity",
             date=pd.Timestamp("2024-01-15"),
@@ -231,8 +229,8 @@ class TestNewsIntegration:
             momentum_strength=0.3,
         )
 
-        # Mock feature row
-        feature = FeatureRow(
+        # Mock feature row (for testing, though not directly used here)
+        _ = FeatureRow(
             date=pd.Timestamp("2024-01-15"),
             symbol="AAPL",
             asset_class="equity",

@@ -1,29 +1,20 @@
 """Integration tests for ML refinement."""
 
-import pytest
-import numpy as np
-import pandas as pd
 from datetime import datetime, timedelta
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from trading_system.ml_refinement.config import (
-    FeatureConfig,
-    FeatureSet,
-    MLConfig,
-    ModelType,
-    FeatureVector,
-)
-from trading_system.ml_refinement.storage.feature_db import FeatureDatabase
+import numpy as np
+import pandas as pd
+import pytest
+
+from trading_system.ml_refinement.config import FeatureConfig, FeatureSet, FeatureVector, MLConfig, ModelType
+from trading_system.ml_refinement.features.extractors.technical_features import MomentumFeatures, TrendFeatures
 from trading_system.ml_refinement.features.pipeline import FeaturePipeline
-from trading_system.ml_refinement.features.extractors.technical_features import (
-    TrendFeatures,
-    MomentumFeatures,
-)
-from trading_system.ml_refinement.training.trainer import ModelTrainer
-from trading_system.ml_refinement.validation.walk_forward import WalkForwardValidator
 from trading_system.ml_refinement.integration.prediction_service import PredictionService
 from trading_system.ml_refinement.integration.signal_scorer import MLSignalScorer
+from trading_system.ml_refinement.storage.feature_db import FeatureDatabase
+from trading_system.ml_refinement.training.trainer import ModelTrainer
+from trading_system.ml_refinement.validation.walk_forward import WalkForwardValidator
 
 
 @pytest.fixture
@@ -270,7 +261,6 @@ class TestPredictionService:
     ):
         """Test signal quality prediction."""
         config = MLConfig()
-        model_dir = str(tmp_path / "models")
 
         # Mock model for prediction
         mock_model = MagicMock()
@@ -278,7 +268,6 @@ class TestPredictionService:
         mock_model.predict_proba.return_value = np.array([[0.3, 0.7]])  # 70% probability
 
         # Create service with mocked model registry
-        from trading_system.ml_refinement.integration.prediction_service import ModelRegistry
 
         class MockModelRegistry:
             def __init__(self, feature_db):
@@ -444,8 +433,6 @@ class TestEndToEndWorkflow:
         populated_feature_db.activate_model("e2e-model-123")
 
         # Step 3: Create prediction service
-        from trading_system.ml_refinement.integration.prediction_service import ModelRegistry
-
         class MockRegistry:
             def __init__(self, feature_db):
                 self.feature_db = feature_db

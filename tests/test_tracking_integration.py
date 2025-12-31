@@ -1,20 +1,16 @@
 """Integration tests for performance tracking."""
 
-import pytest
 from datetime import date, timedelta
 
-from trading_system.tracking.models import (
-    ConvictionLevel,
-    ExitReason,
-    SignalDirection,
-    SignalStatus,
-)
-from trading_system.tracking.storage.sqlite_store import SQLiteTrackingStore
-from trading_system.tracking.signal_tracker import SignalTracker
+import pytest
+
+from trading_system.tracking.analytics.signal_analytics import SignalAnalyzer
+from trading_system.tracking.models import ConvictionLevel, ExitReason, SignalDirection, SignalStatus
 from trading_system.tracking.outcome_recorder import OutcomeRecorder
 from trading_system.tracking.performance_calculator import PerformanceCalculator
-from trading_system.tracking.analytics.signal_analytics import SignalAnalyzer
 from trading_system.tracking.reports.leaderboard import LeaderboardGenerator
+from trading_system.tracking.signal_tracker import SignalTracker
+from trading_system.tracking.storage.sqlite_store import SQLiteTrackingStore
 
 
 @pytest.fixture
@@ -276,7 +272,7 @@ class TestTrackingEdgeCases:
 
         # Second outcome should fail or update
         # (depending on implementation choice - SQLite store should allow update)
-        success2 = recorder.record_outcome(
+        _ = recorder.record_outcome(
             signal_id=signal_id,
             entry_price=100.0,
             exit_price=110.0,

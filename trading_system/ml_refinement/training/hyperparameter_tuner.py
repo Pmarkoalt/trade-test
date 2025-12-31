@@ -1,7 +1,7 @@
 """Hyperparameter tuning for ML models."""
 
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 from loguru import logger
@@ -41,8 +41,8 @@ except ImportError:
     SignalQualityModelType = _SignalQualityModelStub
 
 
-from trading_system.ml_refinement.validation.walk_forward import WalkForwardValidator
 from trading_system.ml_refinement.validation.metrics import calculate_classification_metrics
+from trading_system.ml_refinement.validation.walk_forward import WalkForwardValidator
 
 
 @dataclass

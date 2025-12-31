@@ -2,11 +2,7 @@
 
 import pytest
 
-from trading_system.research.entity_extraction.ticker_extractor import (
-    TickerExtractor,
-    TICKER_ALIASES,
-    ALIAS_TO_TICKER,
-)
+from trading_system.research.entity_extraction.ticker_extractor import ALIAS_TO_TICKER, TICKER_ALIASES, TickerExtractor
 
 
 class TestTickerExtractor:

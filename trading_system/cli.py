@@ -4,7 +4,6 @@ import argparse
 import logging
 import sys
 from contextlib import contextmanager
-from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 
@@ -292,7 +291,7 @@ def display_sensitivity_results(results: Dict[str, Any]) -> None:
             # Best metric value
             if analysis.get("results"):
                 best_metric = max(r["metric"] for r in analysis["results"])
-                console.print("\n[bold green]Best {results.get('metric_name', 'metric')}: {best_metric:.4f}[/bold green]")
+                console.print(f"\n[bold green]Best {analysis.get('metric_name', 'metric')}: {best_metric:.4f}[/bold green]")
 
 
 def interactive_config_setup() -> Optional[str]:
@@ -437,8 +436,8 @@ def cmd_backtest(args: argparse.Namespace) -> int:
         print_success("Backtest completed successfully")
         return 0
 
-    except FileNotFoundError as e:
-        print_error("Config file not found: {e}")
+    except FileNotFoundError:
+        print_error("Config file not found")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
             console.print("  • Verify the config path exists")
@@ -502,13 +501,13 @@ def cmd_backtest(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         print_warning("\nBacktest cancelled by user")
         return 130
-    except TradingSystemError as e:
-        print_error("Trading system error: {e}")
+    except TradingSystemError:
+        print_error("Trading system error")
         if console:
             console.print_exception(show_locals=False)
         return 1
-    except Exception as e:
-        print_error("Unexpected error: {e}")
+    except Exception:
+        print_error("Unexpected error")
         if console:
             console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
             console.print("  • Check logs in the output directory")
@@ -575,8 +574,8 @@ def cmd_validate(args: argparse.Namespace) -> int:
                 console.print("  • Run backtest: [cyan]python -m trading_system backtest --config {args.config}[/cyan]")
             return 1
 
-    except FileNotFoundError as e:
-        print_error("Config file not found: {e}")
+    except FileNotFoundError:
+        print_error("Config file not found")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
             console.print("  • Verify the config path exists")
@@ -586,8 +585,8 @@ def cmd_validate(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         print_warning("\nValidation cancelled by user")
         return 130
-    except Exception as e:
-        print_error("Validation failed: {e}")
+    except Exception:
+        print_error("Validation failed")
         if console:
             console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
             console.print("  • Check logs in the output directory")
@@ -656,8 +655,8 @@ def cmd_holdout(args: argparse.Namespace) -> int:
         print_success("Holdout evaluation completed successfully")
         return 0
 
-    except FileNotFoundError as e:
-        print_error("Config file not found: {e}")
+    except FileNotFoundError:
+        print_error("Config file not found")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
             console.print("  • Verify the config path exists")
@@ -666,8 +665,8 @@ def cmd_holdout(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         print_warning("\nHoldout evaluation cancelled by user")
         return 130
-    except Exception as e:
-        print_error("Holdout evaluation failed: {e}")
+    except Exception:
+        print_error("Holdout evaluation failed")
         if console:
             console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
             console.print("  • Ensure holdout period is properly configured")
@@ -732,15 +731,15 @@ def cmd_sensitivity(args: argparse.Namespace) -> int:
             console.print("  • Run backtest with new parameters")
         return 0
 
-    except FileNotFoundError as e:
-        print_error("Config file not found: {e}")
+    except FileNotFoundError:
+        print_error("Config file not found")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
             console.print("  • Verify the config path exists")
             console.print_exception(show_locals=False)
         return 1
-    except ValueError as e:
-        print_error("Configuration error: {e}")
+    except ValueError:
+        print_error("Configuration error")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
             console.print("  • Validate config: [cyan]python -m trading_system config validate --path {args.config}[/cyan]")
@@ -749,8 +748,8 @@ def cmd_sensitivity(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         print_warning("\nSensitivity analysis cancelled by user")
         return 130
-    except Exception as e:
-        print_error("Sensitivity analysis failed: {e}")
+    except Exception:
+        print_error("Sensitivity analysis failed")
         if console:
             console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
             console.print("  • Ensure parameter grids are configured in strategy config")
@@ -795,8 +794,8 @@ def cmd_config_template(args: argparse.Namespace) -> int:
             logging.info("Template saved to: {output_path}")
 
         return 0
-    except Exception as e:
-        logging.error("Template generation failed: {e}", exc_info=True)
+    except Exception:
+        logging.error("Template generation failed", exc_info=True)
         return 1
 
 
@@ -893,8 +892,8 @@ def cmd_config_validate(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         print_warning("\nValidation cancelled by user")
         return 130
-    except Exception as e:
-        print_error("Validation failed: {e}")
+    except Exception:
+        print_error("Validation failed")
         if console:
             console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
             console.print("  • Check that the file is valid YAML")
@@ -926,8 +925,8 @@ def cmd_config_docs(args: argparse.Namespace) -> int:
             print_success("Documentation saved to: {output_path}")
 
         return 0
-    except Exception as e:
-        print_error("Documentation generation failed: {e}")
+    except Exception:
+        print_error("Documentation generation failed")
         if console:
             console.print_exception()
         else:
@@ -966,9 +965,9 @@ def cmd_config_migrate(args: argparse.Namespace) -> int:
             print_section("Creating Backup")
             try:
                 backup_path = backup_config(str(config_path))
-                print_success("Backup created: {backup_path}")
-            except Exception as e:
-                print_error("Failed to create backup: {e}")
+                print_success(f"Backup created: {backup_path}")
+            except Exception:
+                print_error("Failed to create backup")
                 return 1
 
         # Perform migration
@@ -994,8 +993,8 @@ def cmd_config_migrate(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         print_warning("\nMigration cancelled by user")
         return 130
-    except Exception as e:
-        print_error("Migration failed: {e}")
+    except Exception:
+        print_error("Migration failed")
         if console:
             console.print_exception()
         else:
@@ -1050,8 +1049,8 @@ def cmd_config_version(args: argparse.Namespace) -> int:
 
         return 0 if is_current else 1
 
-    except Exception as e:
-        print_error("Version check failed: {e}")
+    except Exception:
+        print_error("Version check failed")
         if console:
             console.print_exception()
         else:
@@ -1078,10 +1077,8 @@ def cmd_config_schema(args: argparse.Namespace) -> int:
 
         if config_type == "run":
             schema = export_json_schema(RunConfig, output_path=output_path)
-            schema_name = "RunConfig"
         elif config_type == "strategy":
             schema = export_json_schema(StrategyConfig, output_path=output_path)
-            schema_name = "StrategyConfig"
         else:
             print_error("Unknown config type: {config_type}")
             return 1
@@ -1091,11 +1088,12 @@ def cmd_config_schema(args: argparse.Namespace) -> int:
 
             print(json.dumps(schema, indent=2))
         else:
-            print_success("JSON Schema for {schema_name} saved to: {output_path}")
+            schema_name = "RunConfig" if config_type == "run" else "StrategyConfig"
+            print_success(f"JSON Schema for {schema_name} saved to: {output_path}")
 
         return 0
-    except Exception as e:
-        print_error("Schema export failed: {e}")
+    except Exception:
+        print_error("Schema export failed")
         if console:
             console.print_exception()
         else:
@@ -1120,8 +1118,8 @@ def cmd_config_wizard(args: argparse.Namespace) -> int:
 
         run_wizard(config_type=config_type, output_path=output_path)
         return 0
-    except Exception as e:
-        logging.error("Wizard failed: {e}", exc_info=True)
+    except Exception:
+        logging.error("Wizard failed", exc_info=True)
         return 1
 
 
@@ -1148,7 +1146,7 @@ def cmd_strategy_template(args: argparse.Namespace) -> int:
 
         # Generate template
         print_section("Generating Strategy Class")
-        content = generate_strategy_template(
+        generate_strategy_template(
             strategy_name=strategy_name,
             strategy_type=strategy_type,
             asset_class=asset_class,
@@ -1166,30 +1164,30 @@ def cmd_strategy_template(args: argparse.Namespace) -> int:
                 if strategy_type == "custom":
                     strategy_dir = Path("trading_system/strategies/custom")
                 else:
-                    strategy_dir = Path("trading_system/strategies/{strategy_type}")
-            filename = "{strategy_name}_{asset_class}.py"
+                    strategy_dir = Path(f"trading_system/strategies/{strategy_type}")
+            filename = f"{strategy_name}_{asset_class}.py"
             file_path = strategy_dir / filename
 
-        print_success("Strategy template generated: {file_path}")
+        print_success(f"Strategy template generated: {file_path}")
 
         if console:
             console.print("\n[dim]Next steps:[/dim]")
-            console.print("  1. Review and implement the TODO sections in {file_path.name}")
+            console.print(f"  1. Review and implement the TODO sections in {file_path.name}")
             console.print("  2. Register the strategy in strategy_registry.py")
             console.print("  3. Create a strategy config YAML file")
             console.print("  4. Test the strategy with a backtest")
 
         return 0
-    except ValueError as e:
-        print_error("Invalid arguments: {e}")
+    except ValueError:
+        print_error("Invalid arguments")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
             console.print("  • Strategy name should be lowercase with underscores (e.g., 'my_custom_strategy')")
             console.print("  • Strategy type must be one of: momentum, mean_reversion, factor, multi_timeframe, pairs, custom")
             console.print("  • Asset class must be 'equity' or 'crypto'")
         return 1
-    except Exception as e:
-        print_error("Strategy template generation failed: {e}")
+    except Exception:
+        print_error("Strategy template generation failed")
         if console:
             console.print_exception()
         else:
@@ -1242,7 +1240,7 @@ def cmd_strategy_create(args: argparse.Namespace) -> int:
 
         # Generate template
         print_section("Generating Strategy Class")
-        content = generate_strategy_template(
+        generate_strategy_template(
             strategy_name=strategy_name,
             strategy_type=strategy_type,
             asset_class=asset_class,
@@ -1261,21 +1259,21 @@ def cmd_strategy_create(args: argparse.Namespace) -> int:
                     strategy_dir = Path("trading_system/strategies/custom")
                 else:
                     strategy_dir = Path("trading_system/strategies/{strategy_type}")
-            filename = "{strategy_name}_{asset_class}.py"
+            filename = f"{strategy_name}_{asset_class}.py"
             file_path = strategy_dir / filename
 
-        print_success("Strategy template generated: {file_path}")
+        print_success(f"Strategy template generated: {file_path}")
 
         if console:
             console.print("\n[dim]Next steps:[/dim]")
-            console.print("  1. Review and implement the TODO sections in {file_path.name}")
+            console.print(f"  1. Review and implement the TODO sections in {file_path.name}")
             console.print("  2. Register the strategy in strategy_registry.py")
             console.print("  3. Create a strategy config YAML file")
             console.print("  4. Test the strategy with a backtest")
 
         return 0
-    except ValueError as e:
-        print_error("Invalid arguments: {e}")
+    except ValueError:
+        print_error("Invalid arguments")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
             console.print("  • Strategy name should be lowercase with underscores (e.g., 'my_custom_strategy')")
@@ -1285,8 +1283,8 @@ def cmd_strategy_create(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         print_warning("\nStrategy creation cancelled by user")
         return 130
-    except Exception as e:
-        print_error("Strategy template generation failed: {e}")
+    except Exception:
+        print_error("Strategy template generation failed")
         if console:
             console.print_exception()
         else:
@@ -1330,7 +1328,7 @@ def cmd_report(args: argparse.Namespace) -> int:
                             console.print("  • Available run IDs: {', '.join(runs[:5])}")
                             if len(runs) > 5:
                                 console.print("  • ... and {len(runs) - 5} more")
-                    except Exception:
+                    except Exception:  # nosec B110 - exception handling for directory listing, failures are non-critical
                         pass
                 console.print("  • Run a backtest first: [cyan]python -m trading_system backtest -c <config>[/cyan]")
             return 1
@@ -1350,7 +1348,7 @@ def cmd_report(args: argparse.Namespace) -> int:
             summary_display = Path(summary_path).relative_to(Path.cwd())
         except ValueError:
             summary_display = summary_path
-        print_success("Summary report: {summary_display}")
+        print_success(f"Summary report: {summary_display}")
 
         # Generate comparison report (if multiple periods available)
         try:
@@ -1361,9 +1359,9 @@ def cmd_report(args: argparse.Namespace) -> int:
                 comparison_display = Path(comparison_path).relative_to(Path.cwd())
             except ValueError:
                 comparison_display = comparison_path
-            print_success("Comparison report: {comparison_display}")
-        except ValueError as e:
-            print_warning("Could not generate comparison report: {e}")
+            print_success(f"Comparison report: {comparison_display}")
+        except ValueError:
+            print_warning("Could not generate comparison report")
 
         # Print summary to console
         print_section("Report Summary")
@@ -1371,12 +1369,12 @@ def cmd_report(args: argparse.Namespace) -> int:
 
         print_success("Report generation completed successfully")
         if console:
-            console.print("\n[dim]View reports:[/dim] {run_dir.absolute()}")
-            console.print("Launch dashboard: [cyan]python -m trading_system dashboard --run-id {run_id}[/cyan]")
+            console.print(f"\n[dim]View reports:[/dim] {run_dir.absolute()}")
+            console.print(f"Launch dashboard: [cyan]python -m trading_system dashboard --run-id {run_id}[/cyan]")
         return 0
 
-    except FileNotFoundError as e:
-        print_error("Run directory not found: {e}")
+    except FileNotFoundError:
+        print_error("Run directory not found")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
             console.print("  • Verify the run_id exists in the base_path")
@@ -1386,8 +1384,8 @@ def cmd_report(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         print_warning("\nReport generation cancelled by user")
         return 130
-    except Exception as e:
-        print_error("Report generation failed: {e}")
+    except Exception:
+        print_error("Report generation failed")
         if console:
             console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
             console.print("  • Ensure the run completed successfully")
@@ -1408,7 +1406,7 @@ def cmd_dashboard(args: argparse.Namespace) -> int:
         Exit code (0 for success, non-zero for error)
     """
     try:
-        import subprocess
+        import subprocess  # nosec B404 - subprocess needed for streamlit execution
         import sys
 
         base_path = getattr(args, "base_path", "results/")
@@ -1444,21 +1442,21 @@ def cmd_dashboard(args: argparse.Namespace) -> int:
         print_info("Press Ctrl+C to stop the dashboard.\n")
 
         # Run streamlit
-        subprocess.run(cmd)
+        subprocess.run(cmd)  # nosec B603 - subprocess needed for streamlit execution, cmd is constructed from trusted paths
 
         return 0
 
     except KeyboardInterrupt:
         print_warning("\nDashboard stopped by user")
         return 130
-    except FileNotFoundError as e:
-        print_error("Run directory not found: {e}")
+    except FileNotFoundError:
+        print_error("Run directory not found")
         if console:
             console.print("\n[yellow]Tip:[/yellow] Make sure the run_id exists in the base_path directory.")
-            console.print("Available runs can be found in: {Path(base_path).absolute()}")
+            console.print(f"Available runs can be found in: {Path(base_path).absolute()}")
         return 1
-    except Exception as e:
-        print_error("Dashboard launch failed: {e}")
+    except Exception:
+        print_error("Dashboard launch failed")
         if console:
             console.print_exception()
         else:
@@ -1505,8 +1503,8 @@ def cmd_run_scheduler(args: argparse.Namespace) -> int:
             runner.stop()
             print_success("Scheduler stopped")
             return 0
-    except Exception as e:
-        print_error("Failed to start scheduler: {e}")
+    except Exception:
+        print_error("Failed to start scheduler")
         if console:
             console.print_exception()
         return 1
@@ -1534,8 +1532,8 @@ def cmd_run_signals_now(args: argparse.Namespace) -> int:
 
         print_success("Signal generation completed for {asset_class}")
         return 0
-    except Exception as e:
-        print_error("Signal generation failed: {e}")
+    except Exception:
+        print_error("Signal generation failed")
         if console:
             console.print_exception()
         return 1
@@ -1609,8 +1607,8 @@ def cmd_send_test_email(args: argparse.Namespace) -> int:
         else:
             print_error("Failed to send test email. Check SMTP configuration.")
             return 1
-    except Exception as e:
-        print_error("Failed to send test email: {e}")
+    except Exception:
+        print_error("Failed to send test email")
         if console:
             console.print_exception()
         return 1
@@ -1626,7 +1624,7 @@ def cmd_trading_dashboard(args: argparse.Namespace) -> int:
         Exit code (0 for success, non-zero for error)
     """
     try:
-        import subprocess
+        import subprocess  # nosec B404 - subprocess needed for streamlit execution
         import sys
 
         port = getattr(args, "port", 8501)
@@ -1634,7 +1632,7 @@ def cmd_trading_dashboard(args: argparse.Namespace) -> int:
 
         if console:
             console.print("\n[bold cyan]Launching Trading Assistant Dashboard[/bold cyan]")
-            console.print("Address: http://{host}:{port}")
+            console.print(f"Address: http://{host}:{port}")
             console.print("\nPress Ctrl+C to stop the dashboard.\n")
 
         # Check if streamlit is available
@@ -1648,13 +1646,12 @@ def cmd_trading_dashboard(args: argparse.Namespace) -> int:
             return 1
 
         # Get the dashboard app path
-        import os
         from pathlib import Path
 
         dashboard_file = Path(__file__).parent / "dashboard" / "app.py"
 
         if not dashboard_file.exists():
-            print_error("Dashboard app not found: {dashboard_file}")
+            print_error(f"Dashboard app not found: {dashboard_file}")
             return 1
 
         # Build command
@@ -1664,23 +1661,23 @@ def cmd_trading_dashboard(args: argparse.Namespace) -> int:
             "streamlit",
             "run",
             str(dashboard_file),
-            "--server.port={port}",
-            "--server.address={host}",
+            f"--server.port={port}",
+            f"--server.address={host}",
         ]
 
         print_info("Starting Streamlit trading dashboard...")
         print_info("The dashboard will open in your browser automatically.")
 
         # Run streamlit
-        subprocess.run(cmd)
+        subprocess.run(cmd)  # nosec B603 - subprocess needed for streamlit execution, cmd is constructed from trusted paths
 
         return 0
 
     except KeyboardInterrupt:
         print_warning("\nDashboard stopped by user")
         return 130
-    except Exception as e:
-        print_error("Dashboard launch failed: {e}")
+    except Exception:
+        print_error("Dashboard launch failed")
         if console:
             console.print_exception()
         else:
@@ -1762,8 +1759,8 @@ def cmd_fetch_data(args: argparse.Namespace) -> int:
     except KeyboardInterrupt:
         print_warning("\nData fetching cancelled by user")
         return 130
-    except Exception as e:
-        print_error("Failed to fetch data: {e}")
+    except Exception:
+        print_error("Failed to fetch data")
         if console:
             console.print_exception()
         else:
@@ -2212,8 +2209,8 @@ def main() -> int:
     except KeyboardInterrupt:
         print_warning("\nOperation cancelled by user")
         return 130
-    except Exception as e:
-        print_error("Unexpected error: {e}")
+    except Exception:
+        print_error("Unexpected error")
         if console:
             console.print_exception()
         return 1

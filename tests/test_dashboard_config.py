@@ -1,8 +1,6 @@
 """Tests for dashboard configuration."""
 
-import pytest
-
-from trading_system.dashboard.config import DashboardConfig, ChartConfig, PAGES
+from trading_system.dashboard.config import PAGES, ChartConfig, DashboardConfig
 
 
 def test_dashboard_config():

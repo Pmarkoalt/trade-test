@@ -1,14 +1,14 @@
 """CLI utilities and wizards for the trading system."""
 
 # Import wizards
-from .config_wizard import run_wizard
-from .strategy_wizard import run_strategy_wizard
-
 # Import CLI commands from cli.py using importlib to handle naming conflict
 # Since we have both cli.py and cli/ directory, we need to load cli.py directly
 import importlib.util
 import sys
 from pathlib import Path
+
+from .config_wizard import run_wizard
+from .strategy_wizard import run_strategy_wizard
 
 _parent_dir = Path(__file__).parent.parent
 _cli_py_path = _parent_dir / "cli.py"

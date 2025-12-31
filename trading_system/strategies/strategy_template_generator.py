@@ -18,24 +18,24 @@ from ...models.positions import Position, ExitReason
 
 class {{class_name}}({{base_class}}):
     """{{strategy_name}} strategy for {{asset_class}}.
-    
+
     TODO: Add strategy description here.
-    
+
     Eligibility:
     - TODO: Describe eligibility requirements
-    
+
     Entry triggers:
     - TODO: Describe entry trigger conditions
-    
+
     Exit logic:
     - TODO: Describe exit conditions
-    
+
     Capacity check: order_notional <= max_pct * ADV20
     """
-    
+
     def __init__(self, config: StrategyConfig):
         """Initialize {{strategy_name}} strategy.
-        
+
         Args:
             config: Strategy configuration (must have asset_class="{{asset_class}}")
         """
@@ -43,41 +43,41 @@ class {{class_name}}({{base_class}}):
             raise ValueError(
                 f"{{class_name}} requires asset_class='{{asset_class}}', got '{{asset_class_actual}}'"
             )
-        
+
         super().__init__(config)
-    
+
     def check_eligibility(self, features: FeatureRow) -> tuple[bool, List[str]]:
         """Check if symbol is eligible for entry.
-        
+
         Args:
             features: FeatureRow with indicators for the symbol
-        
+
         Returns:
             Tuple of (is_eligible, failure_reasons)
         """
         failures = []
-        
+
         # Check if features are valid
         if not features.is_valid_for_entry():
             failures.append("insufficient_data")
             return False, failures
-        
+
         # TODO: Implement eligibility checks
         # Example:
         # if features.close <= features.ma50:
         #     failures.append("below_MA50")
         #     return False, failures
-        
+
         return True, []
-    
+
     def check_entry_triggers(
         self, features: FeatureRow
     ) -> tuple[Optional[BreakoutType], float]:
         """Check if entry triggers are met.
-        
+
         Args:
             features: FeatureRow with indicators for the symbol
-        
+
         Returns:
             Tuple of (breakout_type, clearance) or (None, 0.0) if no trigger.
             For non-breakout strategies, breakout_type may be a custom enum value.
@@ -90,18 +90,18 @@ class {{class_name}}({{base_class}}):
         #     if features.close >= fast_threshold:
         #         clearance = (features.close / features.highest_close_20d) - 1
         #         return BreakoutType.FAST_20D, clearance
-        
+
         return None, 0.0
-    
+
     def check_exit_signals(
         self, position: Position, features: FeatureRow
     ) -> Optional[ExitReason]:
         """Check if position should be exited.
-        
+
         Args:
             position: Open position to check
             features: FeatureRow with current indicators
-        
+
         Returns:
             ExitReason if exit triggered, None otherwise
         """
@@ -111,18 +111,18 @@ class {{class_name}}({{base_class}}):
         #     return ExitReason.TRAILING_STOP
         # if features.close < position.stop_price:
         #     return ExitReason.HARD_STOP
-        
+
         return None
-    
+
     def update_stop_price(
         self, position: Position, features: FeatureRow
     ) -> Optional[float]:
         """Update stop price for position (trailing stops, tightening).
-        
+
         Args:
             position: Open position
             features: FeatureRow with current indicators
-        
+
         Returns:
             New stop price if updated, None if unchanged
         """
@@ -132,7 +132,7 @@ class {{class_name}}({{base_class}}):
         # new_stop = features.close - (atr_mult * features.atr14)
         # if new_stop > position.stop_price:
         #     return new_stop
-        
+
         return None
 '''
 

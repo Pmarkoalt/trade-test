@@ -107,7 +107,6 @@ class LiveSignalGenerator:
 
         # Step 5: Convert to recommendations
         recommendations = []
-        strategy_map = {s.name: s for s in self.strategies}
 
         for signal, combined_score, metadata in scored_signals:
             # Skip if below minimum conviction threshold
@@ -201,7 +200,7 @@ class LiveSignalGenerator:
                 feature_row = compute_features_for_date(features_df, current_date)
                 if feature_row:
                     features_dict[signal.symbol] = feature_row
-            except Exception:
+            except Exception:  # nosec B112 - exception handling for feature computation, skip symbols with errors
                 # Skip symbols with computation errors
                 continue
 

@@ -1,8 +1,8 @@
 """Quality filter for signals."""
 
+import logging
 from dataclasses import dataclass
 from typing import List, Optional
-import logging
 
 from ...models.signals import Signal
 

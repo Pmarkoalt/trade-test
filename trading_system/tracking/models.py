@@ -1,10 +1,10 @@
 """Data models for performance tracking."""
 
+import uuid
 from dataclasses import dataclass, field
 from datetime import date, datetime
-from typing import Dict, List, Optional
 from enum import Enum
-import uuid
+from typing import Dict, List, Optional
 
 
 class SignalDirection(str, Enum):

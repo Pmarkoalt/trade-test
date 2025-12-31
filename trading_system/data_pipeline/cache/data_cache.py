@@ -197,7 +197,7 @@ class DataCache:
             if cache_path.exists():
                 try:
                     cache_path.unlink()
-                except Exception:
+                except Exception:  # nosec B110 - exception handling for cleanup, failures are non-critical
                     pass
 
     def is_valid(self, key: str) -> bool:

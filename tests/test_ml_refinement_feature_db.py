@@ -1,8 +1,8 @@
 """Tests for ML refinement feature database."""
 
-import numpy as np
-import pytest
 from datetime import datetime
+
+import numpy as np
 
 from trading_system.ml_refinement import FeatureVector, ModelMetadata, ModelType
 from trading_system.ml_refinement.storage import FeatureDatabase

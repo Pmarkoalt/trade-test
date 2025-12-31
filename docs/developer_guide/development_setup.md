@@ -87,20 +87,31 @@ conda activate trading-system
 
 ### 3. Install Dependencies
 
-**Option A: Automated Setup (Recommended)**
+**Option A: Master Setup Script (Recommended)**
 
 ```bash
-# Run the automated setup script (detects and fixes common issues)
-./scripts/setup_environment.sh
+# Run the master setup script (one command does everything)
+./setup.sh
 
 # This will:
-# - Check Python version
+# - Check Python version and environment
 # - Verify NumPy compatibility (critical on macOS)
-# - Install missing dependencies
-# - Fix common environment issues
+# - Install all dependencies (production + dev)
+# - Install pre-commit git hooks
+# - Verify installation
 ```
 
-**Option B: Manual Installation**
+**Option B: Automated Setup (Alternative)**
+
+```bash
+# Run the automated environment setup script
+./scripts/setup_environment.sh
+
+# Then install pre-commit hooks separately
+./scripts/setup_precommit_hooks.sh
+```
+
+**Option C: Manual Installation**
 
 ```bash
 # Install production dependencies
@@ -115,6 +126,8 @@ pip install -r requirements-dev.txt
 **Note**: The project uses `pyproject.toml` as the source of truth. Using `pip install -e ".[dev]"` is the recommended approach.
 
 ### 4. Set Up Pre-commit Hooks
+
+If you used the master setup script (`./setup.sh`), pre-commit hooks are already installed. Otherwise:
 
 Pre-commit hooks automatically run code quality checks before each commit. This helps catch issues early and maintain code quality.
 
@@ -275,4 +288,3 @@ Recommended extensions:
 - Read [Code Style & Standards](code_style.md)
 - Review [Architecture Overview](../../agent-files/01_ARCHITECTURE_OVERVIEW.md)
 - Check [Testing Guide](../../TESTING_GUIDE.md)
-

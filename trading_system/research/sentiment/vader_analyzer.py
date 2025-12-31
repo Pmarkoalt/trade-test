@@ -1,7 +1,7 @@
 """VADER sentiment analyzer implementation."""
 
-from typing import Tuple
 import logging
+from typing import Tuple
 
 try:
     from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
@@ -12,8 +12,9 @@ except ImportError:
     SentimentIntensityAnalyzer = None
 
 from trading_system.data_pipeline.sources.news.models import SentimentLabel
+
 from .base_analyzer import BaseSentimentAnalyzer
-from .financial_lexicon import get_financial_lexicon, INTENSIFIERS
+from .financial_lexicon import INTENSIFIERS, get_financial_lexicon
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +80,6 @@ class VADERSentimentAnalyzer(BaseSentimentAnalyzer):
         compound = scores["compound"]  # -1 to +1
         pos = scores["pos"]
         neg = scores["neg"]
-        neu = scores["neu"]
 
         # Determine label
         if compound >= self.positive_threshold:

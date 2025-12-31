@@ -91,7 +91,7 @@ class PermutationTest:
                 # Only add finite values
                 if np.isfinite(random_sharpe):
                     random_sharpes.append(random_sharpe)
-            except Exception:
+            except Exception:  # nosec B112 - exception handling for randomization, skip invalid iterations
                 # Skip invalid randomizations
                 continue
 

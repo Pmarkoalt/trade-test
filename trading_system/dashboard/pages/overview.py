@@ -2,24 +2,21 @@
 
 import streamlit as st
 
-from trading_system.dashboard.config import DashboardConfig
-from trading_system.dashboard.services.data_service import DashboardDataService
-from trading_system.dashboard.services.cache_service import get_cached_dashboard_data
-from trading_system.dashboard.components.charts import (
-    create_equity_curve,
-    create_win_rate_gauge,
-    create_strategy_comparison_chart,
-)
-from trading_system.dashboard.components.tables import (
-    render_recent_trades_table,
-    render_leaderboard_table,
-)
 from trading_system.dashboard.components.cards import (
+    render_insight_box,
     render_metric_row,
     render_signal_card,
-    render_insight_box,
     render_streak_indicator,
 )
+from trading_system.dashboard.components.charts import (
+    create_equity_curve,
+    create_strategy_comparison_chart,
+    create_win_rate_gauge,
+)
+from trading_system.dashboard.components.tables import render_leaderboard_table, render_recent_trades_table
+from trading_system.dashboard.config import DashboardConfig
+from trading_system.dashboard.services.cache_service import get_cached_dashboard_data
+from trading_system.dashboard.services.data_service import DashboardDataService
 
 
 def render_overview(config: DashboardConfig):

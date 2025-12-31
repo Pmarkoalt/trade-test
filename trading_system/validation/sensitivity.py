@@ -4,7 +4,7 @@ import json
 import logging
 from itertools import product
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union, cast
 
 if TYPE_CHECKING:
     from ..configs.run_config import RunConfig, SensitivityConfig
@@ -41,7 +41,7 @@ try:
     HAS_MATPLOTLIB = True
 except ImportError:
     HAS_MATPLOTLIB = False
-    plt = None  # type: ignore[assignment]
+    plt = cast(Any, None)
 
 # Plotly for interactive visualization (optional)
 try:

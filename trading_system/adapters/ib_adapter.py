@@ -1,15 +1,14 @@
 """Interactive Brokers (IB) adapter for paper trading and live trading."""
 
 import logging
-import queue
 import threading
 import uuid
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
 from ..models.orders import Fill, Order, OrderStatus, SignalSide
-from ..models.positions import ExitReason, Position, PositionSide
+from ..models.positions import Position, PositionSide
 from ..models.signals import BreakoutType
 from .base_adapter import AccountInfo, AdapterConfig, BaseAdapter
 
@@ -62,13 +61,11 @@ class IBAdapter(BaseAdapter):
             ImportError: If ib_insync is not installed
         """
         try:
-            from ib_insync import IB, Crypto, Stock
+            from ib_insync import IB
         except ImportError:
             raise ImportError("ib_insync is required for IBAdapter. " "Install with: pip install ib-insync")
 
         try:
-            from ib_insync import IB
-
             self._ib = IB()
 
             # Connect to TWS/Gateway
@@ -108,8 +105,8 @@ class IBAdapter(BaseAdapter):
             if self._ib is not None:
                 try:
                     self._ib.disconnect()
-                except Exception:
-                    pass
+                except Exception as disconnect_error:
+                    logger.debug(f"Error during disconnect cleanup: {disconnect_error}", exc_info=True)
                 self._ib = None
 
             # Check for specific error types
@@ -217,9 +214,7 @@ class IBAdapter(BaseAdapter):
 
         assert self._ib is not None  # checked by is_connected()
         try:
-            from ib_insync import Crypto, MarketOrder
-            from ib_insync import Order as IBOrder
-            from ib_insync import Stock
+            from ib_insync import Crypto, MarketOrder, Stock
 
             # Create IB contract
             if order.asset_class == "equity":
@@ -335,7 +330,6 @@ class IBAdapter(BaseAdapter):
 
         except Exception as e:
             error_msg = str(e).lower()
-            error_str = str(e)
 
             # Handle specific error types
             if "connection" in error_msg or "timeout" in error_msg or "disconnected" in error_msg:

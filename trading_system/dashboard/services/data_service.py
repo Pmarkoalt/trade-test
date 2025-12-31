@@ -2,16 +2,15 @@
 
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 import pandas as pd
-from loguru import logger
 
-from trading_system.tracking.storage.sqlite_store import SQLiteTrackingStore
-from trading_system.tracking.performance_calculator import PerformanceCalculator
 from trading_system.tracking.analytics.signal_analytics import SignalAnalyzer
-from trading_system.tracking.reports.leaderboard import LeaderboardGenerator
 from trading_system.tracking.models import SignalStatus, TrackedSignal
+from trading_system.tracking.performance_calculator import PerformanceCalculator
+from trading_system.tracking.reports.leaderboard import LeaderboardGenerator
+from trading_system.tracking.storage.sqlite_store import SQLiteTrackingStore
 
 
 @dataclass

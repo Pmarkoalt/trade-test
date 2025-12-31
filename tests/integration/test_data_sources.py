@@ -25,10 +25,10 @@ from trading_system.data.sources import (
     AlphaVantageSource,
     CSVDataSource,
     HDF5DataSource,
-    ParquetDataSource,
     MassiveSource,
-    SQLiteSource,
+    ParquetDataSource,
     PostgreSQLSource,
+    SQLiteSource,
 )
 
 # Test fixtures directory
@@ -281,7 +281,7 @@ class TestParquetDataSource:
         data_dir.mkdir()
 
         try:
-            import pyarrow.parquet as pq
+            import pyarrow.parquet as pq  # noqa: F401
         except ImportError:
             pytest.skip("pyarrow not available")
 
@@ -334,7 +334,7 @@ class TestHDF5DataSource:
         hdf5_path = tmp_path / "test.h5"
 
         try:
-            import tables
+            import tables  # noqa: F401
         except ImportError:
             pytest.skip("tables (PyTables) not available")
 

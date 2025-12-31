@@ -8,8 +8,8 @@ Usage:
     python examples/sensitivity_analysis.py
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -115,17 +115,17 @@ Configure sensitivity analysis in your run_config.yaml:
 validation:
   sensitivity:
     enabled: true
-    
+
     # Equity strategy parameters to test
     equity_atr_mult: [2.0, 2.5, 3.0, 3.5]  # Stop loss ATR multiplier
     equity_breakout_clearance: [0.000, 0.005, 0.010, 0.015]  # Breakout clearance %
     equity_exit_ma: [20, 50]  # Exit MA period
-    
+
     # Crypto strategy parameters to test
     crypto_atr_mult: [2.5, 3.0, 3.5, 4.0]
     crypto_breakout_clearance: [0.000, 0.005, 0.010, 0.015]
     crypto_exit_mode: ["MA20", "MA50", "staged"]
-    
+
     # Portfolio-level parameters
     vol_scaling_mode: ["continuous", "regime", "off"]
 

@@ -4,7 +4,7 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
@@ -239,7 +239,7 @@ class ReportGenerator:
             raise ValueError(f"No period data found in {self.run_dir}")
 
         # Generate summary report
-        from typing import Dict, Any
+        from typing import Any, Dict
 
         report: Dict[str, Any] = {
             "generated_at": datetime.now().isoformat(),

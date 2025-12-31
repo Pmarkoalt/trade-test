@@ -1,13 +1,12 @@
 """Signals page for dashboard."""
 
 import streamlit as st
-import pandas as pd
 
-from trading_system.dashboard.config import DashboardConfig
-from trading_system.dashboard.services.data_service import DashboardDataService
-from trading_system.dashboard.services.cache_service import get_cached_signals_df
-from trading_system.dashboard.components.tables import render_signals_table
 from trading_system.dashboard.components.cards import render_signal_card
+from trading_system.dashboard.components.tables import render_signals_table
+from trading_system.dashboard.config import DashboardConfig
+from trading_system.dashboard.services.cache_service import get_cached_signals_df
+from trading_system.dashboard.services.data_service import DashboardDataService
 
 
 def render_signals(config: DashboardConfig):

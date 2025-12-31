@@ -11,9 +11,6 @@ These tests are part of the production readiness checklist.
 """
 
 import logging
-import os
-from unittest.mock import Mock, patch
-from typing import Dict, List
 
 import pandas as pd
 import pytest
@@ -21,19 +18,10 @@ import pytest
 from trading_system.data.sources.api_source import APIDataSource
 from trading_system.data.sources.csv_source import CSVDataSource
 from trading_system.data.validator import validate_ohlcv
-from trading_system.exceptions import (
-    DataSourceError,
-    DataValidationError,
-    ExecutionError,
-    IndicatorError,
-    InsufficientCapitalError,
-    OrderRejectedError,
-    PortfolioError,
-)
-from trading_system.execution.fill_simulator import simulate_fill, reject_order_missing_data
+from trading_system.exceptions import DataSourceError, ExecutionError
+from trading_system.execution.fill_simulator import reject_order_missing_data, simulate_fill
 from trading_system.models.market_data import Bar
 from trading_system.models.orders import Order, OrderStatus
-from trading_system.models.positions import Position
 from trading_system.models.signals import BreakoutType, SignalSide, SignalType
 from trading_system.portfolio.portfolio import Portfolio
 from trading_system.portfolio.position_sizing import calculate_position_size
@@ -589,7 +577,6 @@ class TestErrorHandlingIntegration:
         )
 
         # Add positions up to max
-        from trading_system.models.positions import Position
         from trading_system.models.orders import Fill
         from trading_system.models.signals import SignalSide
 

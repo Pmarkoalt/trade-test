@@ -1,9 +1,9 @@
 """Relevance scorer for news articles."""
 
-from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Set
-import re
 import logging
+import re
+from dataclasses import dataclass, field
+from typing import List, Optional, Set
 
 from trading_system.data_pipeline.sources.news.models import NewsArticle
 

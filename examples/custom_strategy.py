@@ -8,18 +8,18 @@ Usage:
     python examples/custom_strategy.py
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import List, Optional, Tuple
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from trading_system.strategies.base.strategy_interface import StrategyInterface  # noqa: E402
 from trading_system.configs.strategy_config import StrategyConfig  # noqa: E402
-from trading_system.models.signals import BreakoutType  # noqa: E402
 from trading_system.models.features import FeatureRow  # noqa: E402
-from trading_system.models.positions import Position, ExitReason  # noqa: E402
+from trading_system.models.positions import ExitReason, Position  # noqa: E402
+from trading_system.models.signals import BreakoutType  # noqa: E402
+from trading_system.strategies.base.strategy_interface import StrategyInterface  # noqa: E402
 from trading_system.strategies.strategy_registry import register_strategy  # noqa: E402
 
 # Note: Signal, SignalSide, SignalType, and create_strategy were imported but unused
@@ -181,7 +181,7 @@ def example_use_custom_strategy_in_backtest():
 To use your custom strategy in a backtest:
 
 1. Register your strategy (as shown in Example 1):
-   
+
    register_strategy(
        strategy_type="sma_crossover",
        asset_class="equity",
@@ -189,7 +189,7 @@ To use your custom strategy in a backtest:
    )
 
 2. Create a strategy config YAML file:
-   
+
    name: "sma_crossover_equity"
    asset_class: "equity"
    universe: ["AAPL", "MSFT", "GOOGL"]
@@ -207,14 +207,14 @@ To use your custom strategy in a backtest:
      max_positions: 5
 
 3. Reference it in your run_config.yaml:
-   
+
    strategies:
      equity:
        config_path: "configs/sma_crossover_config.yaml"
        enabled: true
 
 4. Run backtest:
-   
+
    python -m trading_system backtest --config run_config.yaml --period train
 
 Note: The strategy loader will automatically detect and use your custom strategy

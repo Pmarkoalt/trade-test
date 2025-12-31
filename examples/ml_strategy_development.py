@@ -13,18 +13,20 @@ Usage:
     python examples/ml_strategy_development.py
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 from typing import List, Tuple
+
+import numpy as np
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from trading_system.integration.runner import BacktestRunner  # noqa: E402
 from trading_system.configs.run_config import RunConfig  # noqa: E402
-from trading_system.ml.training import MLTrainer  # noqa: E402
-from trading_system.ml.models import ModelType  # noqa: E402
+from trading_system.integration.runner import BacktestRunner  # noqa: E402
 from trading_system.ml.feature_engineering import MLFeatureEngineer  # noqa: E402
+from trading_system.ml.models import ModelType  # noqa: E402
+from trading_system.ml.training import MLTrainer  # noqa: E402
 from trading_system.models.features import FeatureRow  # noqa: E402
 
 

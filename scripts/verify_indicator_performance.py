@@ -6,18 +6,17 @@ This script verifies:
 2. Scales linearly with symbol count
 """
 
+# Add parent directory to path to import trading_system
+import sys
 import time
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-# Add parent directory to path to import trading_system
-import sys
-
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from trading_system.indicators.feature_computer import compute_features
+from trading_system.indicators.feature_computer import compute_features  # noqa: E402
 
 
 def create_test_data(n_bars: int = 10000) -> pd.DataFrame:

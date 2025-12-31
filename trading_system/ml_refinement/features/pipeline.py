@@ -7,10 +7,8 @@ import pandas as pd
 from loguru import logger
 
 from trading_system.ml_refinement.config import FeatureConfig, FeatureSet, FeatureVector
+from trading_system.ml_refinement.features.extractors.base_extractor import OHLCVExtractor
 from trading_system.ml_refinement.features.feature_registry import FeatureRegistry
-from trading_system.ml_refinement.features.extractors.base_extractor import (
-    OHLCVExtractor,
-)
 
 
 class FeaturePipeline:

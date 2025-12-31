@@ -1,7 +1,8 @@
 """Configuration models for research module."""
 
-from pydantic import BaseModel
 from typing import Optional
+
+from pydantic import BaseModel
 
 
 class SentimentConfig(BaseModel):

@@ -6,12 +6,7 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-from trading_system.tracking.models import (
-    PerformanceMetrics,
-    SignalOutcome,
-    SignalStatus,
-    TrackedSignal,
-)
+from trading_system.tracking.models import PerformanceMetrics, SignalOutcome, TrackedSignal
 from trading_system.tracking.storage.base_store import BaseTrackingStore
 
 logger = logging.getLogger(__name__)
@@ -84,7 +79,6 @@ class PerformanceCalculator:
 
         # Basic counts
         total_signals = len(signals)
-        closed_outcomes = [o for o in outcomes if o.return_pct != 0 or o.was_followed]
         followed_outcomes = [o for o in outcomes if o.was_followed]
 
         winners = [o for o in followed_outcomes if o.return_pct > 0]
@@ -400,7 +394,7 @@ class PerformanceCalculator:
                 category = category_func(outcome)
                 if category is None:
                     continue
-            except Exception:
+            except Exception:  # nosec B112 - exception handling for category computation, skip invalid outcomes
                 continue
 
             if category not in categories:

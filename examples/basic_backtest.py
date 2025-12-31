@@ -8,15 +8,15 @@ Usage:
     python examples/basic_backtest.py
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Add parent directory to path to import trading_system
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from trading_system.integration.runner import run_backtest  # noqa: E402
 from trading_system.configs.run_config import RunConfig  # noqa: E402
 from trading_system.integration.runner import BacktestRunner  # noqa: E402
+from trading_system.integration.runner import run_backtest  # noqa: E402
 from trading_system.reporting.metrics import MetricsCalculator  # noqa: E402
 
 

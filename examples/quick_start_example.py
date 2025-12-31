@@ -13,8 +13,8 @@ Usage:
     python examples/quick_start_example.py
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Add parent directory to path to import trading_system
 sys.path.insert(0, str(Path(__file__).parent.parent))

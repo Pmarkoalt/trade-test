@@ -1,20 +1,20 @@
 """Main orchestrator for news analysis."""
 
-from dataclasses import dataclass
-from datetime import datetime, date
-from typing import List, Dict, Optional, Tuple
 import logging
+from dataclasses import dataclass
+from datetime import date, datetime
+from typing import Dict, List, Optional, Tuple
 
 from trading_system.data_pipeline.sources.news import (
-    NewsAggregator,
-    NewsArticle,
-    NewsFetchResult,
-    SentimentLabel,
-    NewsAPIClient,
     AlphaVantageNewsClient,
+    NewsAggregator,
+    NewsAPIClient,
+    NewsArticle,
+    SentimentLabel,
 )
-from .entity_extraction.ticker_extractor import TickerExtractor
+
 from .config import ResearchConfig
+from .entity_extraction.ticker_extractor import TickerExtractor
 
 # Import VADER analyzer conditionally (optional dependency)
 try:

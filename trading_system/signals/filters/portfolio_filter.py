@@ -1,8 +1,8 @@
 """Portfolio filter for signals based on portfolio constraints."""
 
+import logging
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set
-import logging
 
 from ...models.signals import Signal
 

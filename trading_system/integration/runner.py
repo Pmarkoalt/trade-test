@@ -31,13 +31,7 @@ from ..validation.sensitivity import (
     generate_parameter_grid_from_config,
     save_sensitivity_results,
 )
-from ..validation.stress_tests import (
-    check_stress_results,
-    run_bear_market_test,
-    run_flash_crash_simulation,
-    run_range_market_test,
-    run_slippage_stress,
-)
+from ..validation.stress_tests import check_stress_results
 
 logger = logging.getLogger(__name__)
 
@@ -668,7 +662,7 @@ class BacktestRunner:
 
         # Extract close prices for the dates
         returns: List[float] = []
-        prev_close = None
+        prev_close: Optional[float] = None
 
         for date in dates:
             if date not in benchmark_df.index:
@@ -685,7 +679,7 @@ class BacktestRunner:
                         daily_return = (close / prev_close) - 1.0
                         returns.append(daily_return)
                     else:
-                        # First day has no return or invalid prev_close
+                        # Invalid prev_close
                         returns.append(0.0)
                 else:
                     # First day has no return
@@ -1339,12 +1333,11 @@ def run_sensitivity_analysis(
                 # Run backtest
                 runner = BacktestRunner(modified_run_config)
                 runner.initialize()
-                results = runner.run_backtest(period=period)
+                runner.run_backtest(period=period)
 
                 # Calculate metric
                 if runner.engine is None:
                     raise ValueError("engine is not initialized")
-                portfolio = runner.engine.portfolio
                 daily_events = runner.engine.daily_events
                 closed_trades = runner.engine.closed_trades
 

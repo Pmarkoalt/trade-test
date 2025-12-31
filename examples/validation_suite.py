@@ -8,9 +8,9 @@ Usage:
     python examples/validation_suite.py
 """
 
-from pathlib import Path
-import sys
 import json
+import sys
+from pathlib import Path
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from trading_system.integration.runner import run_validation  # noqa: E402
 
 
-def example_run_validation_suite():
+def example_run_validation_suite():  # noqa: C901
     """Example: Run the full validation suite."""
     print("=" * 60)
     print("Example 1: Running Full Validation Suite")
@@ -215,14 +215,14 @@ validation:
     bootstrap_iterations: 1000  # Number of bootstrap samples
     permutation_iterations: 1000  # Number of permutation samples
     bootstrap_5th_percentile_threshold: 0.4  # Reject if < 0.4
-  
+
   # Stress tests
   stress_tests:
     slippage_multipliers: [1.0, 2.0, 3.0]  # Baseline, 2x, 3x slippage
     bear_market_test: true  # Test during bear market months
     range_market_test: true  # Test during range-bound months
     flash_crash_test: true  # Test with flash crash simulation
-  
+
   # Sensitivity analysis (optional)
   sensitivity:
     enabled: true

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Create test benchmark files with 250+ days of data."""
 
-import pandas as pd
-import numpy as np
 from pathlib import Path
+
+import numpy as np
+import pandas as pd
 
 # Set random seed for reproducibility
 np.random.seed(42)

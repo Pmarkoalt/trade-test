@@ -3,12 +3,8 @@
 import pytest
 
 from trading_system.data_pipeline.sources.news.models import SentimentLabel
+from trading_system.research.sentiment.financial_lexicon import NEGATIVE_TERMS, POSITIVE_TERMS, get_financial_lexicon
 from trading_system.research.sentiment.vader_analyzer import VADERSentimentAnalyzer
-from trading_system.research.sentiment.financial_lexicon import (
-    get_financial_lexicon,
-    POSITIVE_TERMS,
-    NEGATIVE_TERMS,
-)
 
 
 class TestFinancialLexicon:
@@ -150,8 +146,9 @@ class TestVADERSentimentAnalyzer:
 
     def test_analyze_article(self, analyzer):
         """Test analyzing a NewsArticle object."""
-        from trading_system.data_pipeline.sources.news.models import NewsArticle
         from datetime import datetime
+
+        from trading_system.data_pipeline.sources.news.models import NewsArticle
 
         article = NewsArticle(
             id="test-1",

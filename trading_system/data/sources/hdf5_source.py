@@ -234,5 +234,5 @@ class HDF5DataSource(BaseDataSource):
         if self._store is not None:
             try:
                 self._store.close()
-            except Exception:
+            except Exception:  # nosec B110 - exception handling for cleanup, failures are non-critical
                 pass

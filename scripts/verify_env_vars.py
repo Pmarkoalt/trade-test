@@ -293,7 +293,7 @@ def test_missing_env_vars() -> Tuple[bool, List[str]]:
             from trading_system.data_pipeline.sources.news.newsapi_client import NewsAPIClient
 
             try:
-                client = NewsAPIClient(api_key=None)
+                _ = NewsAPIClient(api_key=None)
                 issues.append("NewsAPIClient should raise ValueError for None api_key")
                 passed = False
             except ValueError:
@@ -305,11 +305,11 @@ def test_missing_env_vars() -> Tuple[bool, List[str]]:
             print_warning("Could not import NewsAPIClient (may not be installed)")
 
         try:
-            from trading_system.adapters.alpaca_adapter import AlpacaAdapter, AdapterConfig
+            from trading_system.adapters.alpaca_adapter import AdapterConfig, AlpacaAdapter
 
             try:
                 config = AdapterConfig(api_key=None, api_secret=None)
-                adapter = AlpacaAdapter(config)
+                _ = AlpacaAdapter(config)
                 issues.append("AlpacaAdapter should raise ValueError for None credentials")
                 passed = False
             except ValueError:
@@ -321,7 +321,7 @@ def test_missing_env_vars() -> Tuple[bool, List[str]]:
             print_warning("Could not import AlpacaAdapter (may not be installed)")
 
         try:
-            from trading_system.data_pipeline.live_data_fetcher import LiveDataFetcher, DataPipelineConfig
+            from trading_system.data_pipeline.live_data_fetcher import DataPipelineConfig, LiveDataFetcher
 
             config = DataPipelineConfig(massive_api_key=None)
             fetcher = LiveDataFetcher(config)

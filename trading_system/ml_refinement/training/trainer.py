@@ -9,21 +9,10 @@ from typing import Dict, List, Optional, Tuple, Type
 import numpy as np
 from loguru import logger
 
-from trading_system.ml_refinement.config import (
-    MLConfig,
-    ModelMetadata,
-    ModelType,
-    TrainingConfig,
-)
+from trading_system.ml_refinement.config import MLConfig, ModelMetadata, ModelType
 from trading_system.ml_refinement.storage.feature_db import FeatureDatabase
-from trading_system.ml_refinement.validation.walk_forward import (
-    WalkForwardResults,
-    WalkForwardValidator,
-)
-from trading_system.ml_refinement.validation.metrics import (
-    calculate_classification_metrics,
-    calculate_trading_metrics,
-)
+from trading_system.ml_refinement.validation.metrics import calculate_classification_metrics, calculate_trading_metrics
+from trading_system.ml_refinement.validation.walk_forward import WalkForwardResults, WalkForwardValidator
 
 # Try to import base models, create minimal interface if not available
 try:

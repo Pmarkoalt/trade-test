@@ -1,17 +1,17 @@
 """Unit tests for reporting CSV and JSON writers."""
 
-import pytest
-import pandas as pd
 import json
-import tempfile
 import shutil
+import tempfile
+from datetime import timedelta
 from pathlib import Path
-from datetime import datetime, timedelta
 
+import pandas as pd
+import pytest
+
+from trading_system.models.positions import ExitReason, Position, PositionSide
 from trading_system.reporting.csv_writer import CSVWriter
 from trading_system.reporting.json_writer import JSONWriter
-from trading_system.models.positions import Position, ExitReason, PositionSide
-from trading_system.models.orders import Fill, OrderStatus
 
 
 class TestCSVWriter:

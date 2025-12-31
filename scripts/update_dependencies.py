@@ -17,7 +17,7 @@ Usage:
 import argparse
 import json
 import re
-import subprocess
+import subprocess  # nosec B404 - subprocess needed for pip and pytest execution
 import sys
 from pathlib import Path
 from typing import Dict, Tuple
@@ -68,7 +68,7 @@ def parse_version_spec(spec: str) -> Tuple[str, str, str]:
 
     # Try to get current installed version
     try:
-        result = subprocess.run(  # noqa: S603 - subprocess needed for pip execution
+        result = subprocess.run(  # nosec B603 - subprocess needed for pip execution, sys.executable is safe
             [sys.executable, "-m", "pip", "show", spec.split(">=")[0].split(",")[0].strip()],
             capture_output=True,
             text=True,
@@ -79,7 +79,7 @@ def parse_version_spec(spec: str) -> Tuple[str, str, str]:
                 if line.startswith("Version:"):
                     current_version = line.split(":", 1)[1].strip()
                     return (min_version, max_version, current_version)
-    except Exception:  # noqa: S110 - exception handling needed for version parsing
+    except Exception:  # nosec B110 - exception handling needed for version parsing, failures are non-critical
         pass
 
     return (min_version, max_version, None)
@@ -90,7 +90,7 @@ def check_outdated() -> Dict[str, Dict]:
     print("Checking for outdated packages...")
 
     try:
-        result = subprocess.run(  # noqa: S603 - subprocess needed for pip execution
+        result = subprocess.run(  # nosec B603 - subprocess needed for pip execution, sys.executable is safe
             [sys.executable, "-m", "pip", "list", "--outdated", "--format=json"], capture_output=True, text=True, check=True
         )
         outdated = json.loads(result.stdout)
@@ -251,7 +251,7 @@ def run_tests() -> bool:
     """Run the test suite."""
     print("\nRunning tests...")
     try:
-        result = subprocess.run(  # noqa: S603 - subprocess needed for pytest execution
+        result = subprocess.run(  # nosec B603 - subprocess needed for pytest execution, sys.executable is safe
             [sys.executable, "-m", "pytest", "tests/", "-v"], check=False
         )
         return result.returncode == 0

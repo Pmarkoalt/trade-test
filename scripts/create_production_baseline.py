@@ -10,14 +10,13 @@ Usage:
     python scripts/create_production_baseline.py
 """
 
-import sys
-import subprocess
 import json
 import os
+import subprocess  # nosec B404 - subprocess needed for pytest execution
+import sys
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Tuple
-from datetime import datetime
-
 
 # Expected performance targets for production workloads (in seconds)
 PRODUCTION_TARGETS = {
@@ -43,7 +42,7 @@ def run_benchmarks() -> Dict:
     os.chdir(project_root)
 
     # Run benchmarks
-    result = subprocess.run(  # noqa: S603 - subprocess needed for pytest execution
+    result = subprocess.run(  # nosec B603 - subprocess needed for pytest execution, sys.executable is safe
         [
             sys.executable,
             "-m",
@@ -158,7 +157,7 @@ def print_report(passed: List[str], warnings: List[str], failed: List[str]):
 def save_baseline():
     """Save the current benchmark results as baseline."""
     print("\nSaving baseline...")
-    result = subprocess.run(  # noqa: S603 - subprocess needed for pytest execution
+    result = subprocess.run(  # nosec B603 - subprocess needed for pytest execution, sys.executable is safe
         [
             sys.executable,
             "-m",

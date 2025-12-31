@@ -1,12 +1,12 @@
 """Unit tests for portfolio optimization module."""
 
-import pytest
-import pandas as pd
 import numpy as np
+import pandas as pd
+import pytest
 
 from trading_system.portfolio.optimization import (
-    PortfolioOptimizer,
     OptimizationResult,
+    PortfolioOptimizer,
     RebalanceTarget,
     compute_rebalance_targets,
     should_rebalance,

@@ -1,9 +1,9 @@
 """Sentiment aggregator for multiple articles."""
 
-from dataclasses import dataclass
-from datetime import datetime, timedelta
-from typing import Dict, List, Optional, Tuple
 import logging
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Dict, List, Optional, Tuple
 
 from trading_system.data_pipeline.sources.news.models import NewsArticle, SentimentLabel
 

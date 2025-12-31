@@ -1,17 +1,14 @@
 """News page for the dashboard."""
 
-import asyncio
-import os
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import List
 
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-from trading_system.dashboard.config import ChartConfig, DashboardConfig
 from trading_system.dashboard.components.cards import render_insight_box
+from trading_system.dashboard.config import ChartConfig, DashboardConfig
 
 
 def render_news(config: DashboardConfig):
@@ -40,7 +37,7 @@ def render_news_feed(config: DashboardConfig):
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        category = st.selectbox(
+        st.selectbox(
             "Category",
             options=["All", "Technology", "Finance", "Crypto", "Economy"],
             index=0,
@@ -54,7 +51,7 @@ def render_news_feed(config: DashboardConfig):
         )
 
     with col3:
-        timeframe = st.selectbox(
+        st.selectbox(
             "Timeframe",
             options=["Last 24 Hours", "Last 48 Hours", "Last Week"],
             index=0,
@@ -216,7 +213,7 @@ def render_watchlist_news(config: DashboardConfig):
     st.divider()
 
     # Lookback selector
-    lookback = st.selectbox(
+    st.selectbox(
         "Lookback",
         options=["24 hours", "48 hours", "1 week"],
         index=1,
@@ -248,23 +245,6 @@ def render_watchlist_news(config: DashboardConfig):
 
 def _render_news_card(article: dict):
     """Render a news article card."""
-    sentiment = article.get("sentiment_score", 0)
-    sentiment_label = article.get("sentiment_label", "neutral")
-
-    # Sentiment colors
-    if sentiment > 0.1:
-        border_color = "#22c55e"
-        badge_bg = "#dcfce7"
-        badge_text = "#166534"
-    elif sentiment < -0.1:
-        border_color = "#ef4444"
-        badge_bg = "#fee2e2"
-        badge_text = "#991b1b"
-    else:
-        border_color = "#6b7280"
-        badge_bg = "#f3f4f6"
-        badge_text = "#374151"
-
     # Format time
     published = article.get("published_at", datetime.now())
     if isinstance(published, str):
@@ -273,13 +253,11 @@ def _render_news_card(article: dict):
         except (ValueError, AttributeError):
             published = datetime.now()
 
-    time_ago = _format_time_ago(published)
-
     st.markdown(
         """
         <div style="
             border: 1px solid #e5e7eb;
-            border-left: 4px solid {border_color};
+            border-left: 4px solid #6b7280;
             border-radius: 8px;
             padding: 1rem;
             margin-bottom: 1rem;
@@ -292,8 +270,8 @@ def _render_news_card(article: dict):
                     </span>
                 </div>
                 <span style="
-                    background: {badge_bg};
-                    color: {badge_text};
+                    background: #f3f4f6;
+                    color: #374151;
                     padding: 0.25rem 0.5rem;
                     border-radius: 4px;
                     font-size: 0.75rem;
@@ -307,7 +285,7 @@ def _render_news_card(article: dict):
             </div>
             <div style="display: flex; justify-content: space-between; color: #9ca3af; font-size: 0.75rem;">
                 <span>{article.get('source', 'Unknown')}</span>
-                <span>{time_ago}</span>
+                <span>Recently</span>
             </div>
             <div style="margin-top: 0.5rem;">
                 {''.join([f'<span style="background: #e5e7eb; padding: 0.125rem 0.375rem; border-radius: 4px; font-size: 0.7rem; margin-right: 0.25rem;">{s}</span>' for s in article.get('symbols', [])[:5]])}
@@ -320,11 +298,6 @@ def _render_news_card(article: dict):
 
 def _render_compact_news_card(article: dict):
     """Render a compact news card."""
-    sentiment = article.get("sentiment_score", 0)
-    emoji = "🟢" if sentiment > 0.1 else "🔴" if sentiment < -0.1 else "⚪"
-
-    published = article.get("published_at", datetime.now())
-    time_ago = _format_time_ago(published) if isinstance(published, datetime) else "Recently"
 
     st.markdown(
         """
@@ -344,18 +317,12 @@ def _render_compact_news_card(article: dict):
 
 def _render_sentiment_gauge(value: float, title: str):
     """Render a sentiment gauge."""
-    # Normalize to 0-100 for gauge
-    gauge_value = (value + 1) * 50  # -1 to 1 -> 0 to 100
-
     if value > 0.2:
         color = "#22c55e"
-        label = "Positive"
     elif value < -0.2:
         color = "#ef4444"
-        label = "Negative"
     else:
         color = "#f59e0b"
-        label = "Neutral"
 
     fig = go.Figure(
         go.Indicator(

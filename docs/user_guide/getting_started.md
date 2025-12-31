@@ -56,10 +56,23 @@ If you prefer not to use Docker, you can install natively. However, this may lea
 
 #### Step 1: Install Dependencies
 
-Navigate to the project directory and install required packages:
+Navigate to the project directory:
 
 ```bash
 cd trade-test
+```
+
+**Option A: Master Setup Script (Recommended)**
+
+```bash
+# Run the master setup script (handles everything)
+./setup.sh
+```
+
+**Option B: Manual Installation**
+
+```bash
+# Install required packages
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
@@ -285,7 +298,7 @@ dataset:
   equity_path: "data/equity/ohlcv/"  # Your data path
   crypto_path: "data/crypto/ohlcv/"
   benchmark_path: "data/benchmarks/"
-  
+
   start_date: "2023-01-01"  # Your date range
   end_date: "2024-12-31"
 ```
@@ -483,4 +496,3 @@ For more troubleshooting help, see the Troubleshooting Guide (coming soon).
 ---
 
 **Congratulations!** You've successfully run your first backtest. Continue to the [Examples Guide](examples.md) to learn more advanced usage patterns.
-

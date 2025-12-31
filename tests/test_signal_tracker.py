@@ -4,15 +4,9 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional
 
-import pytest
-
-from trading_system.tracking.models import (
-    ConvictionLevel,
-    SignalDirection,
-    SignalStatus,
-)
-from trading_system.tracking.storage.sqlite_store import SQLiteTrackingStore
+from trading_system.tracking.models import ConvictionLevel, SignalDirection, SignalStatus
 from trading_system.tracking.signal_tracker import SignalTracker
+from trading_system.tracking.storage.sqlite_store import SQLiteTrackingStore
 
 
 # Define Recommendation locally to avoid import issues

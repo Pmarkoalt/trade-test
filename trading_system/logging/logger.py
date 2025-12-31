@@ -5,11 +5,9 @@ import logging
 import logging.handlers
 import sys
 import time
-import traceback
 from datetime import datetime
 from enum import Enum
-from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import pandas as pd
 
@@ -153,7 +151,7 @@ class PerformanceContext:
                 metrics["memory_mb"] = end_memory
                 if self.start_memory is not None:
                     metrics["memory_delta_mb"] = end_memory - self.start_memory
-            except Exception:
+            except Exception:  # nosec B110 - exception handling for memory metrics, failures are non-critical
                 pass
 
         memory_mb_val = metrics.get("memory_mb")

@@ -1,8 +1,9 @@
 """Tests for dashboard services."""
 
-import pytest
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 
 class TestDashboardConfig:
@@ -195,6 +196,7 @@ class TestChartComponents:
     def test_create_equity_curve(self):
         """Test equity curve chart creation."""
         import pandas as pd
+
         from trading_system.dashboard.components.charts import create_equity_curve
 
         # Create sample data
@@ -228,6 +230,7 @@ class TestChartComponents:
     def test_create_returns_distribution(self):
         """Test returns distribution chart."""
         import pandas as pd
+
         from trading_system.dashboard.components.charts import create_returns_distribution
 
         # Create sample returns
@@ -282,6 +285,7 @@ class TestTableComponents:
     def test_render_signals_table_empty(self):
         """Test signals table with empty data."""
         import pandas as pd
+
         from trading_system.dashboard.components.tables import render_signals_table
 
         df = pd.DataFrame()
@@ -296,6 +300,7 @@ class TestTableComponents:
     def test_render_performance_table(self):
         """Test performance table rendering."""
         import pandas as pd
+
         from trading_system.dashboard.components.tables import render_performance_table
 
         df = pd.DataFrame(
@@ -403,8 +408,7 @@ class TestIntegration:
 
     def test_all_pages_importable(self):
         """Test that all pages can be imported."""
-        from trading_system.dashboard.pages import overview, signals, performance
-        from trading_system.dashboard.pages import portfolio, news, settings
+        from trading_system.dashboard.pages import news, overview, performance, portfolio, settings, signals
 
         assert callable(overview.render_overview)
         assert callable(signals.render_signals)
@@ -415,7 +419,7 @@ class TestIntegration:
 
     def test_all_components_importable(self):
         """Test that all components can be imported."""
-        from trading_system.dashboard.components import charts, tables, cards
+        from trading_system.dashboard.components import cards, charts, tables
 
         assert hasattr(charts, "create_equity_curve")
         assert hasattr(tables, "render_signals_table")
@@ -423,7 +427,7 @@ class TestIntegration:
 
     def test_all_services_importable(self):
         """Test that all services can be imported."""
-        from trading_system.dashboard.services import data_service, cache_service, auth_service
+        from trading_system.dashboard.services import auth_service, cache_service, data_service
 
         assert hasattr(data_service, "DashboardDataService")
         assert hasattr(cache_service, "CacheService")
@@ -431,7 +435,7 @@ class TestIntegration:
 
     def test_config_importable(self):
         """Test that config can be imported."""
-        from trading_system.dashboard.config import DashboardConfig, ChartConfig
+        from trading_system.dashboard.config import ChartConfig, DashboardConfig
 
         config = DashboardConfig()
         chart_config = ChartConfig()

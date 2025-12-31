@@ -12,7 +12,7 @@ import pickle
 from collections import OrderedDict
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -235,7 +235,7 @@ class FeatureStore:
                                 **data["metadata"],
                             }
                         )
-                except Exception:
+                except Exception:  # nosec B112 - exception handling for cache file loading, skip invalid entries
                     continue
 
         return entries

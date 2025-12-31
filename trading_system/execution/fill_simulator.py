@@ -109,7 +109,7 @@ def simulate_fill(
     fill_price = max(fill_price, 0.01)
 
     # Compute fee
-    from typing import cast, Literal
+    from typing import Literal, cast
 
     asset_class_literal = cast(Literal["equity", "crypto"], order.asset_class)
     fee_bps = compute_fee_bps(asset_class_literal)

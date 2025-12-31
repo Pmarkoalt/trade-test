@@ -1,18 +1,16 @@
 """CLI commands for performance tracking."""
 
-import argparse
 from datetime import date, timedelta
 
-from rich.console import Console
-from rich.table import Table
-from rich.panel import Panel
 from rich import box
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
 
-from trading_system.tracking.storage.sqlite_store import SQLiteTrackingStore
-from trading_system.tracking.performance_calculator import PerformanceCalculator
 from trading_system.tracking.analytics.signal_analytics import SignalAnalyzer
+from trading_system.tracking.performance_calculator import PerformanceCalculator
 from trading_system.tracking.reports.leaderboard import LeaderboardGenerator
-
+from trading_system.tracking.storage.sqlite_store import SQLiteTrackingStore
 
 console = Console()
 

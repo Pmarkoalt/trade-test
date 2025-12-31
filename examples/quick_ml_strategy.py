@@ -12,15 +12,14 @@ Usage:
     python examples/quick_ml_strategy.py
 """
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from trading_system.integration.runner import BacktestRunner  # noqa: E402
 from trading_system.configs.run_config import RunConfig  # noqa: E402
-from trading_system.ml.training import MLTrainer  # noqa: E402
+from trading_system.integration.runner import BacktestRunner  # noqa: E402
 
 
 def quick_ml_workflow():
@@ -64,10 +63,10 @@ def quick_ml_workflow():
     print(
         """
 1. Train a model (see ml_strategy_development.py for full example):
-   
+
    from trading_system.ml.training import MLTrainer
    from trading_system.ml.models import ModelType
-   
+
    trainer = MLTrainer(
        model_type=ModelType.RANDOM_FOREST,
        hyperparameters={"n_estimators": 100, "max_depth": 10, "task": "regression"}
@@ -76,7 +75,7 @@ def quick_ml_workflow():
    trainer.save_model(Path("models/my_model"))
 
 2. Configure your strategy to use ML (in strategy YAML config):
-   
+
    ml:
      enabled: true
      model_path: "models/my_model"
@@ -85,14 +84,14 @@ def quick_ml_workflow():
      confidence_threshold: 0.5  # For filter mode (0.0-1.0)
 
 3. Run backtest with ML-enabled strategy:
-   
+
    from trading_system.integration.runner import run_backtest
    results = run_backtest("configs/run_config.yaml", period="validation")
 
 4. Compare results:
    - Baseline strategy (ml.enabled: false)
    - ML-enhanced strategy (ml.enabled: true)
-   
+
    Look at metrics like:
    - Total return
    - Sharpe ratio

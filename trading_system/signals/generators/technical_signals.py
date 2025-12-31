@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, Callable, Dict, List, Optional
 
 import pandas as pd
 
+from ...indicators.feature_computer import compute_features, compute_features_for_date
 from ...models.features import FeatureRow
 from ...models.signals import Signal
-from ...indicators.feature_computer import compute_features, compute_features_for_date
 
 if TYPE_CHECKING:
     from ...portfolio.portfolio import Portfolio
@@ -134,7 +134,7 @@ class TechnicalSignalGenerator:
                     use_cache=False,  # Don't cache in live mode
                     optimize_memory=False,  # Don't optimize in live mode
                 )
-            except Exception as e:
+            except Exception:  # nosec B112 - exception handling for feature computation, skip symbols with errors
                 # Skip symbols with computation errors
                 continue
 

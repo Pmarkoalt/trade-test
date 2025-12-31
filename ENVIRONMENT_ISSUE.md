@@ -46,7 +46,18 @@ pip install --upgrade pip
 pip install -e ".[dev]"
 ```
 
-### ✅ Use Automated Setup Script
+### ✅ Use Master Setup Script (Recommended)
+
+The master setup script (`./setup.sh`) handles all setup steps including environment checks:
+
+```bash
+# Run the master setup script
+./setup.sh
+```
+
+This will automatically detect and fix common issues.
+
+### ✅ Use Automated Setup Script (Alternative)
 
 We provide `scripts/setup_environment.sh` that automatically:
 - Detects macOS
@@ -181,4 +192,3 @@ Once the environment issue is resolved:
 - Conda-forge: https://conda-forge.org/
 - Known macOS/NumPy issues: Search for "numpy _mac_os_check segfault"
 - Docker documentation: See README.md Docker section
-

@@ -8,9 +8,8 @@ import pytest
 
 from tests.utils.test_helpers import create_sample_feature_row, create_sample_position
 from trading_system.configs.strategy_config import StrategyConfig
-from trading_system.models.signals import BreakoutType, Signal, SignalSide
-from trading_system.models.positions import ExitReason, Position, PositionSide
-from trading_system.models.features import FeatureRow
+from trading_system.models.positions import ExitReason
+from trading_system.models.signals import SignalSide
 from trading_system.strategies.factor.equity_factor import EquityFactorStrategy
 
 

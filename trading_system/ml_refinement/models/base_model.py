@@ -1,10 +1,9 @@
 """Base class for ML models."""
 
+import uuid
 from abc import ABC, abstractmethod
 from datetime import datetime
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
-import uuid
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 
 import numpy as np
 from loguru import logger
@@ -186,7 +185,7 @@ class SignalQualityModel(BaseModel):
         """Train the signal quality model."""
         try:
             from sklearn.ensemble import GradientBoostingClassifier
-            from sklearn.metrics import accuracy_score, roc_auc_score, f1_score
+            from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
         except ImportError:
             logger.error("scikit-learn required for ML models")
             raise

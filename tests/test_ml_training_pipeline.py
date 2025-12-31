@@ -1,19 +1,15 @@
 """Tests for ML training pipeline."""
 
-import tempfile
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import numpy as np
 import pytest
 
 from trading_system.ml_refinement.config import MLConfig, ModelType, TrainingConfig
 from trading_system.ml_refinement.storage.feature_db import FeatureDatabase
-from trading_system.ml_refinement.training.hyperparameter_tuner import (
-    HyperparameterTuner,
-    HyperparameterSearchResult,
-)
-from trading_system.ml_refinement.training.trainer import ModelTrainer, TrainingResult
+from trading_system.ml_refinement.training.hyperparameter_tuner import HyperparameterTuner
+from trading_system.ml_refinement.training.trainer import ModelTrainer
 
 
 class MockModel:
@@ -56,8 +52,9 @@ class MockModel:
 
     def get_metadata(self):
         """Mock get metadata."""
-        from trading_system.ml_refinement.config import ModelMetadata
         from datetime import datetime
+
+        from trading_system.ml_refinement.config import ModelMetadata
 
         return ModelMetadata(
             model_id=self.model_id,
@@ -220,8 +217,9 @@ class TestModelTrainer:
     def test_retrain_logic_checks_new_samples(self, trainer, temp_db):
         """Test: Retrain logic checks for new samples."""
         # First, register an active model
-        from trading_system.ml_refinement.config import ModelMetadata
         from datetime import datetime
+
+        from trading_system.ml_refinement.config import ModelMetadata
 
         active_model = ModelMetadata(
             model_id="test-model-1",

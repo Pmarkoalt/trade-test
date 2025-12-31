@@ -1,17 +1,15 @@
 """Portfolio page for the dashboard."""
 
 from datetime import date, datetime, timedelta
-from typing import Dict, List, Optional
 
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+from trading_system.dashboard.components.cards import render_insight_box, render_metric_row
 from trading_system.dashboard.config import ChartConfig, DashboardConfig
-from trading_system.dashboard.components.cards import render_metric_row, render_insight_box
 from trading_system.dashboard.services.data_service import DashboardDataService
-from trading_system.tracking.models import SignalStatus
 
 
 def render_portfolio(config: DashboardConfig):
@@ -134,12 +132,12 @@ def render_position_history(service: DashboardDataService, config: DashboardConf
     # Date range filter
     col1, col2 = st.columns(2)
     with col1:
-        start_date = st.date_input(
+        st.date_input(
             "From",
             value=date.today() - timedelta(days=config.default_lookback_days),
         )
     with col2:
-        end_date = st.date_input("To", value=date.today())
+        st.date_input("To", value=date.today())
 
     # Status filter
     status_filter = st.selectbox(

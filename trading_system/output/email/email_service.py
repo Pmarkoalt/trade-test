@@ -9,14 +9,16 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 try:
-    from jinja2 import Environment, FileSystemLoader  # type: ignore[import-untyped]
+    from jinja2 import Environment, FileSystemLoader
 
     JINJA2_AVAILABLE = True
 except ImportError:
     JINJA2_AVAILABLE = False
-    # Type stubs for when jinja2 is not available
-    Environment: Any = None  # type: ignore[assignment, misc]
-    FileSystemLoader: Any = None  # type: ignore[assignment, misc]
+    # Create dummy objects for runtime when jinja2 is not available
+    # These are only created if import fails, so no redefinition occurs at runtime
+    # Mypy sees both code paths and flags redefinition, but runtime only has one path
+    Environment: Any = type("Environment", (), {})  # type: ignore[no-redef]
+    FileSystemLoader: Any = type("FileSystemLoader", (), {})  # type: ignore[no-redef]
 
 from ...logging.logger import get_logger
 from ..formatters.recommendation_formatter import RecommendationFormatter
@@ -171,8 +173,8 @@ class EmailService:
         performance_context = None
         if tracking_store:
             try:
-                from ...tracking.performance_calculator import PerformanceCalculator
                 from ...tracking.analytics.signal_analytics import SignalAnalyzer
+                from ...tracking.performance_calculator import PerformanceCalculator
 
                 calculator = PerformanceCalculator(tracking_store)
                 metrics = calculator.calculate_rolling_metrics(window_days=30)

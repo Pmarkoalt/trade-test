@@ -5,7 +5,7 @@ import sqlite3
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import numpy as np
 from loguru import logger
@@ -185,6 +185,8 @@ class FeatureDatabase:
             y: Target vector (n_samples,)
             feature_names: List of feature names
         """
+        # Build WHERE clause from hardcoded condition strings only
+        # All user-provided values are passed as parameters, not interpolated into SQL
         conditions = ["timestamp >= ? AND timestamp <= ?"]
         params: List = [start_date, end_date]
 
@@ -199,12 +201,16 @@ class FeatureDatabase:
             conditions.append("signal_type = ?")
             params.append(signal_type)
 
-        sql = """
-            SELECT features, target_r_multiple
-            FROM feature_vectors
-            WHERE {' AND '.join(conditions)}
-            ORDER BY timestamp ASC
-        """
+        # Join hardcoded condition strings - all values are parameterized
+        where_clause = " AND ".join(conditions)
+        # Build query by concatenating static SQL parts with safely constructed WHERE clause
+        sql_parts = [
+            "SELECT features, target_r_multiple",
+            "FROM feature_vectors",
+            "WHERE " + where_clause,
+            "ORDER BY timestamp ASC",
+        ]
+        sql = "\n            ".join(sql_parts)
 
         cursor = self.connection.execute(sql, params)
         rows = cursor.fetchall()
@@ -265,9 +271,14 @@ class FeatureDatabase:
         if require_target:
             conditions.append("target_r_multiple IS NOT NULL")
 
-        where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
-
-        sql = f"SELECT COUNT(*) FROM feature_vectors {where_clause}"
+        # All condition strings are hardcoded (e.g., "timestamp >= ?", "asset_class = ?")
+        # Actual values are passed as parameters, so this is safe
+        # Build query by concatenating static SQL parts with safely constructed WHERE clause
+        sql_parts = ["SELECT COUNT(*) FROM feature_vectors"]
+        if conditions:
+            where_clause = " AND ".join(conditions)
+            sql_parts.append("WHERE " + where_clause)
+        sql = " ".join(sql_parts)
 
         cursor = self.connection.execute(sql, params)
         result = cursor.fetchone()

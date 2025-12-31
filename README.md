@@ -122,17 +122,33 @@ If you prefer not to use Docker, you can install the system natively. However, t
 
 #### Install Dependencies
 
-**Option A: Automated Setup (Recommended)**
+**Option A: Master Setup Script (Recommended)**
 
 ```bash
 # Clone or navigate to the repository
 cd trade-test
 
-# Run automated setup script (detects and fixes common issues)
-./scripts/setup_environment.sh
+# Run master setup script (one command does everything)
+./setup.sh
+
+# This will:
+# - Check and set up Python environment
+# - Install all dependencies (production + dev)
+# - Install pre-commit git hooks
+# - Verify installation
 ```
 
-**Option B: Manual Installation**
+**Option B: Automated Setup (Alternative)**
+
+```bash
+# Run automated environment setup script
+./scripts/setup_environment.sh
+
+# Then install pre-commit hooks separately
+./scripts/setup_precommit_hooks.sh
+```
+
+**Option C: Manual Installation**
 
 ```bash
 # Clone or navigate to the repository
@@ -150,6 +166,8 @@ pip install -r requirements-dev.txt
 **macOS Users**: If you encounter NumPy segmentation faults, see [ENVIRONMENT_ISSUE.md](ENVIRONMENT_ISSUE.md). **Docker is strongly recommended for macOS.**
 
 #### Verify Installation
+
+If you used the master setup script (`./setup.sh`), verification is already included. Otherwise:
 
 ```bash
 # Quick verification
@@ -627,11 +645,11 @@ graph TB
     E --> F[Execution Engine]
     F --> G[Backtest Engine]
     G --> H[Reporting]
-    
+
     I[Config] --> C
     I --> E
     I --> F
-    
+
     J[Validation Suite] --> G
     K[Risk Manager] --> E
 ```
@@ -692,4 +710,3 @@ Built with:
 
 For detailed testing instructions, see [TESTING_GUIDE.md](TESTING_GUIDE.md)  
 For quick testing reference, see [QUICK_START_TESTING.md](QUICK_START_TESTING.md)
-

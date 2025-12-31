@@ -79,7 +79,7 @@
     {% if news_analysis %}
     <div class="section news">
         <h2>📰 NEWS DIGEST</h2>
-        
+
         <div class="market-sentiment">
             <h3>Market Sentiment: {{ news_analysis.market_sentiment_label.value | title }}</h3>
             <p>Based on {{ news_analysis.total_articles }} articles analyzed</p>
@@ -192,4 +192,3 @@
     </div>
 </div>
 {% endblock %}
-

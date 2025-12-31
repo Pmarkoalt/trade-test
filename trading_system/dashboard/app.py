@@ -1,9 +1,10 @@
 """Main Streamlit dashboard application."""
 
-import streamlit as st
 from pathlib import Path
 
-from trading_system.dashboard.config import DashboardConfig, PAGES
+import streamlit as st
+
+from trading_system.dashboard.config import PAGES, DashboardConfig
 
 
 def setup_page_config(config: DashboardConfig):

@@ -1,11 +1,9 @@
 """Database operations for storing and querying backtest results."""
 
-import json
 import logging
 import sqlite3
-from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -105,7 +103,7 @@ class ResultsDatabase:
             # Insert backtest run
             cursor.execute(
                 """
-                INSERT OR IGNORE INTO backtest_runs 
+                INSERT OR IGNORE INTO backtest_runs
                 (config_path, strategy_name, split_name, period, start_date, end_date, starting_equity, notes)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
@@ -118,7 +116,7 @@ class ResultsDatabase:
                 cursor.execute(
                     """
                     SELECT run_id FROM backtest_runs
-                    WHERE config_path = ? AND strategy_name = ? AND split_name = ? 
+                    WHERE config_path = ? AND strategy_name = ? AND split_name = ?
                     AND period = ? AND start_date = ? AND end_date = ?
                 """,
                     (config_path, strategy_name, split_name, period, start_date, end_date),
@@ -303,7 +301,7 @@ class ResultsDatabase:
             try:
                 if trade.exit_price is not None:
                     r_multiple = trade.compute_r_multiple()
-            except Exception:
+            except Exception:  # nosec B110 - exception handling for R-multiple computation, failures are non-critical
                 pass
 
             cursor.execute(
@@ -707,14 +705,23 @@ class ResultsDatabase:
         cursor = conn.cursor()
 
         try:
-            # Get run metadata
+            # Validate run_ids are integers (prevents injection)
+            if not all(isinstance(run_id, int) for run_id in run_ids):
+                raise ValueError("All run_ids must be integers")
+
+            # Construct placeholders safely - one '?' per run_id, values passed as parameters
+            # Build query by concatenating static SQL parts with safely constructed placeholders
             placeholders = ",".join(["?" for _ in run_ids])
+            sql_parts = [
+                "SELECT run_id, config_path, strategy_name, split_name, period, start_date, end_date",
+                "FROM backtest_runs",
+                "WHERE run_id IN ("
+                + placeholders
+                + ")",  # nosec B608 - placeholders is just '?' chars, values are parameterized
+            ]
+            query = "\n                ".join(sql_parts)
             cursor.execute(
-                """
-                SELECT run_id, config_path, strategy_name, split_name, period, start_date, end_date
-                FROM backtest_runs
-                WHERE run_id IN ({placeholders})
-            """,
+                query,
                 run_ids,
             )
 
@@ -766,9 +773,6 @@ class ResultsDatabase:
         archive_db_path = Path(archive_db_path)
         archive_db_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Create archive database
-        archive_db = ResultsDatabase(archive_db_path)
-
         conn = self._get_connection()
 
         try:
@@ -784,7 +788,6 @@ class ResultsDatabase:
                     logger.warning(f"Run ID {run_id} not found, skipping")
                     continue
 
-                run_dict = dict(run_row)
                 archived_count += 1
                 logger.info(f"Archived run_id {run_id} metadata to archive database")
                 # Note: Full implementation would copy all related tables (trades, equity_curve, etc.)

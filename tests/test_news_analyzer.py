@@ -1,12 +1,13 @@
 """Tests for news analyzer orchestrator."""
 
-import pytest
-from datetime import datetime, date
-from unittest.mock import AsyncMock, MagicMock, patch
+from datetime import date, datetime
+from unittest.mock import AsyncMock
 
-from trading_system.data_pipeline.sources.news.models import NewsArticle, SentimentLabel, NewsFetchResult
-from trading_system.research.news_analyzer import NewsAnalyzer, SymbolNewsSummary, NewsAnalysisResult
+import pytest
+
+from trading_system.data_pipeline.sources.news.models import NewsArticle, NewsFetchResult, SentimentLabel
 from trading_system.research.config import ResearchConfig, SentimentConfig
+from trading_system.research.news_analyzer import NewsAnalysisResult, NewsAnalyzer, SymbolNewsSummary
 
 
 class TestNewsAnalyzer:

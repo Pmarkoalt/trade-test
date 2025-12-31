@@ -1,5 +1,13 @@
 """Dashboard components."""
 
+from trading_system.dashboard.components.cards import (
+    render_insight_box,
+    render_metric_card,
+    render_metric_row,
+    render_signal_card,
+    render_status_badge,
+    render_streak_indicator,
+)
 from trading_system.dashboard.components.charts import (
     create_conviction_breakdown,
     create_equity_curve,
@@ -14,14 +22,6 @@ from trading_system.dashboard.components.tables import (
     render_performance_table,
     render_recent_trades_table,
     render_signals_table,
-)
-from trading_system.dashboard.components.cards import (
-    render_insight_box,
-    render_metric_card,
-    render_metric_row,
-    render_signal_card,
-    render_status_badge,
-    render_streak_indicator,
 )
 
 __all__ = [

@@ -1,16 +1,13 @@
 """Tests for ML refinement feature extractors."""
 
 import pandas as pd
-import pytest
 
 from trading_system.ml_refinement.features.extractors import (
-    BaseFeatureExtractor,
+    MarketRegimeFeatures,
     MomentumFeatures,
-    OHLCVExtractor,
     SignalMetadataFeatures,
     TrendFeatures,
     VolatilityFeatures,
-    MarketRegimeFeatures,
 )
 
 

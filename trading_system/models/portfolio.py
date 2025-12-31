@@ -125,8 +125,7 @@ class Portfolio:
                 window_returns = all_returns[i : i + 20]
                 window_vol = np.std(window_returns) * np.sqrt(252)
                 rolling_vols.append(window_vol)
-            median_vol = np.median(rolling_vols)
-            self.median_vol_252d = median_vol
+            self.median_vol_252d = np.median(rolling_vols)
         else:
             # Use current vol as baseline if insufficient history
             self.median_vol_252d = vol_20d

@@ -1,7 +1,8 @@
 """Database data source implementations (PostgreSQL, SQLite)."""
 
 import logging
-from typing import Any, Dict, List, Optional, Tuple, Union
+import re
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
@@ -24,11 +25,42 @@ class DatabaseDataSource(BaseDataSource):
 
         Args:
             connection_string: Database connection string
-            table_name: Name of the OHLCV table
+            table_name: Name of the OHLCV table (must be a valid SQL identifier)
         """
         self.connection_string = connection_string
+        self._validate_table_name(table_name)
         self.table_name = table_name
         self._connection: Optional[Any] = None
+
+    @staticmethod
+    def _validate_table_name(table_name: str) -> None:
+        """Validate that table name is a safe SQL identifier.
+
+        Args:
+            table_name: Table name to validate
+
+        Raises:
+            ValueError: If table name contains unsafe characters
+        """
+        # Only allow alphanumeric characters and underscores
+        if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", table_name):
+            raise ValueError(
+                f"Invalid table name: {table_name}. Must be a valid SQL identifier (alphanumeric and underscores only)"
+            )
+
+    @staticmethod
+    def _quote_identifier(identifier: str) -> str:
+        """Quote a SQL identifier safely.
+
+        Args:
+            identifier: SQL identifier to quote (table/column name)
+
+        Returns:
+            Properly quoted identifier (works for both SQLite and PostgreSQL)
+        """
+        # Double quotes work for both SQLite and PostgreSQL
+        # Identifier is already validated to be safe, but quoting adds extra safety
+        return f'"{identifier}"'
 
     def _get_connection(self):
         """Get database connection (implemented by subclasses)."""
@@ -66,11 +98,13 @@ class DatabaseDataSource(BaseDataSource):
 
         # Build query with proper parameter placeholders
         placeholders = ",".join([param_style for _ in symbols])
-        query = """
+        # table_name is validated and quoted for safety
+        quoted_table = self._quote_identifier(self.table_name)
+        query = f"""
             SELECT symbol, date, open, high, low, close, volume
-            FROM {self.table_name}
+            FROM {quoted_table}
             WHERE symbol IN ({placeholders})
-        """
+        """  # nosec B608 - quoted_table is validated/quoted identifier, symbols are parameterized
         params = list(symbols)
 
         if start_date is not None:
@@ -128,7 +162,12 @@ class DatabaseDataSource(BaseDataSource):
         conn = self._get_connection()
 
         try:
-            query = f"SELECT DISTINCT symbol FROM {self.table_name} ORDER BY symbol"
+            # table_name is validated and quoted for safety
+            # The table name is validated in __init__ via _validate_table_name()
+            # to only contain alphanumeric characters and underscores, then properly
+            # quoted via _quote_identifier(). This is safe for SQL identifier usage.
+            quoted_table = self._quote_identifier(self.table_name)
+            query = f"SELECT DISTINCT symbol FROM {quoted_table} ORDER BY symbol"  # nosec B608
             df = pd.read_sql_query(query, conn)
             return [str(s) for s in df["symbol"].tolist()]
         except Exception as e:
@@ -148,11 +187,13 @@ class DatabaseDataSource(BaseDataSource):
 
         param_style = self._get_param_style()
         try:
-            query = """
+            # table_name is validated and quoted for safety
+            quoted_table = self._quote_identifier(self.table_name)
+            query = f"""
                 SELECT MIN(date) as min_date, MAX(date) as max_date
-                FROM {self.table_name}
+                FROM {quoted_table}
                 WHERE symbol = {param_style}
-            """
+            """  # nosec B608 - quoted_table is validated/quoted identifier, symbol is parameterized
             df = pd.read_sql_query(query, conn, params=[symbol], parse_dates=["min_date", "max_date"])
 
             if df.empty or df.iloc[0]["min_date"] is None:

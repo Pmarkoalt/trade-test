@@ -1,26 +1,27 @@
 """Performance page for dashboard."""
 
-import streamlit as st
-import pandas as pd
 from datetime import datetime
 
+import pandas as pd
+import streamlit as st
+
+from trading_system.dashboard.components.cards import render_insight_box, render_metric_row
+from trading_system.dashboard.components.charts import (
+    create_conviction_breakdown,
+    create_equity_curve,
+    create_performance_by_day,
+    create_returns_distribution,
+    create_strategy_comparison_chart,
+    create_win_rate_gauge,
+)
+from trading_system.dashboard.components.tables import render_performance_table
 from trading_system.dashboard.config import DashboardConfig
-from trading_system.dashboard.services.data_service import DashboardDataService
 from trading_system.dashboard.services.cache_service import (
     get_cached_dashboard_data,
     get_cached_performance_ts,
     get_cached_strategy_comparison,
 )
-from trading_system.dashboard.components.charts import (
-    create_equity_curve,
-    create_win_rate_gauge,
-    create_returns_distribution,
-    create_strategy_comparison_chart,
-    create_performance_by_day,
-    create_conviction_breakdown,
-)
-from trading_system.dashboard.components.tables import render_performance_table
-from trading_system.dashboard.components.cards import render_metric_row, render_insight_box
+from trading_system.dashboard.services.data_service import DashboardDataService
 
 
 def render_performance(config: DashboardConfig):
