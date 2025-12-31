@@ -18,8 +18,15 @@ from ..strategies.scoring import score_signals
 from ..strategies.queue import select_signals_from_queue
 from ..portfolio.position_sizing import calculate_position_size
 from ..data.validator import validate_ohlcv, detect_missing_data
+from ..logging import (
+    log_trade_event,
+    log_signal_generation,
+    log_portfolio_snapshot,
+    TradeEventType,
+    get_logger
+)
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class DailyEventLoop:
@@ -44,7 +51,9 @@ class DailyEventLoop:
         strategies: List[BaseStrategy],
         compute_features_fn: Callable,
         get_next_trading_day: Callable[[pd.Timestamp], pd.Timestamp],
-        rng: Optional = None
+        rng: Optional = None,
+        slippage_multiplier: float = 1.0,
+        crash_dates: Optional[set] = None
     ):
         """Initialize event loop.
         
@@ -55,6 +64,8 @@ class DailyEventLoop:
             compute_features_fn: Function to compute features for a symbol up to a date
             get_next_trading_day: Function to get next trading day from a date
             rng: Optional random number generator for reproducibility
+            slippage_multiplier: Multiplier for base slippage (for stress tests)
+            crash_dates: Set of dates on which to simulate flash crashes
         """
         self.market_data = market_data
         self.portfolio = portfolio
@@ -62,6 +73,8 @@ class DailyEventLoop:
         self.compute_features_fn = compute_features_fn
         self.get_next_trading_day = get_next_trading_day
         self.rng = rng
+        self.slippage_multiplier = slippage_multiplier
+        self.crash_dates = crash_dates or set()
         
         # Track pending orders and exit orders
         self.pending_orders: List[Order] = []
@@ -134,6 +147,26 @@ class DailyEventLoop:
         self._update_portfolio_metrics(next_day)
         
         # Step 8: Log daily state
+        # Get current prices for positions
+        current_prices = {}
+        for symbol in self.portfolio.positions.keys():
+            bar = self.market_data.get_bar(symbol, next_day)
+            if bar:
+                current_prices[symbol] = bar.close
+        
+        # Serialize positions for correlation analysis
+        positions_dict = {}
+        for symbol, position in self.portfolio.positions.items():
+            if position.is_open():
+                positions_dict[symbol] = {
+                    'symbol': position.symbol,
+                    'asset_class': position.asset_class,
+                    'entry_date': position.entry_date,
+                    'entry_price': position.entry_price,
+                    'quantity': position.quantity,
+                    'current_price': current_prices.get(symbol)
+                }
+        
         events['portfolio_state'] = {
             'equity': self.portfolio.equity,
             'cash': self.portfolio.cash,
@@ -141,7 +174,8 @@ class DailyEventLoop:
             'realized_pnl': self.portfolio.realized_pnl,
             'unrealized_pnl': self.portfolio.unrealized_pnl,
             'gross_exposure': self.portfolio.gross_exposure,
-            'risk_multiplier': self.portfolio.risk_multiplier
+            'risk_multiplier': self.portfolio.risk_multiplier,
+            'positions': positions_dict  # Add serialized positions
         }
         
         return events
@@ -457,6 +491,11 @@ class DailyEventLoop:
             # Base slippage
             base_slippage_bps = 8.0 if order.asset_class == "equity" else 10.0
             
+            # Check if this is a crash date - apply 5x multiplier for flash crashes
+            is_crash_date = date in self.crash_dates
+            effective_multiplier = 5.0 if is_crash_date else self.slippage_multiplier
+            effective_base_slippage = base_slippage_bps * effective_multiplier
+            
             # Simulate fill
             try:
                 fill = simulate_fill(
@@ -466,7 +505,7 @@ class DailyEventLoop:
                     atr14_history=atr14_history,
                     adv20=features.adv20,
                     benchmark_bars=benchmark_bars,
-                    base_slippage_bps=base_slippage_bps,
+                    base_slippage_bps=effective_base_slippage,
                     rng=self.rng
                 )
                 
@@ -496,6 +535,22 @@ class DailyEventLoop:
                         adv20_at_entry=adv20_at_entry
                     )
                     
+                    # Log trade entry
+                    log_trade_event(
+                        logger,
+                        TradeEventType.ENTRY,
+                        symbol=order.symbol,
+                        asset_class=order.asset_class,
+                        date=fill.date,
+                        entry_price=fill.fill_price,
+                        quantity=fill.quantity,
+                        stop_price=order.stop_price,
+                        triggered_on=triggered_on,
+                        slippage_bps=fill.slippage_bps,
+                        fee_bps=fill.fee_bps,
+                        total_cost=fill.total_cost
+                    )
+                    
                     # Clean up metadata
                     if order.order_id in self.order_signal_metadata:
                         del self.order_signal_metadata[order.order_id]
@@ -507,6 +562,17 @@ class DailyEventLoop:
                 logger.error(f"Error executing order {order.order_id}: {e}")
                 order.status = OrderStatus.REJECTED
                 order.rejection_reason = f"EXECUTION_ERROR: {str(e)}"
+                
+                # Log rejected order
+                log_trade_event(
+                    logger,
+                    TradeEventType.REJECTED,
+                    symbol=order.symbol,
+                    asset_class=order.asset_class,
+                    date=date,
+                    reason=order.rejection_reason
+                )
+                
                 orders_to_remove.append(order)
         
         # Remove executed/rejected orders
@@ -561,6 +627,16 @@ class DailyEventLoop:
             exit_mode=exit_mode,
             exit_ma=exit_ma
         )
+        
+        # On crash dates, force all stops to trigger (flash crash simulation)
+        if date in self.crash_dates:
+            # Force exit all positions at stops
+            forced_exits = []
+            for symbol, position in self.portfolio.positions.items():
+                if position.is_open() and symbol not in [s[0] for s in exit_signals]:
+                    # Force stop at worst possible price
+                    forced_exits.append((symbol, ExitReason.HARD_STOP))
+            exit_signals.extend(forced_exits)
         
         return exit_signals
     
@@ -661,6 +737,11 @@ class DailyEventLoop:
             # Base slippage
             base_slippage_bps = 8.0 if order.asset_class == "equity" else 10.0
             
+            # Check if this is a crash date - apply 5x multiplier for flash crashes
+            is_crash_date = date in self.crash_dates
+            effective_multiplier = 5.0 if is_crash_date else self.slippage_multiplier
+            effective_base_slippage = base_slippage_bps * effective_multiplier
+            
             # Simulate fill
             try:
                 fill = simulate_fill(
@@ -670,12 +751,21 @@ class DailyEventLoop:
                     atr14_history=atr14_history,
                     adv20=features.adv20,
                     benchmark_bars=benchmark_bars,
-                    base_slippage_bps=base_slippage_bps,
+                    base_slippage_bps=effective_base_slippage,
                     rng=self.rng
                 )
                 
                 # Update order status
                 order.status = OrderStatus.FILLED
+                
+                # On crash dates, force stops at worst possible price (for exits only)
+                if is_crash_date and exit_reason == ExitReason.HARD_STOP:
+                    # Force exit at worst price (slippage already applied above, but make it worse)
+                    worst_price = min(fill.fill_price, open_bar.low) if order.side == SignalSide.SELL else max(fill.fill_price, open_bar.high)
+                    if order.side == SignalSide.SELL:
+                        fill.fill_price = worst_price  # SELL at worst (lowest) price
+                    else:
+                        fill.fill_price = worst_price  # BUY at worst (highest) price
                 
                 # Close position
                 closed_position = self.portfolio.close_position(
@@ -685,6 +775,31 @@ class DailyEventLoop:
                 )
                 
                 if closed_position:
+                    # Calculate R-multiple
+                    r_multiple = None
+                    if closed_position.initial_stop_price and closed_position.initial_stop_price > 0:
+                        risk = closed_position.entry_price - closed_position.initial_stop_price
+                        if risk > 0:
+                            reward = closed_position.realized_pnl / (closed_position.quantity * risk)
+                            r_multiple = reward
+                    
+                    # Log trade exit
+                    event_type = TradeEventType.STOP_HIT if exit_reason == ExitReason.HARD_STOP else TradeEventType.EXIT
+                    log_trade_event(
+                        logger,
+                        event_type,
+                        symbol=order.symbol,
+                        asset_class=order.asset_class,
+                        date=fill.date,
+                        exit_price=fill.fill_price,
+                        exit_reason=exit_reason.value,
+                        realized_pnl=closed_position.realized_pnl,
+                        r_multiple=r_multiple,
+                        slippage_bps=fill.slippage_bps,
+                        fee_bps=fill.fee_bps,
+                        total_cost=fill.total_cost
+                    )
+                    
                     fills.append(fill)
                 
                 orders_to_remove.append(order_tuple)
