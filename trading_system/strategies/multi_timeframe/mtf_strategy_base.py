@@ -35,12 +35,13 @@ class MultiTimeframeBaseStrategy(StrategyInterface):
         super().__init__(config)
 
         # Extract multi-timeframe parameters
-        self.higher_tf_ma = config.parameters.get("higher_tf_ma", 50)  # Daily MA50
-        self.weekly_lookback = config.parameters.get("weekly_lookback", 4)  # 4 weeks
-        self.weekly_days = config.parameters.get("weekly_days", 28)  # ~4 weeks in trading days
-        self.atr_period = config.parameters.get("atr_period", 14)
-        self.stop_atr_mult = config.parameters.get("stop_atr_mult", 2.0)
-        self.max_hold_days = config.parameters.get("max_hold_days", 60)  # Longer hold for trend following
+        parameters = config.parameters or {}
+        self.higher_tf_ma = parameters.get("higher_tf_ma", 50)  # Daily MA50
+        self.weekly_lookback = parameters.get("weekly_lookback", 4)  # 4 weeks
+        self.weekly_days = parameters.get("weekly_days", 28)  # ~4 weeks in trading days
+        self.atr_period = parameters.get("atr_period", 14)
+        self.stop_atr_mult = parameters.get("stop_atr_mult", 2.0)
+        self.max_hold_days = parameters.get("max_hold_days", 60)  # Longer hold for trend following
 
     def check_entry_triggers(self, features: FeatureRow) -> tuple[Optional[BreakoutType], float]:
         """Check if multi-timeframe entry trigger is met.

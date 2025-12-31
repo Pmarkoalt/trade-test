@@ -56,7 +56,8 @@ class CSVWriter:
         )
 
         # Calculate exposure as percentage
-        df["exposure_pct"] = (df["exposure"] / df["equity"]) * 100
+        df["exposure_pct"] = (df["exposure"] / df["equity"].replace(0, np.nan)) * 100
+        df["exposure_pct"] = df["exposure_pct"].fillna(0.0)
 
         # Write to CSV
         output_path = self.output_dir / "equity_curve.csv"

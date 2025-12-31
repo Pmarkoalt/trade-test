@@ -110,7 +110,7 @@ class TestSensitivityExpanded:
         def metric_func(params):
             return params["atr_mult"] * params["clearance"] * params["risk_pct"] * 1000
 
-        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42)
+        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
         analysis = grid.run()
 
         assert "results" in analysis
@@ -124,7 +124,7 @@ class TestSensitivityExpanded:
         def metric_func(params):
             return params["atr_mult"] * params["clearance"] * 100
 
-        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42)
+        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
         analysis = grid.run()
 
         # Check that heatmap data is available
@@ -141,7 +141,7 @@ class TestSensitivityExpanded:
                 return 1000.0
             return 1.0
 
-        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42)
+        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
         analysis = grid.run()
 
         # Should detect sharp peak
@@ -172,7 +172,7 @@ class TestSensitivityExpanded:
         def progress_callback(completed, total):
             progress_calls.append((completed, total))
 
-        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42)
+        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
         analysis = grid.run(progress_callback=progress_callback)
 
         # Progress callback should be called
@@ -187,7 +187,7 @@ class TestSensitivityExpanded:
         def metric_func(params):
             return params["param1"] * params["param2"]
 
-        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42)
+        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
         analysis = grid.run()
 
         assert "worst_params" in analysis
@@ -205,7 +205,7 @@ class TestSensitivityExpanded:
                 return 10.0
             return 1.0
 
-        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42)
+        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
         analysis = grid.run()
 
         assert "stable_neighborhoods" in analysis
@@ -218,7 +218,7 @@ class TestSensitivityExpanded:
         def metric_func(params):
             return params["param1"] * params["param2"]
 
-        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42)
+        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
         analysis = grid.run()
 
         assert "metric_mean" in analysis
@@ -239,7 +239,7 @@ class TestSensitivityExpanded:
                 raise ValueError("Invalid combination")
             return params["param1"] * params["param2"]
 
-        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42)
+        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
         analysis = grid.run()
 
         # Should skip invalid combination and continue
@@ -255,7 +255,7 @@ class TestSensitivityExpanded:
             # Always raise error
             raise ValueError("Always invalid")
 
-        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42)
+        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
         analysis = grid.run()
 
         # Should handle gracefully
@@ -273,7 +273,7 @@ class TestSensitivityExpanded:
         def metric_func(params):
             return params["param_x"] * params["param_y"]
 
-        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42)
+        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
         analysis = grid.run()
 
         # Should be able to plot heatmap
@@ -297,7 +297,7 @@ class TestSensitivityExpanded:
         def metric_func(params):
             return params["param_x"] * params["param_y"]
 
-        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42)
+        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
         analysis = grid.run()
 
         # Should raise error when trying to plot with insufficient data
@@ -313,7 +313,7 @@ class TestSensitivityExpanded:
         def metric_func(params):
             return params["param_x"] * params["param_y"]
 
-        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42)
+        grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
         analysis = grid.run()
 
         # Should raise error when parameter not in results
@@ -329,7 +329,7 @@ class TestSensitivityExpanded:
         def metric_func(params):
             return params["param1"] * params["param2"]
 
-        analysis = run_parameter_sensitivity(parameter_ranges, metric_func, random_seed=42)
+        analysis = run_parameter_sensitivity(parameter_ranges, metric_func, random_seed=42, parallel=False)
 
         assert "results" in analysis
         assert "best_params" in analysis

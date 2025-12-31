@@ -30,6 +30,7 @@ def sample_data():
 @pytest.fixture
 def base_models(sample_data):
     """Create base models for ensemble."""
+    pytest.importorskip("sklearn")
     X, y = sample_data
 
     models = []
@@ -67,6 +68,7 @@ def test_voting_ensemble_hard(sample_data, base_models):
 
 def test_voting_ensemble_average(sample_data):
     """Test average voting ensemble (for regression)."""
+    pytest.importorskip("sklearn")
     X, y = sample_data
 
     # Convert to regression problem
@@ -110,6 +112,7 @@ def test_voting_ensemble_weights(sample_data, base_models):
 
 def test_stacking_ensemble(sample_data, base_models):
     """Test stacking ensemble."""
+    pytest.importorskip("sklearn")
     X, y = sample_data
 
     # Create meta-learner
@@ -137,6 +140,7 @@ def test_stacking_ensemble(sample_data, base_models):
 
 def test_stacking_ensemble_with_proba(sample_data, base_models):
     """Test stacking ensemble with probability features."""
+    pytest.importorskip("sklearn")
     X, y = sample_data
 
     meta_model = MLModel._create_model_instance(

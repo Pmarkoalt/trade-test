@@ -130,14 +130,21 @@ def migrate_config(
         with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as tmp:
             yaml.dump(migrated_data, tmp, default_flow_style=False, sort_keys=False)
             tmp_path = tmp.name
+            tmp.flush()  # Ensure data is written
 
         try:
+            # Check if file exists before validation
+            if not Path(tmp_path).exists():
+                return False, "Failed to create temporary file for validation", None
+            
             is_valid, error_message, _ = validate_config_file(tmp_path, config_type=config_type)
             if not is_valid:
-                Path(tmp_path).unlink()
+                if Path(tmp_path).exists():
+                    Path(tmp_path).unlink()
                 return False, f"Migrated config failed validation: {error_message}", None
         finally:
-            Path(tmp_path).unlink()
+            if Path(tmp_path).exists():
+                Path(tmp_path).unlink()
 
         # Write migrated config
         if not dry_run:

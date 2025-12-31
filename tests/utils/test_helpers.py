@@ -55,6 +55,8 @@ def create_sample_feature_row(
     ma50: Optional[float] = None,
     ma200: Optional[float] = None,
     atr14: Optional[float] = None,
+    allow_none_atr14: bool = False,  # Allow explicit None for atr14
+    allow_none_ma50: bool = False,  # Allow explicit None for ma50
     **kwargs,
 ) -> FeatureRow:
     """Create a sample FeatureRow with indicators.
@@ -65,9 +67,11 @@ def create_sample_feature_row(
         asset_class: "equity" or "crypto"
         close: Close price
         ma20: MA20 value (defaults to close * 0.98)
-        ma50: MA50 value (defaults to close * 0.95)
+        ma50: MA50 value (defaults to close * 0.95, unless allow_none_ma50=True)
         ma200: MA200 value (defaults to close * 0.90)
-        atr14: ATR14 value (defaults to close * 0.02)
+        atr14: ATR14 value (defaults to close * 0.02, unless allow_none_atr14=True)
+        allow_none_atr14: If True, allow atr14 to be None (for testing)
+        allow_none_ma50: If True, allow ma50 to be None (for testing)
         **kwargs: Additional feature values
 
     Returns:
@@ -76,11 +80,11 @@ def create_sample_feature_row(
     # Set defaults if not provided
     if ma20 is None:
         ma20 = close * 0.98
-    if ma50 is None:
+    if ma50 is None and not allow_none_ma50:
         ma50 = close * 0.95
     if ma200 is None:
         ma200 = close * 0.90
-    if atr14 is None:
+    if atr14 is None and not allow_none_atr14:
         atr14 = close * 0.02
 
     # Set defaults for other features

@@ -17,6 +17,7 @@ from trading_system.configs.strategy_config import (
     StrategyConfig,
 )
 from trading_system.models import BreakoutType, ExitReason, FeatureRow, Position, Signal, SignalSide
+from trading_system.models.positions import PositionSide
 from trading_system.strategies import EquityStrategy
 
 
@@ -457,6 +458,7 @@ class TestExitSignals:
             entry_price=100.0,
             entry_fill_id="fill_1",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=95.0,  # Hard stop: 100 - 2.5 * 2.0 = 95.0
             initial_stop_price=95.0,
             hard_stop_atr_mult=2.5,

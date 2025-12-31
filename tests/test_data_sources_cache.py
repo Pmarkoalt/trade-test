@@ -194,7 +194,7 @@ class TestCachedDataSource:
         csv_path = self.csv_dir / "AAPL.csv"
         df.to_csv(csv_path)
 
-        self.source = CSVDataSource(data_dir=str(self.csv_dir))
+        self.source = CSVDataSource(data_path=str(self.csv_dir))
         self.cached_source = CachedDataSource(self.source, self.cache)
 
     def teardown_method(self):

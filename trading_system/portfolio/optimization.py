@@ -148,13 +148,25 @@ class PortfolioOptimizer:
 
             if not result.success:
                 # Fallback to differential evolution for better global search
-                result = differential_evolution(objective, bounds=bounds, constraints=constraints, maxiter=1000, seed=42)
+                try:
+                    result = differential_evolution(objective, bounds=bounds, constraints=constraints, maxiter=1000, seed=42)
+                    # Check if differential_evolution succeeded
+                    if not hasattr(result, 'x') or result.x is None:
+                        raise ValueError("Differential evolution failed")
+                except Exception:
+                    # If differential evolution also fails, use equal weights
+                    weights = {s: 1.0 / n_assets for s in symbols}
+                    return OptimizationResult(weights=weights, method="markowitz_fallback")
         except Exception as e:
             # Fallback to equal weights if optimization fails
             weights = {s: 1.0 / n_assets for s in symbols}
             return OptimizationResult(weights=weights, method="markowitz_fallback")
 
-        # Extract weights
+        # Extract weights - ensure result.x exists
+        if not hasattr(result, 'x') or result.x is None:
+            weights = {s: 1.0 / n_assets for s in symbols}
+            return OptimizationResult(weights=weights, method="markowitz_fallback")
+
         optimal_weights = result.x
         weights_dict = {symbols[i]: max(0.0, optimal_weights[i]) for i in range(n_assets)}
 
@@ -247,13 +259,25 @@ class PortfolioOptimizer:
             )
 
             if not result.success:
-                result = differential_evolution(objective, bounds=bounds, constraints=constraints, maxiter=1000, seed=42)
+                try:
+                    result = differential_evolution(objective, bounds=bounds, constraints=constraints, maxiter=1000, seed=42)
+                    # Check if differential_evolution succeeded
+                    if not hasattr(result, 'x') or result.x is None:
+                        raise ValueError("Differential evolution failed")
+                except Exception:
+                    # If differential evolution also fails, use equal weights
+                    weights = {s: 1.0 / n_assets for s in symbols}
+                    return OptimizationResult(weights=weights, method="risk_parity_fallback")
         except Exception as e:
             # Fallback to equal weights
             weights = {s: 1.0 / n_assets for s in symbols}
             return OptimizationResult(weights=weights, method="risk_parity_fallback")
 
-        # Extract weights
+        # Extract weights - ensure result.x exists
+        if not hasattr(result, 'x') or result.x is None:
+            weights = {s: 1.0 / n_assets for s in symbols}
+            return OptimizationResult(weights=weights, method="risk_parity_fallback")
+
         optimal_weights = result.x
         weights_dict = {symbols[i]: max(0.0, optimal_weights[i]) for i in range(n_assets)}
 

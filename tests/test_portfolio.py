@@ -311,6 +311,7 @@ class TestPortfolio:
             entry_price=150.0,
             entry_fill_id="fill_1",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=140.0,
             initial_stop_price=140.0,
             hard_stop_atr_mult=2.5,
@@ -473,6 +474,7 @@ class TestPortfolio:
                 entry_price=100.0,
                 entry_fill_id=f"fill_{i}",
                 quantity=100,
+                side=PositionSide.LONG,
                 stop_price=90.0,
                 initial_stop_price=90.0,
                 hard_stop_atr_mult=2.5,
@@ -537,6 +539,7 @@ class TestPortfolio:
             entry_price=50000.0,
             entry_fill_id="fill_1",
             quantity=1,
+            side=PositionSide.LONG,
             stop_price=45000.0,
             initial_stop_price=45000.0,
             hard_stop_atr_mult=3.0,
@@ -615,15 +618,22 @@ class TestPortfolio:
         """Test creating a short position."""
         fill = Fill(
             fill_id="test_short_fill",
+            order_id="test_short_order",
             symbol="TSLA",
             asset_class="equity",
             date=pd.Timestamp("2024-01-15"),
             side=SignalSide.SELL,  # Short
             fill_price=250.0,
+            open_price=250.25,  # Open price before slippage
             quantity=100,
             slippage_bps=10.0,
             fee_bps=1.0,
             total_cost=275.0,
+            vol_mult=1.0,
+            size_penalty=1.0,
+            weekend_penalty=1.0,
+            stress_mult=1.0,
+            notional=25000.0,
         )
 
         # Stop above entry for short
@@ -644,15 +654,22 @@ class TestPortfolio:
         """Test P&L calculation for short positions."""
         fill = Fill(
             fill_id="test_short_fill",
+            order_id="test_short_order",
             symbol="TSLA",
             asset_class="equity",
             date=pd.Timestamp("2024-01-15"),
             side=SignalSide.SELL,
             fill_price=250.0,
+            open_price=250.25,  # Open price before slippage
             quantity=100,
             slippage_bps=10.0,
             fee_bps=1.0,
             total_cost=275.0,
+            vol_mult=1.0,
+            size_penalty=1.0,
+            weekend_penalty=1.0,
+            stress_mult=1.0,
+            notional=25000.0,
         )
 
         position = portfolio.process_fill(
@@ -671,15 +688,22 @@ class TestPortfolio:
         """Test closing a short position."""
         fill = Fill(
             fill_id="test_short_fill",
+            order_id="test_short_order",
             symbol="TSLA",
             asset_class="equity",
             date=pd.Timestamp("2024-01-15"),
             side=SignalSide.SELL,
             fill_price=250.0,
+            open_price=250.25,  # Open price before slippage
             quantity=100,
             slippage_bps=10.0,
             fee_bps=1.0,
             total_cost=275.0,
+            vol_mult=1.0,
+            size_penalty=1.0,
+            weekend_penalty=1.0,
+            stress_mult=1.0,
+            notional=25000.0,
         )
 
         position = portfolio.process_fill(
@@ -689,15 +713,22 @@ class TestPortfolio:
         # Close at 240 (profit)
         exit_fill = Fill(
             fill_id="test_exit_fill",
+            order_id="test_exit_order",
             symbol="TSLA",
             asset_class="equity",
             date=pd.Timestamp("2024-01-20"),
             side=SignalSide.BUY,  # Buy to cover
             fill_price=240.0,
+            open_price=239.76,  # Open price before slippage
             quantity=100,
             slippage_bps=10.0,
             fee_bps=1.0,
             total_cost=264.0,
+            vol_mult=1.0,
+            size_penalty=1.0,
+            weekend_penalty=1.0,
+            stress_mult=1.0,
+            notional=24000.0,
         )
 
         closed_position = portfolio.close_position(symbol="TSLA", exit_fill=exit_fill, exit_reason=ExitReason.MANUAL)
@@ -710,15 +741,22 @@ class TestPortfolio:
         """Test stop loss for short positions."""
         fill = Fill(
             fill_id="test_short_fill",
+            order_id="test_short_order",
             symbol="TSLA",
             asset_class="equity",
             date=pd.Timestamp("2024-01-15"),
             side=SignalSide.SELL,
             fill_price=250.0,
+            open_price=250.25,  # Open price before slippage
             quantity=100,
             slippage_bps=10.0,
             fee_bps=1.0,
             total_cost=275.0,
+            vol_mult=1.0,
+            size_penalty=1.0,
+            weekend_penalty=1.0,
+            stress_mult=1.0,
+            notional=25000.0,
         )
 
         position = portfolio.process_fill(
@@ -767,15 +805,22 @@ class TestPortfolio:
         # Try to create a short position that would exceed limits
         fill = Fill(
             fill_id="test_short_fill",
+            order_id="test_short_order",
             symbol="TSLA",
             asset_class="equity",
             date=pd.Timestamp("2024-01-15"),
             side=SignalSide.SELL,
             fill_price=250.0,
+            open_price=250.25,  # Open price before slippage
             quantity=200,  # Large position
             slippage_bps=10.0,
             fee_bps=1.0,
             total_cost=550.0,
+            vol_mult=1.0,
+            size_penalty=1.0,
+            weekend_penalty=1.0,
+            stress_mult=1.0,
+            notional=50000.0,
         )
 
         # This should work if within limits

@@ -135,6 +135,10 @@ class TestPortfolioProperties:
                 fill=fill, stop_price=price * 0.95, atr_mult=2.5, triggered_on=BreakoutType.FAST_20D, adv20_at_entry=notional
             )
 
+        # Update equity to calculate exposure metrics
+        current_prices = {symbol: price for symbol, price, _ in positions_data}
+        portfolio.update_equity(current_prices)
+
         # Check exposure limits
         if portfolio.gross_exposure_pct is not None:
             assert portfolio.gross_exposure_pct <= 0.80  # Max 80% exposure

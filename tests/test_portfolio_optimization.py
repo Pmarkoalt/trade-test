@@ -241,14 +241,18 @@ class TestComputeRebalanceTargets:
 
     def test_compute_rebalance_targets_basic(self):
         """Test computing rebalance targets."""
-        current_weights = {"AAPL": 0.4, "MSFT": 0.3, "GOOGL": 0.3}
-        target_weights = {"AAPL": 0.5, "MSFT": 0.3, "GOOGL": 0.2}
+        # Convert weights to notionals (current positions)
         equity = 100000.0
+        current_weights = {"AAPL": 0.4, "MSFT": 0.3, "GOOGL": 0.3}
+        current_positions = {symbol: equity * weight for symbol, weight in current_weights.items()}
+        target_weights = {"AAPL": 0.5, "MSFT": 0.3, "GOOGL": 0.2}
         prices = {"AAPL": 150.0, "MSFT": 300.0, "GOOGL": 2500.0}
 
-        targets = compute_rebalance_targets(current_weights, target_weights, equity, prices)
+        targets = compute_rebalance_targets(equity, current_positions, target_weights, prices)
 
-        assert len(targets) == 3
+        # MSFT has same weight (0.3) so won't be in targets if threshold is > 0
+        # Should have at least AAPL and GOOGL
+        assert len(targets) >= 2
         assert all(isinstance(t, RebalanceTarget) for t in targets)
 
         # Check AAPL target (needs to increase)
@@ -256,15 +260,22 @@ class TestComputeRebalanceTargets:
         assert aapl_target.target_weight == 0.5
         assert aapl_target.current_weight == 0.4
         assert aapl_target.delta_notional > 0  # Should buy more
+        
+        # Check GOOGL target (needs to decrease)
+        googl_target = next(t for t in targets if t.symbol == "GOOGL")
+        assert googl_target.target_weight == 0.2
+        assert googl_target.current_weight == 0.3
+        assert googl_target.delta_notional < 0  # Should sell
 
     def test_compute_rebalance_targets_reduce_position(self):
         """Test rebalance targets when reducing position."""
-        current_weights = {"AAPL": 0.6, "MSFT": 0.4}
-        target_weights = {"AAPL": 0.4, "MSFT": 0.6}
         equity = 100000.0
+        current_weights = {"AAPL": 0.6, "MSFT": 0.4}
+        current_positions = {symbol: equity * weight for symbol, weight in current_weights.items()}
+        target_weights = {"AAPL": 0.4, "MSFT": 0.6}
         prices = {"AAPL": 150.0, "MSFT": 300.0}
 
-        targets = compute_rebalance_targets(current_weights, target_weights, equity, prices)
+        targets = compute_rebalance_targets(equity, current_positions, target_weights, prices)
 
         # AAPL should be reduced
         aapl_target = next(t for t in targets if t.symbol == "AAPL")
@@ -276,12 +287,13 @@ class TestComputeRebalanceTargets:
 
     def test_compute_rebalance_targets_new_symbol(self):
         """Test rebalance targets with new symbol not in current portfolio."""
-        current_weights = {"AAPL": 0.5, "MSFT": 0.5}
-        target_weights = {"AAPL": 0.4, "MSFT": 0.4, "GOOGL": 0.2}  # GOOGL is new
         equity = 100000.0
+        current_weights = {"AAPL": 0.5, "MSFT": 0.5}
+        current_positions = {symbol: equity * weight for symbol, weight in current_weights.items()}
+        target_weights = {"AAPL": 0.4, "MSFT": 0.4, "GOOGL": 0.2}  # GOOGL is new
         prices = {"AAPL": 150.0, "MSFT": 300.0, "GOOGL": 2500.0}
 
-        targets = compute_rebalance_targets(current_weights, target_weights, equity, prices)
+        targets = compute_rebalance_targets(equity, current_positions, target_weights, prices)
 
         # Should have 3 targets
         assert len(targets) == 3
@@ -294,12 +306,13 @@ class TestComputeRebalanceTargets:
 
     def test_compute_rebalance_targets_remove_symbol(self):
         """Test rebalance targets when removing a symbol."""
-        current_weights = {"AAPL": 0.5, "MSFT": 0.3, "GOOGL": 0.2}
-        target_weights = {"AAPL": 0.6, "MSFT": 0.4}  # GOOGL removed
         equity = 100000.0
+        current_weights = {"AAPL": 0.5, "MSFT": 0.3, "GOOGL": 0.2}
+        current_positions = {symbol: equity * weight for symbol, weight in current_weights.items()}
+        target_weights = {"AAPL": 0.6, "MSFT": 0.4}  # GOOGL removed
         prices = {"AAPL": 150.0, "MSFT": 300.0, "GOOGL": 2500.0}
 
-        targets = compute_rebalance_targets(current_weights, target_weights, equity, prices)
+        targets = compute_rebalance_targets(equity, current_positions, target_weights, prices)
 
         # Should have 3 targets (including GOOGL to remove)
         assert len(targets) == 3

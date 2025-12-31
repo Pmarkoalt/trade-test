@@ -214,7 +214,33 @@ class TestResultsDatabase:
             "final_cash": 110000.0,
             "final_positions": 0,
             "ending_equity": 110000.0,
-            "closed_trades": [],
+            "closed_trades": [
+                Position(
+                    symbol="AAPL",
+                    asset_class="equity",
+                    side=PositionSide.LONG,
+                    quantity=100,
+                    entry_price=100.0,
+                    entry_date=dates[0],
+                    entry_fill_id="fill1",
+                    initial_stop_price=95.0,
+                    stop_price=95.0,
+                    hard_stop_atr_mult=2.5,
+                    triggered_on=BreakoutType.FAST_20D,
+                    exit_price=105.0,
+                    exit_date=dates[30],  # End of first month
+                    exit_fill_id="exit1",
+                    exit_reason=ExitReason.HARD_STOP,
+                    realized_pnl=500.0,
+                    entry_slippage_bps=5.0,
+                    entry_fee_bps=1.0,
+                    entry_total_cost=6.0,
+                    exit_slippage_bps=5.0,
+                    exit_fee_bps=1.0,
+                    exit_total_cost=6.0,
+                    adv20_at_entry=1000000.0,
+                )
+            ],
             "equity_curve": equity_curve,
             "daily_events": [
                 {"date": date, "portfolio_state": {"cash": 100000.0, "open_positions": 0, "gross_exposure": 0.0}}

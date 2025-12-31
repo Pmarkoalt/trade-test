@@ -21,7 +21,7 @@ from trading_system.configs.strategy_config import (
     StrategyConfig,
 )
 from trading_system.models.features import FeatureRow
-from trading_system.models.positions import ExitReason, Position
+from trading_system.models.positions import ExitReason, Position, PositionSide
 from trading_system.models.signals import BreakoutType
 
 
@@ -270,6 +270,7 @@ class TestStagedExitLogic:
             entry_price=50000.0,
             entry_fill_id="fill_001",
             quantity=1,
+            side=PositionSide.LONG,
             stop_price=44000.0,  # entry - 3.0 * ATR14 = 50000 - 6000
             initial_stop_price=44000.0,
             hard_stop_atr_mult=3.0,

@@ -32,12 +32,13 @@ class MeanReversionBaseStrategy(StrategyInterface):
         super().__init__(config)
 
         # Extract mean reversion parameters
-        self.lookback = config.parameters.get("lookback", 20)
-        self.entry_std = config.parameters.get("entry_std", 2.0)  # Enter at -2 std
-        self.exit_std = config.parameters.get("exit_std", 0.0)  # Exit at mean (0 std)
-        self.max_hold_days = config.parameters.get("max_hold_days", 5)
-        self.atr_period = config.parameters.get("atr_period", 14)
-        self.stop_atr_mult = config.parameters.get("stop_atr_mult", 2.0)
+        parameters = config.parameters or {}
+        self.lookback = parameters.get("lookback", 20)
+        self.entry_std = parameters.get("entry_std", 2.0)  # Enter at -2 std
+        self.exit_std = parameters.get("exit_std", 0.0)  # Exit at mean (0 std)
+        self.max_hold_days = parameters.get("max_hold_days", 5)
+        self.atr_period = parameters.get("atr_period", 14)
+        self.stop_atr_mult = parameters.get("stop_atr_mult", 2.0)
 
     def check_entry_triggers(self, features: FeatureRow) -> tuple[Optional[BreakoutType], float]:
         """Check if mean reversion entry trigger is met.

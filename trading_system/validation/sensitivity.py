@@ -123,16 +123,16 @@ class ParameterSensitivityGrid:
         self.results = results
 
         # Analyze results
-        metrics = [r["metric"] for r in results]
+        metrics = [r["metric"] for r in results] if results else []
 
         analysis = {
             "results": results,
             "best_params": self._find_best_params(),
             "worst_params": self._find_worst_params(),
-            "metric_mean": np.mean(metrics),
-            "metric_std": np.std(metrics),
-            "metric_min": np.min(metrics),
-            "metric_max": np.max(metrics),
+            "metric_mean": np.mean(metrics) if metrics else 0.0,
+            "metric_std": np.std(metrics) if metrics else 0.0,
+            "metric_min": np.min(metrics) if metrics else 0.0,
+            "metric_max": np.max(metrics) if metrics else 0.0,
             "has_sharp_peaks": self._check_sharp_peaks(),
             "stable_neighborhoods": self._find_stable_neighborhoods(),
         }

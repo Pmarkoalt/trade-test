@@ -17,7 +17,7 @@ from trading_system.configs.strategy_config import (
     StrategyConfig,
 )
 from trading_system.models.features import FeatureRow
-from trading_system.models.positions import ExitReason, Position
+from trading_system.models.positions import ExitReason, Position, PositionSide
 from trading_system.models.signals import BreakoutType, Signal, SignalSide, SignalType
 from trading_system.strategies.mean_reversion.equity_mean_reversion import EquityMeanReversionStrategy
 
@@ -399,6 +399,7 @@ class TestExitSignals:
             entry_price=100.0,
             entry_fill_id="fill_1",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=96.0,  # entry - 2.0 * ATR
             initial_stop_price=96.0,
             hard_stop_atr_mult=2.0,
@@ -520,6 +521,7 @@ class TestStopUpdates:
             entry_price=100.0,
             entry_fill_id="fill_1",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=96.0,
             initial_stop_price=96.0,
             hard_stop_atr_mult=2.0,

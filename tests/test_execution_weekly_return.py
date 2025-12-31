@@ -109,12 +109,16 @@ class TestComputeWeeklyReturn:
     def test_zero_start_close(self):
         """Test when start close is zero (should return 0.0)."""
         dates = pd.bdate_range("2024-01-01", periods=10, freq="B")
-        closes = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]
+        # The function looks back 5 trading days from the end
+        # Last 5 trading days are: dates[-5], dates[-4], dates[-3], dates[-2], dates[-1]
+        # Put 0.0 at the start of the lookback window (dates[-5])
+        closes = [1.0, 2.0, 3.0, 4.0, 5.0, 0.0, 7.0, 8.0, 9.0, 10.0]
 
         benchmark_bars = pd.DataFrame({"close": closes}, index=dates)
         current_date = dates[-1]
 
         weekly_ret = compute_weekly_return(benchmark_bars, current_date, "equity")
+        # Function should return 0.0 when start_close <= 0
         assert weekly_ret == 0.0
 
     def test_zero_end_close(self):

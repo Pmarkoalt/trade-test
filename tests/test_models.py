@@ -21,7 +21,7 @@ from trading_system.models.features import FeatureRow
 from trading_system.models.market_data import MarketData
 from trading_system.models.orders import Fill, Order, OrderStatus
 from trading_system.models.portfolio import Portfolio
-from trading_system.models.positions import ExitReason, Position
+from trading_system.models.positions import ExitReason, Position, PositionSide
 from trading_system.models.signals import BreakoutType, Signal, SignalSide, SignalType
 
 
@@ -450,6 +450,7 @@ class TestPosition:
             entry_price=100.0,
             entry_fill_id="FILL001",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=95.0,
             initial_stop_price=95.0,
             hard_stop_atr_mult=2.5,
@@ -473,6 +474,7 @@ class TestPosition:
             entry_price=100.0,
             entry_fill_id="FILL001",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=95.0,
             initial_stop_price=95.0,
             hard_stop_atr_mult=2.5,
@@ -497,6 +499,7 @@ class TestPosition:
             entry_price=100.0,
             entry_fill_id="FILL001",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=95.0,
             initial_stop_price=95.0,
             hard_stop_atr_mult=2.5,
@@ -524,6 +527,7 @@ class TestPosition:
             entry_price=100.0,
             entry_fill_id="FILL001",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=95.0,
             initial_stop_price=95.0,
             hard_stop_atr_mult=2.5,
@@ -548,6 +552,7 @@ class TestPosition:
             entry_price=100.0,
             entry_fill_id="FILL001",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=95.0,
             initial_stop_price=95.0,
             hard_stop_atr_mult=2.5,
@@ -575,6 +580,7 @@ class TestPosition:
             entry_price=100.0,
             entry_fill_id="FILL001",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=95.0,
             initial_stop_price=95.0,
             hard_stop_atr_mult=3.0,
@@ -617,6 +623,7 @@ class TestPortfolio:
             entry_price=100.0,
             entry_fill_id="FILL001",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=95.0,
             initial_stop_price=95.0,
             hard_stop_atr_mult=2.5,
@@ -675,6 +682,7 @@ class TestPortfolio:
             entry_price=100.0,
             entry_fill_id="FILL001",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=95.0,
             initial_stop_price=95.0,
             hard_stop_atr_mult=2.5,

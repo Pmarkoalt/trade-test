@@ -17,7 +17,7 @@ import pytest
 
 from trading_system.data.validator import detect_missing_data, validate_ohlcv
 from trading_system.execution.slippage import compute_slippage_bps
-from trading_system.models.positions import ExitReason, Position
+from trading_system.models.positions import ExitReason, Position, PositionSide
 from trading_system.models.signals import BreakoutType, Signal, SignalSide, SignalType
 from trading_system.portfolio import (
     Portfolio,
@@ -265,6 +265,7 @@ class TestCorrelationGuardWithFewPositions:
             entry_price=100.0,
             entry_fill_id="fill_1",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=95.0,
             initial_stop_price=95.0,
             hard_stop_atr_mult=2.5,
@@ -321,6 +322,7 @@ class TestCorrelationGuardWithFewPositions:
                 entry_price=100.0,
                 entry_fill_id=f"fill_{i}",
                 quantity=100,
+                side=PositionSide.LONG,
                 stop_price=95.0,
                 initial_stop_price=95.0,
                 hard_stop_atr_mult=2.5,
@@ -378,6 +380,7 @@ class TestCorrelationGuardWithFewPositions:
                 entry_price=100.0,
                 entry_fill_id=f"fill_{i}",
                 quantity=100,
+                side=PositionSide.LONG,
                 stop_price=95.0,
                 initial_stop_price=95.0,
                 hard_stop_atr_mult=2.5,
@@ -600,6 +603,7 @@ class TestMultipleExitSignals:
             entry_price=100.0,
             entry_fill_id="fill_1",
             quantity=100,
+            side=PositionSide.LONG,
             stop_price=95.0,  # Hard stop
             initial_stop_price=95.0,
             hard_stop_atr_mult=2.5,
@@ -745,6 +749,7 @@ class TestFlashCrashScenarios:
                 entry_price=100.0,
                 entry_fill_id=f"fill_{i}",
                 quantity=100,
+                side=PositionSide.LONG,
                 stop_price=95.0,  # 5% stop
                 initial_stop_price=95.0,
                 hard_stop_atr_mult=2.5,

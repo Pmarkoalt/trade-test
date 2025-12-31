@@ -120,7 +120,7 @@ class TestSensitivity:
             # Simple test function
             return params["atr_mult"] * params["clearance"] * 100
 
-        grid = ParameterSensitivityGrid(self.parameter_ranges, metric_func, random_seed=self.random_seed)
+        grid = ParameterSensitivityGrid(self.parameter_ranges, metric_func, random_seed=self.random_seed, parallel=False)
         analysis = grid.run()
 
         # Check results
@@ -135,7 +135,7 @@ class TestSensitivity:
         def metric_func(params):
             return params["atr_mult"]
 
-        grid = ParameterSensitivityGrid(self.parameter_ranges, metric_func, random_seed=self.random_seed)
+        grid = ParameterSensitivityGrid(self.parameter_ranges, metric_func, random_seed=self.random_seed, parallel=False)
         analysis = grid.run()
 
         # Best should have highest atr_mult
@@ -151,7 +151,7 @@ class TestSensitivity:
                 return 100.0
             return 1.0
 
-        grid = ParameterSensitivityGrid(self.parameter_ranges, metric_func, random_seed=self.random_seed)
+        grid = ParameterSensitivityGrid(self.parameter_ranges, metric_func, random_seed=self.random_seed, parallel=False)
         analysis = grid.run()
 
         # Should detect sharp peak

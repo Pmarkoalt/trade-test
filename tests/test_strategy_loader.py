@@ -212,6 +212,7 @@ class TestLoadStrategiesFromRunConfig:
             "asset_class": "crypto",
             "universe": "fixed",
             "benchmark": "BTC",
+            "exit": {"mode": "staged", "tightened_stop_atr_mult": 1.5},  # Required for crypto
         }
         with open(crypto_config_path, "w") as f:
             yaml.dump(config_data, f)
@@ -238,6 +239,7 @@ class TestLoadStrategiesFromRunConfig:
             "asset_class": "crypto",
             "universe": "fixed",
             "benchmark": "BTC",
+            "exit": {"mode": "staged", "tightened_stop_atr_mult": 1.5},  # Required for crypto
         }
         with open(crypto_config_path, "w") as f:
             yaml.dump(config_data, f)

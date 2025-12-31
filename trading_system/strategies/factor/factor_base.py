@@ -34,7 +34,8 @@ class FactorBaseStrategy(StrategyInterface):
         super().__init__(config)
 
         # Factor weights
-        factors_config = config.parameters.get("factors", {})
+        parameters = config.parameters or {}
+        factors_config = parameters.get("factors", {})
         self.factors = {
             "momentum": factors_config.get("momentum", 0.4),
             "value": factors_config.get("value", 0.3),
@@ -42,8 +43,8 @@ class FactorBaseStrategy(StrategyInterface):
         }
 
         # Rebalancing parameters
-        self.rebalance_frequency = config.parameters.get("rebalance_frequency", "monthly")
-        self.top_decile_pct = config.parameters.get("top_decile_pct", 0.20)  # top 20%
+        self.rebalance_frequency = parameters.get("rebalance_frequency", "monthly")
+        self.top_decile_pct = parameters.get("top_decile_pct", 0.20)  # top 20%
 
         # State tracking for rebalancing
         self._current_rebalance_date: Optional[datetime] = None
@@ -51,8 +52,8 @@ class FactorBaseStrategy(StrategyInterface):
         self._factor_scores_cache: Dict[str, float] = {}  # symbol -> factor_score
 
         # Risk management
-        self.atr_period = config.parameters.get("atr_period", 14)
-        self.stop_atr_mult = config.parameters.get("stop_atr_mult", 2.0)
+        self.atr_period = parameters.get("atr_period", 14)
+        self.stop_atr_mult = parameters.get("stop_atr_mult", 2.0)
 
     def compute_factor_score(self, features: FeatureRow) -> Optional[float]:
         """Compute composite factor score for a symbol.

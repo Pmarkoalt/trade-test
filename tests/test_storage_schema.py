@@ -291,16 +291,17 @@ class TestCreateSchema:
             )
             conn.commit()
 
-            # Try to insert metrics with invalid run_id (should fail if foreign keys work)
-            # Note: SQLite foreign keys are not enforced by default, but schema should define them
-            cursor.execute(
-                """
-                INSERT INTO run_metrics (run_id, sharpe_ratio, max_drawdown, total_return)
-                VALUES (?, ?, ?, ?)
-            """,
-                (99999, 1.5, 0.15, 0.25),
-            )
-            # This might not fail if foreign keys aren't enforced, but schema should define them
+            # Try to insert metrics with invalid run_id (should fail if foreign keys are enforced)
+            # SQLite foreign keys need to be enabled with PRAGMA foreign_keys = ON
+            with pytest.raises(sqlite3.IntegrityError, match="FOREIGN KEY constraint failed"):
+                cursor.execute(
+                    """
+                    INSERT INTO run_metrics (run_id, sharpe_ratio, max_drawdown, total_return)
+                    VALUES (?, ?, ?, ?)
+                """,
+                    (99999, 1.5, 0.15, 0.25),
+                )
+                conn.commit()
         finally:
             conn.close()
 

@@ -16,6 +16,10 @@ services:
       - ./htmlcov:/app/htmlcov
       # Mount test fixtures if you want to run tests
       - ./tests/fixtures:/app/tests/fixtures:ro
+      # Mount tests directory to include new test files
+      - ./tests:/app/tests
+      # Mount trading_system directory to ensure latest code
+      - ./trading_system:/app/trading_system
       # Optional: Mount custom config directory
       - ./configs:/app/custom_configs:ro
     environment:

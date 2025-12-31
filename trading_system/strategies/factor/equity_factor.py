@@ -45,8 +45,9 @@ class EquityFactorStrategy(FactorBaseStrategy):
         super().__init__(config)
 
         # Equity-specific params
-        self.min_adv20 = config.parameters.get("min_adv20", 10_000_000)  # $10M minimum ADV
-        self.max_hold_days = config.parameters.get("max_hold_days", 90)  # Hold until next rebalance
+        parameters = config.parameters or {}
+        self.min_adv20 = parameters.get("min_adv20", 10_000_000)  # $10M minimum ADV
+        self.max_hold_days = parameters.get("max_hold_days", 90)  # Hold until next rebalance
 
     def compute_factor_score(self, features: FeatureRow) -> Optional[float]:
         """Compute composite factor score for a symbol.

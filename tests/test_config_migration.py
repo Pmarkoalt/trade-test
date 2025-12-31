@@ -104,7 +104,29 @@ class TestMigrateConfig:
     def test_migrate_config_success(self):
         """Test successful config migration."""
         config_path = self.temp_dir / "test_config.yaml"
-        config_data = {"version": "1.0", "data": "test"}
+        # Use a minimal valid run config structure matching RunConfig schema
+        config_data = {
+            "version": "1.0",
+            "dataset": {
+                "equity_path": "data/equity/",
+                "crypto_path": "data/crypto/",
+                "benchmark_path": "data/benchmarks/",
+                "format": "csv",
+                "start_date": "2023-01-01",
+                "end_date": "2023-12-31",
+            },
+            "splits": {
+                "train_start": "2023-01-01",
+                "train_end": "2023-06-30",
+                "validation_start": "2023-07-01",
+                "validation_end": "2023-09-30",
+                "holdout_start": "2023-10-01",
+                "holdout_end": "2023-12-31",
+            },
+            "strategies": {
+                "equity": {"config_path": "test_strategy.yaml", "enabled": True}
+            },
+        }
 
         with open(config_path, "w") as f:
             yaml.dump(config_data, f)

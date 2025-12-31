@@ -39,7 +39,8 @@ class EquityMultiTimeframeStrategy(MultiTimeframeBaseStrategy):
         super().__init__(config)
 
         # Equity-specific params
-        self.min_adv20 = config.parameters.get("min_adv20", 10_000_000)  # $10M minimum ADV
+        parameters = config.parameters or {}
+        self.min_adv20 = parameters.get("min_adv20", 10_000_000)  # $10M minimum ADV
 
     def check_eligibility(self, features: FeatureRow) -> tuple[bool, List[str]]:
         """Check if symbol is eligible for multi-timeframe entry.
