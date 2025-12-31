@@ -1,13 +1,15 @@
 """Signal scoring functions for position queue ranking."""
 
-from typing import Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional
 
 import numpy as np
 
 from trading_system.models.features import FeatureRow
-from trading_system.models.portfolio import Portfolio
 from trading_system.models.signals import Signal
 from trading_system.portfolio.correlation import compute_correlation_to_portfolio
+
+if TYPE_CHECKING:
+    from trading_system.portfolio.portfolio import Portfolio
 
 
 def compute_breakout_strength(signal: Signal, features: FeatureRow) -> float:
@@ -30,6 +32,8 @@ def compute_breakout_strength(signal: Signal, features: FeatureRow) -> float:
     close = features.close
 
     # Use appropriate MA based on breakout type
+    if signal.triggered_on is None:
+        return 0.0
     if signal.triggered_on.value == "20D":
         ma_value = features.ma20
     else:  # 55D
@@ -67,7 +71,7 @@ def compute_momentum_strength(features: FeatureRow) -> float:
 
 def compute_diversification_bonus(
     signal: Signal,
-    portfolio: Portfolio,
+    portfolio: "Portfolio",
     candidate_returns: Dict[str, List[float]],
     portfolio_returns: Dict[str, List[float]],
     lookback: int = 20,
@@ -182,13 +186,13 @@ def rank_normalize(values: List[float]) -> List[float]:
     # Invalid values get 0.0
     normalized[~valid_mask] = 0.0
 
-    return normalized.tolist()
+    return [float(x) for x in normalized.tolist()]
 
 
 def score_signals(
     signals: List[Signal],
     get_features: Callable[[Signal], Optional[FeatureRow]],
-    portfolio: Portfolio,
+    portfolio: "Portfolio",
     candidate_returns: Dict[str, List[float]],
     portfolio_returns: Dict[str, List[float]],
     lookback: int = 20,

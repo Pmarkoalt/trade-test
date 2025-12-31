@@ -3,6 +3,7 @@
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Dict, List, Optional, Tuple
+from trading_system.tracking.models import SignalOutcome
 
 import numpy as np
 
@@ -96,7 +97,7 @@ class StrategyAnalyzer:
         )
 
         # Group by signal type
-        by_strategy = {}
+        by_strategy: Dict[str, List[Tuple[TrackedSignal, Optional[SignalOutcome]]]] = {}
         for signal in signals:
             strategy = signal.signal_type
             if strategy not in by_strategy:
@@ -182,16 +183,16 @@ class StrategyAnalyzer:
         metrics.win_rate = metrics.wins / len(followed) if followed else 0
 
         # Returns
-        metrics.avg_return_pct = np.mean(returns)
+        metrics.avg_return_pct = float(np.mean(returns))
         metrics.total_return_pct = sum(returns)
-        metrics.avg_r = np.mean(r_values)
+        metrics.avg_r = float(np.mean(r_values))
         metrics.total_r = sum(r_values)
 
         # Winner/loser stats
         if winners:
-            metrics.avg_winner_r = np.mean([o.r_multiple for _, o in winners])
+            metrics.avg_winner_r = float(np.mean([o.r_multiple for _, o in winners]))
         if losers:
-            metrics.avg_loser_r = np.mean([o.r_multiple for _, o in losers])
+            metrics.avg_loser_r = float(np.mean([o.r_multiple for _, o in losers]))
 
         # Expectancy
         loss_rate = 1 - metrics.win_rate
@@ -201,7 +202,7 @@ class StrategyAnalyzer:
         if len(returns) > 1:
             std = np.std(returns, ddof=1)
             if std > 0:
-                metrics.sharpe_ratio = (np.mean(returns) / std) * np.sqrt(252)
+                metrics.sharpe_ratio = float((np.mean(returns) / std) * np.sqrt(252))
 
         # Max drawdown
         metrics.max_drawdown_pct = self._calculate_max_drawdown(returns)
@@ -215,7 +216,7 @@ class StrategyAnalyzer:
         # Holding period
         holding_days = [o.holding_days for _, o in followed if o.holding_days]
         if holding_days:
-            metrics.avg_holding_days = np.mean(holding_days)
+            metrics.avg_holding_days = float(np.mean(holding_days))
 
         return metrics
 

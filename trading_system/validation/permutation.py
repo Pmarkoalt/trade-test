@@ -1,14 +1,22 @@
 """Permutation test for entry timing significance."""
 
+import logging
+import time
 from typing import Callable, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
 from scipy.stats import percentileofscore
 
+logger = logging.getLogger(__name__)
+
 
 class PermutationTest:
     """Permutation test: Randomize entry dates while preserving exit logic."""
+
+    # Default timeout values
+    DEFAULT_TIMEOUT_SECONDS = 300  # 5 minutes
+    TIMEOUT_CHECK_INTERVAL = 100  # Check every N iterations
 
     def __init__(
         self,
@@ -17,6 +25,7 @@ class PermutationTest:
         compute_sharpe_func: Callable[[List[Dict]], float],
         n_iterations: int = 1000,
         random_seed: Optional[int] = None,
+        max_time_seconds: Optional[int] = None,
     ):
         """Initialize permutation test.
 
@@ -26,11 +35,14 @@ class PermutationTest:
             compute_sharpe_func: Function that takes trades and returns Sharpe ratio
             n_iterations: Number of randomized runs
             random_seed: Random seed for reproducibility
+            max_time_seconds: Maximum time allowed for test (default: 300 = 5 min).
+                              Set to None to disable timeout.
         """
         self.actual_trades = actual_trades
         self.period = period
         self.compute_sharpe_func = compute_sharpe_func
         self.n_iterations = n_iterations
+        self.max_time_seconds = max_time_seconds if max_time_seconds is not None else self.DEFAULT_TIMEOUT_SECONDS
 
         if random_seed is not None:
             np.random.seed(random_seed)
@@ -41,6 +53,9 @@ class PermutationTest:
         Returns:
             Dictionary with results and percentile rank
         """
+        # Track start time for timeout checking
+        start_time = time.time()
+
         # Compute actual Sharpe
         actual_sharpe = self.compute_sharpe_func(self.actual_trades)
 
@@ -61,8 +76,9 @@ class PermutationTest:
 
         # Store randomized Sharpe ratios
         random_sharpes = []
+        iterations_completed = 0
 
-        for _ in range(self.n_iterations):
+        for i in range(self.n_iterations):
             # Randomize entry dates
             randomized_entries = self._randomize_entry_dates(actual_entries)
 
@@ -78,6 +94,25 @@ class PermutationTest:
             except Exception:
                 # Skip invalid randomizations
                 continue
+
+            iterations_completed += 1
+
+            # Check timeout periodically (every N iterations to avoid overhead)
+            if self.max_time_seconds and (i + 1) % self.TIMEOUT_CHECK_INTERVAL == 0:
+                elapsed_seconds = time.time() - start_time
+                if elapsed_seconds > self.max_time_seconds:
+                    logger.warning(
+                        f"Permutation test timeout: exceeded {self.max_time_seconds}s "
+                        f"(elapsed: {elapsed_seconds:.1f}s, completed {iterations_completed}/{self.n_iterations} iterations)"
+                    )
+                    # Return partial results instead of raising error for graceful degradation
+                    break
+
+        # Log completion
+        total_time = time.time() - start_time
+        logger.info(
+            f"Permutation test completed: {iterations_completed}/{self.n_iterations} iterations in {total_time:.1f}s"
+        )
 
         if not random_sharpes:
             # Return default structure if no valid iterations
@@ -214,6 +249,7 @@ def run_permutation_test(
     compute_sharpe_func: Callable[[List[Dict]], float],
     n_iterations: int = 1000,
     random_seed: Optional[int] = None,
+    max_time_seconds: Optional[int] = None,
 ) -> Dict:
     """Convenience function to run permutation test.
 
@@ -223,11 +259,14 @@ def run_permutation_test(
         compute_sharpe_func: Function that takes trades and returns Sharpe
         n_iterations: Number of randomized runs
         random_seed: Random seed for reproducibility
+        max_time_seconds: Maximum time allowed (default: 300 = 5 min)
 
     Returns:
         Permutation test results
     """
-    test = PermutationTest(actual_trades, period, compute_sharpe_func, n_iterations, random_seed)
+    test = PermutationTest(
+        actual_trades, period, compute_sharpe_func, n_iterations, random_seed, max_time_seconds=max_time_seconds
+    )
     return test.run()
 
 

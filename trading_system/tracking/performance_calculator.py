@@ -101,26 +101,26 @@ class PerformanceCalculator:
         # Returns
         returns_pct = [o.return_pct for o in followed_outcomes]
         total_return = sum(returns_pct) if returns_pct else 0.0
-        avg_return = np.mean(returns_pct) if returns_pct else 0.0
+        avg_return = float(np.mean(returns_pct)) if returns_pct else 0.0
 
         winner_returns = [o.return_pct for o in winners]
         loser_returns = [o.return_pct for o in losers]
-        avg_winner = np.mean(winner_returns) if winner_returns else 0.0
-        avg_loser = np.mean(loser_returns) if loser_returns else 0.0
+        avg_winner = float(np.mean(winner_returns)) if winner_returns else 0.0
+        avg_loser = float(np.mean(loser_returns)) if loser_returns else 0.0
 
         # R-multiples
         r_values = [o.r_multiple for o in followed_outcomes]
         total_r = sum(r_values) if r_values else 0.0
-        avg_r = np.mean(r_values) if r_values else 0.0
+        avg_r = float(np.mean(r_values)) if r_values else 0.0
 
         winner_r = [o.r_multiple for o in winners]
         loser_r = [o.r_multiple for o in losers]
-        avg_winner_r = np.mean(winner_r) if winner_r else 0.0
-        avg_loser_r = np.mean(loser_r) if loser_r else 0.0
+        avg_winner_r = float(np.mean(winner_r)) if winner_r else 0.0
+        avg_loser_r = float(np.mean(loser_r)) if loser_r else 0.0
 
         # Expectancy = (Win% * AvgWin) - (Loss% * AvgLoss)
         loss_rate = 1 - win_rate
-        expectancy_r = (win_rate * avg_winner_r) - (loss_rate * abs(avg_loser_r))
+        expectancy_r = float((win_rate * avg_winner_r) - (loss_rate * abs(avg_loser_r)))
 
         # Risk metrics
         sharpe = self._calculate_sharpe(returns_pct)
@@ -135,15 +135,21 @@ class PerformanceCalculator:
         total_alpha = sum(alphas) if alphas else 0.0
 
         # Build metrics by category
-        metrics_by_asset = self._metrics_by_category(
-            outcomes, lambda o: self._get_signal(o.signal_id).asset_class if self._get_signal(o.signal_id) else None
-        )
-        metrics_by_type = self._metrics_by_category(
-            outcomes, lambda o: self._get_signal(o.signal_id).signal_type if self._get_signal(o.signal_id) else None
-        )
-        metrics_by_conviction = self._metrics_by_category(
-            outcomes, lambda o: self._get_signal(o.signal_id).conviction.value if self._get_signal(o.signal_id) else None
-        )
+        def get_asset_class(outcome: SignalOutcome) -> Optional[str]:
+            signal = self._get_signal(outcome.signal_id)
+            return signal.asset_class if signal else None
+
+        def get_signal_type(outcome: SignalOutcome) -> Optional[str]:
+            signal = self._get_signal(outcome.signal_id)
+            return signal.signal_type if signal else None
+
+        def get_conviction(outcome: SignalOutcome) -> Optional[str]:
+            signal = self._get_signal(outcome.signal_id)
+            return signal.conviction.value if signal and signal.conviction else None
+
+        metrics_by_asset = self._metrics_by_category(outcomes, get_asset_class)
+        metrics_by_type = self._metrics_by_category(outcomes, get_signal_type)
+        metrics_by_conviction = self._metrics_by_category(outcomes, get_conviction)
 
         return PerformanceMetrics(
             period_start=start_date or min(s.created_at.date() for s in signals),
@@ -322,7 +328,7 @@ class PerformanceCalculator:
             # Annualize assuming daily returns
             sharpe *= np.sqrt(self.TRADING_DAYS_PER_YEAR)
 
-        return sharpe
+        return float(sharpe)
 
     def _calculate_sortino(
         self,
@@ -351,7 +357,7 @@ class PerformanceCalculator:
         if annualize:
             sortino *= np.sqrt(self.TRADING_DAYS_PER_YEAR)
 
-        return sortino
+        return float(sortino)
 
     def _calculate_max_drawdown(
         self,
@@ -383,7 +389,8 @@ class PerformanceCalculator:
         category_func,
     ) -> Dict[str, Dict]:
         """Calculate metrics grouped by category."""
-        categories = {}
+        # Intermediate storage with lists
+        categories: Dict[str, Dict[str, List[float]]] = {}
 
         for outcome in outcomes:
             if not outcome.was_followed:

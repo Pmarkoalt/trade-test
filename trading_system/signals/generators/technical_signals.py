@@ -71,7 +71,7 @@ class TechnicalSignalGenerator:
                 equity=portfolio_state.equity,
                 risk_pct=strategy.config.risk.risk_per_trade * portfolio_state.risk_multiplier,
                 entry_price=features.close,
-                stop_price=features.close - (strategy.config.exit.hard_stop_atr_mult * features.atr14),
+                stop_price=features.close - (strategy.config.exit.hard_stop_atr_mult * (features.atr14 or 0.0)) if features.atr14 is not None else features.close * 0.98,
                 max_position_notional=portfolio_state.equity * strategy.config.risk.max_position_notional,
                 risk_multiplier=portfolio_state.risk_multiplier,
             )

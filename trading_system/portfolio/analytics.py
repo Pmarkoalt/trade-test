@@ -426,8 +426,13 @@ class PortfolioAnalyticsCalculator:
         # Performance attribution
         performance_attribution = []
         if asset_returns is not None:
+            # Convert benchmark_returns from list to dict if needed
+            benchmark_returns_dict: Optional[Dict[str, float]] = None
+            if benchmark_returns is not None:
+                if not isinstance(benchmark_returns, list):
+                    benchmark_returns_dict = benchmark_returns
             performance_attribution = self.calculate_performance_attribution(
-                weights, asset_returns, total_return, benchmark_weights, benchmark_returns
+                weights, asset_returns, total_return, benchmark_weights, benchmark_returns_dict
             )
 
         # Concentration metrics

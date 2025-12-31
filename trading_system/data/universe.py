@@ -299,7 +299,7 @@ class CryptoUniverseManager:
         if len(selected) == 0:
             logger.warning("Dynamic universe selection resulted in empty universe. " "Consider relaxing filters.")
 
-        return selected
+        return [str(s) for s in selected]
 
     def should_rebalance(self, current_date: pd.Timestamp) -> bool:
         """Check if universe should be rebalanced.
@@ -318,13 +318,13 @@ class CryptoUniverseManager:
 
         if self.config.rebalance_frequency == "monthly":
             # Rebalance if we've passed into a new month
-            return current_date.year != self.last_rebalance_date.year or current_date.month != self.last_rebalance_date.month
+            return bool(current_date.year != self.last_rebalance_date.year or current_date.month != self.last_rebalance_date.month)
 
         elif self.config.rebalance_frequency == "quarterly":
             # Rebalance if we've passed into a new quarter
             current_quarter = (current_date.month - 1) // 3
             last_quarter = (self.last_rebalance_date.month - 1) // 3
-            return current_date.year != self.last_rebalance_date.year or current_quarter != last_quarter
+            return bool(current_date.year != self.last_rebalance_date.year or current_quarter != last_quarter)
 
         return False
 

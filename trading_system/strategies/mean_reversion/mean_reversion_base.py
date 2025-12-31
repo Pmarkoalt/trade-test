@@ -75,4 +75,4 @@ class MeanReversionBaseStrategy(StrategyInterface):
         Returns:
             Number of days (lookback + buffer)
         """
-        return self.lookback + 20  # Buffer for stability
+        return int(self.lookback + 20)  # Buffer for stability

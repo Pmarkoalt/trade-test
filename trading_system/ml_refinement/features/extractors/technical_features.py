@@ -263,9 +263,9 @@ class MomentumFeatures(OHLCVExtractor):
 
         # Divergence is when they disagree
         if price_change > 0 and mom_change < 0:
-            return -abs(mom_change)  # Bearish divergence
+            return float(-abs(mom_change))  # Bearish divergence
         elif price_change < 0 and mom_change > 0:
-            return abs(mom_change)  # Bullish divergence
+            return float(abs(mom_change))  # Bullish divergence
 
         return 0.0
 
@@ -391,7 +391,7 @@ class VolatilityFeatures(OHLCVExtractor):
             return 0.5
 
         percentile = (historical_vol.iloc[-long_period:] < current_vol).mean()
-        return percentile
+        return float(percentile)
 
     def _vol_trend(self, close: pd.Series, period: int) -> float:
         """Calculate volatility trend (expanding = positive)."""

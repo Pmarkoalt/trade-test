@@ -29,9 +29,9 @@ class StrategyWizard:
         """
         self.use_rich = use_rich and RICH_AVAILABLE
         if self.use_rich:
-            self.console: Optional["Console"] = Console()  # type: ignore[assignment]
+            self.console: Optional["Console"] = Console()
         else:
-            self.console: Optional["Console"] = None
+            self.console = None
 
     def print(self, message: str, style: Optional[str] = None):
         """Print a message.
@@ -40,7 +40,7 @@ class StrategyWizard:
             message: Message to print
             style: Optional rich style
         """
-        if self.use_rich and style:
+        if self.use_rich and style and self.console:
             self.console.print(message, style=style)
         else:
             print(message)
@@ -57,7 +57,7 @@ class StrategyWizard:
             User input string
         """
         if self.use_rich:
-            return Prompt.ask(question, default=default or "")
+            return str(Prompt.ask(question, default=default or ""))
         else:
             prompt_text = question
             if default:
@@ -81,7 +81,7 @@ class StrategyWizard:
             Boolean answer
         """
         if self.use_rich:
-            return Confirm.ask(question, default=default)
+            return bool(Confirm.ask(question, default=default))
         else:
             prompt_text = question
             prompt_text += " (y/n) [y]" if default else " (y/n) [n]"
@@ -152,7 +152,7 @@ class StrategyWizard:
         Returns:
             Dictionary with strategy creation parameters
         """
-        if self.use_rich:
+        if self.use_rich and self.console:
             self.console.print(
                 Panel(
                     "[bold cyan]Strategy Template Generator[/bold cyan]\n"

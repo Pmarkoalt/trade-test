@@ -9,6 +9,9 @@ from typing import Any, Dict, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
+# Cache can store various indicator result types
+CacheValue = Union[pd.Series, pd.DataFrame, float, np.ndarray, Dict[str, Any]]
+
 logger = logging.getLogger(__name__)
 
 
@@ -34,7 +37,7 @@ class IndicatorCache:
         """
         self.max_size = max_size
         # Use OrderedDict for proper LRU eviction
-        self._cache: OrderedDict[Tuple[str, str, int], Any] = OrderedDict()
+        self._cache: OrderedDict[Tuple[str, str, int], CacheValue] = OrderedDict()
         self._hits = 0
         self._misses = 0
         self._invalidations = 0
@@ -126,7 +129,7 @@ class IndicatorCache:
 
         return (data_hash, indicator_name, window)
 
-    def get(self, cache_key: Tuple[str, str, int]) -> Optional[Any]:
+    def get(self, cache_key: Tuple[str, str, int]) -> Optional[CacheValue]:
         """Get cached result.
 
         Implements LRU: moves accessed item to end.
@@ -145,7 +148,7 @@ class IndicatorCache:
         self._misses += 1
         return None
 
-    def set(self, cache_key: Tuple[str, str, int], value: Any) -> None:
+    def set(self, cache_key: Tuple[str, str, int], value: CacheValue) -> None:
         """Store result in cache.
 
         Implements LRU: removes oldest items when cache is full.

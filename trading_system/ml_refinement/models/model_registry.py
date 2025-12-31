@@ -113,7 +113,7 @@ class ModelRegistry:
             logger.error(f"No model class for type: {model_type}")
             return False
 
-        model = model_class()
+        model = model_class()  # type: ignore[call-arg]  # Subclasses have different __init__ signatures
         if not model.load(str(model_path)):
             return False
 
@@ -174,7 +174,7 @@ class ModelRegistry:
         if not model_class:
             return None
 
-        model = model_class()
+        model = model_class()  # type: ignore[call-arg]  # Subclasses have different __init__ signatures
         if model.load(str(model_path)):
             self._active_models[model_type] = model
             return model

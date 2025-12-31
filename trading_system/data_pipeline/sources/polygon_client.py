@@ -11,7 +11,7 @@ import pandas as pd
 try:
     import aiohttp
 except ImportError:
-    aiohttp = None  # type: ignore
+    aiohttp = None
 
 from trading_system.data_pipeline.exceptions import APIRateLimitError, DataFetchError, DataValidationError
 from trading_system.data_pipeline.sources.base_source import BaseDataSource
@@ -122,7 +122,7 @@ class PolygonClient(BaseDataSource):
                         data = await response.json()
                         status = data.get("status", "unknown")
                         if status == "OK":
-                            return data
+                            return dict(data) if data else {}
                         elif status == "ERROR":
                             error_msg = data.get("error", "Unknown error")
                             raise DataFetchError(f"Polygon.io API error: {error_msg}")

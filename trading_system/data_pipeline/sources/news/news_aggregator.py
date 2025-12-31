@@ -94,7 +94,7 @@ class NewsAggregator:
         deduplicated = self._deduplicate_articles(all_articles)
 
         # Sort by published date (newest first)
-        deduplicated.sort(key=lambda a: a.published_at, reverse=True)
+        deduplicated.sort(key=lambda a: a.published_at or datetime.min, reverse=True)
 
         # Cache result
         if self.enable_caching:
@@ -135,7 +135,7 @@ class NewsAggregator:
                     logger.error(f"Error fetching {category} from {source.source_name}: {e}")
 
         deduplicated = self._deduplicate_articles(all_articles)
-        deduplicated.sort(key=lambda a: a.published_at, reverse=True)
+        deduplicated.sort(key=lambda a: a.published_at or datetime.min, reverse=True)
 
         return deduplicated[:max_articles]
 

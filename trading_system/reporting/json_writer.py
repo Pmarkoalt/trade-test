@@ -3,7 +3,7 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -198,7 +198,7 @@ class JSONWriter:
         """
 
         # Convert numpy types to native Python types
-        def convert_value(v):
+        def convert_value(v: Any) -> Any:
             if isinstance(v, (np.integer, np.floating)):
                 return float(v)
             elif isinstance(v, (np.ndarray, list)):
@@ -281,17 +281,24 @@ class JSONWriter:
                 continue
 
             # For drawdown, lower is better; for others, higher is better
+            # Filter out None values and convert to comparable types
+            filtered_values = {k: v for k, v in values.items() if v is not None}
+            if not filtered_values:
+                continue
+            
             if metric == "max_drawdown":
-                best_scenario = min(values.items(), key=lambda x: x[1])
-                worst_scenario = max(values.items(), key=lambda x: x[1])
+                best_scenario = min(filtered_values.items(), key=lambda x: x[1] or 0.0)
+                worst_scenario = max(filtered_values.items(), key=lambda x: x[1] or 0.0)
             else:
-                best_scenario = max(values.items(), key=lambda x: x[1])
-                worst_scenario = min(values.items(), key=lambda x: x[1])
+                best_scenario = max(filtered_values.items(), key=lambda x: x[1] or 0.0)
+                worst_scenario = min(filtered_values.items(), key=lambda x: x[1] or 0.0)
 
+            best_val = best_scenario[1] if best_scenario[1] is not None else 0.0
+            worst_val = worst_scenario[1] if worst_scenario[1] is not None else 0.0
             comparison[metric] = {
-                "best": {"scenario": best_scenario[0], "value": float(best_scenario[1])},
-                "worst": {"scenario": worst_scenario[0], "value": float(worst_scenario[1])},
-                "range": float(best_scenario[1] - worst_scenario[1]),
+                "best": {"scenario": best_scenario[0], "value": float(best_val)},
+                "worst": {"scenario": worst_scenario[0], "value": float(worst_val)},
+                "range": float(best_val - worst_val),
             }
 
         return comparison

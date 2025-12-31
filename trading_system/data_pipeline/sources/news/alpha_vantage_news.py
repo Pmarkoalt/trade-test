@@ -8,7 +8,7 @@ from urllib.parse import urlencode
 try:
     import aiohttp
 except ImportError:
-    aiohttp = None  # type: ignore
+    aiohttp = None
 
 from .base_news_source import BaseNewsSource
 from .models import NewsArticle, NewsFetchResult, SentimentLabel

@@ -2,9 +2,25 @@
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, TypedDict, Union
 
 import pandas as pd
+
+
+class DataQualityReport(TypedDict, total=False):
+    """Data quality report structure."""
+
+    available: bool
+    error: str  # Only present when available=False
+    row_count: int  # Only present when available=True
+    date_range: Optional[Tuple[pd.Timestamp, pd.Timestamp]]  # Only present when available=True
+    missing_dates: List[pd.Timestamp]  # Only present when available=True
+    missing_dates_count: int  # Only present when available=True
+    duplicate_dates: List[pd.Timestamp]  # Only present when available=True
+    duplicate_dates_count: int  # Only present when available=True
+    negative_prices: int  # Only present when available=True
+    zero_volumes: int  # Only present when available=True
+    null_values: Dict[str, int]  # Only present when available=True
 
 logger = logging.getLogger(__name__)
 
@@ -91,7 +107,7 @@ class BaseDataSource(ABC):
 
     def check_data_quality(
         self, symbol: str, start_date: Optional[pd.Timestamp] = None, end_date: Optional[pd.Timestamp] = None
-    ) -> Dict[str, Any]:
+    ) -> DataQualityReport:
         """Check data quality for a symbol.
 
         Args:

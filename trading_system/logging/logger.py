@@ -9,7 +9,9 @@ import traceback
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
+
+import pandas as pd
 
 if TYPE_CHECKING:
     from ..configs.run_config import RunConfig
@@ -117,8 +119,9 @@ class PerformanceContext:
         self.logger = logger
         self.operation = operation
         self.log_memory = log_memory
-        self.start_time = None
-        self.start_memory = None
+        from typing import Optional
+        self.start_time: Optional[float] = None
+        self.start_memory: Optional[float] = None
 
     def __enter__(self):
         """Start timing."""
@@ -133,6 +136,8 @@ class PerformanceContext:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         """End timing and log performance."""
+        if self.start_time is None:
+            return False
         elapsed = time.perf_counter() - self.start_time
 
         metrics = {
@@ -145,12 +150,18 @@ class PerformanceContext:
                 process = psutil.Process(os.getpid())
                 end_memory = process.memory_info().rss / 1024 / 1024  # MB
                 metrics["memory_mb"] = end_memory
-                if self.start_memory:
+                if self.start_memory is not None:
                     metrics["memory_delta_mb"] = end_memory - self.start_memory
             except Exception:
                 pass
 
-        log_performance_metric(self.logger, **metrics)
+        log_performance_metric(
+            self.logger,
+            operation=str(metrics["operation"]),
+            duration_seconds=float(metrics["duration_seconds"]),
+            memory_mb=float(metrics.get("memory_mb")) if metrics.get("memory_mb") is not None else None,
+            memory_delta_mb=float(metrics.get("memory_delta_mb")) if metrics.get("memory_delta_mb") is not None else None,
+        )
 
         return False
 
@@ -199,6 +210,7 @@ def setup_logging(config: "RunConfig", use_json: Optional[bool] = None, use_rich
     file_handler = RotatingFileHandler(log_file, maxBytes=10 * 1024 * 1024, backupCount=5)  # 10MB
     file_handler.setLevel(logging.DEBUG)  # Always log DEBUG to file
 
+    file_formatter: Union[StructuredFormatter, logging.Formatter]
     if use_json:
         file_formatter = StructuredFormatter()
     else:
@@ -244,7 +256,7 @@ def get_logger(name: str) -> logging.Logger:
 
 
 def log_trade_event(
-    logger: logging.Logger, event_type: TradeEventType, symbol: str, asset_class: str, date: Any, **kwargs
+    logger: logging.Logger, event_type: TradeEventType, symbol: str, asset_class: str, date: Union[pd.Timestamp, str], **kwargs
 ) -> None:
     """Log a trade event (entry, exit, stop hit).
 
@@ -285,7 +297,7 @@ def log_trade_event(
 
 
 def log_signal_generation(
-    logger: logging.Logger, symbol: str, asset_class: str, date: Any, signal_generated: bool, **kwargs
+    logger: logging.Logger, symbol: str, asset_class: str, date: Union[pd.Timestamp, str], signal_generated: bool, **kwargs
 ) -> None:
     """Log signal generation decision and reasoning.
 
@@ -322,7 +334,7 @@ def log_signal_generation(
 
 def log_portfolio_snapshot(
     logger: logging.Logger,
-    date: Any,
+    date: Union[pd.Timestamp, str],
     equity: float,
     cash: float,
     open_positions: int,

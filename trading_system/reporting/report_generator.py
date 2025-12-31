@@ -4,13 +4,13 @@ import json
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 
 import numpy as np
 import pandas as pd
 
 try:
-    from rich import box
+    from rich import box as rich_box
     from rich.console import Console
     from rich.panel import Panel
     from rich.table import Table
@@ -18,10 +18,10 @@ try:
     RICH_AVAILABLE = True
 except ImportError:
     RICH_AVAILABLE = False
-    Console = None
-    Table = None
-    Panel = None
-    box = None
+    Console = None  # type: ignore[assignment, misc]
+    Table = None  # type: ignore[assignment, misc]
+    Panel = None  # type: ignore[assignment, misc]
+    rich_box = None  # type: ignore[assignment]
 
 from ..models.positions import ExitReason, Position, PositionSide
 from ..models.signals import BreakoutType
@@ -239,7 +239,8 @@ class ReportGenerator:
             raise ValueError(f"No period data found in {self.run_dir}")
 
         # Generate summary report
-        report = {
+        from typing import Dict, Any
+        report: Dict[str, Any] = {
             "generated_at": datetime.now().isoformat(),
             "run_id": self.run_id,
             "run_directory": str(self.run_dir),
@@ -339,7 +340,7 @@ class ReportGenerator:
             "max_consecutive_losses",
         ]
 
-        comparison = {
+        comparison: Dict[str, Any] = {
             "generated_at": datetime.now().isoformat(),
             "run_id": self.run_id,
             "run_directory": str(self.run_dir),
@@ -495,13 +496,13 @@ class ReportGenerator:
                     f"[bold cyan]Backtest Summary Report[/bold cyan]\n[dim]Run ID: {self.run_id}[/dim]",
                     title="Report",
                     border_style="cyan",
-                    box=box.ROUNDED,
+                    box=rich_box.ROUNDED,
                 )
             )
 
             # Create metrics table for each period
             for period, metrics in period_metrics.items():
-                table = Table(title=f"{period.upper()} Period", box=box.ROUNDED, show_header=True, header_style="bold magenta")
+                table = Table(title=f"{period.upper()} Period", box=rich_box.ROUNDED, show_header=True, header_style="bold magenta")
                 table.add_column("Metric", style="cyan", no_wrap=True)
                 table.add_column("Value", style="green", justify="right")
 
@@ -519,7 +520,7 @@ class ReportGenerator:
             # Comparison table if multiple periods
             if len(period_metrics) >= 2:
                 comparison_table = Table(
-                    title="Period Comparison", box=box.ROUNDED, show_header=True, header_style="bold magenta"
+                    title="Period Comparison", box=rich_box.ROUNDED, show_header=True, header_style="bold magenta"
                 )
                 comparison_table.add_column("Metric", style="cyan", no_wrap=True)
                 for period in period_metrics.keys():

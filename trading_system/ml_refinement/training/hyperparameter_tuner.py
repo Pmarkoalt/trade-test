@@ -9,9 +9,11 @@ from loguru import logger
 # Try to import base models, create minimal interface if not available
 try:
     from trading_system.ml_refinement.models.base_model import BaseModel, SignalQualityModel
+    BaseModelType = BaseModel
+    SignalQualityModelType = SignalQualityModel
 except ImportError:
     # Create minimal interface for models
-    class BaseModel:
+    class _BaseModelStub:
         """Base model interface."""
 
         def __init__(self, **kwargs):
@@ -29,10 +31,12 @@ except ImportError:
             """Predict probabilities."""
             return np.ones((len(X), 2)) * 0.5
 
-    class SignalQualityModel(BaseModel):
+    class _SignalQualityModelStub(_BaseModelStub):
         """Signal quality model."""
-
         pass
+    
+    BaseModelType = _BaseModelStub
+    SignalQualityModelType = _SignalQualityModelStub
 
 
 from trading_system.ml_refinement.validation.walk_forward import WalkForwardValidator
@@ -79,7 +83,7 @@ class HyperparameterTuner:
 
     def __init__(
         self,
-        model_class: type = SignalQualityModel,
+        model_class: type = SignalQualityModelType,
         cv: Optional[WalkForwardValidator] = None,
     ):
         """

@@ -147,14 +147,16 @@ class CombinedSignalGenerator:
         """
         config = self.config
 
-        # Technical score (normalized from signal's combined_score)
-        # Assuming signal combined_score is 0-10, normalize to 0-1
-        technical_score = min(context.signal.combined_score / 10.0, 1.0)
+        # Technical score (normalized from signal's score)
+        # Assuming signal score is 0-10, normalize to 0-1
+        signal_score = context.signal.score if context.signal.score is not None else 0.0
+        technical_score = min(signal_score / 10.0, 1.0)
 
         # Sentiment score (already -1 to 1, shift to 0-1)
         # For buy signals, positive sentiment is good
         # For sell signals, negative sentiment is good
-        if context.signal.direction == "BUY":
+        signal_direction = context.signal.side.value if context.signal.side else "BUY"
+        if signal_direction == "BUY":
             sentiment_normalized = (context.sentiment_score + 1) / 2
         else:
             sentiment_normalized = (1 - context.sentiment_score) / 2
@@ -176,7 +178,7 @@ class CombinedSignalGenerator:
         if config.boost_high_relevance and context.news_relevance >= config.relevance_boost_threshold:
             combined *= config.relevance_boost_multiplier
 
-        return min(combined, 1.0)
+        return float(min(combined, 1.0))
 
     def _filter_signals(self, contexts: List[SignalContext]) -> List[SignalContext]:
         """Filter signals based on configuration.
@@ -197,7 +199,8 @@ class CombinedSignalGenerator:
 
             # Check sentiment alignment if required
             if config.require_aligned_sentiment:
-                if context.signal.direction == "BUY":
+                signal_direction = context.signal.side.value if context.signal.side else "BUY"
+                if signal_direction == "BUY":
                     if context.sentiment_score < config.sentiment_alignment_threshold:
                         continue
                 else:
@@ -235,16 +238,19 @@ class CombinedSignalGenerator:
         Returns:
             Dictionary with signal summary
         """
+        signal_direction = context.signal.side.value if context.signal.side else "BUY"
+        signal_score = context.signal.score if context.signal.score is not None else 0.0
+        target_price = context.signal.metadata.get("target_price") if context.signal.metadata else None
         return {
             "symbol": context.symbol,
-            "direction": context.signal.direction,
+            "direction": signal_direction,
             "combined_score": round(context.combined_score, 3),
-            "technical_score": round(context.signal.combined_score, 2),
+            "technical_score": round(signal_score, 2),
             "sentiment_score": round(context.sentiment_score, 3),
             "sentiment_confidence": round(context.sentiment_confidence, 3),
             "news_relevance": round(context.news_relevance, 3),
             "news_count": context.news_count,
             "entry_price": context.signal.entry_price,
-            "target_price": context.signal.target_price,
+            "target_price": target_price,
             "stop_price": context.signal.stop_price,
         }

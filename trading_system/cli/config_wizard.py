@@ -31,9 +31,9 @@ class ConfigWizard:
         """
         self.use_rich = use_rich and RICH_AVAILABLE
         if self.use_rich:
-            self.console: Optional["Console"] = Console()  # type: ignore[assignment]
+            self.console: Optional["Console"] = Console()
         else:
-            self.console: Optional["Console"] = None
+            self.console = None
 
     def print(self, message: str, style: Optional[str] = None):
         """Print a message.
@@ -42,7 +42,7 @@ class ConfigWizard:
             message: Message to print
             style: Optional rich style
         """
-        if self.use_rich and style:
+        if self.use_rich and style and self.console:
             self.console.print(message, style=style)
         else:
             print(message)
@@ -59,7 +59,7 @@ class ConfigWizard:
             User input string
         """
         if self.use_rich:
-            return Prompt.ask(question, default=default or "")
+            return str(Prompt.ask(question, default=default or ""))
         else:
             prompt_text = question
             if default:
@@ -83,7 +83,7 @@ class ConfigWizard:
             Boolean answer
         """
         if self.use_rich:
-            return Confirm.ask(question, default=default)
+            return bool(Confirm.ask(question, default=default))
         else:
             prompt_text = question
             prompt_text += " (y/n) [y]" if default else " (y/n) [n]"
@@ -121,7 +121,7 @@ class ConfigWizard:
 
     def _create_run_config(self) -> Dict[str, Any]:
         """Create a run configuration interactively."""
-        config = {}
+        config: Dict[str, Any] = {}
 
         self.print("Dataset Configuration", style="bold yellow")
         self.print("-" * 40)
@@ -203,7 +203,7 @@ class ConfigWizard:
 
     def _create_strategy_config(self) -> Dict[str, Any]:
         """Create a strategy configuration interactively."""
-        config = {}
+        config: Dict[str, Any] = {}
 
         config["name"] = self.prompt("Strategy name", default="momentum_strategy")
         config["asset_class"] = self.prompt("Asset class", default="equity")

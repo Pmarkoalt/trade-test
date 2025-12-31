@@ -50,7 +50,10 @@ class PairsTradingStrategy(StrategyInterface):
         super().__init__(config)
 
         # Extract pairs trading parameters
-        self.pairs = config.parameters.get("pairs", [])  # List of (symbol1, symbol2) tuples
+        if config.parameters is None:
+            raise ValueError("config.parameters is required")
+        params = config.parameters
+        self.pairs = params.get("pairs", [])  # List of (symbol1, symbol2) tuples
         if not isinstance(self.pairs, list):
             raise ValueError("pairs must be a list of [symbol1, symbol2] tuples")
 
@@ -59,12 +62,12 @@ class PairsTradingStrategy(StrategyInterface):
             if not isinstance(pair, (list, tuple)) or len(pair) != 2:
                 raise ValueError(f"Each pair must be [symbol1, symbol2], got: {pair}")
 
-        self.lookback = config.parameters.get("lookback", 60)  # Spread lookback period
-        self.entry_zscore = config.parameters.get("entry_zscore", 2.0)  # Enter when |zscore| > this
-        self.exit_zscore = config.parameters.get("exit_zscore", 0.5)  # Exit when |zscore| < this
-        self.max_hold_days = config.parameters.get("max_hold_days", 10)
-        self.atr_period = config.parameters.get("atr_period", 14)
-        self.stop_atr_mult = config.parameters.get("stop_atr_mult", 2.0)
+        self.lookback = params.get("lookback", 60)  # Spread lookback period
+        self.entry_zscore = params.get("entry_zscore", 2.0)  # Enter when |zscore| > this
+        self.exit_zscore = params.get("exit_zscore", 0.5)  # Exit when |zscore| < this
+        self.max_hold_days = params.get("max_hold_days", 10)
+        self.atr_period = params.get("atr_period", 14)
+        self.stop_atr_mult = params.get("stop_atr_mult", 2.0)
 
         # Validate we have pairs
         if not self.pairs:
@@ -255,7 +258,7 @@ class PairsTradingStrategy(StrategyInterface):
         Returns:
             List of 2 signals (one long, one short) or empty list
         """
-        signals = []
+        signals: List[Signal] = []
 
         # Check if both symbols are eligible
         eligible1, _ = self.check_eligibility(features1)
@@ -504,7 +507,7 @@ class PairsTradingStrategy(StrategyInterface):
         Returns:
             List of exit signals (0, 1, or 2 signals)
         """
-        signals = []
+        signals: List[Signal] = []
 
         # Exit when spread converged (|z-score| < exit_zscore)
         if abs(spread_zscore) < self.exit_zscore:
@@ -596,4 +599,4 @@ class PairsTradingStrategy(StrategyInterface):
         Returns:
             Number of days (lookback + buffer)
         """
-        return self.lookback + 20  # Buffer for stability
+        return int(self.lookback + 20)  # Buffer for stability

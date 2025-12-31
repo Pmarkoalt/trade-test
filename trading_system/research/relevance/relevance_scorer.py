@@ -1,6 +1,6 @@
 """Relevance scorer for news articles."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set
 import re
 import logging
@@ -22,19 +22,19 @@ class RelevanceConfig:
     title_mention_weight: float = 0.10
 
     # Keywords that indicate trading relevance
-    trading_keywords: Set[str] = None
+    trading_keywords: Set[str] = field(default_factory=set)
 
     # Keywords that indicate low relevance (noise)
-    noise_keywords: Set[str] = None
+    noise_keywords: Set[str] = field(default_factory=set)
 
     # Premium sources get higher scores
-    premium_sources: Set[str] = None
+    premium_sources: Set[str] = field(default_factory=set)
 
     # Minimum relevance score to consider
     min_relevance_threshold: float = 0.3
 
     def __post_init__(self):
-        if self.trading_keywords is None:
+        if not self.trading_keywords:
             self.trading_keywords = {
                 # Price action
                 "price",
@@ -99,7 +99,7 @@ class RelevanceConfig:
                 "trend",
             }
 
-        if self.noise_keywords is None:
+        if not self.noise_keywords:
             self.noise_keywords = {
                 # Non-trading content
                 "sponsored",
@@ -122,7 +122,7 @@ class RelevanceConfig:
                 "free trial",
             }
 
-        if self.premium_sources is None:
+        if not self.premium_sources:
             self.premium_sources = {
                 "reuters",
                 "bloomberg",

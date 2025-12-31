@@ -124,7 +124,8 @@ if STREAMLIT_AVAILABLE:
     @st.cache_data(ttl=300)
     def get_cached_dashboard_data(_service) -> dict:
         """Get cached dashboard data."""
-        return _service.get_dashboard_data()
+        result = _service.get_dashboard_data()
+        return dict(result) if result else {}
 
     @st.cache_data(ttl=300)
     def get_cached_signals_df(_service, days: int, status: Optional[str] = None):
@@ -137,15 +138,17 @@ if STREAMLIT_AVAILABLE:
         return _service.get_performance_timeseries(days=days)
 
     @st.cache_data(ttl=300)
-    def get_cached_strategy_comparison(_service):
+    def get_cached_strategy_comparison(_service) -> dict:
         """Get cached strategy comparison."""
-        return _service.get_strategy_comparison()
+        result = _service.get_strategy_comparison()
+        return dict(result) if result else {}
 
 else:
     # Fallback functions when streamlit is not available
     def get_cached_dashboard_data(_service) -> dict:
         """Get cached dashboard data."""
-        return _service.get_dashboard_data()
+        result = _service.get_dashboard_data()
+        return dict(result) if result else {}
 
     def get_cached_signals_df(_service, days: int, status: Optional[str] = None):
         """Get cached signals DataFrame."""

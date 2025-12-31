@@ -3,6 +3,7 @@
 import bisect
 import logging
 import pickle
+import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -19,6 +20,12 @@ except ImportError:
     # Create a no-op tqdm if not available
     def tqdm(iterable, *args, **kwargs):
         return iterable
+
+
+class BacktestTimeoutError(Exception):
+    """Raised when backtest exceeds maximum allowed duration."""
+
+    pass
 
 
 from ..data.calendar import get_trading_days
@@ -47,6 +54,10 @@ class BacktestEngine:
     - Trade logging and metrics
     """
 
+    # Default timeout values (in seconds)
+    DEFAULT_TIMEOUT_SECONDS = 3600  # 1 hour
+    TIMEOUT_CHECK_INTERVAL = 10  # Check timeout every N days
+
     def __init__(
         self,
         market_data: MarketData,
@@ -55,6 +66,7 @@ class BacktestEngine:
         seed: Optional[int] = None,
         slippage_multiplier: float = 1.0,
         crash_dates: Optional[List[pd.Timestamp]] = None,
+        max_duration_seconds: Optional[int] = None,
     ):
         """Initialize backtest engine.
 
@@ -65,6 +77,8 @@ class BacktestEngine:
             seed: Optional random seed for reproducibility
             slippage_multiplier: Multiplier for base slippage (default: 1.0, for stress tests: 2.0, 3.0, 5.0)
             crash_dates: List of dates on which to simulate flash crashes (5x slippage + forced stops)
+            max_duration_seconds: Maximum time allowed for backtest (default: 3600 = 1 hour).
+                                  Set to None to disable timeout.
         """
         self.market_data = market_data
         self.strategies = strategies
@@ -72,6 +86,7 @@ class BacktestEngine:
         self.seed = seed
         self.slippage_multiplier = slippage_multiplier
         self.crash_dates = set(crash_dates) if crash_dates else set()
+        self.max_duration_seconds = max_duration_seconds if max_duration_seconds is not None else self.DEFAULT_TIMEOUT_SECONDS
 
         # Initialize random number generator
         self.rng = np.random.default_rng(seed) if seed is not None else np.random.default_rng()
@@ -135,6 +150,10 @@ class BacktestEngine:
                 logger.warning("cProfile not available, profiling disabled")
                 profile = False
 
+        # Track start time for timeout checking
+        start_time = time.time()
+        days_processed = 0
+
         # Process each day with progress bar
         self.daily_events = []
         progress_bar = tqdm(
@@ -148,17 +167,41 @@ class BacktestEngine:
             try:
                 events = event_loop.process_day(date)
                 self.daily_events.append(events)
+                days_processed += 1
 
                 # Update progress bar description with current equity
-                if TQDM_AVAILABLE and len(self.daily_events) % 10 == 0:
+                if TQDM_AVAILABLE and days_processed % 10 == 0:
                     current_equity = self.portfolio.equity
-                    progress_bar.set_postfix(equity=f"${current_equity:,.0f}")
+                    elapsed = time.time() - start_time
+                    progress_bar.set_postfix(equity=f"${current_equity:,.0f}", elapsed=f"{elapsed:.0f}s")
+
+                # Check timeout periodically (every N days to avoid overhead)
+                if self.max_duration_seconds and days_processed % self.TIMEOUT_CHECK_INTERVAL == 0:
+                    elapsed_seconds = time.time() - start_time
+                    if elapsed_seconds > self.max_duration_seconds:
+                        logger.error(
+                            f"Backtest timeout: exceeded {self.max_duration_seconds}s "
+                            f"(elapsed: {elapsed_seconds:.1f}s, processed {days_processed}/{len(trading_dates)} days)"
+                        )
+                        if TQDM_AVAILABLE:
+                            progress_bar.close()
+                        raise BacktestTimeoutError(
+                            f"Backtest exceeded maximum duration of {self.max_duration_seconds} seconds. "
+                            f"Processed {days_processed}/{len(trading_dates)} days in {elapsed_seconds:.1f}s. "
+                            f"Consider reducing date range or increasing max_duration_seconds."
+                        )
+            except BacktestTimeoutError:
+                raise  # Re-raise timeout errors
             except Exception as e:
                 logger.error(f"Error processing day {date}: {e}")
                 continue
 
         if TQDM_AVAILABLE:
             progress_bar.close()
+
+        # Log completion time
+        total_time = time.time() - start_time
+        logger.info(f"Backtest completed: {days_processed} days in {total_time:.1f}s ({total_time/days_processed:.3f}s/day)")
 
         # Stop profiling if enabled
         if profiler is not None:
@@ -205,7 +248,7 @@ class BacktestEngine:
             DailyEventLoop instance
         """
 
-        def compute_features_fn(df_ohlc, symbol, asset_class, benchmark_roc60=None, benchmark_returns=None):
+        def compute_features_fn(df_ohlc, symbol, asset_class, benchmark_roc60=None, benchmark_returns=None, use_cache=False, parallel=False):
             """Wrapper for compute_features."""
             return compute_features(
                 df_ohlc=df_ohlc,
@@ -273,6 +316,9 @@ class BacktestEngine:
         try:
             import pickle
 
+            if ml_config.model_path is None:
+                logger.warning("ML model path is None. ML integration disabled.")
+                return None
             model_path = Path(ml_config.model_path)
 
             if not model_path.exists():

@@ -12,7 +12,7 @@ import pickle
 from collections import deque
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Deque, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -41,7 +41,7 @@ class ConceptDriftDetector:
         self.method = method
 
         # Performance-based drift detection
-        self._performance_history = deque(maxlen=window_size)
+        self._performance_history: Deque[float] = deque(maxlen=window_size)
         self._baseline_performance: Optional[float] = None
 
         # Distribution-based drift detection (using KL divergence or similar)

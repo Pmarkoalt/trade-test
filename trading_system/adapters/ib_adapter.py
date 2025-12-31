@@ -138,7 +138,7 @@ class IBAdapter(BaseAdapter):
 
     def is_connected(self) -> bool:
         """Check if connected to IB."""
-        return self._connected and self._ib is not None and self._ib.isConnected()  # type: ignore[attr-defined]
+        return self._connected and self._ib is not None and self._ib.isConnected()
 
     def get_account_info(self) -> AccountInfo:
         """Get account information from IB.

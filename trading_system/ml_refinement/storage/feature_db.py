@@ -270,7 +270,8 @@ class FeatureDatabase:
         sql = f"SELECT COUNT(*) FROM feature_vectors {where_clause}"
 
         cursor = self.connection.execute(sql, params)
-        return cursor.fetchone()[0]
+        result = cursor.fetchone()
+        return int(result[0]) if result and result[0] is not None else 0
 
     # Model registry operations
     def register_model(self, metadata: ModelMetadata) -> bool:

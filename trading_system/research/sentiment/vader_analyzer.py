@@ -9,7 +9,7 @@ try:
     VADER_AVAILABLE = True
 except ImportError:
     VADER_AVAILABLE = False
-    SentimentIntensityAnalyzer = None  # type: ignore
+    SentimentIntensityAnalyzer = None
 
 from trading_system.data_pipeline.sources.news.models import SentimentLabel
 from .base_analyzer import BaseSentimentAnalyzer

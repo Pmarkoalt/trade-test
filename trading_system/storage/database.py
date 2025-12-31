@@ -5,7 +5,7 @@ import logging
 import sqlite3
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -125,13 +125,13 @@ class ResultsDatabase:
                 )
                 row = cursor.fetchone()
                 if row:
-                    run_id = row[0]
+                    run_id = int(row[0])
                     # Delete existing data for this run
                     self._delete_run_data(cursor, run_id)
                 else:
                     raise ValueError("Failed to insert or find run_id")
             else:
-                run_id = cursor.lastrowid
+                run_id = int(cursor.lastrowid) if cursor.lastrowid is not None else 0
 
             # Store metrics
             self._store_metrics(cursor, run_id, results)
@@ -569,7 +569,7 @@ class ResultsDatabase:
 
         try:
             query = "SELECT * FROM backtest_runs WHERE 1=1"
-            params = []
+            params: List[Union[str, int]] = []
 
             if config_path:
                 query += " AND config_path = ?"

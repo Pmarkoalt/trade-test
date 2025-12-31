@@ -109,9 +109,11 @@ def simulate_fill(
     fill_price = max(fill_price, 0.01)
 
     # Compute fee
-    fee_bps = compute_fee_bps(order.asset_class)
+    from typing import cast, Literal
+    asset_class_literal = cast(Literal["equity", "crypto"], order.asset_class)
+    fee_bps = compute_fee_bps(asset_class_literal)
     notional = fill_price * order.quantity
-    fee_cost = compute_fee_cost(notional, order.asset_class)
+    fee_cost = compute_fee_cost(notional, asset_class_literal)
 
     # Compute slippage cost
     slippage_cost = notional * (slippage_bps / 10000.0)

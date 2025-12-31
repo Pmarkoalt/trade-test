@@ -1,6 +1,6 @@
 """Portfolio filter for signals based on portfolio constraints."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Set
 import logging
 
@@ -52,13 +52,13 @@ class PortfolioState:
     """Current portfolio state for filtering."""
 
     # Current positions by symbol
-    positions: Dict[str, float] = None  # symbol -> exposure
+    positions: Dict[str, float] = field(default_factory=dict)  # symbol -> exposure
 
     # Number of times added to each position
-    position_adds: Dict[str, int] = None  # symbol -> add count
+    position_adds: Dict[str, int] = field(default_factory=dict)  # symbol -> add count
 
     # Sector exposure
-    sector_exposure: Dict[str, float] = None  # sector -> exposure
+    sector_exposure: Dict[str, float] = field(default_factory=dict)  # sector -> exposure
 
     # Total long/short exposure
     long_exposure: float = 0.0
@@ -68,15 +68,7 @@ class PortfolioState:
     cash_available: float = 1.0
 
     # Correlation matrix (if available)
-    correlations: Dict[str, Dict[str, float]] = None
-
-    def __post_init__(self):
-        if self.positions is None:
-            self.positions = {}
-        if self.position_adds is None:
-            self.position_adds = {}
-        if self.sector_exposure is None:
-            self.sector_exposure = {}
+    correlations: Optional[Dict[str, Dict[str, float]]] = None
 
 
 class PortfolioFilter:
@@ -167,7 +159,7 @@ class PortfolioFilter:
 
         # Check direction exposure
         position_size = getattr(signal, "position_size_pct", 0.05)
-        if signal.direction == "BUY":
+        if signal.side.value == "BUY":
             new_long = state.long_exposure + position_size
             if new_long > self.config.max_long_exposure:
                 violations.append(f"Long exposure {new_long:.1%} > max {self.config.max_long_exposure:.1%}")
@@ -183,7 +175,7 @@ class PortfolioFilter:
 
         # Check correlation constraints
         if state.correlations and signal.symbol in state.correlations:
-            correlated_count = self._count_correlated_positions(signal.symbol, state.positions.keys(), state.correlations)
+            correlated_count = self._count_correlated_positions(signal.symbol, set(state.positions.keys()), state.correlations)
             if correlated_count >= self.config.max_correlated_positions:
                 violations.append(f"Too many correlated positions ({correlated_count})")
 
@@ -243,7 +235,7 @@ class PortfolioFilter:
         state.sector_exposure[sector] = state.sector_exposure.get(sector, 0.0) + position_size
 
         # Update direction exposure
-        if signal.direction == "BUY":
+        if signal.side.value == "BUY":
             state.long_exposure += position_size
         else:
             state.short_exposure += position_size
@@ -322,7 +314,7 @@ class PortfolioFilter:
         scores.append(sector_score)
 
         # Direction balance
-        if signal.direction == "BUY":
+        if signal.side.value == "BUY":
             direction_ratio = state.long_exposure / max(state.short_exposure, 0.01)
         else:
             direction_ratio = state.short_exposure / max(state.long_exposure, 0.01)
@@ -333,7 +325,7 @@ class PortfolioFilter:
 
         # Correlation score (if available)
         if state.correlations and signal.symbol in state.correlations:
-            correlated = self._count_correlated_positions(signal.symbol, state.positions.keys(), state.correlations)
+            correlated = self._count_correlated_positions(signal.symbol, set(state.positions.keys()), state.correlations)
             corr_score = max(0, 1 - correlated / self.config.max_correlated_positions)
             scores.append(corr_score)
 

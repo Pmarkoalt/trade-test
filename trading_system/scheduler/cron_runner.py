@@ -10,8 +10,8 @@ try:
 except ImportError:
     APSCHEDULER_AVAILABLE = False
     # Create dummy classes for type checking
-    AsyncIOScheduler = None  # type: ignore
-    CronTrigger = None  # type: ignore
+    AsyncIOScheduler = None  # type: ignore[assignment]
+    CronTrigger = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:
     from apscheduler.schedulers.asyncio import AsyncIOScheduler as AsyncIOSchedulerType

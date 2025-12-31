@@ -271,7 +271,7 @@ class TestBacktestEnginePerformance:
         from trading_system.indicators.feature_computer import compute_features
         from trading_system.strategies import EquityMomentumStrategy
 
-        portfolio = Portfolio(date=pd.Timestamp("2020-01-01"), starting_equity=1000000.0, cash=1000000.0, equity=1000000.0)
+        portfolio = Portfolio(date=pd.Timestamp("2022-01-01"), starting_equity=1000000.0, cash=1000000.0, equity=1000000.0)
 
         strategy = EquityMomentumStrategy(strategy_config)
 
@@ -289,7 +289,8 @@ class TestBacktestEnginePerformance:
             rng=np.random.default_rng(42),
         )
 
-        test_date = pd.Timestamp("2020-06-15")
+        # Use a date within the data range (2022-01-01 to 2024-01-01)
+        test_date = pd.Timestamp("2022-06-15")
 
         def process_single_day():
             return event_loop.process_day(test_date)

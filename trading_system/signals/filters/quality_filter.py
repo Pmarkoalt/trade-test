@@ -81,9 +81,10 @@ class QualityFilter:
         Returns:
             True if signal passes, False otherwise
         """
-        # Check combined score
-        if signal.combined_score < self.config.min_combined_score:
-            logger.debug(f"{signal.symbol}: Score {signal.combined_score} < {self.config.min_combined_score}")
+        # Get combined score from metadata or calculate from score (0-1 normalized to 0-10)
+        combined_score = signal.metadata.get("combined_score", signal.score * 10.0)
+        if combined_score < self.config.min_combined_score:
+            logger.debug(f"{signal.symbol}: Score {combined_score} < {self.config.min_combined_score}")
             return False
 
         # Check reward-to-risk ratio
@@ -102,10 +103,11 @@ class QualityFilter:
                 logger.debug(f"{signal.symbol}: Stop distance {stop_distance_atr:.2f} ATR too tight")
                 return False
 
-        # Check conviction level
-        conviction_value = self._conviction_to_value(signal.conviction)
+        # Check conviction level (from metadata or default to MEDIUM)
+        conviction = signal.metadata.get("conviction", "MEDIUM")
+        conviction_value = self._conviction_to_value(conviction)
         if conviction_value < self.config.min_conviction_level:
-            logger.debug(f"{signal.symbol}: Conviction {signal.conviction} below minimum")
+            logger.debug(f"{signal.symbol}: Conviction {conviction} below minimum")
             return False
 
         return True
@@ -122,17 +124,24 @@ class QualityFilter:
         if signal.entry_price <= 0:
             return 0.0
 
-        if signal.direction == "BUY":
+        # Get target price from metadata or calculate default (2x stop distance)
+        target_price = signal.metadata.get("target_price")
+        if target_price is None:
+            stop_distance = abs(signal.entry_price - signal.stop_price)
+            target_price = signal.entry_price + (2.0 * stop_distance)
+
+        # Use side instead of direction
+        if signal.side.value == "BUY":
             risk = abs(signal.entry_price - signal.stop_price)
-            reward = abs(signal.target_price - signal.entry_price)
+            reward = abs(target_price - signal.entry_price)
         else:
             risk = abs(signal.stop_price - signal.entry_price)
-            reward = abs(signal.entry_price - signal.target_price)
+            reward = abs(signal.entry_price - target_price)
 
         if risk <= 0:
             return float("inf")
 
-        return reward / risk
+        return float(reward / risk)
 
     def _calculate_stop_atr_multiple(self, signal: Signal) -> float:
         """Calculate stop distance in ATR multiples.
@@ -147,7 +156,7 @@ class QualityFilter:
             return 0.0
 
         stop_distance = abs(signal.entry_price - signal.stop_price)
-        return stop_distance / signal.atr
+        return float(stop_distance / signal.atr)
 
     def _conviction_to_value(self, conviction: str) -> int:
         """Convert conviction string to numeric value.
@@ -177,7 +186,8 @@ class QualityFilter:
         scores = []
 
         # Score from combined score (normalized to 0-1)
-        score_normalized = min(signal.combined_score / 10.0, 1.0)
+        combined_score = signal.metadata.get("combined_score", signal.score * 10.0)
+        score_normalized = min(combined_score / 10.0, 1.0)
         scores.append(score_normalized)
 
         # Score from R:R ratio
@@ -186,11 +196,12 @@ class QualityFilter:
         scores.append(rr_score)
 
         # Score from conviction
-        conviction_score = self._conviction_to_value(signal.conviction) / 3.0
+        conviction = signal.metadata.get("conviction", "MEDIUM")
+        conviction_score = self._conviction_to_value(conviction) / 3.0
         scores.append(conviction_score)
 
         # Average all scores
-        return sum(scores) / len(scores)
+        return float(sum(scores) / len(scores))
 
     def rank_by_quality(
         self,

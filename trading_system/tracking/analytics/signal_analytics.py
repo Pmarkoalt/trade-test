@@ -125,7 +125,7 @@ class SignalAnalyzer:
         outcomes: List[Tuple[TrackedSignal, SignalOutcome]],
     ) -> Dict[str, Dict]:
         """Analyze performance by day signal was generated."""
-        by_day = defaultdict(lambda: {"returns": [], "r_values": []})
+        by_day: Dict[str, Dict[str, List[float]]] = defaultdict(lambda: {"returns": [], "r_values": []})
 
         for signal, outcome in outcomes:
             day_idx = signal.created_at.weekday()
@@ -151,7 +151,7 @@ class SignalAnalyzer:
         outcomes: List[Tuple[TrackedSignal, SignalOutcome]],
     ) -> Dict[str, Dict]:
         """Analyze performance by month."""
-        by_month = defaultdict(lambda: {"returns": [], "r_values": []})
+        by_month: Dict[str, Dict[str, List[float]]] = defaultdict(lambda: {"returns": [], "r_values": []})
 
         for signal, outcome in outcomes:
             month_idx = signal.created_at.month - 1
@@ -185,7 +185,7 @@ class SignalAnalyzer:
             "30+ days": (31, 9999),
         }
 
-        by_period = {name: {"returns": [], "r_values": []} for name in buckets}
+        by_period: Dict[str, Dict[str, List[float]]] = {name: {"returns": [], "r_values": []} for name in buckets}
 
         for signal, outcome in outcomes:
             days = outcome.holding_days or 0
@@ -224,7 +224,7 @@ class SignalAnalyzer:
             "9-10": (9, 10),
         }
 
-        by_score = {name: {"returns": [], "r_values": []} for name in buckets}
+        by_score: Dict[str, Dict[str, List[float]]] = {name: {"returns": [], "r_values": []} for name in buckets}
 
         for signal, outcome in outcomes:
             score = signal.combined_score or 0
@@ -271,7 +271,7 @@ class SignalAnalyzer:
         outcomes: List[Tuple[TrackedSignal, SignalOutcome]],
     ) -> Dict[str, Dict]:
         """Analyze performance by conviction level."""
-        by_conviction = defaultdict(lambda: {"returns": [], "r_values": []})
+        by_conviction: Dict[str, Dict[str, List[float]]] = defaultdict(lambda: {"returns": [], "r_values": []})
 
         for signal, outcome in outcomes:
             conv = signal.conviction.value

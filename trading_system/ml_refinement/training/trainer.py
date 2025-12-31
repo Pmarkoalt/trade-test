@@ -28,9 +28,11 @@ from trading_system.ml_refinement.validation.metrics import (
 # Try to import base models, create minimal interface if not available
 try:
     from trading_system.ml_refinement.models.base_model import BaseModel, SignalQualityModel
+    BaseModelType = BaseModel
+    SignalQualityModelType = SignalQualityModel
 except ImportError:
     # Create minimal interface for models
-    class BaseModel:
+    class _BaseModelStub:
         """Base model interface."""
 
         def __init__(self, **kwargs):
@@ -74,10 +76,12 @@ except ImportError:
             Path(path).parent.mkdir(parents=True, exist_ok=True)
             # Stub implementation
 
-    class SignalQualityModel(BaseModel):
+    class _SignalQualityModelStub(_BaseModelStub):
         """Signal quality model."""
-
         pass
+    
+    BaseModelType = _BaseModelStub
+    SignalQualityModelType = _SignalQualityModelStub
 
 
 @dataclass
@@ -125,8 +129,8 @@ class ModelTrainer:
             print(f"CV AUC: {result.cv_metrics['auc']:.3f}")
     """
 
-    MODEL_CLASSES: Dict[ModelType, Type[BaseModel]] = {
-        ModelType.SIGNAL_QUALITY: SignalQualityModel,
+    MODEL_CLASSES: Dict[ModelType, Type[BaseModelType]] = {
+        ModelType.SIGNAL_QUALITY: SignalQualityModelType,
     }
 
     def __init__(
@@ -201,7 +205,10 @@ class ModelTrainer:
             final_model, final_metrics = self._train_final_model(X, y, feature_names, model_type, hyperparameters)
 
             result.final_metrics = final_metrics
-            result.top_features = final_model.get_top_features(10)
+            if hasattr(final_model, "get_top_features"):
+                result.top_features = final_model.get_top_features(10)
+            else:
+                result.top_features = []
 
             # Save model
             model_path = self.model_dir / f"{final_model.model_id}.pkl"
@@ -314,7 +321,7 @@ class ModelTrainer:
         feature_names: List[str],
         model_type: ModelType,
         hyperparameters: Optional[Dict],
-    ) -> Tuple[BaseModel, Dict[str, float]]:
+    ) -> Tuple[BaseModelType, Dict[str, float]]:
         """Train final model on all data."""
         # Use last portion as validation
         val_size = int(len(X) * 0.15)

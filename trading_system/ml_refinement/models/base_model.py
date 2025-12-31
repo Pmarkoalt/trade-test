@@ -3,13 +3,16 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, TYPE_CHECKING
 import uuid
 
 import numpy as np
 from loguru import logger
 
 from trading_system.ml_refinement.config import ModelMetadata, ModelType
+
+if TYPE_CHECKING:
+    from sklearn.ensemble import GradientBoostingClassifier
 
 
 class BaseModel(ABC):
@@ -170,7 +173,7 @@ class SignalQualityModel(BaseModel):
             "random_state": kwargs.get("random_state", 42),
         }
 
-        self._model = None
+        self._model: Optional["GradientBoostingClassifier"] = None
 
     def fit(
         self,
@@ -225,7 +228,7 @@ class SignalQualityModel(BaseModel):
             }
 
         # Feature importance
-        if hasattr(self._model, "feature_importances_"):
+        if self._model is not None and hasattr(self._model, "feature_importances_"):
             importances = self._model.feature_importances_
             self._feature_importance = {name: float(imp) for name, imp in zip(self._feature_names, importances)}
 
@@ -238,12 +241,16 @@ class SignalQualityModel(BaseModel):
         """Predict win/loss (1/0)."""
         if not self.is_fitted:
             raise ValueError("Model not fitted")
+        if self._model is None:
+            raise ValueError("Model not initialized")
         return self._model.predict(X)
 
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
         """Predict probability of success (win)."""
         if not self.is_fitted:
             raise ValueError("Model not fitted")
+        if self._model is None:
+            raise ValueError("Model not initialized")
         return self._model.predict_proba(X)[:, 1]
 
     def save(self, path: str) -> bool:

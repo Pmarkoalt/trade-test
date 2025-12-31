@@ -1,44 +1,128 @@
 # Pre-commit hooks configuration
 # Install with: pip install pre-commit && pre-commit install
 # Run manually with: pre-commit run --all-files
+#
+# IMPORTANT: These hooks AUTO-FORMAT your code on commit.
+# If a hook fails, it will modify files - just `git add` and commit again.
+
+default_language_version:
+  python: python3
 
 repos:
+  # =============================================================================
+  # STAGE 1: Basic file checks (fast, no modifications)
+  # =============================================================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
       - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
       - id: end-of-file-fixer
       - id: check-yaml
+        args: [--unsafe]  # Allow custom YAML tags
       - id: check-added-large-files
+        args: [--maxkb=1000]
       - id: check-json
       - id: check-toml
       - id: check-merge-conflict
       - id: debug-statements
       - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: check-ast  # Check Python syntax
+      - id: check-docstring-first
+      - id: name-tests-test
+        args: [--pytest-test-first]
+        exclude: ^tests/(utils|fixtures)/
 
+  # =============================================================================
+  # STAGE 2: Auto-formatters (modify files automatically)
+  # =============================================================================
+
+  # isort - Sort imports (runs BEFORE black)
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: [--profile=black, --line-length=127]
+        name: isort (sort imports)
+
+  # Black - Code formatter
   - repo: https://github.com/psf/black
     rev: 24.1.1
     hooks:
       - id: black
         language_version: python3
         args: [--line-length=127]
+        name: black (format code)
 
+  # =============================================================================
+  # STAGE 3: Linters (check for issues, may fail commit)
+  # =============================================================================
+
+  # Flake8 - Style checker (uses .flake8 config file)
   - repo: https://github.com/pycqa/flake8
     rev: 7.0.0
     hooks:
       - id: flake8
-        args: [--max-line-length=127, --extend-ignore=E203,E266,E501,W503, --max-complexity=10]
-        additional_dependencies: [flake8]
+        name: flake8 (lint)
+        # Uses configuration from .flake8 file
 
+  # =============================================================================
+  # STAGE 4: Type checking (strict - will block commits with type errors)
+  # =============================================================================
+
+  # mypy - Static type checker
   - repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.8.0
     hooks:
       - id: mypy
+        name: mypy (type check)
+        # Include only specific type stubs (DO NOT use types-all - it's deprecated and broken)
+        # Only include what's actually used in the codebase
         additional_dependencies:
-          - types-PyYAML
-          - types-all
-        args: [--config-file=pyproject.toml]
-        # Only check files that have type annotations
-        # This is less strict but more practical for gradual adoption
-        # Remove this if you want strict checking on all files
-        exclude: ^(tests/|docs/)
+          - types-PyYAML>=6.0.0
+        args: [
+          --config-file=pyproject.toml,
+          --show-error-codes,
+          --no-error-summary,
+          --warn-unused-ignores,
+        ]
+        # Check trading_system and tests for type errors
+        files: ^trading_system/
+        # Exclude generated files and vendored code
+        exclude: |
+          (?x)^(
+            trading_system/dashboard/.*|
+            trading_system/research/.*|
+            .*_pb2\.py|
+            .*_pb2_grpc\.py
+          )$
+
+  # =============================================================================
+  # STAGE 5: Security checks (optional but recommended)
+  # =============================================================================
+
+  # Bandit - Security linter
+  - repo: https://github.com/pycqa/bandit
+    rev: 1.7.7
+    hooks:
+      - id: bandit
+        args: [-c, pyproject.toml, --quiet]
+        additional_dependencies: ["bandit[toml]"]
+        exclude: ^tests/
+        name: bandit (security)
+
+# =============================================================================
+# CI Configuration
+# =============================================================================
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false

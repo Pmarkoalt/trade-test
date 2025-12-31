@@ -40,7 +40,8 @@ class ModelVersionManager:
         """
         if self.registry_file.exists():
             with open(self.registry_file, "r") as f:
-                return json.load(f)
+                result = json.load(f)
+                return dict(result) if result else {}
         return {}
 
     def _save_registry(self) -> None:

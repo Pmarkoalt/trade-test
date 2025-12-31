@@ -1,19 +1,21 @@
 """Position queue selection logic when signals exceed available slots."""
 
 import logging
-from typing import Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
 
-from trading_system.models.portfolio import Portfolio
 from trading_system.models.signals import Signal
 from trading_system.portfolio.correlation import compute_correlation_to_portfolio
 from trading_system.portfolio.position_sizing import estimate_position_size
+
+if TYPE_CHECKING:
+    from trading_system.portfolio.portfolio import Portfolio
 
 logger = logging.getLogger(__name__)
 
 
 def violates_correlation_guard(
     signal: Signal,
-    portfolio: Portfolio,
+    portfolio: "Portfolio",
     candidate_returns: Dict[str, List[float]],
     portfolio_returns: Dict[str, List[float]],
     lookback: int = 20,
@@ -64,7 +66,7 @@ def violates_correlation_guard(
 
 def select_signals_from_queue(
     signals: List[Signal],
-    portfolio: Portfolio,
+    portfolio: "Portfolio",
     max_positions: int,
     max_exposure: float,
     risk_per_trade: float,
@@ -104,7 +106,7 @@ def select_signals_from_queue(
     # Sort by score (descending)
     sorted_signals = sorted(signals, key=lambda s: s.score, reverse=True)
 
-    selected = []
+    selected: List[Signal] = []
     rejected_count = 0
 
     for signal in sorted_signals:
@@ -129,22 +131,18 @@ def select_signals_from_queue(
         # Check if adding this position would exceed max exposure
         # Note: portfolio.gross_exposure is current exposure, but we need to add
         # selected signals' exposure as well
-        total_exposure = (
-            portfolio.gross_exposure
-            + sum(
-                s.entry_price
-                * estimate_position_size(
-                    equity=portfolio.equity,
-                    risk_pct=risk_per_trade,
-                    entry_price=s.entry_price,
-                    stop_price=s.stop_price,
-                    max_position_notional=max_position_notional,
-                    risk_multiplier=portfolio.risk_multiplier,
-                )
-                for s in selected
-            )
-            + estimated_notional
+        selected_exposure = sum(
+            float(s.entry_price * estimate_position_size(
+                equity=portfolio.equity,
+                risk_pct=risk_per_trade,
+                entry_price=s.entry_price,
+                stop_price=s.stop_price,
+                max_position_notional=max_position_notional,
+                risk_multiplier=portfolio.risk_multiplier,
+            ))
+            for s in selected
         )
+        total_exposure = portfolio.gross_exposure + selected_exposure + estimated_notional
 
         if total_exposure > portfolio.equity * max_exposure:
             rejected_count += 1

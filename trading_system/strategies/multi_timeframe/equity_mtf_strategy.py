@@ -159,15 +159,21 @@ class EquityMultiTimeframeStrategy(MultiTimeframeBaseStrategy):
             return None
 
         # Calculate stop price (ATR-based)
+        if features.close is None or features.atr14 is None:
+            return None
         stop_price = self.calculate_stop_price(features.close, features.atr14, self.stop_atr_mult)
 
         # Check capacity
+        if features.adv20 is None:
+            return None
         capacity_passed = self.check_capacity(order_notional, features.adv20)
 
         # Calculate score (based on clearance and trend strength)
         # Higher clearance = stronger breakout
         # Price further above MA50 = stronger trend
-        ma50_distance = (features.close - features.ma50) / features.ma50 if features.ma50 > 0 else 0.0
+        if features.ma50 is None or features.ma50 <= 0:
+            return None
+        ma50_distance = (features.close - features.ma50) / features.ma50
         score = clearance + ma50_distance  # Combined breakout and trend strength
 
         # Calculate breakout strength (normalized by ATR)

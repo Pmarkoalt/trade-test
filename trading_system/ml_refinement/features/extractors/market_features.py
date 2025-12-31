@@ -98,7 +98,7 @@ class MarketRegimeFeatures(OHLCVExtractor):
         trend = (current - ma_val) / (ma_val * vol * np.sqrt(period))
 
         # Clip to -1, 1
-        return max(-1.0, min(1.0, trend))
+        return float(max(-1.0, min(1.0, trend)))
 
     def _calculate_breadth_proxy(self, close: pd.Series, period: int) -> float:
         """
@@ -112,7 +112,7 @@ class MarketRegimeFeatures(OHLCVExtractor):
         returns = close.pct_change()
         positive_days = (returns.iloc[-period:] > 0).sum()
 
-        return positive_days / period
+        return float(positive_days / period)
 
     def _calculate_correlation_regime(
         self,
@@ -152,7 +152,7 @@ class MarketRegimeFeatures(OHLCVExtractor):
         vol_ratio = current_vol / long_vol
 
         # Normalize to 0-1 (0.5 = normal, 1 = 2x normal)
-        return min(1.0, vol_ratio / 2)
+        return float(min(1.0, vol_ratio / 2))
 
     def _calculate_drawdown(self, close: pd.Series) -> float:
         """Calculate current drawdown from peak."""
@@ -162,7 +162,7 @@ class MarketRegimeFeatures(OHLCVExtractor):
         peak = close.expanding().max()
         drawdown = (close - peak) / peak
 
-        return drawdown.iloc[-1]
+        return float(drawdown.iloc[-1])
 
     def _days_from_high(self, close: pd.Series, lookback: int) -> float:
         """Calculate days from recent high (normalized)."""
@@ -192,7 +192,7 @@ class MarketRegimeFeatures(OHLCVExtractor):
                     break
 
         # Normalize by lookback
-        return days / lookback
+        return float(days / lookback)
 
     def _calculate_rally_strength(self, close: pd.Series, period: int) -> float:
         """Calculate strength of current rally/decline."""
@@ -215,4 +215,4 @@ class MarketRegimeFeatures(OHLCVExtractor):
         # Sharpe-like measure
         strength = ret / (vol * np.sqrt(period))
 
-        return max(-1.0, min(1.0, strength))
+        return float(max(-1.0, min(1.0, strength)))

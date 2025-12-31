@@ -46,7 +46,7 @@ class AggregationConfig:
     min_relevance_threshold: float = 0.3
 
     # Source weighting (premium sources get higher weight)
-    source_weights: Dict[str, float] = None
+    source_weights: Optional[Dict[str, float]] = None
 
     # Minimum articles required for high confidence
     min_articles_for_high_confidence: int = 5
@@ -128,12 +128,16 @@ class SentimentAggregator:
 
             # Skip low relevance articles
             if self.config.use_relevance_weighting:
-                if article.relevance_score < self.config.min_relevance_threshold:
+                if article.relevance_score is None or article.relevance_score < self.config.min_relevance_threshold:
                     continue
+
+            if article.sentiment_score is None:
+                continue
 
             weighted_scores.append((article.sentiment_score, weight))
             total_weight += weight
-            relevance_sum += article.relevance_score
+            if article.relevance_score is not None:
+                relevance_sum += article.relevance_score
 
             # Count by category
             if article.sentiment_score > 0.1:
@@ -158,13 +162,14 @@ class SentimentAggregator:
             )
 
         # Calculate weighted average
-        weighted_sum = sum(score * weight for score, weight in weighted_scores)
-        aggregated_score = weighted_sum / total_weight
+        weighted_sum = sum(score * weight for score, weight in weighted_scores if score is not None)
+        aggregated_score = weighted_sum / total_weight if total_weight > 0 else 0.0
 
         # Calculate confidence
+        scores_list = [score for score, _ in weighted_scores if score is not None]
         confidence = self._calculate_confidence(
-            len(weighted_scores),
-            [score for score, _ in weighted_scores],
+            len(scores_list),
+            scores_list,
             total_weight,
         )
 
@@ -226,6 +231,8 @@ class SentimentAggregator:
         total_weight = 0.0
 
         for article in articles:
+            if article.sentiment_score is None:
+                continue
             weight = self._calculate_article_weight(article, as_of)
             weighted_scores.append((article.sentiment_score, weight))
             total_weight += weight
@@ -233,12 +240,13 @@ class SentimentAggregator:
         if total_weight == 0:
             return 0.0, 0.0
 
-        weighted_sum = sum(score * weight for score, weight in weighted_scores)
-        score = weighted_sum / total_weight
+        weighted_sum = sum(score * weight for score, weight in weighted_scores if score is not None)
+        score = weighted_sum / total_weight if total_weight > 0 else 0.0
 
+        scores_list = [s for s, _ in weighted_scores if s is not None]
         confidence = self._calculate_confidence(
-            len(weighted_scores),
-            [s for s, _ in weighted_scores],
+            len(scores_list),
+            scores_list,
             total_weight,
         )
 
@@ -261,25 +269,26 @@ class SentimentAggregator:
         weight = 1.0
 
         # Apply time decay
-        if self.config.use_time_decay:
+        if self.config.use_time_decay and article.published_at is not None:
             hours_old = (as_of - article.published_at).total_seconds() / 3600
             decay = 0.5 ** (hours_old / self.config.decay_half_life_hours)
             weight *= decay
 
         # Apply relevance weighting
-        if self.config.use_relevance_weighting:
+        if self.config.use_relevance_weighting and article.relevance_score is not None:
             weight *= article.relevance_score
 
         # Apply source weighting
-        source_lower = article.source.lower()
-        source_weight = self.config.source_weights.get(
-            source_lower,
-            self.config.source_weights.get("default", 1.0),
-        )
-        weight *= source_weight
+        if self.config.source_weights:
+            source_lower = article.source.lower()
+            source_weight = self.config.source_weights.get(
+                source_lower,
+                self.config.source_weights.get("default", 1.0),
+            )
+            weight *= source_weight
 
         # Apply recency bias
-        if self.config.recency_bias != 1.0:
+        if self.config.recency_bias != 1.0 and article.published_at is not None:
             hours_old = max(1, (as_of - article.published_at).total_seconds() / 3600)
             recency_factor = 1.0 / (hours_old ** (self.config.recency_bias - 1))
             weight *= min(recency_factor, 2.0)  # Cap at 2x
@@ -321,7 +330,7 @@ class SentimentAggregator:
         # Combine factors
         confidence = count_factor * 0.6 + consistency_factor * 0.4
 
-        return min(confidence, 1.0)
+        return float(min(confidence, 1.0))
 
     def _score_to_label(self, score: float) -> SentimentLabel:
         """Convert numeric score to sentiment label.

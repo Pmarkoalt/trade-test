@@ -4,7 +4,11 @@ import json
 import logging
 from itertools import product
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple, Union
+
+if TYPE_CHECKING:
+    from ..configs.run_config import RunConfig, SensitivityConfig
+    from ..configs.strategy_config import StrategyConfig
 
 import numpy as np
 import pandas as pd
@@ -229,7 +233,8 @@ class ParameterSensitivityGrid:
             return {}
 
         best_result = max(self.results, key=lambda x: x["metric"])
-        return best_result["params"]
+        params = best_result.get("params", {})
+        return dict(params) if params else {}
 
     def _find_worst_params(self) -> Dict[str, Any]:
         """Find parameters with worst metric value."""
@@ -237,7 +242,8 @@ class ParameterSensitivityGrid:
             return {}
 
         worst_result = min(self.results, key=lambda x: x["metric"])
-        return worst_result["params"]
+        params = worst_result.get("params", {})
+        return dict(params) if params else {}
 
     def _check_sharp_peaks(self, threshold: float = 2.0) -> bool:
         """Check if there are sharp peaks (overfitting indicator).
@@ -260,10 +266,10 @@ class ParameterSensitivityGrid:
         if std_metric == 0:
             return False
 
-        best_metric = np.max(metrics)
+        best_metric = float(np.max(metrics))
         z_score = (best_metric - mean_metric) / std_metric
 
-        return z_score > threshold
+        return bool(z_score > threshold)
 
     def _find_stable_neighborhoods(self, tolerance: float = 0.1) -> List[Dict[str, Any]]:
         """Find stable neighborhoods (parameters with similar performance).
@@ -440,7 +446,7 @@ def run_parameter_sensitivity(
     return grid.run()
 
 
-def generate_parameter_grid_from_config(sensitivity_config: Any, asset_class: str = "equity") -> Dict[str, List[Any]]:
+def generate_parameter_grid_from_config(sensitivity_config: "SensitivityConfig", asset_class: str = "equity") -> Dict[str, List[Union[int, float, str]]]:
     """Generate parameter grid from SensitivityConfig.
 
     Maps config parameter ranges to actual strategy parameter names.
@@ -465,7 +471,7 @@ def generate_parameter_grid_from_config(sensitivity_config: Any, asset_class: st
             parameter_ranges["entry.fast_clearance"] = sensitivity_config.equity_breakout_clearance
 
         if hasattr(sensitivity_config, "equity_exit_ma") and sensitivity_config.equity_exit_ma:
-            parameter_ranges["exit.exit_ma"] = sensitivity_config.equity_exit_ma
+            parameter_ranges["exit.exit_ma"] = [float(x) for x in sensitivity_config.equity_exit_ma]
 
     elif asset_class == "crypto":
         # Map crypto parameters
@@ -498,20 +504,37 @@ def generate_parameter_grid_from_config(sensitivity_config: Any, asset_class: st
                     parameter_ranges["exit.mode"] = unique_modes
                 unique_mas = list(set(exit_mas))
                 if len(unique_mas) > 1:
-                    parameter_ranges["exit.exit_ma"] = unique_mas
+                    parameter_ranges["exit.exit_ma"] = [float(x) for x in unique_mas]
                 elif len(unique_mas) == 1:
                     # If only one MA value, still add it if mode varies
                     if len(unique_modes) > 1:
-                        parameter_ranges["exit.exit_ma"] = unique_mas
+                        parameter_ranges["exit.exit_ma"] = [float(x) for x in unique_mas]
 
     # Portfolio-level parameters
     if hasattr(sensitivity_config, "vol_scaling_mode") and sensitivity_config.vol_scaling_mode:
         parameter_ranges["volatility_scaling.mode"] = sensitivity_config.vol_scaling_mode
 
-    return parameter_ranges
+    # Convert all values to lists of Union[int, float, str] for type consistency
+    converted_ranges: Dict[str, List[Union[int, float, str]]] = {}
+    for key, value_list in parameter_ranges.items():
+        converted_list: List[Union[int, float, str]] = []
+        for v in value_list:
+            if isinstance(v, str):
+                converted_list.append(v)
+            elif isinstance(v, (int, float)):
+                converted_list.append(v)
+            else:
+                # Try to convert to float, fallback to string
+                try:
+                    converted_list.append(float(v))
+                except (ValueError, TypeError):
+                    converted_list.append(str(v))
+        converted_ranges[key] = converted_list
+    
+    return converted_ranges
 
 
-def apply_parameters_to_strategy_config(strategy_config: Any, parameters: Dict[str, Any]) -> Any:
+def apply_parameters_to_strategy_config(strategy_config: "StrategyConfig", parameters: Dict[str, Any]) -> "StrategyConfig":
     """Apply parameter modifications to a strategy config.
 
     Args:
@@ -538,7 +561,7 @@ def apply_parameters_to_strategy_config(strategy_config: Any, parameters: Dict[s
     return StrategyConfig(**config_dict)
 
 
-def apply_parameters_to_run_config(run_config: Any, parameters: Dict[str, Any]) -> Any:
+def apply_parameters_to_run_config(run_config: "RunConfig", parameters: Dict[str, Any]) -> "RunConfig":
     """Apply portfolio-level parameter modifications to run config.
 
     Args:

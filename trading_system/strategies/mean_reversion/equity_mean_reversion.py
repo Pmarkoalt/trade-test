@@ -38,6 +38,8 @@ class EquityMeanReversionStrategy(MeanReversionBaseStrategy):
         super().__init__(config)
 
         # Equity-specific params
+        if config.parameters is None:
+            raise ValueError("config.parameters is required")
         self.min_adv20 = config.parameters.get("min_adv20", 10_000_000)  # $10M minimum ADV
 
     def check_eligibility(self, features: FeatureRow) -> tuple[bool, List[str]]:
@@ -157,6 +159,8 @@ class EquityMeanReversionStrategy(MeanReversionBaseStrategy):
             side = SignalSide.BUY
             trigger_reason = f"mean_reversion_oversold_z{zscore:.2f}"
             # Stop below entry for long
+            if features.close is None or features.atr14 is None:
+                return None
             stop_price = self.calculate_stop_price(features.close, features.atr14, self.stop_atr_mult)
         elif zscore > self.entry_std:
             # Short signal: overbought
@@ -164,11 +168,15 @@ class EquityMeanReversionStrategy(MeanReversionBaseStrategy):
             side = SignalSide.SELL
             trigger_reason = f"mean_reversion_overbought_z{zscore:.2f}"
             # Stop above entry for short
+            if features.close is None or features.atr14 is None:
+                return None
             stop_price = features.close + (self.stop_atr_mult * features.atr14)
         else:
             return None
 
         # Check capacity
+        if features.adv20 is None:
+            return None
         capacity_passed = self.check_capacity(order_notional, features.adv20)
 
         # Calculate score (higher zscore magnitude = stronger signal)

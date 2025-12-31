@@ -177,13 +177,19 @@ class StrategyInterface(ABC):
 
         # Calculate stop price
         atr_mult = self.config.exit.hard_stop_atr_mult
+        if features.close is None or features.atr14 is None:
+            return None
         stop_price = self.calculate_stop_price(features.close, features.atr14, atr_mult)
 
         # Check capacity
+        if features.adv20 is None:
+            return None
         capacity_passed = self.check_capacity(order_notional, features.adv20)
 
         # Calculate scoring components
         ma = features.ma50 if self.config.eligibility.trend_ma == 50 else features.ma20
+        if ma is None:
+            return None
         breakout_strength = self.calculate_breakout_strength(features.close, ma, features.atr14)
         momentum_strength = self.calculate_momentum_strength(features.roc60, features.benchmark_roc60)
 
@@ -228,7 +234,7 @@ class StrategyInterface(ABC):
             passed_eligibility=is_eligible,
             eligibility_failures=failure_reasons,
             order_notional=order_notional,
-            adv20=features.adv20,
+            adv20=features.adv20 or 0.0,
             capacity_passed=capacity_passed,
         )
 

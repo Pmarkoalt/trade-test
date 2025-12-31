@@ -201,6 +201,7 @@ class Portfolio:
             strategy_name: Strategy name (if None, uses position.strategy_name or symbol as key)
         """
         # Determine key based on strategy_name
+        key: Union[str, Tuple[str, str]]
         if strategy_name is not None:
             key = (strategy_name, position.symbol)
             position.strategy_name = strategy_name
@@ -227,6 +228,7 @@ class Portfolio:
             Removed position, or None if not found
         """
         # Determine key
+        key: Union[str, Tuple[str, str]]
         if strategy_name is not None:
             key = (strategy_name, symbol)
         else:
@@ -265,7 +267,7 @@ class Portfolio:
             return self.positions[symbol]
 
         # Try to find by symbol in any strategy
-        for key, position in self.positions.items():
+        for pos_key, position in self.positions.items():
             if position.symbol == symbol and position.is_open():
                 return position
 
@@ -286,7 +288,7 @@ class Portfolio:
         total_unrealized = 0.0
         total_long_exposure = 0.0
         total_short_exposure = 0.0
-        per_position_notional = {}  # Track notional per symbol
+        per_position_notional: Dict[str, float] = {}  # Track notional per symbol
         open_count = 0
 
         # Batch process all positions in a single pass
@@ -444,7 +446,7 @@ class Portfolio:
         fill: Fill,
         stop_price: float,
         atr_mult: float,
-        triggered_on: BreakoutType,
+        triggered_on: Optional[BreakoutType],
         adv20_at_entry: float,
         strategy_name: Optional[str] = None,
     ) -> Position:
@@ -952,7 +954,7 @@ class Portfolio:
         return {
             "gross_exposure": self.gross_exposure,
             "gross_exposure_pct": self.gross_exposure_pct,
-            "per_position_exposure": self.per_position_exposure.copy(),
+            "per_position_exposure": {k: float(v) for k, v in self.per_position_exposure.items()},
             "cash": self.cash,
             "equity": self.equity,
             "unrealized_pnl": self.unrealized_pnl,

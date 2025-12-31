@@ -225,7 +225,8 @@ def validate_yaml_format(path: str) -> Dict[str, Any]:
     """
     try:
         with open(path, "r") as f:
-            return yaml.safe_load(f)
+            result = yaml.safe_load(f)
+            return dict(result) if result else {}
     except yaml.YAMLError as e:
         raise ValueError(
             f"Invalid YAML format in {path}:\n{str(e)}\n"
@@ -328,7 +329,7 @@ def export_json_schema(model_class: type[BaseModel], output_path: Optional[str] 
         with open(output_path, "w") as f:
             json.dump(schema, f, indent=2)
 
-    return schema
+    return dict(schema) if schema else {}
 
 
 def validate_against_schema(

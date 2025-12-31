@@ -46,7 +46,7 @@ def get_field_info(model_class: type[BaseModel]) -> Dict[str, Any]:
     return fields_info
 
 
-def format_type(type_hint) -> str:
+def format_type(type_hint: Any) -> str:
     """Format a type hint as a string.
 
     Args:
@@ -68,7 +68,7 @@ def format_type(type_hint) -> str:
             val_str = format_type(args[1]) if len(args) > 1 else "Any"
             return f"Dict[{key_str}, {val_str}]"
         elif hasattr(type_hint, "__name__"):
-            return type_hint.__name__
+            return str(type_hint.__name__)
 
     # Handle Literal types
     if hasattr(type_hint, "__args__"):
@@ -78,7 +78,7 @@ def format_type(type_hint) -> str:
 
     # Regular type
     if hasattr(type_hint, "__name__"):
-        return type_hint.__name__
+        return str(type_hint.__name__)
 
     return str(type_hint)
 

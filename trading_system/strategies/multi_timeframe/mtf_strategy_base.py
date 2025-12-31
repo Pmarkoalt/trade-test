@@ -86,4 +86,4 @@ class MultiTimeframeBaseStrategy(StrategyInterface):
         Returns:
             Number of days (higher_tf_ma + weekly_days + buffer)
         """
-        return self.higher_tf_ma + self.weekly_days + 20  # Buffer for stability
+        return int(self.higher_tf_ma + self.weekly_days + 20)  # Buffer for stability

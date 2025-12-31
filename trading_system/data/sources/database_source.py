@@ -1,7 +1,7 @@
 """Database data source implementations (PostgreSQL, SQLite)."""
 
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import pandas as pd
 
@@ -28,7 +28,7 @@ class DatabaseDataSource(BaseDataSource):
         """
         self.connection_string = connection_string
         self.table_name = table_name
-        self._connection = None
+        self._connection: Optional[Any] = None
 
     def _get_connection(self):
         """Get database connection (implemented by subclasses)."""
@@ -130,7 +130,7 @@ class DatabaseDataSource(BaseDataSource):
         try:
             query = f"SELECT DISTINCT symbol FROM {self.table_name} ORDER BY symbol"
             df = pd.read_sql_query(query, conn)
-            return df["symbol"].tolist()
+            return [str(s) for s in df["symbol"].tolist()]
         except Exception as e:
             logger.error(f"Error getting available symbols: {e}")
             return []
@@ -194,7 +194,7 @@ class SQLiteSource(DatabaseDataSource):
             table_name: Name of the OHLCV table
         """
         self.db_path = db_path
-        self._connection = None
+        self._connection: Optional[Any] = None
         super().__init__(f"sqlite:///{db_path}", table_name)
 
     def _get_connection(self):
@@ -228,7 +228,7 @@ class PostgreSQLSource(DatabaseDataSource):
         self.database = database
         self.user = user
         self.password = password
-        self._connection = None
+        self._connection: Optional[Any] = None
         super().__init__(f"postgresql://{user}:{password}@{host}:{port}/{database}", table_name)
 
     def _get_connection(self):

@@ -115,7 +115,7 @@ class EquityFactorStrategy(FactorBaseStrategy):
             self._raw_factors_cache: Dict[str, Dict[str, float]] = {}
         self._raw_factors_cache[features.symbol] = raw_factors
 
-        return composite_score
+        return float(composite_score) if composite_score is not None else None
 
     def check_eligibility(self, features: FeatureRow) -> tuple[bool, List[str]]:
         """Check if symbol is eligible for factor-based entry.
@@ -241,9 +241,13 @@ class EquityFactorStrategy(FactorBaseStrategy):
                 return None
 
         # Calculate stop price (ATR-based)
+        if features.close is None or features.atr14 is None:
+            return None
         stop_price = self.calculate_stop_price(features.close, features.atr14, self.stop_atr_mult)
 
         # Check capacity
+        if features.adv20 is None:
+            return None
         capacity_passed = self.check_capacity(order_notional, features.adv20)
 
         # Get raw factors for metadata

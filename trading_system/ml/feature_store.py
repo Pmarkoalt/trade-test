@@ -165,7 +165,8 @@ class FeatureStore:
         if cache_file.exists():
             with open(cache_file, "rb") as f:
                 data = pickle.load(f)
-                return data["metadata"]
+                metadata = data.get("metadata") if isinstance(data, dict) else None
+                return dict(metadata) if metadata else None
 
         return None
 
@@ -307,7 +308,8 @@ class FeatureVersionManager:
             raise ValueError(f"Feature version {version} not found")
 
         with open(version_file, "r") as f:
-            return json.load(f)
+            result = json.load(f)
+            return dict(result) if result else {}
 
     def list_versions(self) -> List[str]:
         """List all available feature versions.

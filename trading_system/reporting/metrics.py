@@ -94,7 +94,7 @@ class MetricsCalculator:
         # Return maximum drawdown (most negative, so we take the minimum)
         max_dd = np.min(drawdowns)
 
-        return abs(max_dd)  # Return as positive percentage
+        return float(abs(max_dd))  # Return as positive percentage
 
     def calmar_ratio(self) -> float:
         """Calculate Calmar ratio (annualized return / max drawdown).
@@ -163,7 +163,7 @@ class MetricsCalculator:
         if len(r_multiples) == 0:
             return 0.0
 
-        return np.mean(r_multiples)
+        return float(np.mean(r_multiples))
 
     def profit_factor(self) -> float:
         """Calculate profit factor (gross profit / gross loss).
@@ -226,7 +226,7 @@ class MetricsCalculator:
         # Calculate percentile (convert to positive for loss)
         percentile_loss = np.percentile(np.abs(losses), percentile)
 
-        return percentile_loss
+        return float(percentile_loss)
 
     # Tertiary Metrics
 
@@ -314,7 +314,7 @@ class MetricsCalculator:
         if len(holding_periods) == 0:
             return 0.0
 
-        return np.mean(holding_periods)
+        return float(np.mean(holding_periods))
 
     def max_consecutive_losses(self) -> int:
         """Calculate maximum consecutive losses.

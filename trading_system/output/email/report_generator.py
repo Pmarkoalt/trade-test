@@ -11,7 +11,8 @@ try:
     from ...data_pipeline.sources.news.models import SentimentLabel
 except ImportError:
     # Fallback if news models not available
-    SentimentLabel = type(None)  # type: ignore[assignment]
+    from typing import Any
+    SentimentLabel = Any  # type: ignore[assignment, misc]
 
 
 class ReportGenerator:

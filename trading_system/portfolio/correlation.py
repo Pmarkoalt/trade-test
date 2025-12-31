@@ -123,4 +123,4 @@ def compute_correlation_to_portfolio(
     if not correlations:
         return None
 
-    return np.mean(correlations)
+    return float(np.mean(correlations))

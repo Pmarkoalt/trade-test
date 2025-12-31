@@ -184,7 +184,12 @@ class DailyEventLoop:
 
         # Create exit orders for day t+2 open
         exit_orders = self._create_exit_orders(exit_signals, next_day)
-        self.pending_exit_orders.extend(exit_orders)
+        # Convert orders to tuples with exit reasons
+        exit_order_tuples = []
+        for i, order in enumerate(exit_orders):
+            exit_reason = exit_signals[i][1] if i < len(exit_signals) else ExitReason.HARD_STOP
+            exit_order_tuples.append((order, exit_reason))
+        self.pending_exit_orders.extend(exit_order_tuples)
 
         # Step 6: Execute exit orders at day t+2 open (if any pending from previous day)
         day_after_next = self.get_next_trading_day(next_day)
@@ -196,16 +201,17 @@ class DailyEventLoop:
 
         # Step 8: Log daily state
         # Get current prices for positions
-        current_prices = {}
-        for symbol in self.portfolio.positions.keys():
-            bar = self.market_data.get_bar(symbol, next_day)
+        current_prices: Dict[str, float] = {}
+        for pos_key in self.portfolio.positions.keys():
+            symbol_str = pos_key if isinstance(pos_key, str) else pos_key[1]  # Extract symbol from tuple
+            bar = self.market_data.get_bar(symbol_str, next_day)
             if bar:
-                current_prices[symbol] = bar.close
+                current_prices[symbol_str] = bar.close
 
         # Serialize positions for correlation analysis
         positions_dict = {}
         # Create a copy of positions to avoid RuntimeError if positions are modified during iteration
-        for symbol, position in list(self.portfolio.positions.items()):
+        for pos_key, position in list(self.portfolio.positions.items()):
             if position.is_open():
                 positions_dict[symbol] = {
                     "symbol": position.symbol,
@@ -260,7 +266,7 @@ class DailyEventLoop:
         - Use vectorized pandas operations for updates
         """
         # Update features for all symbols in universe
-        all_symbols = set()
+        all_symbols: Set[str] = set()
         for strategy in self.strategies:
             all_symbols.update(strategy.universe)
 
@@ -333,7 +339,8 @@ class DailyEventLoop:
 
             # Compute features using data <= date only
             try:
-                features_df = self.compute_features_fn(available_data, symbol, asset_class=self._get_asset_class(symbol))
+                asset_class = self._get_asset_class(symbol)
+                features_df = self.compute_features_fn(available_data, symbol, asset_class, None, None, False, False)
 
                 # Update market_data.features using vectorized operations
                 if symbol not in self.market_data.features:
@@ -509,6 +516,7 @@ class DailyEventLoop:
                 max_position_notional=self.portfolio.equity * strategy.config.risk.max_position_notional,
                 available_cash=self.portfolio.cash,
                 risk_multiplier=self.portfolio.risk_multiplier,
+                max_exposure=self.portfolio.equity * (strategy.config.risk.max_exposure if hasattr(strategy.config.risk, 'max_exposure') and strategy.config.risk.max_exposure is not None else 0.8),
             )
 
             if qty < 1:
@@ -644,6 +652,8 @@ class DailyEventLoop:
 
             # Simulate fill
             try:
+                if features.adv20 is None or features.atr14 is None:
+                    continue  # Skip if required features are missing
                 fill = simulate_fill(
                     order=order,
                     open_bar=open_bar,
@@ -670,14 +680,23 @@ class DailyEventLoop:
                     # Get signal metadata from order
                     signal_metadata = self.order_signal_metadata.get(order.order_id, {})
                     atr_mult = signal_metadata.get("atr_mult", strategy.config.exit.hard_stop_atr_mult)
+                    from ..models.signals import BreakoutType
                     triggered_on = signal_metadata.get("triggered_on")
+                    if triggered_on is not None and not isinstance(triggered_on, BreakoutType):
+                        triggered_on = None
+                    # process_fill expects BreakoutType or None, but we need to handle None case
                     adv20_at_entry = signal_metadata.get("adv20_at_entry", features.adv20)
+                    if adv20_at_entry is None:
+                        adv20_at_entry = 0.0
 
+                    # Provide default BreakoutType if None
+                    from ..models.signals import BreakoutType
+                    final_triggered_on = triggered_on if triggered_on is not None else BreakoutType.FAST_20D
                     position = self.portfolio.process_fill(
                         fill=fill,
                         stop_price=order.stop_price,
                         atr_mult=atr_mult,
-                        triggered_on=triggered_on,
+                        triggered_on=final_triggered_on,
                         adv20_at_entry=adv20_at_entry,
                     )
 
@@ -738,13 +757,14 @@ class DailyEventLoop:
             List of (symbol, exit_reason) tuples for positions that should exit
         """
         # Get current prices and features for all positions
-        current_prices = {}
-        features_data = {}
+        current_prices: Dict[str, float] = {}
+        features_data: Dict[str, Dict[str, Any]] = {}
 
         # Create a copy of positions to avoid RuntimeError if positions are modified during iteration
-        for symbol, position in list(self.portfolio.positions.items()):
+        for pos_key, position in list(self.portfolio.positions.items()):
             if not position.is_open():
                 continue
+            symbol = pos_key if isinstance(pos_key, str) else pos_key[1]  # Extract symbol from tuple
 
             bar = self.market_data.get_bar(symbol, date)
             if bar is None:
@@ -771,9 +791,10 @@ class DailyEventLoop:
         # On crash dates, force all stops to trigger (flash crash simulation)
         if date in self.crash_dates:
             # Force exit all positions at stops
-            forced_exits = []
+            forced_exits: List[Tuple[str, ExitReason]] = []
             # Create a copy of positions to avoid RuntimeError if positions are modified during iteration
-            for symbol, position in list(self.portfolio.positions.items()):
+            for pos_key, position in list(self.portfolio.positions.items()):
+                symbol = pos_key if isinstance(pos_key, str) else pos_key[1]  # Extract symbol from tuple
                 if position.is_open() and symbol not in [s[0] for s in exit_signals]:
                     # Force stop at worst possible price
                     forced_exits.append((symbol, ExitReason.HARD_STOP))
@@ -881,6 +902,8 @@ class DailyEventLoop:
 
             # Simulate fill
             try:
+                if features.adv20 is None or features.atr14 is None:
+                    continue  # Skip if required features are missing
                 fill = simulate_fill(
                     order=order,
                     open_bar=open_bar,
@@ -992,6 +1015,8 @@ class DailyEventLoop:
         """
         from ..portfolio.position_sizing import estimate_position_size
 
+        if features.close is None or features.atr14 is None:
+            return 0
         return estimate_position_size(
             equity=portfolio.equity,
             risk_pct=strategy.config.risk.risk_per_trade * portfolio.risk_multiplier,
@@ -1082,9 +1107,10 @@ class DailyEventLoop:
         Returns:
             Dictionary mapping symbol to list of returns
         """
-        portfolio_returns = {}
+        portfolio_returns: Dict[str, List[float]] = {}
 
-        for symbol in self.portfolio.positions.keys():
+        for pos_key in self.portfolio.positions.keys():
+            symbol = pos_key if isinstance(pos_key, str) else pos_key[1]  # Extract symbol from tuple
             if symbol in self.returns_data:
                 portfolio_returns[symbol] = self.returns_data[symbol]
             else:
@@ -1094,8 +1120,8 @@ class DailyEventLoop:
                     available_data = bars_df[bars_df.index <= date]
                     if len(available_data) > 1:
                         returns = (available_data["close"] / available_data["close"].shift(1) - 1).tolist()
-                        portfolio_returns[symbol] = returns
-                        self.returns_data[symbol] = returns
+                        portfolio_returns[symbol] = [float(r) for r in returns]
+                        self.returns_data[symbol] = [float(r) for r in returns]
 
         return portfolio_returns
 
@@ -1227,7 +1253,7 @@ class DailyEventLoop:
                 if len(available_data) > 0:
                     # Use business days for equity (simplified)
                     gap_dates = [d for d in gap_dates if d.weekday() < 5]
-                return gap_dates.tolist()
+                return [pd.Timestamp(d) for d in gap_dates.tolist()]
 
         return []
 

@@ -27,7 +27,7 @@ def calculate_classification_metrics(
     # Basic metrics
     n = len(y_true)
     if n == 0:
-        return {"error": "No samples"}
+        return {"error": 0.0}  # Return float 0.0 instead of string
 
     # Confusion matrix elements
     tp = np.sum((y_true == 1) & (y_pred == 1))
@@ -87,7 +87,7 @@ def calculate_auc(y_true: np.ndarray, y_proba: np.ndarray) -> float:
 
     # AUC via trapezoidal rule
     auc = np.trapz(tpr, fpr)
-    return auc
+    return float(auc)
 
 
 def calculate_log_loss(
@@ -101,7 +101,7 @@ def calculate_log_loss(
 
     # Log loss
     loss = -np.mean(y_true * np.log(y_proba) + (1 - y_true) * np.log(1 - y_proba))
-    return loss
+    return float(loss)
 
 
 def calculate_regression_metrics(
@@ -121,7 +121,7 @@ def calculate_regression_metrics(
     metrics = {}
 
     if len(y_true) == 0:
-        return {"error": "No samples"}
+        return {"error": 0.0}  # Return float 0.0 instead of string
 
     # Mean Squared Error
     mse = np.mean((y_true - y_pred) ** 2)
@@ -161,14 +161,14 @@ def calculate_trading_metrics(
     high_conf_mask = y_proba >= threshold
 
     if np.sum(high_conf_mask) == 0:
-        return {"high_conf_count": 0}
+        return {"high_conf_count": 0.0}
 
     # High confidence accuracy
     y_pred_high = (y_proba[high_conf_mask] >= 0.5).astype(int)
     y_true_high = y_true[high_conf_mask]
 
-    metrics["high_conf_count"] = int(np.sum(high_conf_mask))
-    metrics["high_conf_accuracy"] = np.mean(y_pred_high == y_true_high)
+    metrics["high_conf_count"] = float(np.sum(high_conf_mask))
+    metrics["high_conf_accuracy"] = float(np.mean(y_pred_high == y_true_high))
 
     # Expected value calculation
     # Assuming we trade when p > threshold
@@ -212,7 +212,7 @@ def calculate_calibration_error(
 
 def calculate_feature_importance_stability(
     importance_history: List[Dict[str, float]],
-) -> Dict[str, float]:
+) -> Dict[str, Dict[str, float]]:
     """
     Calculate stability of feature importances across folds.
 
@@ -222,7 +222,7 @@ def calculate_feature_importance_stability(
         return {}
 
     # Get all feature names
-    all_features = set()
+    all_features: set[str] = set()
     for imp_dict in importance_history:
         all_features.update(imp_dict.keys())
 
@@ -236,9 +236,9 @@ def calculate_feature_importance_stability(
         cv = std_imp / mean_imp if mean_imp > 0 else float("inf")
 
         stability[feature] = {
-            "mean": mean_imp,
-            "std": std_imp,
-            "cv": cv,
+            "mean": float(mean_imp),
+            "std": float(std_imp),
+            "cv": float(cv),
         }
 
     return stability

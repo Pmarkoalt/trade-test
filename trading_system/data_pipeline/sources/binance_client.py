@@ -11,7 +11,7 @@ import pandas as pd
 try:
     import aiohttp
 except ImportError:
-    aiohttp = None  # type: ignore
+    aiohttp = None
 
 from trading_system.data_pipeline.exceptions import APIRateLimitError, DataFetchError, DataValidationError
 from trading_system.data_pipeline.sources.base_source import BaseDataSource
@@ -165,7 +165,7 @@ class BinanceClient(BaseDataSource):
                         if isinstance(data, dict) and "code" in data:
                             error_msg = data.get("msg", "Unknown error")
                             raise DataFetchError(f"Binance API error: {error_msg}")
-                        return data
+                        return list(data) if isinstance(data, (list, tuple)) else []
 
                     elif response.status >= 500:
                         # Server error, retry with exponential backoff

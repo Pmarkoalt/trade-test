@@ -54,7 +54,7 @@ def generate_run_config_template(output_path: Optional[str] = None, include_comm
     )
 
     # Generate YAML
-    yaml_content = yaml.dump(config.model_dump(), default_flow_style=False, sort_keys=False)
+    yaml_content = str(yaml.dump(config.model_dump(), default_flow_style=False, sort_keys=False))
 
     # Add comments if requested
     if include_comments:
@@ -85,7 +85,7 @@ def generate_run_config_template(output_path: Optional[str] = None, include_comm
             elif line.strip() == "metrics:":
                 commented_lines.append("# Metrics targets for evaluation (optional)")
 
-        yaml_content = "\n".join(commented_lines)
+        yaml_content = str("\n".join(commented_lines))
 
     if output_path:
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)
@@ -148,7 +148,7 @@ def generate_strategy_config_template(
         )
 
     # Generate YAML
-    yaml_content = yaml.dump(config.model_dump(), default_flow_style=False, sort_keys=False)
+    yaml_content = str(yaml.dump(config.model_dump(), default_flow_style=False, sort_keys=False))
 
     # Add comments if requested
     if include_comments:
@@ -178,7 +178,7 @@ def generate_strategy_config_template(
             elif line.strip() == "costs:":
                 commented_lines.append("# Execution cost model parameters")
 
-        yaml_content = "\n".join(commented_lines)
+        yaml_content = str("\n".join(commented_lines))
 
     if output_path:
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)

@@ -35,7 +35,7 @@ def compute_volatility_multiplier(atr14: float, atr14_history: pd.Series) -> flo
     vol_mult = atr14 / mean_atr
 
     # Clip to [0.5, 3.0]
-    return np.clip(vol_mult, 0.5, 3.0)
+    return float(np.clip(vol_mult, 0.5, 3.0))
 
 
 def compute_size_penalty(order_notional: float, adv20: float) -> float:
@@ -65,7 +65,7 @@ def compute_size_penalty(order_notional: float, adv20: float) -> float:
     size_penalty = order_notional / threshold
 
     # Clip to [0.5, 2.0]
-    return np.clip(size_penalty, 0.5, 2.0)
+    return float(np.clip(size_penalty, 0.5, 2.0))
 
 
 def compute_weekend_penalty(date: pd.Timestamp, asset_class: str) -> float:

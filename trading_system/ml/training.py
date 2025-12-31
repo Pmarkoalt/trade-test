@@ -1,5 +1,6 @@
 """ML model training pipeline."""
 
+import logging
 import time
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
@@ -10,6 +11,14 @@ import pandas as pd
 from trading_system.ml.feature_engineering import MLFeatureEngineer
 from trading_system.ml.models import MLModel, ModelMetadata, ModelType
 from trading_system.models.features import FeatureRow
+
+logger = logging.getLogger(__name__)
+
+
+class MLTrainingTimeoutError(Exception):
+    """Raised when ML training exceeds maximum allowed duration."""
+
+    pass
 
 
 class MLTrainer:
@@ -23,11 +32,15 @@ class MLTrainer:
     - Model serialization
     """
 
+    # Default timeout values (in seconds)
+    DEFAULT_TIMEOUT_SECONDS = 1800  # 30 minutes
+
     def __init__(
         self,
         model_type: ModelType,
         feature_engineer: Optional[MLFeatureEngineer] = None,
         hyperparameters: Optional[Dict] = None,
+        max_training_time: Optional[int] = None,
     ):
         """Initialize trainer.
 
@@ -35,11 +48,14 @@ class MLTrainer:
             model_type: Type of model to train
             feature_engineer: Feature engineer instance (will create default if None)
             hyperparameters: Model hyperparameters
+            max_training_time: Maximum time allowed for training (default: 1800 = 30 min).
+                               Set to None to disable timeout.
         """
         self.model_type = model_type
         self.feature_engineer = feature_engineer or MLFeatureEngineer()
         self.hyperparameters = hyperparameters or {}
         self.model: Optional[MLModel] = None
+        self.max_training_time = max_training_time if max_training_time is not None else self.DEFAULT_TIMEOUT_SECONDS
 
     def prepare_data(
         self,
@@ -110,15 +126,33 @@ class MLTrainer:
 
         Returns:
             Dictionary of training metrics
+
+        Raises:
+            MLTrainingTimeoutError: If training exceeds max_training_time
         """
         start_time = time.time()
 
+        def check_timeout(step: str) -> None:
+            """Check if timeout has been exceeded."""
+            if self.max_training_time:
+                elapsed = time.time() - start_time
+                if elapsed > self.max_training_time:
+                    raise MLTrainingTimeoutError(
+                        f"ML training exceeded maximum duration of {self.max_training_time}s "
+                        f"(elapsed: {elapsed:.1f}s, step: {step}). "
+                        f"Consider reducing training data or increasing max_training_time."
+                    )
+
+        logger.info(f"Starting ML training (max_time: {self.max_training_time}s)")
+
         # Fit feature engineer
         self.feature_engineer.fit(feature_rows)
+        check_timeout("feature_engineering_fit")
 
         # Transform features
         X_train = self.feature_engineer.transform_batch(feature_rows)
         y_train = pd.Series(target_values, index=X_train.index)
+        check_timeout("feature_transform")
 
         # Prepare validation data if provided
         val_tuple = None
@@ -127,6 +161,7 @@ class MLTrainer:
             X_val = self.feature_engineer.transform_batch(feature_rows_val)
             y_val = pd.Series(target_values_val, index=X_val.index)
             val_tuple = (X_val, y_val)
+            check_timeout("validation_data_prep")
 
         # Create and train model
         self.model = MLModel._create_model_instance(
@@ -136,10 +171,13 @@ class MLTrainer:
         if model_id:
             self.model.model_id = model_id
 
-        # Train model
+        # Train model (this is the main time-consuming step)
+        logger.info(f"Training model (type: {self.model_type})")
         training_metrics = self.model.train(X_train, y_train, validation_data=val_tuple)
+        check_timeout("model_training")
 
         # Create metadata
+        training_time = time.time() - start_time
         metadata = ModelMetadata(
             model_id=self.model.model_id,
             model_type=self.model_type,
@@ -150,9 +188,11 @@ class MLTrainer:
             target_name="target",
             hyperparameters=self.hyperparameters,
             performance_metrics=training_metrics,
-            training_time_seconds=time.time() - start_time,
+            training_time_seconds=training_time,
         )
         self.model.set_metadata(metadata)
+
+        logger.info(f"ML training completed in {training_time:.1f}s")
 
         return training_metrics
 

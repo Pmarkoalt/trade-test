@@ -80,7 +80,8 @@ class DataCache:
 
         try:
             with open(metadata_path, "r") as f:
-                return json.load(f)
+                result = json.load(f)
+                return dict(result) if result else None
         except (json.JSONDecodeError, IOError) as e:
             logger.warning(f"Error loading metadata for {key}: {e}")
             return None
