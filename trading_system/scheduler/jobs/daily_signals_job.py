@@ -14,8 +14,11 @@ from ...data_pipeline.live_data_fetcher import LiveDataFetcher
 from ...logging.logger import get_logger
 from ...output.email.config import EmailConfig
 from ...output.email.email_service import EmailService
+from ...research.config import ResearchConfig
 from ...signals.config import SignalConfig
 from ...signals.live_signal_generator import LiveSignalGenerator
+from ...strategies.strategy_loader import load_strategies_from_run_config
+from ...tracking.performance_calculator import PerformanceCalculator
 
 logger = get_logger(__name__)
 
@@ -52,10 +55,24 @@ def load_config(config_path: Optional[str] = None) -> Dict:
     signal_config = SignalConfig(
         max_recommendations=int(os.getenv("MAX_RECOMMENDATIONS", "5")),
         min_conviction=os.getenv("MIN_CONVICTION", "MEDIUM"),
-        technical_weight=float(os.getenv("TECHNICAL_WEIGHT", "1.0")),
-        news_weight=float(os.getenv("NEWS_WEIGHT", "0.0")),
+        technical_weight=float(os.getenv("TECHNICAL_WEIGHT", "0.6")),
+        news_weight=float(os.getenv("NEWS_WEIGHT", "0.4")),
+        news_enabled=os.getenv("NEWS_ENABLED", "true").lower() == "true",
+        news_lookback_hours=int(os.getenv("NEWS_LOOKBACK_HOURS", "48")),
+        min_news_score_for_boost=float(os.getenv("MIN_NEWS_SCORE_FOR_BOOST", "7.0")),
+        max_news_score_for_penalty=float(os.getenv("MAX_NEWS_SCORE_FOR_PENALTY", "3.0")),
     )
     config_dict["signals"] = signal_config
+
+    # Load research config
+    research_config = ResearchConfig(
+        enabled=os.getenv("RESEARCH_ENABLED", "true").lower() == "true",
+        newsapi_key=os.getenv("NEWSAPI_KEY"),
+        alpha_vantage_key=os.getenv("ALPHA_VANTAGE_API_KEY"),
+        lookback_hours=int(os.getenv("RESEARCH_LOOKBACK_HOURS", "48")),
+        max_articles_per_symbol=int(os.getenv("MAX_ARTICLES_PER_SYMBOL", "10")),
+    )
+    config_dict["research"] = research_config
 
     # Load email config
     email_config = EmailConfig(
@@ -194,7 +211,7 @@ async def send_error_alert(error: Exception) -> None:
 
 
 async def daily_signals_job(asset_class: str) -> None:
-    """Execute daily signal generation and email.
+    """Execute daily signal generation with news analysis.
 
     Args:
         asset_class: Asset class to generate signals for ("equity" or "crypto")
@@ -207,7 +224,62 @@ async def daily_signals_job(asset_class: str) -> None:
 
         # 2. Initialize components
         data_fetcher = LiveDataFetcher(config["data_pipeline"])
-        signal_generator = LiveSignalGenerator(config["signals"])
+
+        # Initialize news analyzer if research is enabled
+        news_analyzer = None
+        if config["research"].enabled:
+            try:
+                from ...research.news_analyzer import NewsAnalyzer
+
+                news_analyzer = NewsAnalyzer(
+                    config=config["research"],
+                    newsapi_key=config["research"].newsapi_key,
+                    alpha_vantage_key=config["research"].alpha_vantage_key,
+                )
+                logger.info("News analyzer initialized")
+            except Exception as e:
+                logger.warning(f"Failed to initialize news analyzer: {e}. Continuing without news.")
+                news_analyzer = None
+
+        # Load strategies
+        strategies = []
+        try:
+            # Try to load from run config if available
+            config_path = os.getenv("RUN_CONFIG_PATH", "configs/production_run_config.yaml")
+            if Path(config_path).exists():
+                run_config = RunConfig.from_yaml(config_path)
+                equity_config_path = (
+                    run_config.strategies.equity.config_path
+                    if run_config.strategies.equity and run_config.strategies.equity.enabled
+                    else None
+                )
+                crypto_config_path = (
+                    run_config.strategies.crypto.config_path
+                    if run_config.strategies.crypto and run_config.strategies.crypto.enabled
+                    else None
+                )
+                strategies = load_strategies_from_run_config(
+                    equity_config_path=equity_config_path if asset_class == "equity" else None,
+                    crypto_config_path=crypto_config_path if asset_class == "crypto" else None,
+                )
+        except Exception as e:
+            logger.warning(f"Failed to load strategies from config: {e}. Job may not work correctly.")
+
+        if not strategies:
+            logger.error(f"No strategies loaded for {asset_class}")
+            return
+
+        # Get tracking database path from environment or use default
+        tracking_db = os.getenv("TRACKING_DB_PATH", "tracking.db")
+
+        # Initialize signal generator with news analyzer and tracking
+        signal_generator = LiveSignalGenerator(
+            strategies=strategies,
+            signal_config=config["signals"],
+            news_analyzer=news_analyzer,
+            tracking_db=tracking_db,
+        )
+
         email_service = EmailService(config["email"])
 
         # 3. Get universe symbols
@@ -233,30 +305,67 @@ async def daily_signals_job(asset_class: str) -> None:
 
         logger.info(f"Fetched data for {len(ohlcv_data)} symbols")
 
-        # 5. Generate signals
-        recommendations = await signal_generator.generate(
+        # 5. Generate recommendations (now includes news analysis)
+        recommendations = await signal_generator.generate_recommendations(
             ohlcv_data=ohlcv_data,
-            asset_class=asset_class,
-            current_date=date.today()
+            current_date=date.today(),
+            portfolio_state=None,
         )
 
         logger.info(f"Generated {len(recommendations)} recommendations")
 
-        # 6. Get market summary
+        # 6. Get news analysis for email (if not already fetched during signal generation)
+        news_analysis = None
+        if news_analyzer and config["research"].enabled:
+            try:
+                news_analysis = await news_analyzer.analyze_symbols(
+                    symbols=symbols,
+                    lookback_hours=config["research"].lookback_hours,
+                )
+                logger.info(f"Analyzed {news_analysis.total_articles if news_analysis else 0} news articles")
+            except Exception as e:
+                logger.warning(f"Failed to fetch news analysis for email: {e}. Continuing without news in email.")
+                news_analysis = None
+
+        # 7. Get market summary
         market_summary = get_market_summary(ohlcv_data)
 
-        # 7. Send email
-        # Note: send_daily_report is not async, so we'll use asyncio.to_thread
-        import asyncio
-        success = await asyncio.to_thread(
-            email_service.send_daily_report,
+        # 8. Send email with news analysis
+        success = await email_service.send_daily_report(
             recommendations=recommendations,
+            market_summary=market_summary,
             portfolio_summary=None,  # Could be added later
-            news_digest=None,  # Could be added later
+            news_digest=None,  # Legacy format, not used if news_analysis provided
+            news_analysis=news_analysis,  # NEW: Pass news analysis
+            date_obj=date.today(),
+            tracking_store=signal_generator.tracker.store if signal_generator.tracker else None,
         )
 
+        # Mark signals as delivered after successful email send
+        if success and signal_generator.tracker:
+            signal_generator.mark_signals_delivered(recommendations, method="email")
+
+        # Get performance metrics for logging
+        if signal_generator.tracker:
+            try:
+                calculator = PerformanceCalculator(signal_generator.tracker.store)
+                rolling_metrics = calculator.calculate_rolling_metrics(window_days=30)
+
+                logger.info(
+                    f"Rolling 30-day performance: "
+                    f"Win Rate={rolling_metrics.get('win_rate', 0):.0%}, "
+                    f"Expectancy={rolling_metrics.get('expectancy_r', 0):.2f}R"
+                )
+            except Exception as e:
+                logger.warning(f"Failed to calculate rolling metrics: {e}")
+
         if success:
-            logger.info(f"Daily signals job completed: {len(recommendations)} recommendations sent via email")
+            articles_count = news_analysis.total_articles if news_analysis else 0
+            logger.info(
+                f"Daily signals job completed: "
+                f"{len(recommendations)} recommendations, "
+                f"{articles_count} articles analyzed"
+            )
         else:
             logger.error("Failed to send daily signals email")
 

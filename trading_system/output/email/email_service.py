@@ -53,7 +53,9 @@ class EmailService:
         market_summary: Optional[Dict[str, Any]] = None,
         portfolio_summary: Optional[Dict[str, Any]] = None,
         news_digest: Optional[Dict[str, Any]] = None,
+        news_analysis: Optional[Any] = None,  # NewsAnalysisResult type
         date_obj: Optional[date] = None,
+        tracking_store: Optional[Any] = None,  # BaseTrackingStore type
     ) -> bool:
         """Send daily signal report email.
 
@@ -61,7 +63,8 @@ class EmailService:
             recommendations: List of Recommendation objects
             market_summary: Optional market summary data
             portfolio_summary: Optional portfolio summary data
-            news_digest: Optional news digest data
+            news_digest: Optional news digest data (legacy format)
+            news_analysis: Optional NewsAnalysisResult object (new format)
             date_obj: Optional date (defaults to today)
 
         Returns:
@@ -77,7 +80,9 @@ class EmailService:
                     market_summary=market_summary or {},
                     portfolio_summary=portfolio_summary,
                     news_digest=news_digest,
+                    news_analysis=news_analysis,
                     date_obj=date_obj,
+                    tracking_store=tracking_store,
                 )
             else:
                 # Fallback to simple HTML
@@ -104,7 +109,9 @@ class EmailService:
         market_summary: Dict[str, Any],
         portfolio_summary: Optional[Dict[str, Any]],
         news_digest: Optional[Dict[str, Any]],
-        date_obj: date,
+        news_analysis: Optional[Any] = None,  # NewsAnalysisResult type
+        date_obj: Optional[date] = None,
+        tracking_store: Optional[Any] = None,  # BaseTrackingStore type
     ) -> str:
         """Render email template using Jinja2.
 
@@ -112,7 +119,8 @@ class EmailService:
             recommendations: List of Recommendation objects
             market_summary: Market summary data
             portfolio_summary: Optional portfolio summary
-            news_digest: Optional news digest
+            news_digest: Optional news digest (legacy format)
+            news_analysis: Optional NewsAnalysisResult object (new format)
             date_obj: Date for the report
 
         Returns:
@@ -121,6 +129,8 @@ class EmailService:
         if not self.jinja_env:
             raise RuntimeError("Jinja2 not available")
 
+        date_obj = date_obj or date.today()
+
         # Get template
         template = self.jinja_env.get_template("daily_signals.html")
 
@@ -128,17 +138,71 @@ class EmailService:
         buy_signals = [r for r in recommendations if r.direction == "BUY"]
         sell_signals = [r for r in recommendations if r.direction == "SELL"]
 
+        # Separate news by sentiment if news_analysis is provided
+        positive_news = []
+        negative_news = []
+
+        if news_analysis and hasattr(news_analysis, 'articles'):
+            try:
+                from ...data_pipeline.sources.news.models import SentimentLabel
+
+                for article in news_analysis.articles:
+                    if hasattr(article, 'sentiment_label') and article.sentiment_label:
+                        if article.sentiment_label in [SentimentLabel.POSITIVE, SentimentLabel.VERY_POSITIVE]:
+                            positive_news.append(article)
+                        elif article.sentiment_label in [SentimentLabel.NEGATIVE, SentimentLabel.VERY_NEGATIVE]:
+                            negative_news.append(article)
+            except (ImportError, AttributeError):
+                # Fallback if SentimentLabel not available or different structure
+                for article in news_analysis.articles:
+                    if hasattr(article, 'sentiment_label'):
+                        label = str(article.sentiment_label).upper()
+                        if 'POSITIVE' in label:
+                            positive_news.append(article)
+                        elif 'NEGATIVE' in label:
+                            negative_news.append(article)
+
+        # Add performance section if tracking available
+        performance_context = None
+        if tracking_store:
+            try:
+                from ...tracking.performance_calculator import PerformanceCalculator
+                from ...tracking.analytics.signal_analytics import SignalAnalyzer
+
+                calculator = PerformanceCalculator(tracking_store)
+                metrics = calculator.calculate_rolling_metrics(window_days=30)
+
+                # Get recent closed trades
+                analyzer = SignalAnalyzer(tracking_store)
+                analytics = analyzer.analyze()
+
+                performance_context = {
+                    "days": 30,
+                    "metrics": metrics,
+                    "recent_closed": analytics.last_10_trades[:5] if analytics.last_10_trades else [],
+                    "streak": {
+                        "count": analytics.current_streak,
+                        "type": analytics.current_streak_type,
+                    } if analytics.current_streak >= 3 else None,
+                }
+            except Exception as e:
+                logger.warning(f"Failed to generate performance context: {e}")
+
         context = {
             "recommendations": recommendations,
             "buy_signals": buy_signals,
             "sell_signals": sell_signals,
             "market": market_summary,
             "portfolio": portfolio_summary,
-            "news": news_digest,
+            "news": news_digest,  # Legacy format
+            "news_analysis": news_analysis,  # New format
+            "positive_news": positive_news[:5],
+            "negative_news": negative_news[:5],
             "date": date_obj.strftime("%B %d, %Y"),
             "date_short": date_obj.strftime("%Y-%m-%d"),
             "num_recommendations": len(recommendations),
             "generated_at": datetime.now().strftime("%I:%M %p ET"),
+            "performance": performance_context,
         }
 
         # Render template (run in thread pool to avoid blocking)

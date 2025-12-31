@@ -76,7 +76,62 @@
     </div>
     {% endif %}
 
-    {% if news %}
+    {% if news_analysis %}
+    <div class="section news">
+        <h2>📰 NEWS DIGEST</h2>
+        
+        <div class="market-sentiment">
+            <h3>Market Sentiment: {{ news_analysis.market_sentiment_label.value | title }}</h3>
+            <p>Based on {{ news_analysis.total_articles }} articles analyzed</p>
+        </div>
+
+        {% if positive_news %}
+        <div class="news-section positive">
+            <h4>🟢 Positive Sentiment</h4>
+            <ul>
+                {% for article in positive_news[:5] %}
+                <li>
+                    <strong>{{ article.symbols | join(', ') }}</strong>:
+                    {{ article.title }}
+                    <span class="source">({{ article.source }})</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if negative_news %}
+        <div class="news-section negative">
+            <h4>🔴 Negative Sentiment</h4>
+            <ul>
+                {% for article in negative_news[:5] %}
+                <li>
+                    <strong>{{ article.symbols | join(', ') }}</strong>:
+                    {{ article.title }}
+                    <span class="source">({{ article.source }})</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="news-section notable">
+            <h4>📌 Notable Headlines</h4>
+            <ul>
+                {% for symbol, summary in news_analysis.symbol_summaries.items() %}
+                    {% if summary.top_headlines %}
+                    <li>
+                        <strong>{{ symbol }}</strong>
+                        ({{ summary.sentiment_label.value | title }}):
+                        {{ summary.top_headlines[0] }}
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% elif news %}
+    {# Fallback to old news format for backward compatibility #}
     <div class="section news">
         <h2>📰 NEWS DIGEST</h2>
         {% if news.positive %}
@@ -124,6 +179,10 @@
             <p><strong>Avg Loser:</strong> {{ "%+.2f"|format(portfolio.performance.avg_loser) }}%</p>
         </div>
     </div>
+    {% endif %}
+
+    {% if performance %}
+    {% include 'partials/performance_section.html' %}
     {% endif %}
 
     <div class="footer">

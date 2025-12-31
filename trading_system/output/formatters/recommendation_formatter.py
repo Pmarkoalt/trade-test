@@ -26,23 +26,47 @@ class RecommendationFormatter:
         conviction_class = recommendation.conviction.lower().replace(" ", "-")
         conviction_badge = f'<span class="conviction-badge {conviction_class}">{recommendation.conviction} CONVICTION</span>'
 
-        # Format news headlines
-        news_html = ""
+        # Format news context and headlines
+        news_context_html = ""
+        if recommendation.news_reasoning:
+            news_context_html = f'<div class="news-context"><span class="icon">📰</span> {recommendation.news_reasoning}</div>'
+        
+        news_headlines_html = ""
         if recommendation.news_headlines:
-            news_html = '<div class="news-headlines">📰 Recent News:<ul>'
-            for headline in recommendation.news_headlines[:3]:  # Limit to 3 headlines
-                news_html += f'<li>"{headline}"</li>'
-            news_html += "</ul></div>"
+            news_headlines_html = '<div class="headlines"><strong>Recent News:</strong><ul>'
+            for headline in recommendation.news_headlines[:2]:  # Limit to 2 headlines
+                news_headlines_html += f'<li>{headline}</li>'
+            news_headlines_html += "</ul></div>"
 
-        # Format scores
+        # Format scores with news integration
+        news_score_class = ""
+        if recommendation.news_score is not None:
+            if recommendation.news_score >= 7.0:
+                news_score_class = "positive"
+            elif recommendation.news_score <= 3.0:
+                news_score_class = "negative"
+        
         scores_html = f"""
         <div class="scores">
-            <p><strong>Technical Score:</strong> {recommendation.technical_score:.1f}/10</p>
+            <div class="score-item">
+                <span class="label">Technical:</span>
+                <span class="value">{recommendation.technical_score:.1f}/10</span>
+            </div>
         """
         if recommendation.news_score is not None:
-            scores_html += f'<p><strong>News Score:</strong> {recommendation.news_score:.1f}/10</p>'
+            scores_html += f'''
+            <div class="score-item">
+                <span class="label">News:</span>
+                <span class="value {news_score_class}">{recommendation.news_score:.1f}/10</span>
+            </div>
+            '''
         if recommendation.combined_score > 0:
-            scores_html += f'<p><strong>Combined:</strong> {recommendation.combined_score:.1f}/10</p>'
+            scores_html += f'''
+            <div class="score-item combined">
+                <span class="label">Combined:</span>
+                <span class="value">{recommendation.combined_score:.1f}/10</span>
+            </div>
+            '''
         scores_html += "</div>"
 
         # Get symbol name (simplified - in production, use a symbol-to-name mapping)
@@ -62,7 +86,8 @@ class RecommendationFormatter:
                     <p><strong>Size:</strong> {recommendation.position_size_pct:.1f}% of portfolio</p>
                 </div>
                 {scores_html}
-                {news_html}
+                {news_context_html}
+                {news_headlines_html}
                 <div class="reasoning">
                     <p><strong>💡 Reasoning:</strong> {recommendation.reasoning}</p>
                 </div>

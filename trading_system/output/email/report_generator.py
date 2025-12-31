@@ -2,9 +2,16 @@
 
 from datetime import date, datetime
 from pathlib import Path
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from ..formatters.recommendation_formatter import RecommendationFormatter
+
+# Type hints for news analysis (avoid circular imports)
+try:
+    from ...data_pipeline.sources.news.models import SentimentLabel
+except ImportError:
+    # Fallback if news models not available
+    SentimentLabel = None
 
 
 class ReportGenerator:
@@ -120,6 +127,63 @@ class ReportGenerator:
         html = base_template.format(styles=styles, content=content)
 
         return html
+
+    async def generate_daily_report(
+        self,
+        recommendations: List,
+        market_summary: Dict[str, Any],
+        news_analysis: Optional[Any] = None,  # NewsAnalysisResult type
+        date_obj: Optional[date] = None,
+    ) -> Dict[str, Any]:
+        """Generate email report data with news analysis.
+
+        Prepares data for template rendering. The actual HTML rendering
+        is handled by email_service.py using Jinja2 templates.
+
+        Args:
+            recommendations: List of Recommendation objects
+            market_summary: Market summary dictionary
+            news_analysis: Optional NewsAnalysisResult object
+            date_obj: Optional date (defaults to today)
+
+        Returns:
+            Dictionary with prepared data for template context
+        """
+        date_obj = date_obj or date.today()
+
+        # Separate news by sentiment
+        positive_news = []
+        negative_news = []
+
+        if news_analysis and hasattr(news_analysis, 'articles'):
+            try:
+                from ...data_pipeline.sources.news.models import SentimentLabel
+
+                for article in news_analysis.articles:
+                    if hasattr(article, 'sentiment_label') and article.sentiment_label:
+                        if article.sentiment_label in [SentimentLabel.POSITIVE, SentimentLabel.VERY_POSITIVE]:
+                            positive_news.append(article)
+                        elif article.sentiment_label in [SentimentLabel.NEGATIVE, SentimentLabel.VERY_NEGATIVE]:
+                            negative_news.append(article)
+            except (ImportError, AttributeError):
+                # Fallback if SentimentLabel not available
+                for article in news_analysis.articles:
+                    if hasattr(article, 'sentiment_label'):
+                        label = str(article.sentiment_label).upper()
+                        if 'POSITIVE' in label:
+                            positive_news.append(article)
+                        elif 'NEGATIVE' in label:
+                            negative_news.append(article)
+
+        return {
+            "recommendations": recommendations,
+            "market": market_summary,
+            "news_analysis": news_analysis,
+            "positive_news": positive_news[:5],
+            "negative_news": negative_news[:5],
+            "date": date_obj.strftime("%B %d, %Y"),
+            "generated_at": datetime.now().strftime("%I:%M %p ET"),
+        }
 
     def _format_signals_section(self, signals: List) -> str:
         """Format signals into HTML.

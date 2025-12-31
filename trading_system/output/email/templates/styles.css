@@ -138,10 +138,43 @@ body {
     padding: 10px;
     background-color: #f0f0f0;
     border-radius: 4px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 .scores p {
     margin: 5px 0;
+}
+
+.score-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.score-item .label {
+    font-weight: 600;
+    color: #555;
+}
+
+.score-item .value {
+    font-weight: bold;
+    font-size: 16px;
+    color: #2c3e50;
+}
+
+.score-item .value.positive {
+    color: #27ae60;
+}
+
+.score-item .value.negative {
+    color: #e74c3c;
+}
+
+.score-item.combined .value {
+    font-size: 18px;
+    color: #4a90e2;
 }
 
 .news-headlines {
@@ -160,6 +193,73 @@ body {
 .news-headlines li {
     margin: 5px 0;
     color: #555;
+}
+
+.news-context {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #e8f4f8;
+    border-left: 3px solid #4a90e2;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.news-context .icon {
+    font-size: 18px;
+}
+
+.headlines {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+.headlines ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.headlines li {
+    margin: 5px 0;
+    color: #555;
+    font-size: 14px;
+}
+
+.market-sentiment {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #e8f4f8;
+    border-radius: 4px;
+    border-left: 4px solid #4a90e2;
+}
+
+.market-sentiment h3 {
+    margin: 0 0 5px 0;
+    color: #2c3e50;
+}
+
+.market-sentiment p {
+    margin: 0;
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.news-section.notable {
+    background-color: #f8f9fa;
+    border-left: 4px solid #95a5a6;
+}
+
+.news-section.notable h4 {
+    color: #2c3e50;
+}
+
+.source {
+    font-size: 12px;
+    color: #7f8c8d;
+    font-style: italic;
 }
 
 .reasoning {

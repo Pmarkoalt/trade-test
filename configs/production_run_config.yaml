@@ -108,6 +108,40 @@ output:
 # Reproducibility
 random_seed: 42  # Seed for RNG (slippage, bootstrap, permutation tests)
 
+# Research & News
+research:
+  enabled: true
+  lookback_hours: 48
+  max_articles_per_symbol: 10
+  # API keys should be set via environment variables:
+  # NEWSAPI_API_KEY, ALPHA_VANTAGE_API_KEY
+  # Or set directly here (not recommended for production)
+  newsapi_key: null  # Set via NEWSAPI_API_KEY env var
+  alpha_vantage_key: null  # Set via ALPHA_VANTAGE_API_KEY env var
+
+  sentiment:
+    use_vader: true
+    use_finbert: false  # Phase 4 - requires GPU
+    vader_threshold_positive: 0.05
+    vader_threshold_negative: -0.05
+    min_confidence: 0.5
+
+  relevance:
+    min_relevance_score: 0.3
+    title_weight: 0.6
+    summary_weight: 0.4
+
+# Signal Generation
+signals:
+  max_recommendations: 5
+  min_conviction: "MEDIUM"
+  technical_weight: 0.6
+  news_weight: 0.4
+  news_enabled: true
+  news_lookback_hours: 48
+  min_news_score_for_boost: 7.0
+  max_news_score_for_penalty: 3.0
+
 # Validation configuration (for validate command)
 validation:
   # Parameter sensitivity grid

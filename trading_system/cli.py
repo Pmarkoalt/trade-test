@@ -1621,6 +1621,74 @@ def cmd_send_test_email(args: argparse.Namespace) -> int:
         return 1
 
 
+def cmd_trading_dashboard(args: argparse.Namespace) -> int:
+    """Launch the trading assistant dashboard.
+
+    Args:
+        args: Parsed command-line arguments
+
+    Returns:
+        Exit code (0 for success, non-zero for error)
+    """
+    try:
+        import subprocess
+        import sys
+
+        port = getattr(args, "port", 8501)
+        host = getattr(args, "host", "localhost")
+
+        if console:
+            console.print(f"\n[bold cyan]Launching Trading Assistant Dashboard[/bold cyan]")
+            console.print(f"Address: http://{host}:{port}")
+            console.print(f"\nPress Ctrl+C to stop the dashboard.\n")
+
+        # Check if streamlit is available
+        try:
+            import streamlit
+        except ImportError:
+            print_error("Streamlit is not installed. Install it with: pip install streamlit")
+            if console:
+                console.print("\n[yellow]Tip:[/yellow] Streamlit is required for the dashboard.")
+                console.print("Install it with: pip install streamlit plotly")
+            return 1
+
+        # Get the dashboard app path
+        import os
+        from pathlib import Path
+        dashboard_file = Path(__file__).parent / "dashboard" / "app.py"
+
+        if not dashboard_file.exists():
+            print_error(f"Dashboard app not found: {dashboard_file}")
+            return 1
+
+        # Build command
+        cmd = [
+            sys.executable, "-m", "streamlit", "run",
+            str(dashboard_file),
+            f"--server.port={port}",
+            f"--server.address={host}",
+        ]
+
+        print_info("Starting Streamlit trading dashboard...")
+        print_info("The dashboard will open in your browser automatically.")
+
+        # Run streamlit
+        subprocess.run(cmd)
+
+        return 0
+
+    except KeyboardInterrupt:
+        print_warning("\nDashboard stopped by user")
+        return 130
+    except Exception as e:
+        print_error(f"Dashboard launch failed: {e}")
+        if console:
+            console.print_exception()
+        else:
+            logging.exception("Dashboard launch failed")
+        return 1
+
+
 def cmd_fetch_data(args: argparse.Namespace) -> int:
     """Fetch OHLCV data for symbols.
 
@@ -1759,6 +1827,10 @@ def main() -> int:
   # Fetch data command (alias: fetch)
   python -m trading_system fetch-data --symbols AAPL,MSFT --asset-class equity --days 30
   python -m trading_system fetch -s BTC,ETH -a crypto -d 60  # Alias for fetch-data
+
+  # Trading dashboard (alias: tdash) - live signals, portfolio, news
+  python -m trading_system trading-dashboard
+  python -m trading_system tdash --port 8502 --host 0.0.0.0
 
 💡 Tips:
   • Use aliases for faster commands (bt, val, ho, sens, rep, dash, cfg)
@@ -2049,6 +2121,21 @@ def main() -> int:
     )
     test_email_parser.set_defaults(func=cmd_send_test_email)
 
+    # Trading dashboard command (live signals dashboard)
+    trading_dashboard_parser = subparsers.add_parser(
+        "trading-dashboard",
+        aliases=["tdash"],
+        help="Launch trading assistant dashboard",
+        description="Launch the live trading assistant dashboard for signals, portfolio, news, and performance",
+    )
+    trading_dashboard_parser.add_argument(
+        "--port", "-p", type=int, default=8501, help="Port to run dashboard on (default: 8501)"
+    )
+    trading_dashboard_parser.add_argument(
+        "--host", "-H", type=str, default="localhost", help="Host to run dashboard on (default: localhost)"
+    )
+    trading_dashboard_parser.set_defaults(func=cmd_trading_dashboard)
+
     # Fetch data command
     fetch_data_parser = subparsers.add_parser(
         "fetch-data",
@@ -2080,6 +2167,15 @@ def main() -> int:
     )
     fetch_data_parser.set_defaults(func=cmd_fetch_data)
 
+    # ML command group
+    from .cli.commands import ml
+    ml_parser = subparsers.add_parser(
+        "ml",
+        help="ML model management",
+        description="ML model training, prediction, and management commands",
+    )
+    ml.setup_parser(ml_parser)
+
     # Parse arguments
     args = parser.parse_args()
 
@@ -2102,6 +2198,13 @@ def main() -> int:
             strategy_parser.print_help()
             return 1
         return args.func(args)
+
+    # Handle ML subcommands
+    if args.command == "ml":
+        if not args.ml_command:
+            ml_parser.print_help()
+            return 1
+        return ml.handle_command(args)
 
     # Run command
     try:

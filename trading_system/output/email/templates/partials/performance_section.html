@@ -1,0 +1,90 @@
+<!-- Performance Section for Daily Email -->
+<div class="performance-section" style="margin-top: 24px; padding-top: 24px; border-top: 2px solid #e0e0e0;">
+    <h2 style="font-size: 18px; margin-bottom: 16px; color: #1a1a1a;">
+        Performance (Last {{ days }} Days)
+    </h2>
+
+    <!-- Quick Stats Row -->
+    <table style="width: 100%; margin-bottom: 16px;">
+        <tr>
+            <td style="text-align: center; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                <div style="font-size: 24px; font-weight: bold; color: {% if metrics.total_r > 0 %}#22c55e{% else %}#ef4444{% endif %};">
+                    {% if metrics.total_r > 0 %}+{% endif %}{{ "%.1f"|format(metrics.total_r) }}R
+                </div>
+                <div style="font-size: 11px; color: #666; text-transform: uppercase;">Return</div>
+            </td>
+            <td style="width: 8px;"></td>
+            <td style="text-align: center; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                <div style="font-size: 24px; font-weight: bold;">
+                    {{ "%.0f"|format(metrics.win_rate * 100) }}%
+                </div>
+                <div style="font-size: 11px; color: #666; text-transform: uppercase;">Win Rate</div>
+            </td>
+            <td style="width: 8px;"></td>
+            <td style="text-align: center; padding: 12px; background: #f8f9fa; border-radius: 8px;">
+                <div style="font-size: 24px; font-weight: bold;">
+                    {{ metrics.signals_followed }}
+                </div>
+                <div style="font-size: 11px; color: #666; text-transform: uppercase;">Trades</div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Recent Closed Trades -->
+    {% if recent_closed and recent_closed|length > 0 %}
+    <div style="margin-bottom: 16px;">
+        <h3 style="font-size: 14px; margin-bottom: 8px; color: #666;">Recently Closed</h3>
+        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+            {% for trade in recent_closed[:5] %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 8px 4px;">
+                    <strong>{{ trade.symbol }}</strong>
+                </td>
+                <td style="padding: 8px 4px; color: #666;">
+                    {{ trade.direction }}
+                </td>
+                <td style="padding: 8px 4px; text-align: right; color: {% if trade.r_multiple > 0 %}#22c55e{% else %}#ef4444{% endif %};">
+                    {% if trade.r_multiple > 0 %}+{% endif %}{{ "%.2f"|format(trade.r_multiple) }}R
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- Active Positions -->
+    {% if active_positions and active_positions|length > 0 %}
+    <div style="margin-bottom: 16px;">
+        <h3 style="font-size: 14px; margin-bottom: 8px; color: #666;">Active Positions ({{ active_positions|length }})</h3>
+        <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+            <tr style="background: #f8f9fa;">
+                <th style="padding: 8px 4px; text-align: left; font-weight: 600;">Symbol</th>
+                <th style="padding: 8px 4px; text-align: left; font-weight: 600;">Entry</th>
+                <th style="padding: 8px 4px; text-align: right; font-weight: 600;">Current</th>
+                <th style="padding: 8px 4px; text-align: right; font-weight: 600;">P&L</th>
+            </tr>
+            {% for pos in active_positions %}
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="padding: 8px 4px;"><strong>{{ pos.symbol }}</strong></td>
+                <td style="padding: 8px 4px;">${{ "%.2f"|format(pos.entry_price) }}</td>
+                <td style="padding: 8px 4px; text-align: right;">${{ "%.2f"|format(pos.current_price) }}</td>
+                <td style="padding: 8px 4px; text-align: right; color: {% if pos.unrealized_pnl > 0 %}#22c55e{% else %}#ef4444{% endif %};">
+                    {% if pos.unrealized_pnl > 0 %}+{% endif %}{{ "%.1f"|format(pos.unrealized_pnl_pct * 100) }}%
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- Streak Indicator -->
+    {% if streak and streak.count >= 3 %}
+    <div style="padding: 12px; background: {% if streak.type == 'win' %}#f0fdf4{% else %}#fef2f2{% endif %}; border-radius: 8px; text-align: center;">
+        <span style="font-size: 20px;">{% if streak.type == 'win' %}🔥{% else %}⚠️{% endif %}</span>
+        <span style="font-weight: 600;">
+            {{ streak.count }}-trade {{ streak.type }}ing streak
+        </span>
+    </div>
+    {% endif %}
+</div>
+

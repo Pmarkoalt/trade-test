@@ -39,6 +39,8 @@ class Recommendation:
 
     # Optional metadata
     news_headlines: List[str] = field(default_factory=list)
+    news_reasoning: Optional[str] = None
+    news_sentiment: Optional[str] = None  # 'positive', 'negative', 'neutral'
     generated_at: datetime = field(default_factory=datetime.now)
     strategy_name: Optional[str] = None
 

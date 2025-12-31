@@ -1,0 +1,61 @@
+# Docker Compose for Trading Assistant Dashboard
+# Usage: docker-compose up -d
+
+version: '3.8'
+
+services:
+  dashboard:
+    build:
+      context: ../..
+      dockerfile: trading_system/dashboard/Dockerfile
+    container_name: trading-dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      # Persist databases
+      - ./data:/app/data
+      # Mount config
+      - ./config:/app/config:ro
+    environment:
+      # API Keys (set in .env file)
+      - POLYGON_API_KEY=${POLYGON_API_KEY:-}
+      - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY:-}
+      - NEWSAPI_API_KEY=${NEWSAPI_API_KEY:-}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY:-}
+      # Dashboard settings
+      - DASHBOARD_PASSWORD_HASH=${DASHBOARD_PASSWORD_HASH:-}
+      - TRACKING_DB_PATH=/app/data/tracking.db
+      - FEATURE_DB_PATH=/app/data/features.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Optional: Scheduler service for cron jobs
+  scheduler:
+    build:
+      context: ../..
+      dockerfile: trading_system/dashboard/Dockerfile
+    container_name: trading-scheduler
+    command: ["python", "-m", "trading_system.scheduler.cron_runner"]
+    volumes:
+      - ./data:/app/data
+      - ./config:/app/config:ro
+    environment:
+      - POLYGON_API_KEY=${POLYGON_API_KEY:-}
+      - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY:-}
+      - NEWSAPI_API_KEY=${NEWSAPI_API_KEY:-}
+      - SENDGRID_API_KEY=${SENDGRID_API_KEY:-}
+      - TRACKING_DB_PATH=/app/data/tracking.db
+      - FEATURE_DB_PATH=/app/data/features.db
+    restart: unless-stopped
+    depends_on:
+      - dashboard
+    profiles:
+      - full  # Only start with: docker-compose --profile full up
+
+volumes:
+  data:

@@ -26,3 +26,19 @@ class DataPipelineConfig(BaseModel):
 
         arbitrary_types_allowed = True
 
+
+class NewsAPIConfig(BaseModel):
+    """NewsAPI.org configuration.
+
+    Attributes:
+        api_key: NewsAPI.org API key
+        rate_limit_per_minute: Maximum requests per minute (free tier: 100/day)
+        max_articles_per_symbol: Maximum articles to fetch per symbol
+        lookback_hours: How many hours back to search for articles
+    """
+
+    api_key: str
+    rate_limit_per_minute: int = 5
+    max_articles_per_symbol: int = 10
+    lookback_hours: int = 48
+

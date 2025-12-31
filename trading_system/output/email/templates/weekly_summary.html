@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Performance Summary</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+        .header h1 {
+            margin: 0;
+            color: #1a1a1a;
+            font-size: 24px;
+        }
+        .header .date-range {
+            color: #666;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .metric-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        .metric-card.highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .metric-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .metric-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+        }
+        .positive { color: #22c55e; }
+        .negative { color: #ef4444; }
+        .neutral { color: #666; }
+        .section {
+            margin-bottom: 24px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        .trade-row.winner { background: rgba(34, 197, 94, 0.05); }
+        .trade-row.loser { background: rgba(239, 68, 68, 0.05); }
+        .insight-box {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            border-radius: 0 4px 4px 0;
+        }
+        .insight-box.success {
+            background: #f0fdf4;
+            border-left-color: #22c55e;
+        }
+        .insight-box.warning {
+            background: #fef2f2;
+            border-left-color: #ef4444;
+        }
+        .footer {
+            text-align: center;
+            padding-top: 24px;
+            border-top: 1px solid #e0e0e0;
+            color: #666;
+            font-size: 12px;
+        }
+        .strategy-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        .strategy-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Weekly Performance Summary</h1>
+            <div class="date-range">{{ period_start }} - {{ period_end }}</div>
+        </div>
+
+        <!-- Key Metrics Grid -->
+        <div class="metric-grid">
+            <div class="metric-card highlight">
+                <div class="metric-value">{{ "%.1f"|format(metrics.total_r) }}R</div>
+                <div class="metric-label">Total Return</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">{{ "%.0f"|format(metrics.win_rate * 100) }}%</div>
+                <div class="metric-label">Win Rate</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">{{ metrics.signals_followed }}</div>
+                <div class="metric-label">Trades Closed</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-value">{{ "%.2f"|format(metrics.expectancy_r) }}R</div>
+                <div class="metric-label">Expectancy</div>
+            </div>
+        </div>
+
+        <!-- Performance Summary -->
+        <div class="section">
+            <div class="section-title">Performance Breakdown</div>
+            <table>
+                <tr>
+                    <td>Winners</td>
+                    <td class="positive">{{ metrics.signals_won }} (avg +{{ "%.2f"|format(metrics.avg_winner_r) }}R)</td>
+                </tr>
+                <tr>
+                    <td>Losers</td>
+                    <td class="negative">{{ metrics.signals_lost }} (avg {{ "%.2f"|format(metrics.avg_loser_r) }}R)</td>
+                </tr>
+                <tr>
+                    <td>Sharpe Ratio</td>
+                    <td>{{ "%.2f"|format(metrics.sharpe_ratio) }}</td>
+                </tr>
+                <tr>
+                    <td>Max Drawdown</td>
+                    <td class="{% if metrics.max_drawdown_pct < -0.1 %}negative{% else %}neutral{% endif %}">
+                        {{ "%.1f"|format(metrics.max_drawdown_pct * 100) }}%
+                    </td>
+                </tr>
+                <tr>
+                    <td>vs Benchmark</td>
+                    <td class="{% if metrics.alpha > 0 %}positive{% else %}negative{% endif %}">
+                        {% if metrics.alpha > 0 %}+{% endif %}{{ "%.2f"|format(metrics.alpha * 100) }}% alpha
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Strategy Performance -->
+        {% if strategies %}
+        <div class="section">
+            <div class="section-title">Strategy Performance</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Trades</th>
+                        <th>Win Rate</th>
+                        <th>Total R</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for strategy in strategies %}
+                    <tr>
+                        <td>{{ strategy.name }}</td>
+                        <td>{{ strategy.followed_signals }}</td>
+                        <td>{{ "%.0f"|format(strategy.win_rate * 100) }}%</td>
+                        <td class="{% if strategy.total_r > 0 %}positive{% else %}negative{% endif %}">
+                            {% if strategy.total_r > 0 %}+{% endif %}{{ "%.1f"|format(strategy.total_r) }}R
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Recent Trades -->
+        {% if recent_trades %}
+        <div class="section">
+            <div class="section-title">Recent Trades</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Symbol</th>
+                        <th>Direction</th>
+                        <th>Result</th>
+                        <th>Exit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trade in recent_trades %}
+                    <tr class="trade-row {% if trade.r_multiple > 0 %}winner{% else %}loser{% endif %}">
+                        <td><strong>{{ trade.symbol }}</strong></td>
+                        <td>{{ trade.direction }}</td>
+                        <td class="{% if trade.r_multiple > 0 %}positive{% else %}negative{% endif %}">
+                            {% if trade.r_multiple > 0 %}+{% endif %}{{ "%.2f"|format(trade.r_multiple) }}R
+                        </td>
+                        <td>{{ trade.exit_reason or 'Manual' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Insights -->
+        {% if insights %}
+        <div class="section">
+            <div class="section-title">Insights & Recommendations</div>
+            {% for insight in insights %}
+            <div class="insight-box {% if 'WARNING' in insight %}warning{% elif 'Strong' in insight or 'Best' in insight %}success{% endif %}">
+                {{ insight }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Cumulative Performance -->
+        <div class="section">
+            <div class="section-title">Cumulative Performance (All Time)</div>
+            <table>
+                <tr>
+                    <td>Total Signals Generated</td>
+                    <td>{{ cumulative.total_signals }}</td>
+                </tr>
+                <tr>
+                    <td>Total Trades Taken</td>
+                    <td>{{ cumulative.total_followed }}</td>
+                </tr>
+                <tr>
+                    <td>Overall Win Rate</td>
+                    <td>{{ "%.1f"|format(cumulative.win_rate * 100) }}%</td>
+                </tr>
+                <tr>
+                    <td>Total Return</td>
+                    <td class="{% if cumulative.total_r > 0 %}positive{% else %}negative{% endif %}">
+                        {% if cumulative.total_r > 0 %}+{% endif %}{{ "%.1f"|format(cumulative.total_r) }}R
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>Generated by Trading Assistant</p>
+            <p>{{ generated_at }}</p>
+        </div>
+    </div>
+</body>
+</html>
+

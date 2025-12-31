@@ -1,0 +1,187 @@
+/* Custom styles for Trading Assistant Dashboard */
+
+/* Main container */
+.main .block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+/* Metric cards */
+.metric-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.metric-card-value {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.metric-card-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+/* Signal cards */
+.signal-card {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: white;
+}
+
+.signal-card.buy {
+    border-left: 4px solid #22c55e;
+}
+
+.signal-card.sell {
+    border-left: 4px solid #ef4444;
+}
+
+.signal-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.signal-card-symbol {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.signal-card-conviction {
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.conviction-high {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.conviction-medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.conviction-low {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Tables */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    background: #f9fafb;
+    padding: 0.75rem;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.data-table td {
+    padding: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.data-table tr:hover {
+    background: #f9fafb;
+}
+
+/* Positive/Negative colors */
+.positive {
+    color: #22c55e;
+}
+
+.negative {
+    color: #ef4444;
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.status-active {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-closed {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* Charts container */
+.chart-container {
+    background: white;
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Section headers */
+.section-header {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+/* Filters bar */
+.filters-bar {
+    background: #f9fafb;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+/* Insight boxes */
+.insight-box {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.insight-box.success {
+    background: #f0fdf4;
+    border-left: 4px solid #22c55e;
+}
+
+.insight-box.warning {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+}
+
+.insight-box.danger {
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+}
+
+.insight-box.info {
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+}
+

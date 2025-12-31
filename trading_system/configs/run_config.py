@@ -8,6 +8,8 @@ import pandas as pd
 import yaml
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+from ..research.config import ResearchConfig
+from ..signals.config import SignalConfig
 from .validation import (
     ConfigValidationError,
     validate_date_format,
@@ -342,6 +344,8 @@ class RunConfig(BaseModel):
     scoring: ScoringConfig = Field(default_factory=ScoringConfig)
     execution: ExecutionConfig = Field(default_factory=ExecutionConfig)
     output: OutputConfig = Field(default_factory=OutputConfig)
+    research: ResearchConfig = Field(default_factory=ResearchConfig)
+    signals: Optional[SignalConfig] = Field(default_factory=SignalConfig)
     random_seed: int = 42
     validation: Optional[ValidationConfig] = None
     metrics: Optional[MetricsConfig] = None
