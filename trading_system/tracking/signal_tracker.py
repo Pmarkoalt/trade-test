@@ -109,8 +109,7 @@ class SignalTracker:
         signal_id = self.store.insert_signal(signal)
 
         logger.info(
-            f"Recorded signal {signal_id}: {direction.value} {symbol} "
-            f"@ {entry_price} (conviction: {conviction.value})"
+            f"Recorded signal {signal_id}: {direction.value} {symbol} " f"@ {entry_price} (conviction: {conviction.value})"
         )
 
         return signal_id

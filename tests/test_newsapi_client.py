@@ -323,4 +323,3 @@ class TestNewsAPIClient:
         with patch("trading_system.data_pipeline.sources.news.newsapi_client.aiohttp", None):
             with pytest.raises(ImportError, match="aiohttp is required"):
                 NewsAPIClient(api_key="test_key")
-

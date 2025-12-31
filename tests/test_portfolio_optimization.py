@@ -260,7 +260,7 @@ class TestComputeRebalanceTargets:
         assert aapl_target.target_weight == 0.5
         assert aapl_target.current_weight == 0.4
         assert aapl_target.delta_notional > 0  # Should buy more
-        
+
         # Check GOOGL target (needs to decrease)
         googl_target = next(t for t in targets if t.symbol == "GOOGL")
         assert googl_target.target_weight == 0.2
@@ -369,4 +369,3 @@ class TestShouldRebalance:
         result = should_rebalance(current_weights, target_weights, threshold=0.05)
 
         assert result is True
-

@@ -29,7 +29,8 @@ def create_equity_curve(
 
     # Create subplots: equity and drawdown
     fig = make_subplots(
-        rows=2, cols=1,
+        rows=2,
+        cols=1,
         shared_xaxes=True,
         vertical_spacing=0.1,
         row_heights=[0.7, 0.3],
@@ -47,7 +48,8 @@ def create_equity_curve(
             fill="tozeroy",
             fillcolor=f"rgba(59, 130, 246, 0.1)",
         ),
-        row=1, col=1,
+        row=1,
+        col=1,
     )
 
     # High water mark
@@ -60,7 +62,8 @@ def create_equity_curve(
                 name="High Water Mark",
                 line=dict(color=config.neutral_color, width=1, dash="dash"),
             ),
-            row=1, col=1,
+            row=1,
+            col=1,
         )
 
     # Drawdown
@@ -75,7 +78,8 @@ def create_equity_curve(
                 fill="tozeroy",
                 fillcolor=f"rgba(239, 68, 68, 0.2)",
             ),
-            row=2, col=1,
+            row=2,
+            col=1,
         )
 
     # Update layout
@@ -117,29 +121,31 @@ def create_win_rate_gauge(
     else:
         color = config.negative_color
 
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=win_rate * 100,
-        number={"suffix": "%", "font": {"size": 40}},
-        gauge={
-            "axis": {"range": [0, 100], "tickwidth": 1},
-            "bar": {"color": color},
-            "bgcolor": "white",
-            "borderwidth": 2,
-            "bordercolor": "gray",
-            "steps": [
-                {"range": [0, 45], "color": "rgba(239, 68, 68, 0.2)"},
-                {"range": [45, 55], "color": "rgba(245, 158, 11, 0.2)"},
-                {"range": [55, 100], "color": "rgba(34, 197, 94, 0.2)"},
-            ],
-            "threshold": {
-                "line": {"color": "black", "width": 2},
-                "thickness": 0.75,
-                "value": 50,
+    fig = go.Figure(
+        go.Indicator(
+            mode="gauge+number",
+            value=win_rate * 100,
+            number={"suffix": "%", "font": {"size": 40}},
+            gauge={
+                "axis": {"range": [0, 100], "tickwidth": 1},
+                "bar": {"color": color},
+                "bgcolor": "white",
+                "borderwidth": 2,
+                "bordercolor": "gray",
+                "steps": [
+                    {"range": [0, 45], "color": "rgba(239, 68, 68, 0.2)"},
+                    {"range": [45, 55], "color": "rgba(245, 158, 11, 0.2)"},
+                    {"range": [55, 100], "color": "rgba(34, 197, 94, 0.2)"},
+                ],
+                "threshold": {
+                    "line": {"color": "black", "width": 2},
+                    "thickness": 0.75,
+                    "value": 50,
+                },
             },
-        },
-        title={"text": "Win Rate"},
-    ))
+            title={"text": "Win Rate"},
+        )
+    )
 
     fig.update_layout(
         height=250,
@@ -172,21 +178,25 @@ def create_returns_distribution(
     losers = [r for r in returns if r <= 0]
 
     # Add histograms
-    fig.add_trace(go.Histogram(
-        x=winners,
-        name="Winners",
-        marker_color=config.positive_color,
-        opacity=0.7,
-        nbinsx=20,
-    ))
+    fig.add_trace(
+        go.Histogram(
+            x=winners,
+            name="Winners",
+            marker_color=config.positive_color,
+            opacity=0.7,
+            nbinsx=20,
+        )
+    )
 
-    fig.add_trace(go.Histogram(
-        x=losers,
-        name="Losers",
-        marker_color=config.negative_color,
-        opacity=0.7,
-        nbinsx=20,
-    ))
+    fig.add_trace(
+        go.Histogram(
+            x=losers,
+            name="Losers",
+            marker_color=config.negative_color,
+            opacity=0.7,
+            nbinsx=20,
+        )
+    )
 
     # Add mean line
     mean_r = np.mean(returns) if returns else 0
@@ -233,19 +243,18 @@ def create_strategy_comparison_chart(
     df_sorted = df.sort_values(metric, ascending=True)
 
     # Color based on positive/negative
-    colors = [
-        config.positive_color if v > 0 else config.negative_color
-        for v in df_sorted[metric]
-    ]
+    colors = [config.positive_color if v > 0 else config.negative_color for v in df_sorted[metric]]
 
-    fig = go.Figure(go.Bar(
-        x=df_sorted[metric],
-        y=df_sorted["strategy"],
-        orientation="h",
-        marker_color=colors,
-        text=[f"{v:.2f}" for v in df_sorted[metric]],
-        textposition="outside",
-    ))
+    fig = go.Figure(
+        go.Bar(
+            x=df_sorted[metric],
+            y=df_sorted["strategy"],
+            orientation="h",
+            marker_color=colors,
+            text=[f"{v:.2f}" for v in df_sorted[metric]],
+            textposition="outside",
+        )
+    )
 
     # Title based on metric
     titles = {
@@ -291,7 +300,8 @@ def create_performance_by_day(
     avg_r = [by_day.get(d, {}).get("avg_r", 0) for d in days]
 
     fig = make_subplots(
-        rows=1, cols=2,
+        rows=1,
+        cols=2,
         subplot_titles=("Win Rate by Day", "Avg R by Day"),
     )
 
@@ -303,7 +313,8 @@ def create_performance_by_day(
             marker_color=config.primary_color,
             name="Win Rate",
         ),
-        row=1, col=1,
+        row=1,
+        col=1,
     )
 
     # Avg R bars
@@ -315,7 +326,8 @@ def create_performance_by_day(
             marker_color=colors,
             name="Avg R",
         ),
-        row=1, col=2,
+        row=1,
+        col=2,
     )
 
     fig.update_layout(
@@ -358,23 +370,27 @@ def create_conviction_breakdown(
     fig = go.Figure()
 
     # Grouped bar chart
-    fig.add_trace(go.Bar(
-        name="Win Rate (%)",
-        x=levels,
-        y=win_rates,
-        marker_color=config.primary_color,
-        text=[f"{v:.0f}%" for v in win_rates],
-        textposition="outside",
-    ))
+    fig.add_trace(
+        go.Bar(
+            name="Win Rate (%)",
+            x=levels,
+            y=win_rates,
+            marker_color=config.primary_color,
+            text=[f"{v:.0f}%" for v in win_rates],
+            textposition="outside",
+        )
+    )
 
-    fig.add_trace(go.Bar(
-        name="Avg R",
-        x=levels,
-        y=avg_r,
-        marker_color=config.positive_color,
-        text=[f"{v:.2f}R" for v in avg_r],
-        textposition="outside",
-    ))
+    fig.add_trace(
+        go.Bar(
+            name="Avg R",
+            x=levels,
+            y=avg_r,
+            marker_color=config.positive_color,
+            text=[f"{v:.2f}R" for v in avg_r],
+            textposition="outside",
+        )
+    )
 
     fig.update_layout(
         height=300,
@@ -423,20 +439,21 @@ def create_monthly_performance_heatmap(
         month_idx = month - 1
         z[year_idx, month_idx] = r_value
 
-    month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    month_names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
-    fig = go.Figure(data=go.Heatmap(
-        z=z,
-        x=month_names,
-        y=[str(y) for y in years],
-        colorscale="RdYlGn",
-        zmid=0,
-        text=[[f"{v:.1f}R" if not np.isnan(v) else "" for v in row] for row in z],
-        texttemplate="%{text}",
-        textfont={"size": 10},
-        hovertemplate="Year: %{y}<br>Month: %{x}<br>Return: %{z:.2f}R<extra></extra>",
-    ))
+    fig = go.Figure(
+        data=go.Heatmap(
+            z=z,
+            x=month_names,
+            y=[str(y) for y in years],
+            colorscale="RdYlGn",
+            zmid=0,
+            text=[[f"{v:.1f}R" if not np.isnan(v) else "" for v in row] for row in z],
+            texttemplate="%{text}",
+            textfont={"size": 10},
+            hovertemplate="Year: %{y}<br>Month: %{x}<br>Return: %{z:.2f}R<extra></extra>",
+        )
+    )
 
     fig.update_layout(
         height=max(200, len(years) * 60),
@@ -445,4 +462,3 @@ def create_monthly_performance_heatmap(
     )
 
     return fig
-

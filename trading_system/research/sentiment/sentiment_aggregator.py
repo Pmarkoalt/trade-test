@@ -29,7 +29,7 @@ class AggregatedSentiment:
     def sentiment_ratio(self) -> float:
         """Ratio of positive to negative articles."""
         if self.negative_count == 0:
-            return float('inf') if self.positive_count > 0 else 1.0
+            return float("inf") if self.positive_count > 0 else 1.0
         return self.positive_count / self.negative_count
 
 
@@ -99,10 +99,7 @@ class SentimentAggregator:
             as_of = datetime.utcnow()
 
         # Filter articles for this symbol
-        symbol_articles = [
-            a for a in articles
-            if symbol.upper() in [s.upper() for s in a.symbols]
-        ]
+        symbol_articles = [a for a in articles if symbol.upper() in [s.upper() for s in a.symbols]]
 
         if not symbol_articles:
             return AggregatedSentiment(
@@ -203,10 +200,7 @@ class SentimentAggregator:
         Returns:
             Dictionary mapping symbols to AggregatedSentiment
         """
-        return {
-            symbol: self.aggregate_for_symbol(articles, symbol, as_of)
-            for symbol in symbols
-        }
+        return {symbol: self.aggregate_for_symbol(articles, symbol, as_of) for symbol in symbols}
 
     def get_market_sentiment(
         self,
@@ -318,14 +312,14 @@ class SentimentAggregator:
         if len(scores) > 1:
             mean = sum(scores) / len(scores)
             variance = sum((s - mean) ** 2 for s in scores) / len(scores)
-            std_dev = variance ** 0.5
+            std_dev = variance**0.5
             # Convert std_dev to consistency (0 std = 1.0 consistency, 2 std = 0 consistency)
             consistency_factor = max(0, 1 - std_dev / 2)
         else:
             consistency_factor = 0.5  # Neutral if only one article
 
         # Combine factors
-        confidence = (count_factor * 0.6 + consistency_factor * 0.4)
+        confidence = count_factor * 0.6 + consistency_factor * 0.4
 
         return min(confidence, 1.0)
 

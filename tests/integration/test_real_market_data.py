@@ -33,7 +33,9 @@ def has_real_data() -> bool:
     return EQUITY_DATA_DIR.exists() and any(EQUITY_DATA_DIR.glob("*.csv"))
 
 
-@pytest.mark.skipif(not has_real_data(), reason="Real market data not available. Run: python scripts/download_real_market_data.py")
+@pytest.mark.skipif(
+    not has_real_data(), reason="Real market data not available. Run: python scripts/download_real_market_data.py"
+)
 class TestRealMarketData:
     """Tests with real historical market data."""
 
@@ -68,8 +70,9 @@ class TestRealMarketData:
                 df = data[symbol]
                 assert len(df) > 0, f"Data for {symbol} should not be empty"
                 assert "date" in df.columns or df.index.name == "date", f"Data for {symbol} should have date column/index"
-                assert all(col in df.columns for col in ["open", "high", "low", "close", "volume"]), \
-                    f"Data for {symbol} should have OHLCV columns"
+                assert all(
+                    col in df.columns for col in ["open", "high", "low", "close", "volume"]
+                ), f"Data for {symbol} should have OHLCV columns"
 
     def test_real_data_validation(self, equity_symbols):
         """Test that real market data passes validation."""
@@ -85,8 +88,9 @@ class TestRealMarketData:
 
             # Check for common data quality issues
             # 1. No negative prices
-            assert (df[["open", "high", "low", "close"]] > 0).all().all(), \
-                f"Real data for {symbol} should have positive prices"
+            assert (
+                (df[["open", "high", "low", "close"]] > 0).all().all()
+            ), f"Real data for {symbol} should have positive prices"
 
             # 2. OHLC relationships are valid
             assert (df["high"] >= df["low"]).all(), f"Real data for {symbol} should have high >= low"
@@ -425,5 +429,3 @@ class TestRealMarketData:
             else:
                 # No duplicates - good!
                 assert True
-
-

@@ -202,4 +202,3 @@ class LiveDataFetcher:
         await self.binance._close_session()
 
         return False
-

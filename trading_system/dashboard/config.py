@@ -91,4 +91,3 @@ PAGES: Dict[str, Dict[str, str]] = {
         "description": "System settings",
     },
 }
-

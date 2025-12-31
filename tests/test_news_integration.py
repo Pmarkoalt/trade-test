@@ -22,6 +22,7 @@ from trading_system.signals.live_signal_generator import LiveSignalGenerator
 @dataclass
 class SymbolNewsSummary:
     """Mock symbol news summary."""
+
     symbol: str
     article_count: int
     avg_sentiment_score: float
@@ -36,6 +37,7 @@ class SymbolNewsSummary:
 @dataclass
 class NewsAnalysisResult:
     """Mock news analysis result."""
+
     analysis_date: date
     symbols_analyzed: List[str]
     symbol_summaries: Dict[str, SymbolNewsSummary]
@@ -51,11 +53,7 @@ class MockNewsAnalyzer:
     def __init__(self, config: ResearchConfig):
         self.config = config
 
-    async def analyze_symbols(
-        self,
-        symbols: List[str],
-        lookback_hours: int = 48
-    ) -> NewsAnalysisResult:
+    async def analyze_symbols(self, symbols: List[str], lookback_hours: int = 48) -> NewsAnalysisResult:
         """Mock analyze_symbols that returns test data."""
         # Create mock articles
         articles = []
@@ -74,7 +72,7 @@ class MockNewsAnalyzer:
                     sentiment_score=0.6,
                     sentiment_label=SentimentLabel.POSITIVE,
                     sentiment_confidence=0.8,
-                    symbols=[symbol]
+                    symbols=[symbol],
                 )
                 articles.append(article)
 
@@ -87,7 +85,7 @@ class MockNewsAnalyzer:
                     negative_count=0,
                     neutral_count=0,
                     sentiment_trend="improving",
-                    most_recent_article=datetime.now()
+                    most_recent_article=datetime.now(),
                 )
             else:
                 # Create neutral article for other symbols
@@ -101,7 +99,7 @@ class MockNewsAnalyzer:
                     sentiment_score=0.0,
                     sentiment_label=SentimentLabel.NEUTRAL,
                     sentiment_confidence=0.5,
-                    symbols=[symbol]
+                    symbols=[symbol],
                 )
                 articles.append(article)
 
@@ -114,7 +112,7 @@ class MockNewsAnalyzer:
                     negative_count=0,
                     neutral_count=1,
                     sentiment_trend="stable",
-                    most_recent_article=datetime.now()
+                    most_recent_article=datetime.now(),
                 )
 
         return NewsAnalysisResult(
@@ -124,7 +122,7 @@ class MockNewsAnalyzer:
             market_sentiment=0.3,
             market_sentiment_label=SentimentLabel.POSITIVE,
             total_articles=len(articles),
-            articles=articles
+            articles=articles,
         )
 
 
@@ -142,26 +140,22 @@ class TestNewsIntegration:
                     "title": "Apple stock surges on strong iPhone sales",
                     "description": "Apple Inc reported record quarterly revenue...",
                     "url": "https://example.com/1",
-                    "publishedAt": "2024-01-15T10:00:00Z"
+                    "publishedAt": "2024-01-15T10:00:00Z",
                 },
                 {
                     "source": {"name": "Bloomberg"},
                     "title": "Tech stocks rally amid Fed optimism",
                     "description": "Technology shares led the market higher...",
                     "url": "https://example.com/2",
-                    "publishedAt": "2024-01-15T09:00:00Z"
-                }
-            ]
+                    "publishedAt": "2024-01-15T09:00:00Z",
+                },
+            ],
         }
 
     @pytest.fixture
     def research_config(self):
         """Create research config for testing."""
-        return ResearchConfig(
-            enabled=True,
-            lookback_hours=48,
-            max_articles_per_symbol=10
-        )
+        return ResearchConfig(enabled=True, lookback_hours=48, max_articles_per_symbol=10)
 
     @pytest.fixture
     def mock_news_analyzer(self, research_config):
@@ -173,22 +167,26 @@ class TestNewsIntegration:
         """Create sample OHLCV data."""
         dates = pd.date_range(start="2024-01-01", periods=100, freq="D")
         return {
-            "AAPL": pd.DataFrame({
-                "date": dates,
-                "open": [150.0] * 100,
-                "high": [155.0] * 100,
-                "low": [148.0] * 100,
-                "close": [152.0] * 100,
-                "volume": [1000000] * 100
-            }),
-            "MSFT": pd.DataFrame({
-                "date": dates,
-                "open": [350.0] * 100,
-                "high": [355.0] * 100,
-                "low": [348.0] * 100,
-                "close": [352.0] * 100,
-                "volume": [500000] * 100
-            })
+            "AAPL": pd.DataFrame(
+                {
+                    "date": dates,
+                    "open": [150.0] * 100,
+                    "high": [155.0] * 100,
+                    "low": [148.0] * 100,
+                    "close": [152.0] * 100,
+                    "volume": [1000000] * 100,
+                }
+            ),
+            "MSFT": pd.DataFrame(
+                {
+                    "date": dates,
+                    "open": [350.0] * 100,
+                    "high": [355.0] * 100,
+                    "low": [348.0] * 100,
+                    "close": [352.0] * 100,
+                    "volume": [500000] * 100,
+                }
+            ),
         }
 
     @pytest.fixture
@@ -202,10 +200,7 @@ class TestNewsIntegration:
     @pytest.mark.asyncio
     async def test_news_analyzer_processes_articles(self, mock_news_analyzer):
         """Test that news analyzer processes articles correctly."""
-        result = await mock_news_analyzer.analyze_symbols(
-            symbols=["AAPL"],
-            lookback_hours=24
-        )
+        result = await mock_news_analyzer.analyze_symbols(symbols=["AAPL"], lookback_hours=24)
 
         assert result.total_articles >= 1
         assert "AAPL" in result.symbol_summaries
@@ -216,17 +211,10 @@ class TestNewsIntegration:
     @pytest.mark.asyncio
     async def test_positive_news_boosts_signal_score(self, mock_news_analyzer, sample_ohlcv_data, mock_strategy):
         """Test that positive news increases signal score."""
-        signal_config = SignalConfig(
-            news_enabled=True,
-            technical_weight=0.6,
-            news_weight=0.4,
-            min_news_score_for_boost=7.0
-        )
+        signal_config = SignalConfig(news_enabled=True, technical_weight=0.6, news_weight=0.4, min_news_score_for_boost=7.0)
 
         generator = LiveSignalGenerator(
-            strategies=[mock_strategy],
-            signal_config=signal_config,
-            news_analyzer=mock_news_analyzer
+            strategies=[mock_strategy], signal_config=signal_config, news_analyzer=mock_news_analyzer
         )
 
         # Create a mock signal
@@ -240,7 +228,7 @@ class TestNewsIntegration:
             entry_price=152.0,
             stop_price=148.0,
             breakout_strength=0.5,
-            momentum_strength=0.3
+            momentum_strength=0.3,
         )
 
         # Mock feature row
@@ -258,14 +246,11 @@ class TestNewsIntegration:
             roc60=0.1,
             highest_close_20d=150.0,
             highest_close_55d=148.0,
-            adv20=1000000.0
+            adv20=1000000.0,
         )
 
         # Get news analysis
-        news_analysis = await mock_news_analyzer.analyze_symbols(
-            symbols=["AAPL"],
-            lookback_hours=48
-        )
+        news_analysis = await mock_news_analyzer.analyze_symbols(symbols=["AAPL"], lookback_hours=48)
 
         # Verify positive news exists
         assert news_analysis.symbol_summaries["AAPL"].avg_sentiment_score > 0
@@ -278,6 +263,7 @@ class TestNewsIntegration:
     @pytest.mark.asyncio
     async def test_negative_news_reduces_signal_score(self, research_config):
         """Test that negative news decreases signal score."""
+
         # Create analyzer with negative news
         class NegativeNewsAnalyzer(MockNewsAnalyzer):
             async def analyze_symbols(self, symbols, lookback_hours=48):
@@ -293,7 +279,7 @@ class TestNewsIntegration:
                         negative_count=1,
                         neutral_count=0,
                         sentiment_trend="declining",
-                        most_recent_article=datetime.now()
+                        most_recent_article=datetime.now(),
                     )
                 return result
 
@@ -309,10 +295,7 @@ class TestNewsIntegration:
         """Test that generated email includes news digest."""
         from trading_system.output.email.report_generator import ReportGenerator
 
-        result = await mock_news_analyzer.analyze_symbols(
-            symbols=["AAPL", "MSFT"],
-            lookback_hours=48
-        )
+        result = await mock_news_analyzer.analyze_symbols(symbols=["AAPL", "MSFT"], lookback_hours=48)
 
         # Verify we have news data to include in email
         assert result.total_articles > 0
@@ -339,18 +322,16 @@ class TestNewsIntegration:
                     "positive_count": summary.positive_count,
                     "negative_count": summary.negative_count,
                     "neutral_count": summary.neutral_count,
-                    "sentiment_trend": summary.sentiment_trend
+                    "sentiment_trend": summary.sentiment_trend,
                 }
                 for symbol, summary in result.symbol_summaries.items()
-            }
+            },
         }
 
         # Generate email HTML with news digest
         report_generator = ReportGenerator()
         html_content = report_generator.generate_daily_signals_html(
-            recommendations=[],
-            portfolio_summary=None,
-            news_digest=news_digest
+            recommendations=[], portfolio_summary=None, news_digest=news_digest
         )
 
         # Verify news section is included in HTML
@@ -426,11 +407,7 @@ class TestSentimentAnalysis:
         """Test batch sentiment analysis."""
         analyzer = VADERSentimentAnalyzer()
 
-        texts = [
-            "Stock surges on earnings beat",
-            "Company faces bankruptcy",
-            "Price remains stable"
-        ]
+        texts = ["Stock surges on earnings beat", "Company faces bankruptcy", "Price remains stable"]
 
         results = analyzer.analyze_batch(texts)
         assert len(results) == 3
@@ -469,25 +446,17 @@ class TestSentimentAnalysis:
     @pytest.mark.asyncio
     async def test_news_integration_with_signal_generator(self, mock_news_analyzer, sample_ohlcv_data, mock_strategy):
         """Test full integration of news with signal generation."""
-        signal_config = SignalConfig(
-            news_enabled=True,
-            technical_weight=0.6,
-            news_weight=0.4
-        )
+        signal_config = SignalConfig(news_enabled=True, technical_weight=0.6, news_weight=0.4)
 
         generator = LiveSignalGenerator(
-            strategies=[mock_strategy],
-            signal_config=signal_config,
-            news_analyzer=mock_news_analyzer
+            strategies=[mock_strategy], signal_config=signal_config, news_analyzer=mock_news_analyzer
         )
 
         # Generate recommendations (this will call news analyzer)
         recommendations = await generator.generate_recommendations(
-            ohlcv_data=sample_ohlcv_data,
-            current_date=date(2024, 1, 15)
+            ohlcv_data=sample_ohlcv_data, current_date=date(2024, 1, 15)
         )
 
         # Verify that news analysis was integrated
         # The exact behavior depends on implementation, but we verify no errors occur
         assert isinstance(recommendations, list)
-

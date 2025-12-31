@@ -213,4 +213,3 @@ def render_streak_indicator(
         """,
         unsafe_allow_html=True,
     )
-

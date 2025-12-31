@@ -133,22 +133,24 @@ class DashboardDataService:
             # Convert to DataFrame
             data = []
             for signal in signals:
-                data.append({
-                    "id": signal.id,
-                    "symbol": signal.symbol,
-                    "direction": signal.direction.value,
-                    "signal_type": signal.signal_type,
-                    "conviction": signal.conviction.value,
-                    "status": signal.status.value,
-                    "entry_price": signal.entry_price,
-                    "target_price": signal.target_price,
-                    "stop_price": signal.stop_price,
-                    "combined_score": signal.combined_score,
-                    "technical_score": signal.technical_score,
-                    "news_score": signal.news_score,
-                    "created_at": signal.created_at,
-                    "was_delivered": signal.was_delivered,
-                })
+                data.append(
+                    {
+                        "id": signal.id,
+                        "symbol": signal.symbol,
+                        "direction": signal.direction.value,
+                        "signal_type": signal.signal_type,
+                        "conviction": signal.conviction.value,
+                        "status": signal.status.value,
+                        "entry_price": signal.entry_price,
+                        "target_price": signal.target_price,
+                        "stop_price": signal.stop_price,
+                        "combined_score": signal.combined_score,
+                        "technical_score": signal.technical_score,
+                        "news_score": signal.news_score,
+                        "created_at": signal.created_at,
+                        "was_delivered": signal.was_delivered,
+                    }
+                )
 
             df = pd.DataFrame(data)
             return df
@@ -245,18 +247,19 @@ class DashboardDataService:
 
             data = []
             for entry in leaderboard.entries:
-                data.append({
-                    "rank": entry.rank,
-                    "strategy": entry.display_name,
-                    "total_r": entry.total_r,
-                    "win_rate": entry.win_rate,
-                    "expectancy": entry.expectancy_r,
-                    "trades": entry.trade_count,
-                    "trend": entry.trend,
-                })
+                data.append(
+                    {
+                        "rank": entry.rank,
+                        "strategy": entry.display_name,
+                        "total_r": entry.total_r,
+                        "win_rate": entry.win_rate,
+                        "expectancy": entry.expectancy_r,
+                        "trades": entry.trade_count,
+                        "trend": entry.trend,
+                    }
+                )
 
             return pd.DataFrame(data)
 
         finally:
             store.close()
-

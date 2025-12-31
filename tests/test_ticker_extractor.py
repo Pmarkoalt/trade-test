@@ -154,13 +154,13 @@ class TestTickerExtractor:
         """Test that extractor only finds tickers in valid_tickers set."""
         custom_tickers = {"AAPL", "MSFT"}
         extractor = TickerExtractor(valid_tickers=custom_tickers)
-        
+
         # Should find AAPL and MSFT
         text1 = "Apple and Microsoft reported earnings"
         tickers1 = extractor.extract(text1)
         assert "AAPL" in tickers1
         assert "MSFT" in tickers1
-        
+
         # Should NOT find BTC even if mentioned
         text2 = "Bitcoin and Apple both rose"
         tickers2 = extractor.extract(text2)
@@ -188,11 +188,11 @@ class TestTickerExtractor:
         # Test Microsoft aliases
         text1 = "Microsoft stock rose"
         assert "MSFT" in extractor.extract(text1)
-        
+
         # Test Nvidia aliases
         text2 = "Nvidia announced new GeForce cards"
         assert "NVDA" in extractor.extract(text2)
-        
+
         # Test Meta/Facebook aliases
         text3 = "Facebook parent Meta reported earnings"
         assert "META" in extractor.extract(text3)
@@ -212,4 +212,3 @@ class TestTickerExtractor:
         assert ALIAS_TO_TICKER["apple"] == "AAPL"
         assert "bitcoin" in ALIAS_TO_TICKER
         assert ALIAS_TO_TICKER["bitcoin"] == "BTC"
-

@@ -94,4 +94,3 @@ class SignalMetadataFeatures(BaseFeatureExtractor):
         features["is_momentum"] = 1.0 if "momentum" in signal_type else 0.0
 
         return features
-

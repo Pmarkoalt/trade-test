@@ -20,4 +20,3 @@ class EmailConfig(BaseModel):
         """Pydantic configuration."""
 
         frozen = True
-

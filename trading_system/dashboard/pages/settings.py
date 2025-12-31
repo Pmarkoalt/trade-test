@@ -17,13 +17,7 @@ def render_settings(config: DashboardConfig):
     st.caption("Configure your trading dashboard")
 
     # Tabs for different settings categories
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "General",
-        "API Keys",
-        "Notifications",
-        "Risk Settings",
-        "About"
-    ])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["General", "API Keys", "Notifications", "Risk Settings", "About"])
 
     with tab1:
         render_general_settings(config)
@@ -135,10 +129,7 @@ def render_api_settings():
     """Render API settings section."""
     st.subheader("API Keys")
 
-    st.warning(
-        "API keys are stored as environment variables for security. "
-        "Set them in your shell or .env file."
-    )
+    st.warning("API keys are stored as environment variables for security. " "Set them in your shell or .env file.")
 
     # Display current status
     st.markdown("**API Key Status**")
@@ -176,14 +167,15 @@ def render_api_settings():
                 <span style="color: {color}; font-size: 1.25rem;">{status}</span>
             </div>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
     st.divider()
 
     # Instructions
     with st.expander("How to set API keys"):
-        st.markdown("""
+        st.markdown(
+            """
         **Option 1: Environment Variables**
         ```bash
         export POLYGON_API_KEY="your_key_here"
@@ -208,7 +200,8 @@ def render_api_settings():
         - Alpha Vantage: https://www.alphavantage.co (Free tier: 5 calls/min)
         - NewsAPI: https://newsapi.org (Free tier: 100 requests/day)
         - SendGrid: https://sendgrid.com (Free tier: 100 emails/day)
-        """)
+        """
+        )
 
 
 def render_notification_settings(config: DashboardConfig):
@@ -457,7 +450,8 @@ def render_about_section():
     """Render about section."""
     st.subheader("About Trading Assistant")
 
-    st.markdown("""
+    st.markdown(
+        """
     **Trading Assistant Dashboard** v1.0
 
     A comprehensive trading signal generation and tracking system with:
@@ -470,7 +464,8 @@ def render_about_section():
     ---
 
     **System Status**
-    """)
+    """
+    )
 
     # System checks
     checks = [
@@ -486,21 +481,20 @@ def render_about_section():
     for name, status in checks:
         emoji = "" if status else ""
         color = "#22c55e" if status else "#ef4444"
-        st.markdown(
-            f"<span style='color: {color};'>{emoji}</span> {name}",
-            unsafe_allow_html=True
-        )
+        st.markdown(f"<span style='color: {color};'>{emoji}</span> {name}", unsafe_allow_html=True)
 
     st.divider()
 
     # Documentation links
     st.markdown("**Documentation & Resources**")
-    st.markdown("""
+    st.markdown(
+        """
     - [User Guide](#) - How to use the trading system
     - [API Documentation](#) - REST API reference
     - [Strategy Guide](#) - Understanding the strategies
     - [FAQ](#) - Frequently asked questions
-    """)
+    """
+    )
 
     st.divider()
 
@@ -517,7 +511,7 @@ def render_about_section():
                     "theme": "light",
                     "auto_refresh": True,
                     "refresh_interval": 300,
-                }
+                },
             }
             st.download_button(
                 label="Download Config",

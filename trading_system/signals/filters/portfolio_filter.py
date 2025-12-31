@@ -154,19 +154,19 @@ class PortfolioFilter:
 
         # Check symbol exposure
         current_exposure = state.positions.get(signal.symbol, 0.0)
-        new_exposure = current_exposure + getattr(signal, 'position_size_pct', 0.05)
+        new_exposure = current_exposure + getattr(signal, "position_size_pct", 0.05)
         if new_exposure > self.config.max_symbol_exposure:
             violations.append(f"Symbol exposure {new_exposure:.1%} > max {self.config.max_symbol_exposure:.1%}")
 
         # Check sector exposure
         sector = self.symbol_sectors.get(signal.symbol, "unknown")
         current_sector_exposure = state.sector_exposure.get(sector, 0.0)
-        new_sector_exposure = current_sector_exposure + getattr(signal, 'position_size_pct', 0.05)
+        new_sector_exposure = current_sector_exposure + getattr(signal, "position_size_pct", 0.05)
         if new_sector_exposure > self.config.max_sector_exposure:
             violations.append(f"Sector {sector} exposure {new_sector_exposure:.1%} > max")
 
         # Check direction exposure
-        position_size = getattr(signal, 'position_size_pct', 0.05)
+        position_size = getattr(signal, "position_size_pct", 0.05)
         if signal.direction == "BUY":
             new_long = state.long_exposure + position_size
             if new_long > self.config.max_long_exposure:
@@ -183,9 +183,7 @@ class PortfolioFilter:
 
         # Check correlation constraints
         if state.correlations and signal.symbol in state.correlations:
-            correlated_count = self._count_correlated_positions(
-                signal.symbol, state.positions.keys(), state.correlations
-            )
+            correlated_count = self._count_correlated_positions(signal.symbol, state.positions.keys(), state.correlations)
             if correlated_count >= self.config.max_correlated_positions:
                 violations.append(f"Too many correlated positions ({correlated_count})")
 
@@ -229,7 +227,7 @@ class PortfolioFilter:
             signal: Accepted signal
             state: Portfolio state to update
         """
-        position_size = getattr(signal, 'position_size_pct', 0.05)
+        position_size = getattr(signal, "position_size_pct", 0.05)
         symbol = signal.symbol
 
         # Update position
@@ -335,9 +333,7 @@ class PortfolioFilter:
 
         # Correlation score (if available)
         if state.correlations and signal.symbol in state.correlations:
-            correlated = self._count_correlated_positions(
-                signal.symbol, state.positions.keys(), state.correlations
-            )
+            correlated = self._count_correlated_positions(signal.symbol, state.positions.keys(), state.correlations)
             corr_score = max(0, 1 - correlated / self.config.max_correlated_positions)
             scores.append(corr_score)
 

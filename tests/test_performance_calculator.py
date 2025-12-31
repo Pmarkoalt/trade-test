@@ -565,4 +565,3 @@ class TestPerformanceCalculator:
         assert abs(metrics.benchmark_return_pct - 0.05) < 0.001
 
         store.close()
-

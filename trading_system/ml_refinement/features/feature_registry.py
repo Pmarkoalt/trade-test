@@ -78,4 +78,3 @@ class FeatureRegistry:
     def get_feature_count(self) -> int:
         """Get total feature count."""
         return len(self.get_all_feature_names())
-

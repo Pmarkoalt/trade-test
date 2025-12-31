@@ -58,10 +58,7 @@ class TestVADERSentimentAnalyzer:
 
     def test_analyzer_custom_thresholds(self):
         """Test analyzer with custom thresholds."""
-        analyzer = VADERSentimentAnalyzer(
-            positive_threshold=0.1,
-            negative_threshold=-0.1
-        )
+        analyzer = VADERSentimentAnalyzer(positive_threshold=0.1, negative_threshold=-0.1)
         assert analyzer.positive_threshold == 0.1
         assert analyzer.negative_threshold == -0.1
 
@@ -95,18 +92,14 @@ class TestVADERSentimentAnalyzer:
 
     def test_very_positive_sentiment(self, analyzer):
         """Test very positive sentiment (high compound score)."""
-        score, label, conf = analyzer.analyze(
-            "Stock skyrockets to all-time high after beating expectations"
-        )
+        score, label, conf = analyzer.analyze("Stock skyrockets to all-time high after beating expectations")
         assert label == SentimentLabel.VERY_POSITIVE
         assert score >= 0.5
         assert 0.0 <= conf <= 1.0
 
     def test_very_negative_sentiment(self, analyzer):
         """Test very negative sentiment (low compound score)."""
-        score, label, conf = analyzer.analyze(
-            "Company faces bankruptcy after fraud scandal"
-        )
+        score, label, conf = analyzer.analyze("Company faces bankruptcy after fraud scandal")
         assert label == SentimentLabel.VERY_NEGATIVE
         assert score <= -0.5
         assert 0.0 <= conf <= 1.0
@@ -175,4 +168,3 @@ class TestVADERSentimentAnalyzer:
         assert result.sentiment_confidence is not None
         assert result.is_processed is True
         assert result.sentiment_score > 0  # Should be positive
-

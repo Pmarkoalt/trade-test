@@ -105,9 +105,7 @@ class TestLiveDataFetcherIntegration:
             pytest.skip("POLYGON_API_KEY not set, skipping integration test")
 
         # Pre-populate cache
-        cache_key = fetcher.cache.get_cache_key(
-            "AAPL", "equity", date.today() - timedelta(days=30), date.today()
-        )
+        cache_key = fetcher.cache.get_cache_key("AAPL", "equity", date.today() - timedelta(days=30), date.today())
         fetcher.cache.set(cache_key, sample_dataframe)
 
         # Mock API (should not be called due to cache)
@@ -127,9 +125,7 @@ class TestLiveDataFetcherIntegration:
     async def test_fetch_crypto_data_with_cache(self, fetcher, sample_dataframe):
         """Test fetching crypto data with cache."""
         # Pre-populate cache
-        cache_key = fetcher.cache.get_cache_key(
-            "BTC", "crypto", date.today() - timedelta(days=30), date.today()
-        )
+        cache_key = fetcher.cache.get_cache_key("BTC", "crypto", date.today() - timedelta(days=30), date.today())
         crypto_df = sample_dataframe.copy()
         crypto_df["symbol"] = "BTC"
         fetcher.cache.set(cache_key, crypto_df)
@@ -154,9 +150,7 @@ class TestLiveDataFetcherIntegration:
             pytest.skip("POLYGON_API_KEY not set, skipping integration test")
 
         # Pre-populate cache for one symbol
-        cache_key_aapl = fetcher.cache.get_cache_key(
-            "AAPL", "equity", date.today() - timedelta(days=30), date.today()
-        )
+        cache_key_aapl = fetcher.cache.get_cache_key("AAPL", "equity", date.today() - timedelta(days=30), date.today())
         fetcher.cache.set(cache_key_aapl, sample_dataframe)
 
         # Mock API for the other symbol
@@ -214,4 +208,3 @@ class TestLiveDataFetcherUnit:
             assert len(data["BTC"]) == 30
 
         await fetcher.__aexit__(None, None, None)
-

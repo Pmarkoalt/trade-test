@@ -202,10 +202,12 @@ class TestChartComponents:
         dates = pd.date_range(start="2024-01-01", periods=30, freq="D")
         equity = [10000 * (1 + 0.01 * i + 0.005 * (i % 5)) for i in range(30)]
 
-        df = pd.DataFrame({
-            "date": dates,
-            "equity": equity,
-        })
+        df = pd.DataFrame(
+            {
+                "date": dates,
+                "equity": equity,
+            }
+        )
 
         # Should not raise
         fig = create_equity_curve(df)
@@ -297,11 +299,13 @@ class TestTableComponents:
         import pandas as pd
         from trading_system.dashboard.components.tables import render_performance_table
 
-        df = pd.DataFrame({
-            "strategy": ["momentum", "mean_reversion"],
-            "win_rate": [0.55, 0.48],
-            "sharpe_ratio": [1.5, 0.8],
-        })
+        df = pd.DataFrame(
+            {
+                "strategy": ["momentum", "mean_reversion"],
+                "win_rate": [0.55, 0.48],
+                "sharpe_ratio": [1.5, 0.8],
+            }
+        )
 
         try:
             with patch("streamlit.dataframe"):
@@ -391,6 +395,7 @@ class TestPortfolioPage:
 
         # Just verify import works
         from trading_system.dashboard.pages.portfolio import render_portfolio
+
         assert callable(render_portfolio)
 
 
@@ -413,17 +418,17 @@ class TestIntegration:
         """Test that all components can be imported."""
         from trading_system.dashboard.components import charts, tables, cards
 
-        assert hasattr(charts, 'create_equity_curve')
-        assert hasattr(tables, 'render_signals_table')
-        assert hasattr(cards, 'render_metric_row')
+        assert hasattr(charts, "create_equity_curve")
+        assert hasattr(tables, "render_signals_table")
+        assert hasattr(cards, "render_metric_row")
 
     def test_all_services_importable(self):
         """Test that all services can be imported."""
         from trading_system.dashboard.services import data_service, cache_service, auth_service
 
-        assert hasattr(data_service, 'DashboardDataService')
-        assert hasattr(cache_service, 'CacheService')
-        assert hasattr(auth_service, 'AuthService')
+        assert hasattr(data_service, "DashboardDataService")
+        assert hasattr(cache_service, "CacheService")
+        assert hasattr(auth_service, "AuthService")
 
     def test_config_importable(self):
         """Test that config can be imported."""
@@ -440,4 +445,4 @@ class TestIntegration:
         # This should not raise
         import trading_system.dashboard.app as app
 
-        assert hasattr(app, 'main')
+        assert hasattr(app, "main")

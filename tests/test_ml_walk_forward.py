@@ -337,4 +337,3 @@ def test_walk_forward_sequential_splits():
         for i in range(len(splits) - 1):
             assert splits[i + 1].train_start >= splits[i].train_start
             assert splits[i + 1].val_start >= splits[i].val_start
-

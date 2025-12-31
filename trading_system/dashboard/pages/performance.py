@@ -64,28 +64,30 @@ def render_performance(config: DashboardConfig):
     # Key metrics
     st.subheader("Summary Metrics")
 
-    render_metric_row([
-        {
-            "label": "Total Return",
-            "value": f"{metrics.get('total_r', 0):+.1f}R",
-        },
-        {
-            "label": "Win Rate",
-            "value": f"{metrics.get('win_rate', 0) * 100:.1f}%",
-        },
-        {
-            "label": "Expectancy",
-            "value": f"{metrics.get('expectancy_r', 0):.2f}R",
-        },
-        {
-            "label": "Sharpe Ratio",
-            "value": f"{metrics.get('sharpe_ratio', 0):.2f}",
-        },
-        {
-            "label": "Max Drawdown",
-            "value": f"{metrics.get('max_drawdown_pct', 0) * 100:.1f}%",
-        },
-    ])
+    render_metric_row(
+        [
+            {
+                "label": "Total Return",
+                "value": f"{metrics.get('total_r', 0):+.1f}R",
+            },
+            {
+                "label": "Win Rate",
+                "value": f"{metrics.get('win_rate', 0) * 100:.1f}%",
+            },
+            {
+                "label": "Expectancy",
+                "value": f"{metrics.get('expectancy_r', 0):.2f}R",
+            },
+            {
+                "label": "Sharpe Ratio",
+                "value": f"{metrics.get('sharpe_ratio', 0):.2f}",
+            },
+            {
+                "label": "Max Drawdown",
+                "value": f"{metrics.get('max_drawdown_pct', 0) * 100:.1f}%",
+            },
+        ]
+    )
 
     st.divider()
 

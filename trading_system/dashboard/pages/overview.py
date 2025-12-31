@@ -51,29 +51,31 @@ def render_overview(config: DashboardConfig):
     st.subheader("Key Metrics (30 Days)")
 
     metrics_30d = data.metrics_30d
-    render_metric_row([
-        {
-            "label": "Total Return",
-            "value": f"{metrics_30d.get('total_r', 0):+.1f}R",
-            "delta": f"{metrics_30d.get('avg_r', 0):+.2f}R avg",
-            "help": "Total R-multiple return",
-        },
-        {
-            "label": "Win Rate",
-            "value": f"{metrics_30d.get('win_rate', 0) * 100:.0f}%",
-            "help": "Percentage of winning trades",
-        },
-        {
-            "label": "Expectancy",
-            "value": f"{metrics_30d.get('expectancy_r', 0):.2f}R",
-            "help": "Expected R per trade",
-        },
-        {
-            "label": "Trades",
-            "value": str(metrics_30d.get('total_signals', 0)),
-            "help": "Number of trades taken",
-        },
-    ])
+    render_metric_row(
+        [
+            {
+                "label": "Total Return",
+                "value": f"{metrics_30d.get('total_r', 0):+.1f}R",
+                "delta": f"{metrics_30d.get('avg_r', 0):+.2f}R avg",
+                "help": "Total R-multiple return",
+            },
+            {
+                "label": "Win Rate",
+                "value": f"{metrics_30d.get('win_rate', 0) * 100:.0f}%",
+                "help": "Percentage of winning trades",
+            },
+            {
+                "label": "Expectancy",
+                "value": f"{metrics_30d.get('expectancy_r', 0):.2f}R",
+                "help": "Expected R per trade",
+            },
+            {
+                "label": "Trades",
+                "value": str(metrics_30d.get("total_signals", 0)),
+                "help": "Number of trades taken",
+            },
+        ]
+    )
 
     # Streak indicator
     analytics = data.analytics
@@ -116,16 +118,18 @@ def render_overview(config: DashboardConfig):
 
         if data.active_signals:
             for signal in data.active_signals[:3]:
-                render_signal_card({
-                    "symbol": signal.symbol,
-                    "direction": signal.direction.value,
-                    "conviction": signal.conviction.value,
-                    "combined_score": signal.combined_score,
-                    "signal_type": signal.signal_type,
-                    "entry_price": signal.entry_price,
-                    "target_price": signal.target_price,
-                    "stop_price": signal.stop_price,
-                })
+                render_signal_card(
+                    {
+                        "symbol": signal.symbol,
+                        "direction": signal.direction.value,
+                        "conviction": signal.conviction.value,
+                        "combined_score": signal.combined_score,
+                        "signal_type": signal.signal_type,
+                        "entry_price": signal.entry_price,
+                        "target_price": signal.target_price,
+                        "stop_price": signal.stop_price,
+                    }
+                )
 
             if len(data.active_signals) > 3:
                 st.caption(f"+ {len(data.active_signals) - 3} more active signals")

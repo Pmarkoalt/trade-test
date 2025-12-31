@@ -136,7 +136,7 @@ def migrate_config(
             # Check if file exists before validation
             if not Path(tmp_path).exists():
                 return False, "Failed to create temporary file for validation", None
-            
+
             is_valid, error_message, _ = validate_config_file(tmp_path, config_type=config_type)
             if not is_valid:
                 if Path(tmp_path).exists():

@@ -13,25 +13,27 @@ except ImportError:
     # Create minimal interface for models
     class BaseModel:
         """Base model interface."""
-        
+
         def __init__(self, **kwargs):
             self.model_id = f"model_{np.random.randint(10000, 99999)}"
-            
+
         def fit(self, X_train, y_train, X_val=None, y_val=None, feature_names=None):
             """Train the model."""
             return {"accuracy": 0.0}
-            
+
         def predict(self, X):
             """Make predictions."""
             return np.zeros(len(X))
-            
+
         def predict_proba(self, X):
             """Predict probabilities."""
             return np.ones((len(X), 2)) * 0.5
-            
+
     class SignalQualityModel(BaseModel):
         """Signal quality model."""
+
         pass
+
 
 from trading_system.ml_refinement.validation.walk_forward import WalkForwardValidator
 from trading_system.ml_refinement.validation.metrics import calculate_classification_metrics
@@ -124,7 +126,7 @@ class HyperparameterTuner:
 
         logger.info(f"Grid search: {len(combinations)} combinations")
 
-        best_score = -float('inf')
+        best_score = -float("inf")
         best_params = {}
 
         for combo in combinations:
@@ -134,12 +136,14 @@ class HyperparameterTuner:
             scores = self._evaluate_params(X, y, feature_names, params, scoring)
             avg_score = np.mean(scores)
 
-            result.all_results.append({
-                "params": params,
-                "scores": scores,
-                "mean_score": avg_score,
-                "std_score": np.std(scores),
-            })
+            result.all_results.append(
+                {
+                    "params": params,
+                    "scores": scores,
+                    "mean_score": avg_score,
+                    "std_score": np.std(scores),
+                }
+            )
 
             if avg_score > best_score:
                 best_score = avg_score
@@ -188,7 +192,7 @@ class HyperparameterTuner:
         start_time = datetime.now()
         result = HyperparameterSearchResult()
 
-        best_score = -float('inf')
+        best_score = -float("inf")
         best_params = {}
 
         for trial in range(n_trials):
@@ -211,12 +215,14 @@ class HyperparameterTuner:
             scores = self._evaluate_params(X, y, feature_names, params, scoring)
             avg_score = np.mean(scores)
 
-            result.all_results.append({
-                "trial": trial,
-                "params": params,
-                "scores": scores,
-                "mean_score": avg_score,
-            })
+            result.all_results.append(
+                {
+                    "trial": trial,
+                    "params": params,
+                    "scores": scores,
+                    "mean_score": avg_score,
+                }
+            )
 
             if avg_score > best_score:
                 best_score = avg_score
@@ -244,10 +250,10 @@ class HyperparameterTuner:
         scores = []
 
         for split in self.cv.generate_splits(len(X)):
-            X_train = X[split.train_start:split.train_end]
-            y_train = y[split.train_start:split.train_end]
-            X_val = X[split.val_start:split.val_end]
-            y_val = y[split.val_start:split.val_end]
+            X_train = X[split.train_start : split.train_end]
+            y_train = y[split.train_start : split.train_end]
+            X_val = X[split.val_start : split.val_end]
+            y_val = y[split.val_start : split.val_end]
 
             # Train model
             model = self.model_class(**params)
@@ -256,17 +262,16 @@ class HyperparameterTuner:
             # Evaluate
             y_pred = model.predict(X_val)
             y_proba_full = model.predict_proba(X_val)
-            
+
             # Extract positive class probabilities (assuming binary classification)
             if y_proba_full.ndim > 1:
                 y_proba = y_proba_full[:, 1] if y_proba_full.shape[1] > 1 else y_proba_full[:, 0]
             else:
                 y_proba = y_proba_full
-                
+
             y_val_binary = (y_val > 0).astype(int)
 
             metrics = calculate_classification_metrics(y_val_binary, y_pred, y_proba)
             scores.append(metrics.get(scoring, 0))
 
         return scores
-

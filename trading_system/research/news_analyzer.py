@@ -19,6 +19,7 @@ from .config import ResearchConfig
 # Import VADER analyzer conditionally (optional dependency)
 try:
     from .sentiment.vader_analyzer import VADERSentimentAnalyzer
+
     VADER_AVAILABLE = True
 except ImportError:
     VADER_AVAILABLE = False
@@ -59,12 +60,7 @@ class NewsAnalysisResult:
 class NewsAnalyzer:
     """Main news analysis orchestrator."""
 
-    def __init__(
-        self,
-        config: ResearchConfig,
-        newsapi_key: Optional[str] = None,
-        alpha_vantage_key: Optional[str] = None
-    ):
+    def __init__(self, config: ResearchConfig, newsapi_key: Optional[str] = None, alpha_vantage_key: Optional[str] = None):
         """Initialize news analyzer.
 
         Args:
@@ -94,23 +90,16 @@ class NewsAnalyzer:
 
         # Initialize sentiment analyzer (optional dependency)
         if not VADER_AVAILABLE or VADERSentimentAnalyzer is None:
-            raise ImportError(
-                "vaderSentiment is required for NewsAnalyzer. "
-                "Install it with: pip install vaderSentiment"
-            )
+            raise ImportError("vaderSentiment is required for NewsAnalyzer. " "Install it with: pip install vaderSentiment")
         self.sentiment_analyzer = VADERSentimentAnalyzer(
             positive_threshold=config.sentiment.vader_threshold_positive,
-            negative_threshold=config.sentiment.vader_threshold_negative
+            negative_threshold=config.sentiment.vader_threshold_negative,
         )
         self.ticker_extractor = TickerExtractor()
 
         logger.info("NewsAnalyzer initialized")
 
-    async def analyze_symbols(
-        self,
-        symbols: List[str],
-        lookback_hours: int = None
-    ) -> NewsAnalysisResult:
+    async def analyze_symbols(self, symbols: List[str], lookback_hours: int = None) -> NewsAnalysisResult:
         """Analyze news for given symbols.
 
         Args:
@@ -126,9 +115,7 @@ class NewsAnalyzer:
 
         # 1. Fetch news
         fetch_result = await self.news_aggregator.fetch_articles(
-            symbols=symbols,
-            lookback_hours=lookback,
-            max_articles_per_symbol=self.config.max_articles_per_symbol
+            symbols=symbols, lookback_hours=lookback, max_articles_per_symbol=self.config.max_articles_per_symbol
         )
 
         articles = fetch_result.articles if fetch_result.success else []
@@ -156,14 +143,10 @@ class NewsAnalyzer:
             market_sentiment=market_sentiment,
             market_sentiment_label=market_label,
             total_articles=len(processed_articles),
-            articles=processed_articles
+            articles=processed_articles,
         )
 
-    def _process_article(
-        self,
-        article: NewsArticle,
-        target_symbols: List[str]
-    ) -> NewsArticle:
+    def _process_article(self, article: NewsArticle, target_symbols: List[str]) -> NewsArticle:
         """Process a single article.
 
         Args:
@@ -177,9 +160,7 @@ class NewsAnalyzer:
         if article.is_processed and article.sentiment_score is not None:
             # Still need to extract symbols if not done
             if not article.symbols:
-                article.symbols = self.ticker_extractor.extract(
-                    f"{article.title} {article.summary or ''}"
-                )
+                article.symbols = self.ticker_extractor.extract(f"{article.title} {article.summary or ''}")
             return article
 
         # Extract symbols mentioned
@@ -194,11 +175,7 @@ class NewsAnalyzer:
 
         return article
 
-    def _generate_symbol_summary(
-        self,
-        symbol: str,
-        articles: List[NewsArticle]
-    ) -> SymbolNewsSummary:
+    def _generate_symbol_summary(self, symbol: str, articles: List[NewsArticle]) -> SymbolNewsSummary:
         """Generate summary for a symbol.
 
         Args:
@@ -221,7 +198,7 @@ class NewsAnalyzer:
                 negative_count=0,
                 neutral_count=0,
                 top_headlines=[],
-                sentiment_trend="stable"
+                sentiment_trend="stable",
             )
 
         # Calculate sentiment stats
@@ -229,10 +206,12 @@ class NewsAnalyzer:
         avg_sentiment = sum(sentiments) / len(sentiments) if sentiments else 0.0
 
         # Count by label
-        positive_count = sum(1 for a in symbol_articles
-                            if a.sentiment_label in [SentimentLabel.POSITIVE, SentimentLabel.VERY_POSITIVE])
-        negative_count = sum(1 for a in symbol_articles
-                            if a.sentiment_label in [SentimentLabel.NEGATIVE, SentimentLabel.VERY_NEGATIVE])
+        positive_count = sum(
+            1 for a in symbol_articles if a.sentiment_label in [SentimentLabel.POSITIVE, SentimentLabel.VERY_POSITIVE]
+        )
+        negative_count = sum(
+            1 for a in symbol_articles if a.sentiment_label in [SentimentLabel.NEGATIVE, SentimentLabel.VERY_NEGATIVE]
+        )
         neutral_count = len(symbol_articles) - positive_count - negative_count
 
         # Determine overall label
@@ -249,9 +228,7 @@ class NewsAnalyzer:
 
         # Get top headlines (most recent, highest absolute sentiment)
         sorted_articles = sorted(
-            symbol_articles,
-            key=lambda a: (abs(a.sentiment_score or 0), a.published_at or datetime.min),
-            reverse=True
+            symbol_articles, key=lambda a: (abs(a.sentiment_score or 0), a.published_at or datetime.min), reverse=True
         )
         top_headlines = [a.title for a in sorted_articles[:3]]
 
@@ -286,13 +263,10 @@ class NewsAnalyzer:
             neutral_count=neutral_count,
             top_headlines=top_headlines,
             sentiment_trend=trend,
-            most_recent_article=most_recent
+            most_recent_article=most_recent,
         )
 
-    def _calculate_market_sentiment(
-        self,
-        articles: List[NewsArticle]
-    ) -> Tuple[float, SentimentLabel]:
+    def _calculate_market_sentiment(self, articles: List[NewsArticle]) -> Tuple[float, SentimentLabel]:
         """Calculate overall market sentiment.
 
         Args:
@@ -317,11 +291,7 @@ class NewsAnalyzer:
 
         return avg, label
 
-    def get_news_score_for_signal(
-        self,
-        symbol: str,
-        analysis: NewsAnalysisResult
-    ) -> Tuple[float, str]:
+    def get_news_score_for_signal(self, symbol: str, analysis: NewsAnalysisResult) -> Tuple[float, str]:
         """Get news score for use in signal scoring.
 
         Args:

@@ -295,9 +295,7 @@ def show_recent(count: int, db_path: str):
         streak_type = "winning" if analytics.current_streak_type == "win" else "losing"
         streak_color = "green" if analytics.current_streak_type == "win" else "red"
         console.print(
-            f"\n[{streak_color}]Currently on a {analytics.current_streak}-trade "
-            f"{streak_type} streak[/{streak_color}]"
+            f"\n[{streak_color}]Currently on a {analytics.current_streak}-trade " f"{streak_type} streak[/{streak_color}]"
         )
 
     store.close()
-

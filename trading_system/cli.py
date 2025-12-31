@@ -1655,6 +1655,7 @@ def cmd_trading_dashboard(args: argparse.Namespace) -> int:
         # Get the dashboard app path
         import os
         from pathlib import Path
+
         dashboard_file = Path(__file__).parent / "dashboard" / "app.py"
 
         if not dashboard_file.exists():
@@ -1663,7 +1664,10 @@ def cmd_trading_dashboard(args: argparse.Namespace) -> int:
 
         # Build command
         cmd = [
-            sys.executable, "-m", "streamlit", "run",
+            sys.executable,
+            "-m",
+            "streamlit",
+            "run",
             str(dashboard_file),
             f"--server.port={port}",
             f"--server.address={host}",
@@ -2169,6 +2173,7 @@ def main() -> int:
 
     # ML command group
     from .cli.commands import ml
+
     ml_parser = subparsers.add_parser(
         "ml",
         help="ML model management",

@@ -16,16 +16,16 @@ except ImportError:
     # Create minimal ModelRegistry stub
     class ModelRegistry:
         """Minimal model registry stub."""
-        
+
         def __init__(self, feature_db: FeatureDatabase):
             self.feature_db = feature_db
             self._models: Dict[ModelType, object] = {}
-            
+
         def get_active(self, model_type: ModelType):
             """Get active model for type."""
             if model_type in self._models:
                 return self._models[model_type]
-                
+
             # Try to get from database
             metadata = self.feature_db.get_active_model(model_type.value)
             if metadata:
@@ -133,7 +133,7 @@ class PredictionService:
         # Predict
         try:
             y_proba = model.predict_proba(X)
-            
+
             # Extract positive class probability
             if y_proba.ndim > 1:
                 quality_score = float(y_proba[0, 1] if y_proba.shape[1] > 1 else y_proba[0, 0])
@@ -143,7 +143,7 @@ class PredictionService:
             # Log prediction
             self.feature_db.log_prediction(
                 signal_id=signal_id,
-                model_id=getattr(model, 'model_id', 'unknown'),
+                model_id=getattr(model, "model_id", "unknown"),
                 quality_score=quality_score,
             )
 
@@ -230,4 +230,3 @@ class PredictionService:
         self._models.clear()
         for model_type in ModelType:
             self._get_model(model_type)
-

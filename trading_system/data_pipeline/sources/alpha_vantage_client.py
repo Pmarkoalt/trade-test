@@ -23,9 +23,7 @@ class AlphaVantageClient(BaseDataSource):
         """
         self.api_key = api_key
 
-    async def fetch_daily_bars(
-        self, symbol: str, start_date: date, end_date: date
-    ) -> pd.DataFrame:
+    async def fetch_daily_bars(self, symbol: str, start_date: date, end_date: date) -> pd.DataFrame:
         """Fetch daily OHLCV bars for a symbol over a date range.
 
         Args:
@@ -54,4 +52,3 @@ class AlphaVantageClient(BaseDataSource):
             This is a stub method that will be implemented in future tasks.
         """
         raise NotImplementedError("This method will be implemented in future tasks")
-

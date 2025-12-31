@@ -194,8 +194,10 @@ class TestDailySignalsJob:
     @pytest.mark.asyncio
     async def test_daily_signals_job_no_symbols(self, mock_env_vars):
         """Test daily signals job when no symbols are found."""
-        with patch("trading_system.scheduler.jobs.daily_signals_job.load_strategies_from_run_config") as mock_load_strategies, \
-             patch("trading_system.scheduler.jobs.daily_signals_job.load_universe") as mock_load_universe:
+        with (
+            patch("trading_system.scheduler.jobs.daily_signals_job.load_strategies_from_run_config") as mock_load_strategies,
+            patch("trading_system.scheduler.jobs.daily_signals_job.load_universe") as mock_load_universe,
+        ):
 
             mock_strategy = MagicMock()
             mock_load_strategies.return_value = [mock_strategy]
@@ -207,12 +209,14 @@ class TestDailySignalsJob:
     @pytest.mark.asyncio
     async def test_daily_signals_job_success(self, mock_env_vars, sample_ohlcv_data):
         """Test successful daily signals job execution."""
-        with patch("trading_system.scheduler.jobs.daily_signals_job.load_config") as mock_load_config, \
-             patch("trading_system.scheduler.jobs.daily_signals_job.LiveDataFetcher") as mock_fetcher_class, \
-             patch("trading_system.scheduler.jobs.daily_signals_job.load_strategies_from_run_config") as mock_load_strategies, \
-             patch("trading_system.scheduler.jobs.daily_signals_job.load_universe") as mock_load_universe, \
-             patch("trading_system.scheduler.jobs.daily_signals_job.LiveSignalGenerator") as mock_signal_gen_class, \
-             patch("trading_system.scheduler.jobs.daily_signals_job.EmailService") as mock_email_class:
+        with (
+            patch("trading_system.scheduler.jobs.daily_signals_job.load_config") as mock_load_config,
+            patch("trading_system.scheduler.jobs.daily_signals_job.LiveDataFetcher") as mock_fetcher_class,
+            patch("trading_system.scheduler.jobs.daily_signals_job.load_strategies_from_run_config") as mock_load_strategies,
+            patch("trading_system.scheduler.jobs.daily_signals_job.load_universe") as mock_load_universe,
+            patch("trading_system.scheduler.jobs.daily_signals_job.LiveSignalGenerator") as mock_signal_gen_class,
+            patch("trading_system.scheduler.jobs.daily_signals_job.EmailService") as mock_email_class,
+        ):
 
             # Setup mocks
             mock_config = {
@@ -252,8 +256,10 @@ class TestDailySignalsJob:
     @pytest.mark.asyncio
     async def test_daily_signals_job_error_handling(self, mock_env_vars):
         """Test error handling in daily signals job."""
-        with patch("trading_system.scheduler.jobs.daily_signals_job.load_config") as mock_load_config, \
-             patch("trading_system.scheduler.jobs.daily_signals_job.send_error_alert") as mock_send_alert:
+        with (
+            patch("trading_system.scheduler.jobs.daily_signals_job.load_config") as mock_load_config,
+            patch("trading_system.scheduler.jobs.daily_signals_job.send_error_alert") as mock_send_alert,
+        ):
 
             mock_load_config.side_effect = ValueError("Config error")
             mock_send_alert.return_value = None
@@ -503,4 +509,3 @@ class TestMLRetrainJob:
         assert status["needed"] is True
         assert "new samples" in status["reason"]
         assert status["new_samples"] == 150
-

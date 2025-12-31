@@ -48,10 +48,7 @@ def render_active_positions(service: DashboardDataService, config: DashboardConf
 
         if not active_signals:
             st.info("No active positions currently.")
-            render_insight_box(
-                "Start tracking by generating signals through the trading system.",
-                type="info"
-            )
+            render_insight_box("Start tracking by generating signals through the trading system.", type="info")
             return
 
         # Portfolio summary metrics
@@ -62,12 +59,14 @@ def render_active_positions(service: DashboardDataService, config: DashboardConf
         buy_count = sum(1 for s in active_signals if s.direction.value == "BUY")
         sell_count = total_positions - buy_count
 
-        render_metric_row([
-            {"label": "Active Positions", "value": str(total_positions)},
-            {"label": "Total Exposure", "value": f"{total_exposure:.1%}"},
-            {"label": "Long Positions", "value": str(buy_count)},
-            {"label": "Short Positions", "value": str(sell_count)},
-        ])
+        render_metric_row(
+            [
+                {"label": "Active Positions", "value": str(total_positions)},
+                {"label": "Total Exposure", "value": f"{total_exposure:.1%}"},
+                {"label": "Long Positions", "value": str(buy_count)},
+                {"label": "Short Positions", "value": str(sell_count)},
+            ]
+        )
 
         st.divider()
 
@@ -84,18 +83,20 @@ def render_active_positions(service: DashboardDataService, config: DashboardConf
                 reward_pct = 0
                 rr_ratio = 0
 
-            positions_data.append({
-                "Symbol": signal.symbol,
-                "Direction": signal.direction.value,
-                "Entry": f"${signal.entry_price:.2f}",
-                "Target": f"${signal.target_price:.2f}",
-                "Stop": f"${signal.stop_price:.2f}",
-                "Size": f"{signal.position_size_pct:.1%}",
-                "R:R": f"{rr_ratio:.1f}",
-                "Score": f"{signal.combined_score:.1f}",
-                "Conviction": signal.conviction.value,
-                "Days Held": (datetime.now() - signal.created_at).days if signal.created_at else 0,
-            })
+            positions_data.append(
+                {
+                    "Symbol": signal.symbol,
+                    "Direction": signal.direction.value,
+                    "Entry": f"${signal.entry_price:.2f}",
+                    "Target": f"${signal.target_price:.2f}",
+                    "Stop": f"${signal.stop_price:.2f}",
+                    "Size": f"{signal.position_size_pct:.1%}",
+                    "R:R": f"{rr_ratio:.1f}",
+                    "Score": f"{signal.combined_score:.1f}",
+                    "Conviction": signal.conviction.value,
+                    "Days Held": (datetime.now() - signal.created_at).days if signal.created_at else 0,
+                }
+            )
 
         df = pd.DataFrame(positions_data)
 
@@ -108,20 +109,18 @@ def render_active_positions(service: DashboardDataService, config: DashboardConf
                 "Symbol": st.column_config.TextColumn("Symbol", width="small"),
                 "Direction": st.column_config.TextColumn("Dir", width="small"),
                 "Conviction": st.column_config.TextColumn("Conv", width="small"),
-            }
+            },
         )
 
         # Insights
         if total_positions > 5:
             render_insight_box(
-                f"You have {total_positions} active positions. Consider reviewing concentration risk.",
-                type="warning"
+                f"You have {total_positions} active positions. Consider reviewing concentration risk.", type="warning"
             )
 
         if total_exposure > 0.8:
             render_insight_box(
-                f"Portfolio exposure is {total_exposure:.0%}. Limited capacity for new positions.",
-                type="warning"
+                f"Portfolio exposure is {total_exposure:.0%}. Limited capacity for new positions.", type="warning"
             )
 
     except Exception as e:
@@ -174,17 +173,28 @@ def render_position_history(service: DashboardDataService, config: DashboardConf
             total_closed = len(closed_df)
 
             st.markdown("**Closed Positions Summary**")
-            render_metric_row([
-                {"label": "Total Closed", "value": str(total_closed)},
-                {"label": "Avg Hold Days", "value": "N/A"},
-                {"label": "Win Rate", "value": "N/A"},
-                {"label": "Total R", "value": "N/A"},
-            ])
+            render_metric_row(
+                [
+                    {"label": "Total Closed", "value": str(total_closed)},
+                    {"label": "Avg Hold Days", "value": "N/A"},
+                    {"label": "Win Rate", "value": "N/A"},
+                    {"label": "Total R", "value": "N/A"},
+                ]
+            )
 
         st.divider()
 
         # Display table
-        display_cols = ["symbol", "direction", "conviction", "status", "entry_price", "target_price", "stop_price", "created_at"]
+        display_cols = [
+            "symbol",
+            "direction",
+            "conviction",
+            "status",
+            "entry_price",
+            "target_price",
+            "stop_price",
+            "created_at",
+        ]
         display_cols = [c for c in display_cols if c in df.columns]
 
         st.dataframe(
@@ -258,13 +268,15 @@ def render_allocation_view(service: DashboardDataService, config: DashboardConfi
             asset_data[asset_class] = asset_data.get(asset_class, 0) + s.position_size_pct
 
         if asset_data:
-            fig = go.Figure(go.Bar(
-                x=list(asset_data.keys()),
-                y=[v * 100 for v in asset_data.values()],
-                marker_color=chart_config.primary_color,
-                text=[f"{v:.1%}" for v in asset_data.values()],
-                textposition="outside",
-            ))
+            fig = go.Figure(
+                go.Bar(
+                    x=list(asset_data.keys()),
+                    y=[v * 100 for v in asset_data.values()],
+                    marker_color=chart_config.primary_color,
+                    text=[f"{v:.1%}" for v in asset_data.values()],
+                    textposition="outside",
+                )
+            )
             fig.update_layout(
                 height=250,
                 xaxis_title="Asset Class",
@@ -285,13 +297,15 @@ def render_allocation_view(service: DashboardDataService, config: DashboardConfi
             "LOW": "#6b7280",
         }
 
-        fig = go.Figure(go.Bar(
-            x=list(conv_data.keys()),
-            y=[v * 100 for v in conv_data.values()],
-            marker_color=[colors_map[k] for k in conv_data.keys()],
-            text=[f"{v:.1%}" for v in conv_data.values()],
-            textposition="outside",
-        ))
+        fig = go.Figure(
+            go.Bar(
+                x=list(conv_data.keys()),
+                y=[v * 100 for v in conv_data.values()],
+                marker_color=[colors_map[k] for k in conv_data.keys()],
+                text=[f"{v:.1%}" for v in conv_data.values()],
+                textposition="outside",
+            )
+        )
         fig.update_layout(
             height=250,
             xaxis_title="Conviction",

@@ -153,9 +153,7 @@ class LeaderboardGenerator:
                 rank=strategy.rank,
                 previous_rank=previous_ranks.get(strategy.name, strategy.rank),
                 strategy_name=strategy.name,
-                display_name=self.STRATEGY_DISPLAY_NAMES.get(
-                    strategy.name, strategy.name.replace("_", " ").title()
-                ),
+                display_name=self.STRATEGY_DISPLAY_NAMES.get(strategy.name, strategy.name.replace("_", " ").title()),
                 total_r=strategy.total_r,
                 win_rate=strategy.win_rate,
                 expectancy_r=strategy.expectancy_r,
@@ -229,10 +227,12 @@ class LeaderboardGenerator:
                 f"#{entry.rank:<5}{entry.display_name:<25}{r_str:<12}{wr_str:<12}{entry.trade_count:<8}{trend_symbol}"
             )
 
-        lines.extend([
-            "-" * 75,
-            f"Profitable: {leaderboard.profitable_strategies}/{leaderboard.total_strategies}",
-        ])
+        lines.extend(
+            [
+                "-" * 75,
+                f"Profitable: {leaderboard.profitable_strategies}/{leaderboard.total_strategies}",
+            ]
+        )
 
         if leaderboard.top_performer:
             lines.append(f"Top Performer: {leaderboard.top_performer}")
@@ -242,4 +242,3 @@ class LeaderboardGenerator:
             lines.append(f"Needs Attention: {leaderboard.needs_attention}")
 
         return "\n".join(lines)
-

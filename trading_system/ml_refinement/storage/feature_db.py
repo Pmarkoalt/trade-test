@@ -98,20 +98,23 @@ class FeatureDatabase:
         """
 
         with self.transaction():
-            self.connection.execute(sql, (
-                fv.signal_id,
-                fv.timestamp,
-                json.dumps(fv.features),
-                fv.target,
-                fv.target_binary,
-                None,  # target_return_pct - can be added later
-                self.FEATURE_VERSION,
-                datetime.now().isoformat(),
-                symbol,
-                asset_class,
-                signal_type,
-                conviction,
-            ))
+            self.connection.execute(
+                sql,
+                (
+                    fv.signal_id,
+                    fv.timestamp,
+                    json.dumps(fv.features),
+                    fv.target,
+                    fv.target_binary,
+                    None,  # target_return_pct - can be added later
+                    self.FEATURE_VERSION,
+                    datetime.now().isoformat(),
+                    symbol,
+                    asset_class,
+                    signal_type,
+                    conviction,
+                ),
+            )
 
         return True
 
@@ -134,13 +137,16 @@ class FeatureDatabase:
         """
 
         with self.transaction():
-            cursor = self.connection.execute(sql, (
-                r_multiple,
-                target_binary,
-                return_pct,
-                datetime.now().isoformat(),
-                signal_id,
-            ))
+            cursor = self.connection.execute(
+                sql,
+                (
+                    r_multiple,
+                    target_binary,
+                    return_pct,
+                    datetime.now().isoformat(),
+                    signal_id,
+                ),
+            )
 
         return cursor.rowcount > 0
 
@@ -217,10 +223,7 @@ class FeatureDatabase:
         feature_names = sorted(all_keys)
 
         # Build arrays
-        X = np.array([
-            [fd.get(key, 0.0) for key in feature_names]
-            for fd in feature_dicts
-        ])
+        X = np.array([[fd.get(key, 0.0) for key in feature_names] for fd in feature_dicts])
         y = np.array(targets)
 
         return X, y, feature_names
@@ -232,9 +235,7 @@ class FeatureDatabase:
         **kwargs,
     ) -> Tuple[np.ndarray, np.ndarray, List[str]]:
         """Get training data with binary target (win/loss)."""
-        X, y, feature_names = self.get_training_data(
-            start_date, end_date, **kwargs
-        )
+        X, y, feature_names = self.get_training_data(start_date, end_date, **kwargs)
 
         if len(y) > 0:
             y_binary = (y > 0).astype(int)
@@ -286,22 +287,25 @@ class FeatureDatabase:
         """
 
         with self.transaction():
-            self.connection.execute(sql, (
-                metadata.model_id,
-                metadata.model_type.value,
-                metadata.version,
-                metadata.created_at,
-                metadata.train_start_date,
-                metadata.train_end_date,
-                metadata.train_samples,
-                metadata.validation_samples,
-                json.dumps(metadata.train_metrics),
-                json.dumps(metadata.validation_metrics),
-                json.dumps(metadata.feature_names),
-                json.dumps(metadata.feature_importance),
-                f"{metadata.model_id}.pkl",
-                0,  # Not active by default
-            ))
+            self.connection.execute(
+                sql,
+                (
+                    metadata.model_id,
+                    metadata.model_type.value,
+                    metadata.version,
+                    metadata.created_at,
+                    metadata.train_start_date,
+                    metadata.train_end_date,
+                    metadata.train_samples,
+                    metadata.validation_samples,
+                    json.dumps(metadata.train_metrics),
+                    json.dumps(metadata.validation_metrics),
+                    json.dumps(metadata.feature_names),
+                    json.dumps(metadata.feature_importance),
+                    f"{metadata.model_id}.pkl",
+                    0,  # Not active by default
+                ),
+            )
 
         return True
 
@@ -319,17 +323,14 @@ class FeatureDatabase:
 
         with self.transaction():
             # Deactivate all models of this type
-            self.connection.execute(
-                "UPDATE model_registry SET is_active = 0 WHERE model_type = ?",
-                (model_type,)
-            )
+            self.connection.execute("UPDATE model_registry SET is_active = 0 WHERE model_type = ?", (model_type,))
 
             # Activate this model
             self.connection.execute(
                 """UPDATE model_registry
                    SET is_active = 1, deployed_at = ?
                    WHERE model_id = ?""",
-                (datetime.now().isoformat(), model_id)
+                (datetime.now().isoformat(), model_id),
             )
 
         return True
@@ -404,14 +405,17 @@ class FeatureDatabase:
         """
 
         with self.transaction():
-            self.connection.execute(sql, (
-                signal_id,
-                model_id,
-                datetime.now().isoformat(),
-                quality_score,
-                predicted_r,
-                confidence,
-            ))
+            self.connection.execute(
+                sql,
+                (
+                    signal_id,
+                    model_id,
+                    datetime.now().isoformat(),
+                    quality_score,
+                    predicted_r,
+                    confidence,
+                ),
+            )
 
         return True
 
@@ -441,11 +445,13 @@ class FeatureDatabase:
         """
 
         with self.transaction():
-            cursor = self.connection.execute(sql, (
-                actual_r,
-                prediction_error,
-                signal_id,
-            ))
+            cursor = self.connection.execute(
+                sql,
+                (
+                    actual_r,
+                    prediction_error,
+                    signal_id,
+                ),
+            )
 
         return cursor.rowcount > 0
-

@@ -33,4 +33,3 @@ class ResearchConfig(BaseModel):
 
     sentiment: SentimentConfig = SentimentConfig()
     relevance: RelevanceConfig = RelevanceConfig()
-

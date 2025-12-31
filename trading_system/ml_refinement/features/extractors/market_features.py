@@ -24,13 +24,13 @@ class MarketRegimeFeatures(OHLCVExtractor):
     @property
     def feature_names(self) -> List[str]:
         return [
-            "market_trend",               # Overall market direction
-            "market_breadth",             # Approximated breadth
-            "correlation_regime",         # High/low correlation
-            "volatility_regime",          # Vol regime (0-1)
-            "drawdown_depth",             # Current drawdown
-            "days_from_high",             # Days since ATH
-            "rally_strength",             # Strength of current rally
+            "market_trend",  # Overall market direction
+            "market_breadth",  # Approximated breadth
+            "correlation_regime",  # High/low correlation
+            "volatility_regime",  # Vol regime (0-1)
+            "drawdown_depth",  # Current drawdown
+            "days_from_high",  # Days since ATH
+            "rally_strength",  # Strength of current rally
         ]
 
     def extract(
@@ -60,9 +60,7 @@ class MarketRegimeFeatures(OHLCVExtractor):
         features["market_breadth"] = self._calculate_breadth_proxy(close, 20)
 
         # Correlation regime
-        features["correlation_regime"] = self._calculate_correlation_regime(
-            ohlcv["close"], close, 20
-        )
+        features["correlation_regime"] = self._calculate_correlation_regime(ohlcv["close"], close, 20)
 
         # Volatility regime
         features["volatility_regime"] = self._calculate_vol_regime(close, 20)
@@ -146,7 +144,7 @@ class MarketRegimeFeatures(OHLCVExtractor):
         current_vol = returns.iloc[-period:].std()
 
         # Compare to longer-term vol
-        long_vol = returns.iloc[-period * 2:-period].std()
+        long_vol = returns.iloc[-period * 2 : -period].std()
 
         if long_vol <= 0:
             return 0.5
@@ -218,4 +216,3 @@ class MarketRegimeFeatures(OHLCVExtractor):
         strength = ret / (vol * np.sqrt(period))
 
         return max(-1.0, min(1.0, strength))
-

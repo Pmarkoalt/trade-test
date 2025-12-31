@@ -83,4 +83,3 @@ class BaseNewsSource(ABC):
             self._last_request_time = datetime.now()
 
         self._request_count += 1
-

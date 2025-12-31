@@ -141,7 +141,7 @@ class TestCreateStrategy:
     def test_create_strategy_momentum_crypto(self):
         """Test creating momentum crypto strategy."""
         from trading_system.configs.strategy_config import ExitConfig
-        
+
         config = StrategyConfig(
             name="crypto_momentum",
             asset_class="crypto",
@@ -204,11 +204,11 @@ class TestCreateStrategy:
         # Or test with a type that's inferred but not registered
         # For now, let's test that invalid combinations raise errors
         from trading_system.strategies.strategy_registry import get_strategy_class
-        
+
         # Test that a non-existent type/asset_class combo returns None
         strategy_class = get_strategy_class("nonexistent_type", "equity")
         assert strategy_class is None
-        
+
         # The create_strategy will infer "momentum" from default, so it won't raise
         # To properly test StrategyNotFoundError, we'd need to modify _infer_strategy_type
         # or test with a type that's explicitly set but not registered

@@ -21,15 +21,15 @@ except ImportError:
     # Create minimal ModelRegistry stub
     class ModelRegistry:
         """Minimal model registry stub."""
-        
+
         def __init__(self, model_dir: str, feature_db: FeatureDatabase):
             self.model_dir = model_dir
             self.feature_db = feature_db
-            
+
         def get_active(self, model_type: ModelType):
             """Get active model metadata for type."""
             return self.feature_db.get_active_model(model_type.value)
-            
+
         def activate(self, model_id: str):
             """Activate a model."""
             return self.feature_db.activate_model(model_id)
@@ -40,7 +40,7 @@ console = Console()
 
 def setup_parser(ml_parser):
     """Set up ML CLI commands.
-    
+
     Args:
         ml_parser: The ML parser to add subcommands to.
     """
@@ -177,15 +177,17 @@ def cmd_train(args):
         )
 
     if result.success:
-        console.print(Panel(
-            f"[green]Model trained successfully![/green]\n\n"
-            f"Model ID: {result.model_id}\n"
-            f"Samples: {result.train_samples}\n"
-            f"CV AUC: {result.cv_metrics.get('auc', 0):.3f}\n"
-            f"Time: {result.total_time_seconds:.1f}s",
-            title="Training Complete",
-            box=box.ROUNDED,
-        ))
+        console.print(
+            Panel(
+                f"[green]Model trained successfully![/green]\n\n"
+                f"Model ID: {result.model_id}\n"
+                f"Samples: {result.train_samples}\n"
+                f"CV AUC: {result.cv_metrics.get('auc', 0):.3f}\n"
+                f"Time: {result.total_time_seconds:.1f}s",
+                title="Training Complete",
+                box=box.ROUNDED,
+            )
+        )
 
         # Show top features
         if result.top_features:
@@ -218,13 +220,15 @@ def cmd_status(args):
     total_features = feature_db.count_samples(require_target=False)
     labeled_features = feature_db.count_samples(require_target=True)
 
-    console.print(Panel(
-        f"Total feature vectors: {total_features}\n"
-        f"With labels: {labeled_features}\n"
-        f"Unlabeled: {total_features - labeled_features}",
-        title="Feature Database",
-        box=box.ROUNDED,
-    ))
+    console.print(
+        Panel(
+            f"Total feature vectors: {total_features}\n"
+            f"With labels: {labeled_features}\n"
+            f"Unlabeled: {total_features - labeled_features}",
+            title="Feature Database",
+            box=box.ROUNDED,
+        )
+    )
 
     # Model status
     table = Table(title="Active Models", box=box.ROUNDED)
@@ -257,10 +261,7 @@ def cmd_status(args):
     for model_type in ModelType:
         status = job.check_retrain_needed(model_type)
         if status["needed"]:
-            console.print(
-                f"[yellow]Retrain recommended for {model_type.value}: "
-                f"{status['reason']}[/yellow]"
-            )
+            console.print(f"[yellow]Retrain recommended for {model_type.value}: " f"{status['reason']}[/yellow]")
 
     feature_db.close()
     return 0
@@ -396,4 +397,3 @@ def cmd_retrain(args):
 
     feature_db.close()
     return 0
-

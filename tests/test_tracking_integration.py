@@ -286,4 +286,3 @@ class TestTrackingEdgeCases:
         # If it raises an exception, that's also acceptable behavior
         outcome = recorder.get_outcome(signal_id)
         assert outcome is not None
-

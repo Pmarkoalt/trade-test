@@ -103,4 +103,3 @@ def get_migration_files() -> List[Tuple[int, str]]:
         migrations.append((version, str(f)))
 
     return sorted(migrations, key=lambda x: x[0])
-

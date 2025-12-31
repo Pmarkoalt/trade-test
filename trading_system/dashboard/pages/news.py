@@ -73,10 +73,7 @@ def render_news_feed(config: DashboardConfig):
     # Filter articles
     filtered_articles = news_articles
     if sentiment_filter != "All":
-        filtered_articles = [
-            a for a in filtered_articles
-            if a.get("sentiment_label", "").lower() == sentiment_filter.lower()
-        ]
+        filtered_articles = [a for a in filtered_articles if a.get("sentiment_label", "").lower() == sentiment_filter.lower()]
 
     # Display articles
     for article in filtered_articles:
@@ -119,29 +116,34 @@ def render_sentiment_analysis(config: DashboardConfig):
     # Sentiment by symbol
     st.markdown("**Sentiment by Symbol**")
 
-    symbol_sentiments = sentiment_data.get("by_symbol", {
-        "AAPL": 0.45,
-        "MSFT": 0.32,
-        "GOOGL": 0.18,
-        "NVDA": 0.55,
-        "AMZN": -0.12,
-        "BTC": -0.08,
-        "ETH": 0.15,
-    })
+    symbol_sentiments = sentiment_data.get(
+        "by_symbol",
+        {
+            "AAPL": 0.45,
+            "MSFT": 0.32,
+            "GOOGL": 0.18,
+            "NVDA": 0.55,
+            "AMZN": -0.12,
+            "BTC": -0.08,
+            "ETH": 0.15,
+        },
+    )
 
     # Create horizontal bar chart
     symbols = list(symbol_sentiments.keys())
     scores = list(symbol_sentiments.values())
     colors = [chart_config.positive_color if s > 0 else chart_config.negative_color for s in scores]
 
-    fig = go.Figure(go.Bar(
-        x=scores,
-        y=symbols,
-        orientation='h',
-        marker_color=colors,
-        text=[f"{s:+.2f}" for s in scores],
-        textposition='outside',
-    ))
+    fig = go.Figure(
+        go.Bar(
+            x=scores,
+            y=symbols,
+            orientation="h",
+            marker_color=colors,
+            text=[f"{s:+.2f}" for s in scores],
+            textposition="outside",
+        )
+    )
 
     fig.update_layout(
         height=max(250, len(symbols) * 35),
@@ -162,15 +164,17 @@ def render_sentiment_analysis(config: DashboardConfig):
     df_trend = pd.DataFrame(trend_data)
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=df_trend["date"],
-        y=df_trend["sentiment"],
-        mode="lines+markers",
-        name="Sentiment",
-        line=dict(color=chart_config.primary_color, width=2),
-        fill="tozeroy",
-        fillcolor="rgba(59, 130, 246, 0.1)",
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=df_trend["date"],
+            y=df_trend["sentiment"],
+            mode="lines+markers",
+            name="Sentiment",
+            line=dict(color=chart_config.primary_color, width=2),
+            fill="tozeroy",
+            fillcolor="rgba(59, 130, 246, 0.1)",
+        )
+    )
 
     fig.update_layout(
         height=300,
@@ -186,15 +190,9 @@ def render_sentiment_analysis(config: DashboardConfig):
 
     # Insights
     if overall_sentiment > 0.3:
-        render_insight_box(
-            "Market sentiment is strongly positive. Consider taking profits on long positions.",
-            type="success"
-        )
+        render_insight_box("Market sentiment is strongly positive. Consider taking profits on long positions.", type="success")
     elif overall_sentiment < -0.3:
-        render_insight_box(
-            "Market sentiment is negative. Look for oversold opportunities.",
-            type="warning"
-        )
+        render_insight_box("Market sentiment is negative. Look for oversold opportunities.", type="warning")
 
 
 def render_watchlist_news(config: DashboardConfig):
@@ -244,7 +242,7 @@ def render_watchlist_news(config: DashboardConfig):
             st.markdown(
                 f"<span style='color: {sentiment_color}; font-weight: 600;'>"
                 f"Overall: {sentiment_label} ({avg_sentiment:+.2f})</span>",
-                unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
 
@@ -316,7 +314,7 @@ def _render_news_card(article: dict):
             </div>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 
@@ -340,7 +338,7 @@ def _render_compact_news_card(article: dict):
             </div>
         </div>
         """,
-        unsafe_allow_html=True
+        unsafe_allow_html=True,
     )
 
 
@@ -359,26 +357,28 @@ def _render_sentiment_gauge(value: float, title: str):
         color = "#f59e0b"
         label = "Neutral"
 
-    fig = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=value,
-        number={"suffix": "", "font": {"size": 28}, "valueformat": "+.2f"},
-        gauge={
-            "axis": {"range": [-1, 1], "tickwidth": 1},
-            "bar": {"color": color},
-            "steps": [
-                {"range": [-1, -0.2], "color": "rgba(239, 68, 68, 0.2)"},
-                {"range": [-0.2, 0.2], "color": "rgba(245, 158, 11, 0.2)"},
-                {"range": [0.2, 1], "color": "rgba(34, 197, 94, 0.2)"},
-            ],
-            "threshold": {
-                "line": {"color": "black", "width": 2},
-                "thickness": 0.75,
-                "value": 0,
+    fig = go.Figure(
+        go.Indicator(
+            mode="gauge+number",
+            value=value,
+            number={"suffix": "", "font": {"size": 28}, "valueformat": "+.2f"},
+            gauge={
+                "axis": {"range": [-1, 1], "tickwidth": 1},
+                "bar": {"color": color},
+                "steps": [
+                    {"range": [-1, -0.2], "color": "rgba(239, 68, 68, 0.2)"},
+                    {"range": [-0.2, 0.2], "color": "rgba(245, 158, 11, 0.2)"},
+                    {"range": [0.2, 1], "color": "rgba(34, 197, 94, 0.2)"},
+                ],
+                "threshold": {
+                    "line": {"color": "black", "width": 2},
+                    "thickness": 0.75,
+                    "value": 0,
+                },
             },
-        },
-        title={"text": title, "font": {"size": 14}},
-    ))
+            title={"text": title, "font": {"size": 14}},
+        )
+    )
 
     fig.update_layout(
         height=180,
@@ -391,7 +391,8 @@ def _render_sentiment_gauge(value: float, title: str):
 def _render_api_setup_guide():
     """Render API setup instructions."""
     with st.expander("📋 How to enable live news"):
-        st.markdown("""
+        st.markdown(
+            """
         To enable live news fetching, set up the following API keys:
 
         **NewsAPI.org** (Free tier: 100 requests/day)
@@ -405,7 +406,8 @@ def _render_api_setup_guide():
         3. Set environment variable: `ALPHA_VANTAGE_API_KEY`
 
         After setting the keys, restart the dashboard.
-        """)
+        """
+        )
 
 
 def _format_time_ago(dt: datetime) -> str:
@@ -519,14 +521,17 @@ def _get_sample_sentiment_data() -> dict:
 def _generate_sample_trend() -> List[dict]:
     """Generate sample sentiment trend data."""
     import random
+
     trend = []
     base = 0.1
     for i in range(7):
-        date = datetime.now() - timedelta(days=6-i)
+        date = datetime.now() - timedelta(days=6 - i)
         base += random.uniform(-0.15, 0.15)
         base = max(-0.8, min(0.8, base))
-        trend.append({
-            "date": date.strftime("%Y-%m-%d"),
-            "sentiment": round(base, 2),
-        })
+        trend.append(
+            {
+                "date": date.strftime("%Y-%m-%d"),
+                "sentiment": round(base, 2),
+            }
+        )
     return trend

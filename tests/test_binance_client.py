@@ -279,4 +279,3 @@ class TestBinanceClient:
             # Verify dates are correct (Binance uses UTC)
             assert df["date"].iloc[0] == date(2023, 1, 1)
             assert df["date"].iloc[1] == date(2023, 1, 2)
-

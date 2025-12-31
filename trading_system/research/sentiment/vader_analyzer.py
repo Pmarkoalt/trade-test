@@ -21,24 +21,19 @@ logger = logging.getLogger(__name__)
 class VADERSentimentAnalyzer(BaseSentimentAnalyzer):
     """VADER-based sentiment analyzer with financial lexicon."""
 
-    def __init__(
-        self,
-        positive_threshold: float = 0.05,
-        negative_threshold: float = -0.05
-    ):
+    def __init__(self, positive_threshold: float = 0.05, negative_threshold: float = -0.05):
         """Initialize VADER analyzer.
 
         Args:
             positive_threshold: Compound score threshold for positive
             negative_threshold: Compound score threshold for negative
-            
+
         Raises:
             ImportError: If vaderSentiment is not installed
         """
         if not VADER_AVAILABLE:
             raise ImportError(
-                "vaderSentiment is required for VADERSentimentAnalyzer. "
-                "Install it with: pip install vaderSentiment"
+                "vaderSentiment is required for VADERSentimentAnalyzer. " "Install it with: pip install vaderSentiment"
             )
         self.positive_threshold = positive_threshold
         self.negative_threshold = negative_threshold

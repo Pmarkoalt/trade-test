@@ -29,9 +29,7 @@ class DataCache:
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.ttl_hours = ttl_hours
 
-    def get_cache_key(
-        self, symbol: str, asset_class: str, start_date: date, end_date: date
-    ) -> str:
+    def get_cache_key(self, symbol: str, asset_class: str, start_date: date, end_date: date) -> str:
         """Generate cache key.
 
         Args:
@@ -272,4 +270,3 @@ class DataCache:
                 metadata_path.unlink()
         except Exception as e:
             logger.warning(f"Error deleting cache entry {key}: {e}")
-

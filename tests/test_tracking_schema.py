@@ -17,7 +17,9 @@ class TestSchemaCreation:
         conn = sqlite3.connect(str(db_path))
 
         # Run migration
-        migration_file = Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        migration_file = (
+            Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        )
         with open(migration_file) as f:
             conn.executescript(f.read())
 
@@ -38,7 +40,9 @@ class TestSchemaCreation:
         db_path = tmp_path / "test.db"
         conn = sqlite3.connect(str(db_path))
 
-        migration_file = Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        migration_file = (
+            Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        )
         with open(migration_file) as f:
             conn.executescript(f.read())
 
@@ -68,7 +72,9 @@ class TestSchemaCreation:
         db_path = tmp_path / "test.db"
         conn = sqlite3.connect(str(db_path))
 
-        migration_file = Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        migration_file = (
+            Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        )
         with open(migration_file) as f:
             conn.executescript(f.read())
 
@@ -86,7 +92,9 @@ class TestSchemaCreation:
         db_path = tmp_path / "test.db"
         conn = sqlite3.connect(str(db_path))
 
-        migration_file = Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        migration_file = (
+            Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        )
         with open(migration_file) as f:
             conn.executescript(f.read())
 
@@ -104,7 +112,9 @@ class TestSchemaCreation:
         db_path = tmp_path / "test.db"
         conn = sqlite3.connect(str(db_path))
 
-        migration_file = Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        migration_file = (
+            Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        )
         with open(migration_file) as f:
             conn.executescript(f.read())
 
@@ -122,7 +132,9 @@ class TestSchemaCreation:
         db_path = tmp_path / "test.db"
         conn = sqlite3.connect(str(db_path))
 
-        migration_file = Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        migration_file = (
+            Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        )
         with open(migration_file) as f:
             conn.executescript(f.read())
 
@@ -151,7 +163,9 @@ class TestSchemaCreation:
         # Enable foreign key constraints
         conn.execute("PRAGMA foreign_keys = ON")
 
-        migration_file = Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        migration_file = (
+            Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        )
         with open(migration_file) as f:
             conn.executescript(f.read())
 
@@ -172,7 +186,9 @@ class TestSchemaCreation:
         db_path = tmp_path / "test.db"
         conn = sqlite3.connect(str(db_path))
 
-        migration_file = Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        migration_file = (
+            Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        )
         with open(migration_file) as f:
             conn.executescript(f.read())
 
@@ -190,7 +206,9 @@ class TestSchemaCreation:
         db_path = tmp_path / "test.db"
         conn = sqlite3.connect(str(db_path))
 
-        migration_file = Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        migration_file = (
+            Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        )
         with open(migration_file) as f:
             conn.executescript(f.read())
 
@@ -228,7 +246,9 @@ class TestSchemaCreation:
         db_path = tmp_path / "test.db"
         conn = sqlite3.connect(str(db_path))
 
-        migration_file = Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        migration_file = (
+            Path(__file__).parent.parent / "trading_system" / "tracking" / "storage" / "migrations" / "001_initial_schema.sql"
+        )
         with open(migration_file) as f:
             conn.executescript(f.read())
 
@@ -282,4 +302,3 @@ class TestSchemaModule:
         for table_name, columns in TABLES.items():
             assert len(columns) > 0, f"Table {table_name} has no columns"
             assert all(isinstance(col, str) for col in columns), f"Table {table_name} has non-string column names"
-

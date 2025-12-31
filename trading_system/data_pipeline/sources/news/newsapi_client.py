@@ -54,7 +54,7 @@ class NewsAPIClient(BaseNewsSource):
         Args:
             api_key: NewsAPI.org API key
             rate_limit_per_minute: Max requests per minute (free tier: 100/day)
-            
+
         Raises:
             ImportError: If aiohttp is not installed
         """
@@ -287,4 +287,3 @@ class NewsAPIClient(BaseNewsSource):
                 continue
 
         return articles
-

@@ -328,4 +328,3 @@ class TestJSONWriter:
         assert "scenarios" in comparison
         assert comparison["scenarios"] == {}
         assert "comparison" in comparison
-

@@ -142,12 +142,12 @@ class EmailService:
         positive_news = []
         negative_news = []
 
-        if news_analysis and hasattr(news_analysis, 'articles'):
+        if news_analysis and hasattr(news_analysis, "articles"):
             try:
                 from ...data_pipeline.sources.news.models import SentimentLabel
 
                 for article in news_analysis.articles:
-                    if hasattr(article, 'sentiment_label') and article.sentiment_label:
+                    if hasattr(article, "sentiment_label") and article.sentiment_label:
                         if article.sentiment_label in [SentimentLabel.POSITIVE, SentimentLabel.VERY_POSITIVE]:
                             positive_news.append(article)
                         elif article.sentiment_label in [SentimentLabel.NEGATIVE, SentimentLabel.VERY_NEGATIVE]:
@@ -155,11 +155,11 @@ class EmailService:
             except (ImportError, AttributeError):
                 # Fallback if SentimentLabel not available or different structure
                 for article in news_analysis.articles:
-                    if hasattr(article, 'sentiment_label'):
+                    if hasattr(article, "sentiment_label"):
                         label = str(article.sentiment_label).upper()
-                        if 'POSITIVE' in label:
+                        if "POSITIVE" in label:
                             positive_news.append(article)
-                        elif 'NEGATIVE' in label:
+                        elif "NEGATIVE" in label:
                             negative_news.append(article)
 
         # Add performance section if tracking available
@@ -180,10 +180,14 @@ class EmailService:
                     "days": 30,
                     "metrics": metrics,
                     "recent_closed": analytics.last_10_trades[:5] if analytics.last_10_trades else [],
-                    "streak": {
-                        "count": analytics.current_streak,
-                        "type": analytics.current_streak_type,
-                    } if analytics.current_streak >= 3 else None,
+                    "streak": (
+                        {
+                            "count": analytics.current_streak,
+                            "type": analytics.current_streak_type,
+                        }
+                        if analytics.current_streak >= 3
+                        else None
+                    ),
                 }
             except Exception as e:
                 logger.warning(f"Failed to generate performance context: {e}")
@@ -233,7 +237,9 @@ class EmailService:
                 <p><small>Generated at: {}</small></p>
             </body>
             </html>
-            """.format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+            """.format(
+                datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            )
 
             msg.attach(MIMEText(test_html, "html"))
 
@@ -308,4 +314,3 @@ class EmailService:
         </html>
         """
         return html
-

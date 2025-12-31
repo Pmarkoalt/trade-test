@@ -314,10 +314,7 @@ class AutoOutcomeRecorder:
 
                 if success:
                     closed_signals.append(signal.id)
-                    logger.info(
-                        f"Auto-closed {signal.symbol}: {exit_reason.value} "
-                        f"@ {current_price}"
-                    )
+                    logger.info(f"Auto-closed {signal.symbol}: {exit_reason.value} " f"@ {current_price}")
 
         return closed_signals
 

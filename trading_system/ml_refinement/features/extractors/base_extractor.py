@@ -82,4 +82,3 @@ class OHLCVExtractor(BaseFeatureExtractor):
             return float(val) if pd.notna(val) else default
         except (IndexError, KeyError):
             return default
-

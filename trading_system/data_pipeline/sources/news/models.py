@@ -63,4 +63,3 @@ class NewsFetchResult:
     success: bool = True
     error_message: Optional[str] = None
     rate_limit_remaining: Optional[int] = None
-

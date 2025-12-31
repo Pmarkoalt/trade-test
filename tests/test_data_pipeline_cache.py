@@ -267,4 +267,3 @@ class TestDataCache:
         cache = DataCache(cache_dir=new_cache_dir)
         assert new_cache_dir.exists()
         assert new_cache_dir.is_dir()
-

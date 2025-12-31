@@ -5,4 +5,3 @@ from .email_service import EmailService
 from .report_generator import ReportGenerator
 
 __all__ = ["EmailConfig", "EmailService", "ReportGenerator"]
-

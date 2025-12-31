@@ -27,7 +27,7 @@ class AlphaVantageNewsClient(BaseNewsSource):
         Args:
             api_key: Alpha Vantage API key
             rate_limit_per_minute: Max requests per minute
-            
+
         Raises:
             ImportError: If aiohttp is not installed
         """
@@ -221,9 +221,7 @@ class AlphaVantageNewsClient(BaseNewsSource):
 
                 # Get overall sentiment (Alpha Vantage provides this!)
                 overall_sentiment = raw.get("overall_sentiment_score")
-                sentiment_label = self._map_sentiment_label(
-                    raw.get("overall_sentiment_label", "Neutral")
-                )
+                sentiment_label = self._map_sentiment_label(raw.get("overall_sentiment_label", "Neutral"))
 
                 # Convert sentiment score to float if present
                 sentiment_score = None
@@ -286,4 +284,3 @@ class AlphaVantageNewsClient(BaseNewsSource):
             "Bearish": SentimentLabel.NEGATIVE,
         }
         return mapping.get(av_label, SentimentLabel.NEUTRAL)
-

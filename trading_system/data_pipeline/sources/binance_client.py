@@ -121,9 +121,7 @@ class BinanceClient(BaseDataSource):
         # Record this API call
         self._call_times.append(asyncio.get_event_loop().time())
 
-    async def _make_request(
-        self, url: str, params: Optional[dict] = None, max_retries: int = 3
-    ) -> list:
+    async def _make_request(self, url: str, params: Optional[dict] = None, max_retries: int = 3) -> list:
         """Make an HTTP request with exponential backoff and error handling.
 
         Args:
@@ -155,7 +153,7 @@ class BinanceClient(BaseDataSource):
                         if retry_after:
                             wait_time = float(retry_after)
                         else:
-                            wait_time = backoff_delay * (2 ** attempt)
+                            wait_time = backoff_delay * (2**attempt)
 
                         logger.warning(f"Rate limit exceeded. Waiting {wait_time:.2f} seconds...")
                         await asyncio.sleep(wait_time)
@@ -172,7 +170,7 @@ class BinanceClient(BaseDataSource):
                     elif response.status >= 500:
                         # Server error, retry with exponential backoff
                         if attempt < max_retries - 1:
-                            wait_time = backoff_delay * (2 ** attempt)
+                            wait_time = backoff_delay * (2**attempt)
                             logger.warning(f"Server error {response.status}. Retrying in {wait_time:.2f} seconds...")
                             await asyncio.sleep(wait_time)
                             continue
@@ -186,7 +184,7 @@ class BinanceClient(BaseDataSource):
 
             except aiohttp.ClientError as e:
                 if attempt < max_retries - 1:
-                    wait_time = backoff_delay * (2 ** attempt)
+                    wait_time = backoff_delay * (2**attempt)
                     logger.warning(f"Network error: {e}. Retrying in {wait_time:.2f} seconds...")
                     await asyncio.sleep(wait_time)
                     continue
@@ -253,9 +251,7 @@ class BinanceClient(BaseDataSource):
 
         return df
 
-    async def fetch_daily_bars(
-        self, symbol: str, start_date: date, end_date: date
-    ) -> pd.DataFrame:
+    async def fetch_daily_bars(self, symbol: str, start_date: date, end_date: date) -> pd.DataFrame:
         """Fetch daily OHLCV bars for a symbol over a date range.
 
         Args:
@@ -394,4 +390,3 @@ class BinanceClient(BaseDataSource):
         """Async context manager exit - close session."""
         await self._close_session()
         return False
-

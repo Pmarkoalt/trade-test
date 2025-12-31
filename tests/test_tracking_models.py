@@ -321,4 +321,3 @@ class TestEnums:
         assert ExitReason.TIME_EXIT == "time_exit"
         assert ExitReason.MANUAL == "manual"
         assert ExitReason.SIGNAL_REVERSAL == "signal_reversal"
-

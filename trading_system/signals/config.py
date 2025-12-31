@@ -18,4 +18,3 @@ class SignalConfig(BaseModel):
     news_lookback_hours: int = 48
     min_news_score_for_boost: float = 7.0  # Score above this boosts conviction
     max_news_score_for_penalty: float = 3.0  # Score below this penalizes
-

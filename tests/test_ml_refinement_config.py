@@ -79,7 +79,7 @@ def test_feature_vector_optional_fields():
     )
     assert fv.target is None
     assert fv.target_binary is None
-    
+
     data = fv.to_dict()
     restored = FeatureVector.from_dict(data)
     assert restored.target is None
@@ -145,4 +145,3 @@ def test_ml_config_custom_training_config():
     assert ml_config.training.train_window_days == 500
     assert ml_config.training.min_training_samples == 200
     assert ml_config.training.model_type == "random_forest"
-

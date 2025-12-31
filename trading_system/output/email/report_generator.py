@@ -155,12 +155,12 @@ class ReportGenerator:
         positive_news = []
         negative_news = []
 
-        if news_analysis and hasattr(news_analysis, 'articles'):
+        if news_analysis and hasattr(news_analysis, "articles"):
             try:
                 from ...data_pipeline.sources.news.models import SentimentLabel
 
                 for article in news_analysis.articles:
-                    if hasattr(article, 'sentiment_label') and article.sentiment_label:
+                    if hasattr(article, "sentiment_label") and article.sentiment_label:
                         if article.sentiment_label in [SentimentLabel.POSITIVE, SentimentLabel.VERY_POSITIVE]:
                             positive_news.append(article)
                         elif article.sentiment_label in [SentimentLabel.NEGATIVE, SentimentLabel.VERY_NEGATIVE]:
@@ -168,11 +168,11 @@ class ReportGenerator:
             except (ImportError, AttributeError):
                 # Fallback if SentimentLabel not available
                 for article in news_analysis.articles:
-                    if hasattr(article, 'sentiment_label'):
+                    if hasattr(article, "sentiment_label"):
                         label = str(article.sentiment_label).upper()
-                        if 'POSITIVE' in label:
+                        if "POSITIVE" in label:
                             positive_news.append(article)
-                        elif 'NEGATIVE' in label:
+                        elif "NEGATIVE" in label:
                             negative_news.append(article)
 
         return {
@@ -357,4 +357,3 @@ class ReportGenerator:
         </html>
         """
         return html
-

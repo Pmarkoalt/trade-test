@@ -341,4 +341,3 @@ def test_model_id_generation():
     assert model1.model_id != model2.model_id
     assert model1.model_id.startswith("signal_quality")
     assert model2.model_id.startswith("signal_quality")
-

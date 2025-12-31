@@ -283,4 +283,3 @@ class TestPolygonClient:
         with patch("trading_system.data_pipeline.sources.polygon_client.aiohttp", None):
             with pytest.raises(ImportError, match="aiohttp is required"):
                 PolygonClient(api_key="test_key")
-

@@ -23,4 +23,3 @@ class DataValidationError(DataPipelineError):
     """Raised when fetched data fails validation."""
 
     pass
-

@@ -202,4 +202,3 @@ class NewsAggregator:
     def clear_cache(self):
         """Clear the article cache."""
         self._cache.clear()
-

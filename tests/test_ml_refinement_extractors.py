@@ -16,13 +16,15 @@ from trading_system.ml_refinement.features.extractors import (
 
 def test_trend_features():
     """Test trend feature extraction."""
-    ohlcv = pd.DataFrame({
-        "open": [100] * 250,
-        "high": [101] * 250,
-        "low": [99] * 250,
-        "close": list(range(100, 350)),  # Uptrend
-        "volume": [1000] * 250,
-    })
+    ohlcv = pd.DataFrame(
+        {
+            "open": [100] * 250,
+            "high": [101] * 250,
+            "low": [99] * 250,
+            "close": list(range(100, 350)),  # Uptrend
+            "volume": [1000] * 250,
+        }
+    )
 
     extractor = TrendFeatures()
     features = extractor.extract(ohlcv)
@@ -37,13 +39,15 @@ def test_trend_features():
 
 def test_trend_features_insufficient_data():
     """Test trend features with insufficient data."""
-    ohlcv = pd.DataFrame({
-        "open": [100] * 10,
-        "high": [101] * 10,
-        "low": [99] * 10,
-        "close": [100] * 10,
-        "volume": [1000] * 10,
-    })
+    ohlcv = pd.DataFrame(
+        {
+            "open": [100] * 10,
+            "high": [101] * 10,
+            "low": [99] * 10,
+            "close": [100] * 10,
+            "volume": [1000] * 10,
+        }
+    )
 
     extractor = TrendFeatures()
     features = extractor.extract(ohlcv)
@@ -56,13 +60,15 @@ def test_trend_features_insufficient_data():
 def test_momentum_features_rsi():
     """Test RSI calculation."""
     # Create data with clear uptrend (RSI should be high)
-    ohlcv = pd.DataFrame({
-        "open": [100] * 50,
-        "high": [102] * 50,
-        "low": [99] * 50,
-        "close": list(range(100, 150)),  # Strong uptrend
-        "volume": [1000] * 50,
-    })
+    ohlcv = pd.DataFrame(
+        {
+            "open": [100] * 50,
+            "high": [102] * 50,
+            "low": [99] * 50,
+            "close": list(range(100, 150)),  # Strong uptrend
+            "volume": [1000] * 50,
+        }
+    )
 
     extractor = MomentumFeatures()
     features = extractor.extract(ohlcv)
@@ -79,13 +85,15 @@ def test_momentum_features_rsi():
 
 def test_volatility_features():
     """Test volatility feature extraction."""
-    ohlcv = pd.DataFrame({
-        "open": [100, 101, 99, 102, 98],
-        "high": [102, 103, 101, 104, 100],
-        "low": [98, 99, 97, 100, 96],
-        "close": [101, 100, 102, 99, 101],
-        "volume": [1000] * 5,
-    })
+    ohlcv = pd.DataFrame(
+        {
+            "open": [100, 101, 99, 102, 98],
+            "high": [102, 103, 101, 104, 100],
+            "low": [98, 99, 97, 100, 96],
+            "close": [101, 100, 102, 99, 101],
+            "volume": [1000] * 5,
+        }
+    )
 
     extractor = VolatilityFeatures()
     features = extractor.extract(ohlcv)
@@ -141,13 +149,15 @@ def test_signal_features_missing_values():
 
 def test_market_regime_features():
     """Test market regime feature extraction."""
-    ohlcv = pd.DataFrame({
-        "open": [100] * 100,
-        "high": [101] * 100,
-        "low": [99] * 100,
-        "close": list(range(100, 200)),  # Uptrend
-        "volume": [1000] * 100,
-    })
+    ohlcv = pd.DataFrame(
+        {
+            "open": [100] * 100,
+            "high": [101] * 100,
+            "low": [99] * 100,
+            "close": list(range(100, 200)),  # Uptrend
+            "volume": [1000] * 100,
+        }
+    )
 
     extractor = MarketRegimeFeatures()
     features = extractor.extract(ohlcv)
@@ -167,21 +177,25 @@ def test_market_regime_features():
 
 def test_market_regime_with_benchmark():
     """Test market features work with benchmark data."""
-    ohlcv = pd.DataFrame({
-        "open": [100] * 100,
-        "high": [101] * 100,
-        "low": [99] * 100,
-        "close": list(range(100, 200)),
-        "volume": [1000] * 100,
-    })
+    ohlcv = pd.DataFrame(
+        {
+            "open": [100] * 100,
+            "high": [101] * 100,
+            "low": [99] * 100,
+            "close": list(range(100, 200)),
+            "volume": [1000] * 100,
+        }
+    )
 
-    benchmark = pd.DataFrame({
-        "open": [200] * 100,
-        "high": [201] * 100,
-        "low": [199] * 100,
-        "close": list(range(200, 300)),
-        "volume": [2000] * 100,
-    })
+    benchmark = pd.DataFrame(
+        {
+            "open": [200] * 100,
+            "high": [201] * 100,
+            "low": [199] * 100,
+            "close": list(range(200, 300)),
+            "volume": [2000] * 100,
+        }
+    )
 
     extractor = MarketRegimeFeatures()
     features = extractor.extract(ohlcv, benchmark_data=benchmark)
@@ -241,13 +255,15 @@ def test_ohlcv_extractor_safe_get():
 
 def test_trend_features_normalized():
     """Test that trend features are normalized appropriately."""
-    ohlcv = pd.DataFrame({
-        "open": [100] * 250,
-        "high": [101] * 250,
-        "low": [99] * 250,
-        "close": list(range(100, 350)),
-        "volume": [1000] * 250,
-    })
+    ohlcv = pd.DataFrame(
+        {
+            "open": [100] * 250,
+            "high": [101] * 250,
+            "low": [99] * 250,
+            "close": list(range(100, 350)),
+            "volume": [1000] * 250,
+        }
+    )
 
     extractor = TrendFeatures()
     features = extractor.extract(ohlcv)
@@ -263,13 +279,15 @@ def test_trend_features_normalized():
 
 def test_momentum_features_normalized():
     """Test that momentum features are normalized."""
-    ohlcv = pd.DataFrame({
-        "open": [100] * 50,
-        "high": [102] * 50,
-        "low": [99] * 50,
-        "close": list(range(100, 150)),
-        "volume": [1000] * 50,
-    })
+    ohlcv = pd.DataFrame(
+        {
+            "open": [100] * 50,
+            "high": [102] * 50,
+            "low": [99] * 50,
+            "close": list(range(100, 150)),
+            "volume": [1000] * 50,
+        }
+    )
 
     extractor = MomentumFeatures()
     features = extractor.extract(ohlcv)
@@ -311,13 +329,15 @@ def test_signal_features_one_hot():
 def test_volatility_features_edge_cases():
     """Test volatility features handle edge cases."""
     # Very small dataset
-    ohlcv = pd.DataFrame({
-        "open": [100, 101],
-        "high": [102, 103],
-        "low": [98, 99],
-        "close": [101, 102],
-        "volume": [1000, 1000],
-    })
+    ohlcv = pd.DataFrame(
+        {
+            "open": [100, 101],
+            "high": [102, 103],
+            "low": [98, 99],
+            "close": [101, 102],
+            "volume": [1000, 1000],
+        }
+    )
 
     extractor = VolatilityFeatures()
     features = extractor.extract(ohlcv)
@@ -330,13 +350,15 @@ def test_volatility_features_edge_cases():
 
 def test_market_regime_insufficient_data():
     """Test market regime with insufficient data."""
-    ohlcv = pd.DataFrame({
-        "open": [100] * 10,
-        "high": [101] * 10,
-        "low": [99] * 10,
-        "close": [100] * 10,
-        "volume": [1000] * 10,
-    })
+    ohlcv = pd.DataFrame(
+        {
+            "open": [100] * 10,
+            "high": [101] * 10,
+            "low": [99] * 10,
+            "close": [100] * 10,
+            "volume": [1000] * 10,
+        }
+    )
 
     extractor = MarketRegimeFeatures()
     features = extractor.extract(ohlcv)
@@ -347,4 +369,3 @@ def test_market_regime_insufficient_data():
     # With insufficient data, should return defaults
     assert features["market_breadth"] == 0.5  # Default when insufficient data
     assert extractor.validate_output(features)
-

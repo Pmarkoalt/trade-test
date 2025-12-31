@@ -43,4 +43,3 @@ class Recommendation:
     news_sentiment: Optional[str] = None  # 'positive', 'negative', 'neutral'
     generated_at: datetime = field(default_factory=datetime.now)
     strategy_name: Optional[str] = None
-

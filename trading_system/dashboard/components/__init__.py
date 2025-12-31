@@ -46,4 +46,3 @@ __all__ = [
     "render_status_badge",
     "render_streak_indicator",
 ]
-

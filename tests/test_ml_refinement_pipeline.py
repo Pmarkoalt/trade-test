@@ -9,13 +9,15 @@ from trading_system.ml_refinement.features import FeaturePipeline, FeatureRegist
 
 def create_sample_ohlcv(n_bars: int = 100) -> pd.DataFrame:
     """Create sample OHLCV data."""
-    return pd.DataFrame({
-        "open": [100.0] * n_bars,
-        "high": [101.0] * n_bars,
-        "low": [99.0] * n_bars,
-        "close": list(range(100, 100 + n_bars)),
-        "volume": [1000] * n_bars,
-    })
+    return pd.DataFrame(
+        {
+            "open": [100.0] * n_bars,
+            "high": [101.0] * n_bars,
+            "low": [99.0] * n_bars,
+            "close": list(range(100, 100 + n_bars)),
+            "volume": [1000] * n_bars,
+        }
+    )
 
 
 def test_pipeline_standard_features():
@@ -338,13 +340,15 @@ def test_pipeline_handles_missing_data():
     pipeline = FeaturePipeline(config)
 
     # Empty OHLCV
-    ohlcv = pd.DataFrame({
-        "open": [],
-        "high": [],
-        "low": [],
-        "close": [],
-        "volume": [],
-    })
+    ohlcv = pd.DataFrame(
+        {
+            "open": [],
+            "high": [],
+            "low": [],
+            "close": [],
+            "volume": [],
+        }
+    )
     signal_meta = {}
 
     # Should handle gracefully
@@ -405,4 +409,3 @@ def test_pipeline_get_feature_names():
 
     feature_count = pipeline.get_feature_count()
     assert feature_count == len(feature_names)
-

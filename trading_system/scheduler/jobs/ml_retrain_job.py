@@ -16,14 +16,14 @@ except ImportError:
     # Create minimal ModelRegistry stub
     class ModelRegistry:
         """Minimal model registry stub."""
-        
+
         def __init__(self, feature_db: FeatureDatabase):
             self.feature_db = feature_db
-            
+
         def get_active(self, model_type: ModelType):
             """Get active model metadata for type."""
             return self.feature_db.get_active_model(model_type.value)
-            
+
         def activate(self, model_id: str):
             """Activate a model."""
             return self.feature_db.activate_model(model_id)
@@ -105,21 +105,25 @@ class MLRetrainJob:
             try:
                 result = self._retrain_model(model_type, force)
                 if result:
-                    results["models_retrained"].append({
-                        "model_type": model_type.value,
-                        "model_id": result.model_id,
-                        "cv_auc": result.cv_metrics.get("auc", 0),
-                        "samples": result.train_samples,
-                    })
+                    results["models_retrained"].append(
+                        {
+                            "model_type": model_type.value,
+                            "model_id": result.model_id,
+                            "cv_auc": result.cv_metrics.get("auc", 0),
+                            "samples": result.train_samples,
+                        }
+                    )
                 else:
                     results["models_skipped"].append(model_type.value)
 
             except Exception as e:
                 logger.exception(f"Error retraining {model_type.value}")
-                results["errors"].append({
-                    "model_type": model_type.value,
-                    "error": str(e),
-                })
+                results["errors"].append(
+                    {
+                        "model_type": model_type.value,
+                        "error": str(e),
+                    }
+                )
 
         elapsed = (datetime.now() - start_time).total_seconds()
         results["completed_at"] = datetime.now().isoformat()
@@ -160,9 +164,7 @@ class MLRetrainJob:
 
         # Calculate training date range
         end_date = datetime.now().strftime("%Y-%m-%d")
-        start_date = (
-            datetime.now() - timedelta(days=self.config.training.train_window_days * 2)
-        ).strftime("%Y-%m-%d")
+        start_date = (datetime.now() - timedelta(days=self.config.training.train_window_days * 2)).strftime("%Y-%m-%d")
 
         # Train new model
         result = self.trainer.train(
@@ -184,10 +186,7 @@ class MLRetrainJob:
 
             # Only activate if better (with small tolerance)
             if new_auc < current_auc - 0.02:
-                logger.info(
-                    f"New model ({new_auc:.3f}) not better than current ({current_auc:.3f}), "
-                    f"keeping current"
-                )
+                logger.info(f"New model ({new_auc:.3f}) not better than current ({current_auc:.3f}), " f"keeping current")
                 should_activate = False
 
         if should_activate:
@@ -226,4 +225,3 @@ class MLRetrainJob:
             "current_model": current.model_id,
             "current_auc": current.validation_metrics.get("auc", 0),
         }
-

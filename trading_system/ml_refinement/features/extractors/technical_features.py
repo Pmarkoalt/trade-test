@@ -35,17 +35,21 @@ class TrendFeatures(OHLCVExtractor):
         names = []
 
         for lb in self.lookbacks:
-            names.extend([
-                f"price_vs_ma{lb}",        # Price relative to MA
-                f"ma{lb}_slope",           # MA slope (normalized)
-            ])
+            names.extend(
+                [
+                    f"price_vs_ma{lb}",  # Price relative to MA
+                    f"ma{lb}_slope",  # MA slope (normalized)
+                ]
+            )
 
-        names.extend([
-            "price_vs_ma_fast_slow",       # Fast MA vs Slow MA
-            "trend_strength",               # ADX-like measure
-            "higher_highs",                 # Count of higher highs
-            "lower_lows",                   # Count of lower lows
-        ])
+        names.extend(
+            [
+                "price_vs_ma_fast_slow",  # Fast MA vs Slow MA
+                "trend_strength",  # ADX-like measure
+                "higher_highs",  # Count of higher highs
+                "lower_lows",  # Count of lower lows
+            ]
+        )
 
         return names
 
@@ -110,11 +114,14 @@ class TrendFeatures(OHLCVExtractor):
         low = ohlcv["low"]
         close = ohlcv["close"]
 
-        tr = pd.concat([
-            high - low,
-            (high - close.shift(1)).abs(),
-            (low - close.shift(1)).abs(),
-        ], axis=1).max(axis=1)
+        tr = pd.concat(
+            [
+                high - low,
+                (high - close.shift(1)).abs(),
+                (low - close.shift(1)).abs(),
+            ],
+            axis=1,
+        ).max(axis=1)
 
         atr = tr.rolling(period).mean()
         return self._safe_get(atr, -1)
@@ -133,7 +140,7 @@ class TrendFeatures(OHLCVExtractor):
             return 0.0
 
         correlation = np.corrcoef(x, y)[0, 1]
-        return correlation ** 2 if not np.isnan(correlation) else 0.0
+        return correlation**2 if not np.isnan(correlation) else 0.0
 
     def _count_higher_highs(self, high: pd.Series, lookback: int) -> float:
         """Count consecutive higher highs."""
@@ -181,14 +188,16 @@ class MomentumFeatures(OHLCVExtractor):
         names = []
 
         for lb in self.lookbacks:
-            names.append(f"roc_{lb}")       # Rate of change
+            names.append(f"roc_{lb}")  # Rate of change
 
-        names.extend([
-            "rsi_14",                       # RSI
-            "rsi_deviation",                # RSI distance from 50
-            "momentum_divergence",          # Price vs momentum divergence
-            "acceleration",                 # Momentum acceleration
-        ])
+        names.extend(
+            [
+                "rsi_14",  # RSI
+                "rsi_deviation",  # RSI distance from 50
+                "momentum_divergence",  # Price vs momentum divergence
+                "acceleration",  # Momentum acceleration
+            ]
+        )
 
         return names
 
@@ -256,7 +265,7 @@ class MomentumFeatures(OHLCVExtractor):
         if price_change > 0 and mom_change < 0:
             return -abs(mom_change)  # Bearish divergence
         elif price_change < 0 and mom_change > 0:
-            return abs(mom_change)   # Bullish divergence
+            return abs(mom_change)  # Bullish divergence
 
         return 0.0
 
@@ -285,12 +294,12 @@ class VolatilityFeatures(OHLCVExtractor):
     @property
     def feature_names(self) -> List[str]:
         return [
-            "atr_ratio",                   # ATR vs price
-            "volatility_percentile",       # Current vol vs historical
-            "volatility_trend",            # Vol expanding or contracting
-            "range_ratio",                 # Today's range vs avg
-            "gap_size",                    # Gap from previous close
-            "intraday_volatility",         # High-low / close
+            "atr_ratio",  # ATR vs price
+            "volatility_percentile",  # Current vol vs historical
+            "volatility_trend",  # Vol expanding or contracting
+            "range_ratio",  # Today's range vs avg
+            "gap_size",  # Gap from previous close
+            "intraday_volatility",  # High-low / close
         ]
 
     def extract(self, ohlcv: pd.DataFrame, current_idx: int = -1) -> Dict[str, float]:
@@ -352,11 +361,14 @@ class VolatilityFeatures(OHLCVExtractor):
         low = ohlcv["low"]
         close = ohlcv["close"]
 
-        tr = pd.concat([
-            high - low,
-            (high - close.shift(1)).abs(),
-            (low - close.shift(1)).abs(),
-        ], axis=1).max(axis=1)
+        tr = pd.concat(
+            [
+                high - low,
+                (high - close.shift(1)).abs(),
+                (low - close.shift(1)).abs(),
+            ],
+            axis=1,
+        ).max(axis=1)
 
         atr = tr.rolling(period).mean()
         return self._safe_get(atr, -1)
@@ -395,4 +407,3 @@ class VolatilityFeatures(OHLCVExtractor):
         if past > 0:
             return (current - past) / past
         return 0.0
-

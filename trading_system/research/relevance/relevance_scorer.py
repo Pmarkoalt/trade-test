@@ -37,42 +37,104 @@ class RelevanceConfig:
         if self.trading_keywords is None:
             self.trading_keywords = {
                 # Price action
-                "price", "stock", "shares", "trading", "market",
-                "rally", "surge", "plunge", "drop", "fall", "rise",
-                "gain", "loss", "bullish", "bearish",
+                "price",
+                "stock",
+                "shares",
+                "trading",
+                "market",
+                "rally",
+                "surge",
+                "plunge",
+                "drop",
+                "fall",
+                "rise",
+                "gain",
+                "loss",
+                "bullish",
+                "bearish",
                 # Financial metrics
-                "earnings", "revenue", "profit", "loss", "eps",
-                "guidance", "forecast", "outlook", "beat", "miss",
+                "earnings",
+                "revenue",
+                "profit",
+                "loss",
+                "eps",
+                "guidance",
+                "forecast",
+                "outlook",
+                "beat",
+                "miss",
                 # Corporate actions
-                "acquisition", "merger", "buyout", "ipo", "spinoff",
-                "dividend", "buyback", "split",
+                "acquisition",
+                "merger",
+                "buyout",
+                "ipo",
+                "spinoff",
+                "dividend",
+                "buyback",
+                "split",
                 # Analyst activity
-                "upgrade", "downgrade", "rating", "target", "analyst",
-                "recommendation", "overweight", "underweight",
+                "upgrade",
+                "downgrade",
+                "rating",
+                "target",
+                "analyst",
+                "recommendation",
+                "overweight",
+                "underweight",
                 # Regulatory/Legal
-                "sec", "fda", "approval", "lawsuit", "investigation",
-                "regulation", "compliance",
+                "sec",
+                "fda",
+                "approval",
+                "lawsuit",
+                "investigation",
+                "regulation",
+                "compliance",
                 # Market dynamics
-                "volume", "volatility", "momentum", "breakout",
-                "support", "resistance", "trend",
+                "volume",
+                "volatility",
+                "momentum",
+                "breakout",
+                "support",
+                "resistance",
+                "trend",
             }
 
         if self.noise_keywords is None:
             self.noise_keywords = {
                 # Non-trading content
-                "sponsored", "advertisement", "opinion", "editorial",
-                "podcast", "video", "webinar", "newsletter",
+                "sponsored",
+                "advertisement",
+                "opinion",
+                "editorial",
+                "podcast",
+                "video",
+                "webinar",
+                "newsletter",
                 # Social/Entertainment
-                "celebrity", "entertainment", "sports", "lifestyle",
+                "celebrity",
+                "entertainment",
+                "sports",
+                "lifestyle",
                 # Generic noise
-                "click here", "subscribe", "sign up", "free trial",
+                "click here",
+                "subscribe",
+                "sign up",
+                "free trial",
             }
 
         if self.premium_sources is None:
             self.premium_sources = {
-                "reuters", "bloomberg", "wsj", "wall street journal",
-                "financial times", "ft", "barrons", "cnbc",
-                "marketwatch", "seeking alpha", "benzinga",
+                "reuters",
+                "bloomberg",
+                "wsj",
+                "wall street journal",
+                "financial times",
+                "ft",
+                "barrons",
+                "cnbc",
+                "marketwatch",
+                "seeking alpha",
+                "benzinga",
             }
 
 
@@ -101,7 +163,7 @@ class RelevanceScorer:
             Compiled regex pattern
         """
         escaped = [re.escape(kw) for kw in keywords]
-        pattern = r'\b(' + '|'.join(escaped) + r')\b'
+        pattern = r"\b(" + "|".join(escaped) + r")\b"
         return re.compile(pattern, re.IGNORECASE)
 
     def score_article(
@@ -181,10 +243,7 @@ class RelevanceScorer:
             Filtered list of relevant articles
         """
         threshold = min_score or self.config.min_relevance_threshold
-        return [
-            article for article in articles
-            if self.score_article(article, target_symbols) >= threshold
-        ]
+        return [article for article in articles if self.score_article(article, target_symbols) >= threshold]
 
     def rank_by_relevance(
         self,
@@ -202,10 +261,7 @@ class RelevanceScorer:
         Returns:
             List of (article, score) tuples sorted by relevance
         """
-        scored = [
-            (article, self.score_article(article, target_symbols))
-            for article in articles
-        ]
+        scored = [(article, self.score_article(article, target_symbols)) for article in articles]
         sorted_articles = sorted(scored, key=lambda x: x[1], reverse=True)
 
         if top_k:

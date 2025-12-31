@@ -35,14 +35,12 @@ class CronRunner:
 
         Args:
             config: Optional scheduler configuration. If None, uses default config.
-            
+
         Raises:
             ImportError: If apscheduler is not installed
         """
         if not APSCHEDULER_AVAILABLE:
-            raise ImportError(
-                "apscheduler is required for CronRunner. Install it with: pip install apscheduler"
-            )
+            raise ImportError("apscheduler is required for CronRunner. Install it with: pip install apscheduler")
         self.config = config or SchedulerConfig()
         self.scheduler = AsyncIOScheduler()
 
@@ -55,11 +53,7 @@ class CronRunner:
         # Daily equity signals - 4:30 PM ET
         self.scheduler.add_job(
             daily_signals_job,
-            CronTrigger(
-                hour=16,
-                minute=30,
-                timezone="America/New_York"
-            ),
+            CronTrigger(hour=16, minute=30, timezone="America/New_York"),
             id="daily_equity_signals",
             kwargs={"asset_class": "equity"},
             replace_existing=True,
@@ -68,11 +62,7 @@ class CronRunner:
         # Daily crypto signals - midnight UTC
         self.scheduler.add_job(
             daily_signals_job,
-            CronTrigger(
-                hour=0,
-                minute=0,
-                timezone="UTC"
-            ),
+            CronTrigger(hour=0, minute=0, timezone="UTC"),
             id="daily_crypto_signals",
             kwargs={"asset_class": "crypto"},
             replace_existing=True,
@@ -109,4 +99,3 @@ class CronRunner:
         if not APSCHEDULER_AVAILABLE:
             return False
         return self.scheduler.running
-

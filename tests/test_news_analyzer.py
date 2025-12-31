@@ -15,11 +15,7 @@ class TestNewsAnalyzer:
     @pytest.fixture
     def config(self):
         """Create a test ResearchConfig."""
-        return ResearchConfig(
-            lookback_hours=48,
-            max_articles_per_symbol=10,
-            sentiment=SentimentConfig()
-        )
+        return ResearchConfig(lookback_hours=48, max_articles_per_symbol=10, sentiment=SentimentConfig())
 
     @pytest.fixture
     def analyzer(self, config):
@@ -35,20 +31,13 @@ class TestNewsAnalyzer:
 
     def test_analyzer_initialization_with_keys(self, config):
         """Test analyzer initialization with API keys."""
-        analyzer = NewsAnalyzer(
-            config=config,
-            newsapi_key="test-newsapi-key",
-            alpha_vantage_key="test-av-key"
-        )
+        analyzer = NewsAnalyzer(config=config, newsapi_key="test-newsapi-key", alpha_vantage_key="test-av-key")
         assert analyzer is not None
         assert len(analyzer.news_aggregator.sources) == 2
 
     def test_analyzer_initialization_with_config_keys(self):
         """Test analyzer uses keys from config if not provided."""
-        config = ResearchConfig(
-            newsapi_key="config-newsapi-key",
-            alpha_vantage_key="config-av-key"
-        )
+        config = ResearchConfig(newsapi_key="config-newsapi-key", alpha_vantage_key="config-av-key")
         analyzer = NewsAnalyzer(config=config)
         assert analyzer is not None
         assert len(analyzer.news_aggregator.sources) == 2
@@ -57,12 +46,7 @@ class TestNewsAnalyzer:
     async def test_analyze_symbols_empty_result(self, analyzer):
         """Test analyzing symbols with no articles."""
         # Mock the news aggregator to return empty result
-        mock_result = NewsFetchResult(
-            articles=[],
-            source="test",
-            symbols_requested=["AAPL"],
-            success=True
-        )
+        mock_result = NewsFetchResult(articles=[], source="test", symbols_requested=["AAPL"], success=True)
         analyzer.news_aggregator.fetch_articles = AsyncMock(return_value=mock_result)
 
         result = await analyzer.analyze_symbols(["AAPL"])
@@ -87,7 +71,7 @@ class TestNewsAnalyzer:
                 title="Apple stock surges on earnings",
                 summary="Apple reported strong earnings",
                 published_at=datetime.now(),
-                url="http://test.com/1"
+                url="http://test.com/1",
             ),
             NewsArticle(
                 id="2",
@@ -95,16 +79,11 @@ class TestNewsAnalyzer:
                 title="Microsoft announces new product",
                 summary="Microsoft unveiled new technology",
                 published_at=datetime.now(),
-                url="http://test.com/2"
+                url="http://test.com/2",
             ),
         ]
 
-        mock_result = NewsFetchResult(
-            articles=articles,
-            source="test",
-            symbols_requested=["AAPL", "MSFT"],
-            success=True
-        )
+        mock_result = NewsFetchResult(articles=articles, source="test", symbols_requested=["AAPL", "MSFT"], success=True)
         analyzer.news_aggregator.fetch_articles = AsyncMock(return_value=mock_result)
 
         result = await analyzer.analyze_symbols(["AAPL", "MSFT"])
@@ -118,12 +97,7 @@ class TestNewsAnalyzer:
     @pytest.mark.asyncio
     async def test_analyze_symbols_custom_lookback(self, analyzer):
         """Test analyzing with custom lookback hours."""
-        mock_result = NewsFetchResult(
-            articles=[],
-            source="test",
-            symbols_requested=["AAPL"],
-            success=True
-        )
+        mock_result = NewsFetchResult(articles=[], source="test", symbols_requested=["AAPL"], success=True)
         analyzer.news_aggregator.fetch_articles = AsyncMock(return_value=mock_result)
 
         await analyzer.analyze_symbols(["AAPL"], lookback_hours=24)
@@ -136,11 +110,7 @@ class TestNewsAnalyzer:
     def test_process_article_extracts_symbols(self, analyzer):
         """Test that _process_article extracts symbols."""
         article = NewsArticle(
-            id="1",
-            source="Test",
-            title="Apple stock surges",
-            summary="Apple reported earnings",
-            published_at=datetime.now()
+            id="1", source="Test", title="Apple stock surges", summary="Apple reported earnings", published_at=datetime.now()
         )
 
         processed = analyzer._process_article(article, ["AAPL", "MSFT"])
@@ -157,7 +127,7 @@ class TestNewsAnalyzer:
             source="Test",
             title="Apple and Bitcoin both rose",
             summary="AAPL and BTC surged",
-            published_at=datetime.now()
+            published_at=datetime.now(),
         )
 
         processed = analyzer._process_article(article, ["AAPL"])
@@ -175,7 +145,7 @@ class TestNewsAnalyzer:
             published_at=datetime.now(),
             sentiment_score=0.5,
             sentiment_label=SentimentLabel.POSITIVE,
-            is_processed=True
+            is_processed=True,
         )
 
         processed = analyzer._process_article(article, ["AAPL"])
@@ -210,7 +180,7 @@ class TestNewsAnalyzer:
                 symbols=["AAPL"],
                 sentiment_score=0.7,
                 sentiment_label=SentimentLabel.VERY_POSITIVE,
-                is_processed=True
+                is_processed=True,
             ),
             NewsArticle(
                 id="2",
@@ -221,7 +191,7 @@ class TestNewsAnalyzer:
                 symbols=["AAPL"],
                 sentiment_score=0.5,
                 sentiment_label=SentimentLabel.POSITIVE,
-                is_processed=True
+                is_processed=True,
             ),
         ]
 
@@ -250,7 +220,7 @@ class TestNewsAnalyzer:
                 published_at=datetime.now(),
                 sentiment_score=0.5,
                 sentiment_label=SentimentLabel.POSITIVE,
-                is_processed=True
+                is_processed=True,
             ),
             NewsArticle(
                 id="2",
@@ -259,7 +229,7 @@ class TestNewsAnalyzer:
                 published_at=datetime.now(),
                 sentiment_score=0.3,
                 sentiment_label=SentimentLabel.POSITIVE,
-                is_processed=True
+                is_processed=True,
             ),
         ]
 
@@ -277,7 +247,7 @@ class TestNewsAnalyzer:
             market_sentiment=0.0,
             market_sentiment_label=SentimentLabel.NEUTRAL,
             total_articles=0,
-            articles=[]
+            articles=[],
         )
 
         score, reasoning = analyzer.get_news_score_for_signal("AAPL", analysis)
@@ -296,7 +266,7 @@ class TestNewsAnalyzer:
             negative_count=0,
             neutral_count=1,
             top_headlines=["Headline 1", "Headline 2"],
-            sentiment_trend="improving"
+            sentiment_trend="improving",
         )
 
         analysis = NewsAnalysisResult(
@@ -306,7 +276,7 @@ class TestNewsAnalyzer:
             market_sentiment=0.5,
             market_sentiment_label=SentimentLabel.POSITIVE,
             total_articles=5,
-            articles=[]
+            articles=[],
         )
 
         score, reasoning = analyzer.get_news_score_for_signal("AAPL", analysis)
@@ -326,7 +296,7 @@ class TestNewsAnalyzer:
             negative_count=2,
             neutral_count=1,
             top_headlines=["Headline 1"],
-            sentiment_trend="declining"
+            sentiment_trend="declining",
         )
 
         analysis = NewsAnalysisResult(
@@ -336,7 +306,7 @@ class TestNewsAnalyzer:
             market_sentiment=-0.3,
             market_sentiment_label=SentimentLabel.NEGATIVE,
             total_articles=3,
-            articles=[]
+            articles=[],
         )
 
         score, reasoning = analyzer.get_news_score_for_signal("AAPL", analysis)
@@ -356,7 +326,7 @@ class TestNewsAnalyzer:
             negative_count=0,
             neutral_count=1,
             top_headlines=["Headline 1"],
-            sentiment_trend="improving"
+            sentiment_trend="improving",
         )
 
         reasoning = analyzer._generate_reasoning(summary)
@@ -364,4 +334,3 @@ class TestNewsAnalyzer:
         assert "Positive news sentiment" in reasoning
         assert "(5 articles)" in reasoning
         assert "improving trend" in reasoning
-

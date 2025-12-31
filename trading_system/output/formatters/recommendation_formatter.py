@@ -30,12 +30,12 @@ class RecommendationFormatter:
         news_context_html = ""
         if recommendation.news_reasoning:
             news_context_html = f'<div class="news-context"><span class="icon">📰</span> {recommendation.news_reasoning}</div>'
-        
+
         news_headlines_html = ""
         if recommendation.news_headlines:
             news_headlines_html = '<div class="headlines"><strong>Recent News:</strong><ul>'
             for headline in recommendation.news_headlines[:2]:  # Limit to 2 headlines
-                news_headlines_html += f'<li>{headline}</li>'
+                news_headlines_html += f"<li>{headline}</li>"
             news_headlines_html += "</ul></div>"
 
         # Format scores with news integration
@@ -45,7 +45,7 @@ class RecommendationFormatter:
                 news_score_class = "positive"
             elif recommendation.news_score <= 3.0:
                 news_score_class = "negative"
-        
+
         scores_html = f"""
         <div class="scores">
             <div class="score-item">
@@ -54,19 +54,19 @@ class RecommendationFormatter:
             </div>
         """
         if recommendation.news_score is not None:
-            scores_html += f'''
+            scores_html += f"""
             <div class="score-item">
                 <span class="label">News:</span>
                 <span class="value {news_score_class}">{recommendation.news_score:.1f}/10</span>
             </div>
-            '''
+            """
         if recommendation.combined_score > 0:
-            scores_html += f'''
+            scores_html += f"""
             <div class="score-item combined">
                 <span class="label">Combined:</span>
                 <span class="value">{recommendation.combined_score:.1f}/10</span>
             </div>
-            '''
+            """
         scores_html += "</div>"
 
         # Get symbol name (simplified - in production, use a symbol-to-name mapping)
@@ -139,4 +139,3 @@ Technical Score: {recommendation.technical_score:.1f}/10
         text += f"\n💡 Reasoning: {recommendation.reasoning}\n"
 
         return text
-

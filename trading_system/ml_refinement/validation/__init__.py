@@ -27,4 +27,3 @@ __all__ = [
     "calculate_auc",
     "calculate_calibration_error",
 ]
-

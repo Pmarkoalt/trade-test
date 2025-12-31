@@ -96,8 +96,7 @@ class LiveSignalGenerator:
             symbols = list(ohlcv_data.keys())
             try:
                 news_analysis = await self.news_analyzer.analyze_symbols(
-                    symbols=symbols,
-                    lookback_hours=self.config.news_lookback_hours
+                    symbols=symbols, lookback_hours=self.config.news_lookback_hours
                 )
             except Exception:
                 # If news analysis fails, continue without it
@@ -134,9 +133,7 @@ class LiveSignalGenerator:
             if strategy_config is None:
                 continue
 
-            recommendation = self._create_recommendation(
-                signal, combined_score, feature, strategy_config, metadata
-            )
+            recommendation = self._create_recommendation(signal, combined_score, feature, strategy_config, metadata)
             recommendations.append(recommendation)
 
             # Limit to max_recommendations
@@ -149,7 +146,7 @@ class LiveSignalGenerator:
                 try:
                     signal_id = self.tracker.record_from_recommendation(recommendation)
                     # Store tracking_id on recommendation for later use
-                    if not hasattr(recommendation, 'tracking_id'):
+                    if not hasattr(recommendation, "tracking_id"):
                         recommendation.tracking_id = signal_id
                     else:
                         recommendation.tracking_id = signal_id
@@ -244,23 +241,20 @@ class LiveSignalGenerator:
 
             if news_analysis and self.news_analyzer:
                 try:
-                    news_score, news_reasoning = self.news_analyzer.get_news_score_for_signal(
-                        signal.symbol,
-                        news_analysis
-                    )
+                    news_score, news_reasoning = self.news_analyzer.get_news_score_for_signal(signal.symbol, news_analysis)
                     # Extract headlines from news_analysis
-                    if hasattr(news_analysis, 'symbol_summaries'):
+                    if hasattr(news_analysis, "symbol_summaries"):
                         symbol_summary = news_analysis.symbol_summaries.get(signal.symbol)
-                        if symbol_summary and hasattr(symbol_summary, 'top_headlines'):
+                        if symbol_summary and hasattr(symbol_summary, "top_headlines"):
                             news_headlines = symbol_summary.top_headlines or []
                         # Extract sentiment label
-                        if symbol_summary and hasattr(symbol_summary, 'sentiment_label'):
+                        if symbol_summary and hasattr(symbol_summary, "sentiment_label"):
                             sentiment_label = symbol_summary.sentiment_label
-                            if hasattr(sentiment_label, 'value'):
+                            if hasattr(sentiment_label, "value"):
                                 label_value = sentiment_label.value.lower()
-                                if 'positive' in label_value:
+                                if "positive" in label_value:
                                     news_sentiment = "positive"
-                                elif 'negative' in label_value:
+                                elif "negative" in label_value:
                                     news_sentiment = "negative"
                                 else:
                                     news_sentiment = "neutral"
@@ -269,10 +263,7 @@ class LiveSignalGenerator:
                     news_reasoning = "News analysis error"
 
             # Combined score
-            combined = (
-                technical_score * self.config.technical_weight +
-                news_score * self.config.news_weight
-            )
+            combined = technical_score * self.config.technical_weight + news_score * self.config.news_weight
 
             metadata = {
                 "technical_score": technical_score,
@@ -280,7 +271,7 @@ class LiveSignalGenerator:
                 "news_reasoning": news_reasoning,
                 "news_headlines": news_headlines,
                 "news_sentiment": news_sentiment,
-                "combined_score": combined
+                "combined_score": combined,
             }
 
             scored.append((signal, combined, metadata))
@@ -351,7 +342,7 @@ class LiveSignalGenerator:
         # Extract news sentiment and headlines from metadata
         news_sentiment = metadata.get("news_sentiment")
         news_headlines = metadata.get("news_headlines", [])
-        
+
         # Fallback: derive sentiment from score if not in metadata
         if news_sentiment is None and news_score is not None:
             if news_score >= 7.0:

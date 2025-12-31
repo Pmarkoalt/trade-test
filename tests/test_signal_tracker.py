@@ -451,4 +451,3 @@ class TestSignalTracker:
         assert signal.status == SignalStatus.ACTIVE
 
         store.close()
-

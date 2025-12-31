@@ -299,4 +299,3 @@ class TestLiveDataFetcher:
 
         # Sessions should be closed after context exit
         assert fetcher.binance._session is None or fetcher.binance._session.closed
-

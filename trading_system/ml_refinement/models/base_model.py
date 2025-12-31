@@ -227,16 +227,10 @@ class SignalQualityModel(BaseModel):
         # Feature importance
         if hasattr(self._model, "feature_importances_"):
             importances = self._model.feature_importances_
-            self._feature_importance = {
-                name: float(imp)
-                for name, imp in zip(self._feature_names, importances)
-            }
+            self._feature_importance = {name: float(imp) for name, imp in zip(self._feature_names, importances)}
 
         self.is_fitted = True
-        logger.info(
-            f"Trained {self.model_type.value} model: "
-            f"train_auc={self._train_metrics.get('auc', 0):.3f}"
-        )
+        logger.info(f"Trained {self.model_type.value} model: " f"train_auc={self._train_metrics.get('auc', 0):.3f}")
 
         return self._train_metrics
 
@@ -310,4 +304,3 @@ class SignalQualityModel(BaseModel):
             reverse=True,
         )
         return sorted_features[:n]
-

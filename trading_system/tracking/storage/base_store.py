@@ -138,4 +138,3 @@ class BaseTrackingStore(ABC):
     ) -> Dict:
         """Get aggregate signal statistics."""
         pass
-

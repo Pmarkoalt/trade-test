@@ -195,10 +195,7 @@ class StrategyAnalyzer:
 
         # Expectancy
         loss_rate = 1 - metrics.win_rate
-        metrics.expectancy_r = (
-            (metrics.win_rate * metrics.avg_winner_r) -
-            (loss_rate * abs(metrics.avg_loser_r))
-        )
+        metrics.expectancy_r = (metrics.win_rate * metrics.avg_winner_r) - (loss_rate * abs(metrics.avg_loser_r))
 
         # Sharpe
         if len(returns) > 1:
@@ -231,10 +228,10 @@ class StrategyAnalyzer:
             # Composite score: weighted combination of metrics
             # Higher is better
             strategy.score = (
-                strategy.expectancy_r * 2.0 +      # Expectancy most important
-                strategy.win_rate * 1.0 +          # Win rate matters
-                strategy.sharpe_ratio * 0.5 +      # Risk-adjusted return
-                (1 + strategy.max_drawdown_pct) * 0.5  # Drawdown penalty
+                strategy.expectancy_r * 2.0  # Expectancy most important
+                + strategy.win_rate * 1.0  # Win rate matters
+                + strategy.sharpe_ratio * 0.5  # Risk-adjusted return
+                + (1 + strategy.max_drawdown_pct) * 0.5  # Drawdown penalty
             )
 
         # Sort by score descending
@@ -261,7 +258,7 @@ class StrategyAnalyzer:
 
         names = list(strategy_returns.keys())
         for i, name1 in enumerate(names):
-            for name2 in names[i + 1:]:
+            for name2 in names[i + 1 :]:
                 # Align returns by index (simplified)
                 r1 = strategy_returns[name1]
                 r2 = strategy_returns[name2]
@@ -307,35 +304,20 @@ class StrategyAnalyzer:
         worst = comparison.strategies[-1]
 
         # Best strategy recommendation
-        recommendations.append(
-            f"Focus on {best.name}: {best.expectancy_r:.2f}R expectancy, "
-            f"{best.win_rate:.0%} win rate"
-        )
+        recommendations.append(f"Focus on {best.name}: {best.expectancy_r:.2f}R expectancy, " f"{best.win_rate:.0%} win rate")
 
         # Worst strategy warning
         if worst.expectancy_r < 0:
-            recommendations.append(
-                f"Consider disabling {worst.name}: negative expectancy "
-                f"({worst.expectancy_r:.2f}R)"
-            )
+            recommendations.append(f"Consider disabling {worst.name}: negative expectancy " f"({worst.expectancy_r:.2f}R)")
 
         # Correlation warning
         for (s1, s2), corr in comparison.strategy_correlations.items():
             if corr > 0.7:
-                recommendations.append(
-                    f"{s1} and {s2} are highly correlated ({corr:.2f}) - "
-                    "consider using only one"
-                )
+                recommendations.append(f"{s1} and {s2} are highly correlated ({corr:.2f}) - " "consider using only one")
 
         # Diversification suggestion
-        low_corr_pairs = [
-            (s1, s2) for (s1, s2), corr in comparison.strategy_correlations.items()
-            if corr < 0.3
-        ]
+        low_corr_pairs = [(s1, s2) for (s1, s2), corr in comparison.strategy_correlations.items() if corr < 0.3]
         if low_corr_pairs:
-            recommendations.append(
-                f"Diversify with uncorrelated strategies: {low_corr_pairs[0]}"
-            )
+            recommendations.append(f"Diversify with uncorrelated strategies: {low_corr_pairs[0]}")
 
         return recommendations
-

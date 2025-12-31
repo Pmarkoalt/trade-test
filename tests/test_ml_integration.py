@@ -41,13 +41,16 @@ def sample_ohlcv():
     low = close - np.abs(np.random.randn(300)) * 2
     open_ = close + np.random.randn(300) * 1
 
-    return pd.DataFrame({
-        "open": open_,
-        "high": high,
-        "low": low,
-        "close": close,
-        "volume": np.random.randint(1000000, 10000000, 300),
-    }, index=dates)
+    return pd.DataFrame(
+        {
+            "open": open_,
+            "high": high,
+            "low": low,
+            "close": close,
+            "volume": np.random.randint(1000000, 10000000, 300),
+        },
+        index=dates,
+    )
 
 
 @pytest.fixture
@@ -68,7 +71,7 @@ def populated_feature_db(feature_db):
     for i in range(200):
         fv = FeatureVector(
             signal_id=f"sig-{i:04d}",
-            timestamp=(datetime.now() - timedelta(days=200-i)).isoformat(),
+            timestamp=(datetime.now() - timedelta(days=200 - i)).isoformat(),
             features={
                 "rsi": np.random.uniform(20, 80),
                 "price_vs_ma20": np.random.uniform(-0.1, 0.1),
@@ -217,7 +220,7 @@ class TestModelTraining:
         config = MLConfig()
         config.training.min_training_samples = 30  # Lower for testing
         config.training.min_validation_samples = 10
-        
+
         trainer = ModelTrainer(
             config,
             populated_feature_db,
@@ -225,9 +228,7 @@ class TestModelTraining:
         )
 
         # Mock the model class to use a simple mock
-        with patch.object(trainer, 'MODEL_CLASSES', {
-            ModelType.SIGNAL_QUALITY: MagicMock
-        }):
+        with patch.object(trainer, "MODEL_CLASSES", {ModelType.SIGNAL_QUALITY: MagicMock}):
             # Create a proper mock model
             mock_model = MagicMock()
             mock_model.model_id = "test-model-123"
@@ -246,7 +247,7 @@ class TestModelTraining:
             )
             mock_model.predict.return_value = np.array([1, 0, 1])
             mock_model.predict_proba.return_value = np.array([[0.3, 0.7], [0.8, 0.2], [0.4, 0.6]])
-            
+
             trainer.MODEL_CLASSES[ModelType.SIGNAL_QUALITY] = lambda **kwargs: mock_model
 
             result = trainer.train(
@@ -270,23 +271,23 @@ class TestPredictionService:
         """Test signal quality prediction."""
         config = MLConfig()
         model_dir = str(tmp_path / "models")
-        
+
         # Mock model for prediction
         mock_model = MagicMock()
         mock_model.model_id = "test-model-123"
         mock_model.predict_proba.return_value = np.array([[0.3, 0.7]])  # 70% probability
-        
+
         # Create service with mocked model registry
         from trading_system.ml_refinement.integration.prediction_service import ModelRegistry
-        
+
         class MockModelRegistry:
             def __init__(self, feature_db):
                 self.feature_db = feature_db
                 self._models = {}
-                
+
             def get_active(self, model_type):
                 return mock_model
-                
+
         registry = MockModelRegistry(populated_feature_db)
         service = PredictionService(config, populated_feature_db, registry)
 
@@ -320,11 +321,11 @@ class TestMLSignalScorer:
         config = MLConfig()
         config.enabled = True
         config.use_ml_scores = True
-        
+
         # Mock prediction service
         mock_service = MagicMock()
         mock_service.predict_signal_quality.return_value = 0.75  # 75% quality
-        
+
         scorer = MLSignalScorer(config, mock_service)
 
         # Score a signal
@@ -352,7 +353,7 @@ class TestMLSignalScorer:
         """Test signal scoring without ML."""
         config = MLConfig()
         config.enabled = False
-        
+
         mock_service = MagicMock()
         scorer = MLSignalScorer(config, mock_service)
 
@@ -376,7 +377,7 @@ class TestMLSignalScorer:
         config.enabled = True
         config.use_ml_scores = True
         config.quality_threshold_low = 0.5
-        
+
         mock_service = MagicMock()
         scorer = MLSignalScorer(config, mock_service)
 
@@ -411,15 +412,13 @@ class TestEndToEndWorkflow:
         config.training.min_validation_samples = 10
         config.enabled = True
         config.use_ml_scores = True
-        
+
         model_dir = str(tmp_path / "models")
-        
+
         # Step 1: Train model
         trainer = ModelTrainer(config, populated_feature_db, model_dir)
-        
-        with patch.object(trainer, 'MODEL_CLASSES', {
-            ModelType.SIGNAL_QUALITY: MagicMock
-        }):
+
+        with patch.object(trainer, "MODEL_CLASSES", {ModelType.SIGNAL_QUALITY: MagicMock}):
             mock_model = MagicMock()
             mock_model.model_id = "e2e-model-123"
             mock_model.get_top_features.return_value = []
@@ -435,9 +434,9 @@ class TestEndToEndWorkflow:
             )
             mock_model.predict.return_value = np.array([1])
             mock_model.predict_proba.return_value = np.array([[0.3, 0.7]])
-            
+
             trainer.MODEL_CLASSES[ModelType.SIGNAL_QUALITY] = lambda **kwargs: mock_model
-            
+
             result = trainer.train(ModelType.SIGNAL_QUALITY)
             assert result.success
 
@@ -446,14 +445,14 @@ class TestEndToEndWorkflow:
 
         # Step 3: Create prediction service
         from trading_system.ml_refinement.integration.prediction_service import ModelRegistry
-        
+
         class MockRegistry:
             def __init__(self, feature_db):
                 self.feature_db = feature_db
-                
+
             def get_active(self, model_type):
                 return mock_model
-                
+
         registry = MockRegistry(populated_feature_db)
         service = PredictionService(config, populated_feature_db, registry)
 
@@ -485,4 +484,3 @@ class TestEndToEndWorkflow:
 
         assert enhanced.ml_enabled
         assert enhanced.combined_score > 0
-

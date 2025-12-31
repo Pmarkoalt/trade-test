@@ -590,4 +590,3 @@ class TestAutoOutcomeRecorder:
         assert signal_ids[2] not in closed  # GOOGL no exit
 
         store.close()
-

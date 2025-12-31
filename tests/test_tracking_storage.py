@@ -574,4 +574,3 @@ class TestSQLiteTrackingStore:
         assert retrieved.user_notes == "Great trade!"
 
         store.close()
-

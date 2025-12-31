@@ -269,4 +269,3 @@ class PerformanceMetrics:
     metrics_by_asset_class: Dict[str, Dict] = field(default_factory=dict)
     metrics_by_signal_type: Dict[str, Dict] = field(default_factory=dict)
     metrics_by_conviction: Dict[str, Dict] = field(default_factory=dict)
-

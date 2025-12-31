@@ -311,10 +311,7 @@ class SignalAnalyzer:
     ) -> Dict:
         """Calculate win/loss streaks."""
         # Sort by exit date
-        sorted_outcomes = sorted(
-            outcomes,
-            key=lambda x: x[1].actual_exit_date or date.today()
-        )
+        sorted_outcomes = sorted(outcomes, key=lambda x: x[1].actual_exit_date or date.today())
 
         if not sorted_outcomes:
             return {"current": 0, "current_type": "", "max_win": 0, "max_loss": 0}
@@ -368,14 +365,16 @@ class SignalAnalyzer:
 
         result = []
         for signal, outcome in sorted_outcomes[:n]:
-            result.append({
-                "symbol": signal.symbol,
-                "direction": signal.direction.value,
-                "return_pct": outcome.return_pct,
-                "r_multiple": outcome.r_multiple,
-                "exit_date": outcome.actual_exit_date.isoformat() if outcome.actual_exit_date else None,
-                "exit_reason": outcome.exit_reason.value if outcome.exit_reason else None,
-            })
+            result.append(
+                {
+                    "symbol": signal.symbol,
+                    "direction": signal.direction.value,
+                    "return_pct": outcome.return_pct,
+                    "r_multiple": outcome.r_multiple,
+                    "exit_date": outcome.actual_exit_date.isoformat() if outcome.actual_exit_date else None,
+                    "exit_reason": outcome.exit_reason.value if outcome.exit_reason else None,
+                }
+            )
 
         return result
 
@@ -404,49 +403,30 @@ class SignalAnalyzer:
 
         # Day of week insight
         if analytics.performance_by_day_of_week:
-            best_day = max(
-                analytics.performance_by_day_of_week.items(),
-                key=lambda x: x[1].get("avg_r", 0)
-            )
-            worst_day = min(
-                analytics.performance_by_day_of_week.items(),
-                key=lambda x: x[1].get("avg_r", 0)
-            )
+            best_day = max(analytics.performance_by_day_of_week.items(), key=lambda x: x[1].get("avg_r", 0))
+            worst_day = min(analytics.performance_by_day_of_week.items(), key=lambda x: x[1].get("avg_r", 0))
             if best_day[1]["total"] >= 5:
                 insights.append(
                     f"Best performance on {best_day[0]} "
                     f"(avg {best_day[1]['avg_r']:.2f}R, {best_day[1]['win_rate']:.0%} win rate)"
                 )
             if worst_day[1]["total"] >= 5 and worst_day[1]["avg_r"] < 0:
-                insights.append(
-                    f"Consider avoiding {worst_day[0]} signals "
-                    f"(avg {worst_day[1]['avg_r']:.2f}R)"
-                )
+                insights.append(f"Consider avoiding {worst_day[0]} signals " f"(avg {worst_day[1]['avg_r']:.2f}R)")
 
         # Conviction accuracy
         if analytics.conviction_accuracy:
             high_acc = analytics.conviction_accuracy.get("HIGH", 0)
             low_acc = analytics.conviction_accuracy.get("LOW", 0)
             if high_acc > low_acc + 0.1:
-                insights.append(
-                    f"HIGH conviction signals outperform: "
-                    f"{high_acc:.0%} vs {low_acc:.0%} win rate"
-                )
+                insights.append(f"HIGH conviction signals outperform: " f"{high_acc:.0%} vs {low_acc:.0%} win rate")
             elif low_acc > high_acc:
-                insights.append(
-                    "WARNING: LOW conviction signals outperforming HIGH - "
-                    "review scoring methodology"
-                )
+                insights.append("WARNING: LOW conviction signals outperforming HIGH - " "review scoring methodology")
 
         # Score correlation
         if analytics.score_vs_outcome_correlation > 0.3:
-            insights.append(
-                f"Combined score is predictive (r={analytics.score_vs_outcome_correlation:.2f})"
-            )
+            insights.append(f"Combined score is predictive (r={analytics.score_vs_outcome_correlation:.2f})")
         elif analytics.score_vs_outcome_correlation < 0:
-            insights.append(
-                "WARNING: Negative score-outcome correlation - scoring needs review"
-            )
+            insights.append("WARNING: Negative score-outcome correlation - scoring needs review")
 
         # Streaks
         if analytics.current_streak >= 5:
@@ -455,13 +435,8 @@ class SignalAnalyzer:
 
         # Recent performance
         if analytics.recent_win_rate < 0.4:
-            insights.append(
-                f"Recent performance declining: {analytics.recent_win_rate:.0%} win rate (last 20)"
-            )
+            insights.append(f"Recent performance declining: {analytics.recent_win_rate:.0%} win rate (last 20)")
         elif analytics.recent_win_rate > 0.7:
-            insights.append(
-                f"Strong recent performance: {analytics.recent_win_rate:.0%} win rate (last 20)"
-            )
+            insights.append(f"Strong recent performance: {analytics.recent_win_rate:.0%} win rate (last 20)")
 
         return insights
-

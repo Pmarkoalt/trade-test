@@ -130,8 +130,7 @@ class WalkForwardValidator:
             actual_train_size = train_end - train_start
             actual_val_size = val_end - val_start
 
-            if actual_train_size >= self.min_train_samples and \
-               actual_val_size >= self.min_val_samples:
+            if actual_train_size >= self.min_train_samples and actual_val_size >= self.min_val_samples:
 
                 split = WalkForwardSplit(
                     train_start=train_start,
@@ -293,4 +292,3 @@ class PurgedKFold:
             test_idx = np.arange(test_start, test_end)
 
             yield train_idx, test_idx
-

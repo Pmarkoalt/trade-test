@@ -100,9 +100,7 @@ def calculate_log_loss(
     y_proba = np.clip(y_proba, eps, 1 - eps)
 
     # Log loss
-    loss = -np.mean(
-        y_true * np.log(y_proba) + (1 - y_true) * np.log(1 - y_proba)
-    )
+    loss = -np.mean(y_true * np.log(y_proba) + (1 - y_true) * np.log(1 - y_proba))
     return loss
 
 
@@ -235,7 +233,7 @@ def calculate_feature_importance_stability(
         std_imp = np.std(values)
 
         # Coefficient of variation (lower = more stable)
-        cv = std_imp / mean_imp if mean_imp > 0 else float('inf')
+        cv = std_imp / mean_imp if mean_imp > 0 else float("inf")
 
         stability[feature] = {
             "mean": mean_imp,
@@ -244,4 +242,3 @@ def calculate_feature_importance_stability(
         }
 
     return stability
-

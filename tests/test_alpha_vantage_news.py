@@ -355,4 +355,3 @@ class TestAlphaVantageNewsClient:
         with patch("trading_system.data_pipeline.sources.news.alpha_vantage_news.aiohttp", None):
             with pytest.raises(ImportError, match="aiohttp is required"):
                 AlphaVantageNewsClient(api_key="test_key")
-

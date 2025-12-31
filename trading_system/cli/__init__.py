@@ -24,7 +24,7 @@ if _cli_py_path.exists():
         # Store in sys.modules with a unique name
         sys.modules["trading_system.cli_file"] = _cli_module
         _cli_spec.loader.exec_module(_cli_module)
-        
+
         # Re-export functions
         main = _cli_module.main
         cmd_backtest = _cli_module.cmd_backtest

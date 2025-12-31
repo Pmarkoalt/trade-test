@@ -74,9 +74,9 @@ class TickerExtractor:
 
         # Pattern for explicit ticker mentions (e.g., $AAPL, AAPL:, (AAPL))
         self.ticker_pattern = re.compile(
-            r'(?:\$([A-Z]{1,5})|'  # $AAPL
-            r'\b([A-Z]{1,5})(?::|(?=\s+(?:stock|shares|price|falls|rises|surges|drops)))|'  # AAPL: or AAPL stock
-            r'\(([A-Z]{1,5})\))'  # (AAPL)
+            r"(?:\$([A-Z]{1,5})|"  # $AAPL
+            r"\b([A-Z]{1,5})(?::|(?=\s+(?:stock|shares|price|falls|rises|surges|drops)))|"  # AAPL: or AAPL stock
+            r"\(([A-Z]{1,5})\))"  # (AAPL)
         )
 
     def extract(self, text: str) -> List[str]:
@@ -104,7 +104,7 @@ class TickerExtractor:
         for alias, ticker in ALIAS_TO_TICKER.items():
             if ticker in self.valid_tickers and alias in text_lower:
                 # Verify it's a word boundary match
-                pattern = r'\b' + re.escape(alias) + r'\b'
+                pattern = r"\b" + re.escape(alias) + r"\b"
                 if re.search(pattern, text_lower):
                     found_tickers.add(ticker)
 

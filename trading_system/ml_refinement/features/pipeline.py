@@ -122,9 +122,7 @@ class FeaturePipeline:
                 all_features.update(features)
 
             except Exception as e:
-                logger.warning(
-                    f"Error extracting features from {extractor.name}: {e}"
-                )
+                logger.warning(f"Error extracting features from {extractor.name}: {e}")
                 # Fill with zeros for failed extractor
                 for name in extractor.feature_names:
                     all_features[name] = 0.0
@@ -133,9 +131,7 @@ class FeaturePipeline:
         if self.config.scale_features:
             all_features = self._scale_features(all_features)
 
-        logger.debug(
-            f"Extracted {len(all_features)} features for signal {signal_id}"
-        )
+        logger.debug(f"Extracted {len(all_features)} features for signal {signal_id}")
 
         return all_features
 
@@ -290,4 +286,3 @@ class FeatureScaler:
             result.append(self.transform(sample))
 
         return result
-

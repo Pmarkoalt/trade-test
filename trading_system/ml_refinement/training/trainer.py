@@ -32,30 +32,30 @@ except ImportError:
     # Create minimal interface for models
     class BaseModel:
         """Base model interface."""
-        
+
         def __init__(self, **kwargs):
             self.model_id = f"model_{uuid.uuid4().hex[:8]}"
             self.feature_names: List[str] = []
             self.feature_importance: Dict[str, float] = {}
-            
+
         def fit(self, X_train, y_train, X_val=None, y_val=None, feature_names=None):
             """Train the model."""
             if feature_names:
                 self.feature_names = feature_names
             return {"accuracy": 0.0}
-            
+
         def predict(self, X):
             """Make predictions."""
             return np.zeros(len(X))
-            
+
         def predict_proba(self, X):
             """Predict probabilities."""
             return np.ones((len(X), 2)) * 0.5
-            
+
         def get_top_features(self, n=10):
             """Get top N features by importance."""
             return []
-            
+
         def get_metadata(self):
             """Get model metadata."""
             return ModelMetadata(
@@ -68,14 +68,15 @@ except ImportError:
                 train_samples=0,
                 validation_samples=0,
             )
-            
+
         def save(self, path):
             """Save model."""
             Path(path).parent.mkdir(parents=True, exist_ok=True)
             # Stub implementation
-            
+
     class SignalQualityModel(BaseModel):
         """Signal quality model."""
+
         pass
 
 
@@ -189,9 +190,7 @@ class ModelTrainer:
 
             # Run walk-forward validation
             logger.info("Running walk-forward validation")
-            cv_results = self._run_walk_forward_cv(
-                X, y, feature_names, model_type, hyperparameters
-            )
+            cv_results = self._run_walk_forward_cv(X, y, feature_names, model_type, hyperparameters)
 
             result.n_folds = cv_results.n_folds
             result.val_samples = cv_results.total_val_samples
@@ -199,9 +198,7 @@ class ModelTrainer:
 
             # Train final model on all data
             logger.info("Training final model on all data")
-            final_model, final_metrics = self._train_final_model(
-                X, y, feature_names, model_type, hyperparameters
-            )
+            final_model, final_metrics = self._train_final_model(X, y, feature_names, model_type, hyperparameters)
 
             result.final_metrics = final_metrics
             result.top_features = final_model.get_top_features(10)
@@ -251,10 +248,10 @@ class ModelTrainer:
 
         for fold_idx, split in enumerate(validator.generate_splits(len(X))):
             # Split data
-            X_train = X[split.train_start:split.train_end]
-            y_train = y[split.train_start:split.train_end]
-            X_val = X[split.val_start:split.val_end]
-            y_val = y[split.val_start:split.val_end]
+            X_train = X[split.train_start : split.train_end]
+            y_train = y[split.train_start : split.train_end]
+            X_val = X[split.val_start : split.val_end]
+            y_val = y[split.val_start : split.val_end]
 
             # Create and train model
             model_class = self.MODEL_CLASSES[model_type]
@@ -264,7 +261,7 @@ class ModelTrainer:
             # Predict on validation
             y_pred = model.predict(X_val)
             y_proba_full = model.predict_proba(X_val)
-            
+
             # Extract positive class probabilities (assuming binary classification)
             if y_proba_full.ndim > 1:
                 y_proba = y_proba_full[:, 1] if y_proba_full.shape[1] > 1 else y_proba_full[:, 0]
@@ -277,20 +274,21 @@ class ModelTrainer:
             metrics.update(calculate_trading_metrics(y_val_binary, y_proba))
 
             fold_metrics_list.append(metrics)
-            results.fold_results.append({
-                "fold": fold_idx,
-                "train_size": split.train_size,
-                "val_size": split.val_size,
-                "metrics": metrics,
-            })
+            results.fold_results.append(
+                {
+                    "fold": fold_idx,
+                    "train_size": split.train_size,
+                    "val_size": split.val_size,
+                    "metrics": metrics,
+                }
+            )
 
             # Store predictions
             for i, (pred, actual) in enumerate(zip(y_proba, y_val)):
                 all_predictions.append((split.val_start + i, float(pred), float(actual)))
 
             logger.debug(
-                f"Fold {fold_idx}: train={split.train_size}, val={split.val_size}, "
-                f"auc={metrics.get('auc', 0):.3f}"
+                f"Fold {fold_idx}: train={split.train_size}, val={split.val_size}, " f"auc={metrics.get('auc', 0):.3f}"
             )
 
         # Aggregate metrics
@@ -330,13 +328,13 @@ class ModelTrainer:
         # Evaluate on validation
         y_pred = model.predict(X_val)
         y_proba_full = model.predict_proba(X_val)
-        
+
         # Extract positive class probabilities (assuming binary classification)
         if y_proba_full.ndim > 1:
             y_proba = y_proba_full[:, 1] if y_proba_full.shape[1] > 1 else y_proba_full[:, 0]
         else:
             y_proba = y_proba_full
-            
+
         y_val_binary = (y_val > 0).astype(int)
 
         final_metrics = calculate_classification_metrics(y_val_binary, y_pred, y_proba)
@@ -374,14 +372,8 @@ class ModelTrainer:
         )
 
         if new_samples >= min_new_samples:
-            logger.info(
-                f"Found {new_samples} new samples since {active.train_end_date}, "
-                f"retraining {model_type.value}"
-            )
+            logger.info(f"Found {new_samples} new samples since {active.train_end_date}, " f"retraining {model_type.value}")
             return self.train(model_type)
         else:
-            logger.debug(
-                f"Only {new_samples} new samples, need {min_new_samples} to retrain"
-            )
+            logger.debug(f"Only {new_samples} new samples, need {min_new_samples} to retrain")
             return None
-

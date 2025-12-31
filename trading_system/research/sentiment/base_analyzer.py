@@ -44,4 +44,3 @@ class BaseSentimentAnalyzer(ABC):
         article.is_processed = True
 
         return article
-

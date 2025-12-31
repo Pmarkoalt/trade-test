@@ -13,4 +13,3 @@ class SchedulerConfig(BaseModel):
 
     enabled: bool = True
     timezone: str = "UTC"
-

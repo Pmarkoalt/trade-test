@@ -93,24 +93,29 @@ def main():
     # Render selected page
     if selected_page == "overview":
         from trading_system.dashboard.pages.overview import render_overview
+
         render_overview(config)
     elif selected_page == "signals":
         from trading_system.dashboard.pages.signals import render_signals
+
         render_signals(config)
     elif selected_page == "performance":
         from trading_system.dashboard.pages.performance import render_performance
+
         render_performance(config)
     elif selected_page == "portfolio":
         from trading_system.dashboard.pages.portfolio import render_portfolio
+
         render_portfolio(config)
     elif selected_page == "news":
         from trading_system.dashboard.pages.news import render_news
+
         render_news(config)
     elif selected_page == "settings":
         from trading_system.dashboard.pages.settings import render_settings
+
         render_settings(config)
 
 
 if __name__ == "__main__":
     main()
-

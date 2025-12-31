@@ -87,18 +87,17 @@ class TestNewsAggregator:
 
     def test_init_with_caching_disabled(self):
         """Test initialization with caching disabled."""
-        aggregator = NewsAggregator(
-            newsapi_key="test_newsapi", enable_caching=False, cache_ttl_minutes=30
-        )
+        aggregator = NewsAggregator(newsapi_key="test_newsapi", enable_caching=False, cache_ttl_minutes=30)
         assert aggregator.enable_caching is False
 
     @pytest.mark.asyncio
     async def test_fetch_news_for_symbols_success(self, sample_articles):
         """Test successful fetch from multiple sources."""
         # Create aggregator with mocked sources
-        with patch("trading_system.data_pipeline.sources.news.news_aggregator.NewsAPIClient") as mock_newsapi_class, patch(
-            "trading_system.data_pipeline.sources.news.news_aggregator.AlphaVantageNewsClient"
-        ) as mock_av_class:
+        with (
+            patch("trading_system.data_pipeline.sources.news.news_aggregator.NewsAPIClient") as mock_newsapi_class,
+            patch("trading_system.data_pipeline.sources.news.news_aggregator.AlphaVantageNewsClient") as mock_av_class,
+        ):
             mock_newsapi = AsyncMock()
             mock_newsapi.source_name = "NewsAPI"
             mock_newsapi.fetch_articles = AsyncMock(
@@ -169,9 +168,10 @@ class TestNewsAggregator:
     @pytest.mark.asyncio
     async def test_fetch_news_for_symbols_source_failure(self):
         """Test that source failures are handled gracefully."""
-        with patch("trading_system.data_pipeline.sources.news.news_aggregator.NewsAPIClient") as mock_newsapi_class, patch(
-            "trading_system.data_pipeline.sources.news.news_aggregator.AlphaVantageNewsClient"
-        ) as mock_av_class:
+        with (
+            patch("trading_system.data_pipeline.sources.news.news_aggregator.NewsAPIClient") as mock_newsapi_class,
+            patch("trading_system.data_pipeline.sources.news.news_aggregator.AlphaVantageNewsClient") as mock_av_class,
+        ):
             mock_newsapi = AsyncMock()
             mock_newsapi.source_name = "NewsAPI"
             mock_newsapi.fetch_articles = AsyncMock(
@@ -213,9 +213,10 @@ class TestNewsAggregator:
     @pytest.mark.asyncio
     async def test_fetch_news_for_symbols_exception_handling(self, sample_articles):
         """Test that exceptions from sources are handled gracefully."""
-        with patch("trading_system.data_pipeline.sources.news.news_aggregator.NewsAPIClient") as mock_newsapi_class, patch(
-            "trading_system.data_pipeline.sources.news.news_aggregator.AlphaVantageNewsClient"
-        ) as mock_av_class:
+        with (
+            patch("trading_system.data_pipeline.sources.news.news_aggregator.NewsAPIClient") as mock_newsapi_class,
+            patch("trading_system.data_pipeline.sources.news.news_aggregator.AlphaVantageNewsClient") as mock_av_class,
+        ):
             mock_newsapi = AsyncMock()
             mock_newsapi.source_name = "NewsAPI"
             mock_newsapi.fetch_articles = AsyncMock(side_effect=Exception("Connection error"))
@@ -432,4 +433,3 @@ class TestNewsAggregator:
         cached = aggregator._get_cached("test_key")
 
         assert cached is None
-

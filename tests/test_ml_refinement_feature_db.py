@@ -148,11 +148,7 @@ def test_count_samples(tmp_path):
     assert with_targets == 2
 
     # Count with date range
-    in_range = db.count_samples(
-        start_date="2024-01-01",
-        end_date="2024-01-02",
-        require_target=True
-    )
+    in_range = db.count_samples(start_date="2024-01-01", end_date="2024-01-02", require_target=True)
     assert in_range == 2
     db.close()
 
@@ -270,10 +266,7 @@ def test_prediction_logging(tmp_path):
     assert success
 
     # Verify prediction was logged (check database directly)
-    cursor = db.connection.execute(
-        "SELECT * FROM prediction_log WHERE signal_id = ?",
-        ("signal-123",)
-    )
+    cursor = db.connection.execute("SELECT * FROM prediction_log WHERE signal_id = ?", ("signal-123",))
     row = cursor.fetchone()
     assert row is not None
     assert row["quality_score"] == 0.75
@@ -289,11 +282,13 @@ def test_training_data_filtering(tmp_path):
     db.initialize()
 
     # Store vectors with different attributes
-    for i, (asset_class, signal_type) in enumerate([
-        ("equity", "momentum"),
-        ("equity", "mean_reversion"),
-        ("crypto", "momentum"),
-    ]):
+    for i, (asset_class, signal_type) in enumerate(
+        [
+            ("equity", "momentum"),
+            ("equity", "mean_reversion"),
+            ("crypto", "momentum"),
+        ]
+    ):
         fv = FeatureVector(
             signal_id=f"test-{i}",
             timestamp=f"2024-01-{i+1:02d}T10:00:00",
@@ -388,9 +383,7 @@ def test_schema_creation(tmp_path):
     db.initialize()
 
     # Check that all tables exist
-    cursor = db.connection.execute(
-        "SELECT name FROM sqlite_master WHERE type='table'"
-    )
+    cursor = db.connection.execute("SELECT name FROM sqlite_master WHERE type='table'")
     tables = {row[0] for row in cursor.fetchall()}
 
     expected_tables = {
@@ -405,10 +398,7 @@ def test_schema_creation(tmp_path):
     assert expected_tables.issubset(tables)
 
     # Check migrations table has entry
-    cursor = db.connection.execute(
-        "SELECT version FROM ml_schema_migrations"
-    )
+    cursor = db.connection.execute("SELECT version FROM ml_schema_migrations")
     versions = [row[0] for row in cursor.fetchall()]
     assert 1 in versions
     db.close()
-

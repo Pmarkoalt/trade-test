@@ -7,6 +7,7 @@ from enum import Enum
 
 class ModelType(str, Enum):
     """Types of ML models."""
+
     SIGNAL_QUALITY = "signal_quality"
     RETURN_PREDICTOR = "return_predictor"
     REGIME_CLASSIFIER = "regime_classifier"
@@ -15,10 +16,11 @@ class ModelType(str, Enum):
 
 class FeatureSet(str, Enum):
     """Predefined feature sets."""
-    MINIMAL = "minimal"          # Basic features only
-    STANDARD = "standard"        # Standard feature set
-    EXTENDED = "extended"        # All available features
-    CUSTOM = "custom"            # User-defined
+
+    MINIMAL = "minimal"  # Basic features only
+    STANDARD = "standard"  # Standard feature set
+    EXTENDED = "extended"  # All available features
+    CUSTOM = "custom"  # User-defined
 
 
 @dataclass
@@ -32,9 +34,7 @@ class FeatureConfig:
     custom_features: List[str] = field(default_factory=list)
 
     # Technical feature parameters
-    technical_lookbacks: List[int] = field(
-        default_factory=lambda: [5, 10, 20, 50, 200]
-    )
+    technical_lookbacks: List[int] = field(default_factory=lambda: [5, 10, 20, 50, 200])
 
     # Market feature parameters
     market_regime_window: int = 20
@@ -54,9 +54,9 @@ class TrainingConfig:
     """Configuration for model training."""
 
     # Walk-forward parameters
-    train_window_days: int = 252        # ~1 year
-    validation_window_days: int = 63    # ~3 months
-    step_size_days: int = 21            # ~1 month
+    train_window_days: int = 252  # ~1 year
+    validation_window_days: int = 63  # ~3 months
+    step_size_days: int = 21  # ~1 month
 
     # Minimum data requirements
     min_training_samples: int = 100
@@ -71,7 +71,7 @@ class TrainingConfig:
     early_stopping_rounds: int = 50
 
     # Regularization
-    max_features: int = 50              # Limit feature count
+    max_features: int = 50  # Limit feature count
     feature_selection: bool = True
     feature_importance_threshold: float = 0.01
 
@@ -94,7 +94,7 @@ class MLConfig:
     feature_db_path: str = "features.db"
 
     # Retraining schedule
-    retrain_frequency_days: int = 7     # Weekly retraining
+    retrain_frequency_days: int = 7  # Weekly retraining
     min_new_samples_for_retrain: int = 20
 
     # Prediction thresholds
@@ -103,7 +103,7 @@ class MLConfig:
 
     # Integration
     use_ml_scores: bool = True
-    ml_score_weight: float = 0.3        # Weight in combined score
+    ml_score_weight: float = 0.3  # Weight in combined score
 
 
 @dataclass
@@ -113,7 +113,7 @@ class FeatureVector:
     signal_id: str
     timestamp: str
     features: Dict[str, float]
-    target: Optional[float] = None      # R-multiple outcome
+    target: Optional[float] = None  # R-multiple outcome
     target_binary: Optional[int] = None  # 1 = win, 0 = loss
 
     def to_dict(self) -> Dict:
@@ -164,4 +164,3 @@ class ModelMetadata:
     # Status
     is_active: bool = False
     deployed_at: Optional[str] = None
-

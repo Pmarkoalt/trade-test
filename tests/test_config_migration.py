@@ -123,9 +123,7 @@ class TestMigrateConfig:
                 "holdout_start": "2023-10-01",
                 "holdout_end": "2023-12-31",
             },
-            "strategies": {
-                "equity": {"config_path": "test_strategy.yaml", "enabled": True}
-            },
+            "strategies": {"equity": {"config_path": "test_strategy.yaml", "enabled": True}},
         }
 
         with open(config_path, "w") as f:

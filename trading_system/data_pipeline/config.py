@@ -41,4 +41,3 @@ class NewsAPIConfig(BaseModel):
     rate_limit_per_minute: int = 5
     max_articles_per_symbol: int = 10
     lookback_hours: int = 48
-

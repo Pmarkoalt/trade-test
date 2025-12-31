@@ -1,2 +1,1 @@
 """Sentiment analysis module."""
-

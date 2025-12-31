@@ -21,4 +21,3 @@ __all__ = [
     "get_cached_performance_ts",
     "get_cached_strategy_comparison",
 ]
-

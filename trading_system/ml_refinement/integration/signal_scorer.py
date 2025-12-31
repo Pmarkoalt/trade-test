@@ -183,9 +183,7 @@ class MLSignalScorer:
             total_weight = tech_weight + news_weight + ml_weight
 
             combined = (
-                normalized_technical * tech_weight +
-                normalized_news * news_weight +
-                normalized_ml * ml_weight
+                normalized_technical * tech_weight + normalized_news * news_weight + normalized_ml * ml_weight
             ) / total_weight
 
         else:
@@ -222,10 +220,6 @@ class MLSignalScorer:
             elif signal.ml_quality_score >= min_quality:
                 filtered.append(signal)
             else:
-                logger.debug(
-                    f"Filtered out {signal.symbol}: ML quality "
-                    f"{signal.ml_quality_score:.2f} < {min_quality}"
-                )
+                logger.debug(f"Filtered out {signal.symbol}: ML quality " f"{signal.ml_quality_score:.2f} < {min_quality}")
 
         return filtered
-

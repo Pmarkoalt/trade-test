@@ -201,13 +201,14 @@ class ModelRegistry:
         results = []
         for metadata in history:
             val_metric = metadata.validation_metrics.get(metric, 0)
-            results.append({
-                "model_id": metadata.model_id,
-                "version": metadata.version,
-                "created_at": metadata.created_at,
-                "metric": val_metric,
-                "is_active": metadata.is_active,
-            })
+            results.append(
+                {
+                    "model_id": metadata.model_id,
+                    "version": metadata.version,
+                    "created_at": metadata.created_at,
+                    "metric": val_metric,
+                    "is_active": metadata.is_active,
+                }
+            )
 
         return sorted(results, key=lambda x: x["metric"], reverse=True)
-

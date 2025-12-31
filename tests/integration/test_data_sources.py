@@ -90,8 +90,9 @@ class TestCSVDataSource:
         # Verify data structure
         for symbol, df in data.items():
             assert len(df) > 0, f"Data for {symbol} should not be empty"
-            assert all(col in df.columns for col in ["open", "high", "low", "close", "volume"]), \
-                f"Data for {symbol} should have OHLCV columns"
+            assert all(
+                col in df.columns for col in ["open", "high", "low", "close", "volume"]
+            ), f"Data for {symbol} should have OHLCV columns"
             assert df.index.name == "date", f"Data for {symbol} should have date index"
 
     def test_csv_source_date_filtering(self, sample_data_dir):
@@ -145,7 +146,8 @@ class TestSQLiteDataSource:
         conn = sqlite3.connect(str(db_file))
 
         # Create table
-        conn.execute("""
+        conn.execute(
+            """
             CREATE TABLE ohlcv_data (
                 symbol TEXT,
                 date DATE,
@@ -156,7 +158,8 @@ class TestSQLiteDataSource:
                 volume REAL,
                 PRIMARY KEY (symbol, date)
             )
-        """)
+        """
+        )
 
         # Insert sample data
         for symbol in ["AAPL", "MSFT", "GOOGL"]:
@@ -182,8 +185,9 @@ class TestSQLiteDataSource:
         # Verify data structure
         for symbol, df in data.items():
             assert len(df) > 0, f"Data for {symbol} should not be empty"
-            assert all(col in df.columns for col in ["open", "high", "low", "close", "volume"]), \
-                f"Data for {symbol} should have OHLCV columns"
+            assert all(
+                col in df.columns for col in ["open", "high", "low", "close", "volume"]
+            ), f"Data for {symbol} should have OHLCV columns"
 
     def test_sqlite_source_date_filtering(self, sqlite_db):
         """Test that SQLite source filters by date range."""
@@ -234,7 +238,7 @@ class TestPostgreSQLDataSource:
 
     @pytest.mark.skipif(
         not os.getenv("POSTGRES_HOST"),
-        reason="PostgreSQL not configured. Set POSTGRES_HOST, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD to test."
+        reason="PostgreSQL not configured. Set POSTGRES_HOST, POSTGRES_DB, POSTGRES_USER, POSTGRES_PASSWORD to test.",
     )
     def test_postgres_source_loads_data(self, postgres_connection_params):
         """Test that PostgreSQL source loads data (requires database setup)."""
@@ -255,8 +259,9 @@ class TestPostgreSQLDataSource:
                 if data:
                     for symbol, df in data.items():
                         assert len(df) > 0, f"Data for {symbol} should not be empty"
-                        assert all(col in df.columns for col in ["open", "high", "low", "close", "volume"]), \
-                            f"Data for {symbol} should have OHLCV columns"
+                        assert all(
+                            col in df.columns for col in ["open", "high", "low", "close", "volume"]
+                        ), f"Data for {symbol} should have OHLCV columns"
             except Exception as e:
                 pytest.skip(f"PostgreSQL test requires database setup: {e}")
 
@@ -299,8 +304,9 @@ class TestParquetDataSource:
             # Verify data structure
             for symbol, df in data.items():
                 assert len(df) > 0, f"Data for {symbol} should not be empty"
-                assert all(col in df.columns for col in ["open", "high", "low", "close", "volume"]), \
-                    f"Data for {symbol} should have OHLCV columns"
+                assert all(
+                    col in df.columns for col in ["open", "high", "low", "close", "volume"]
+                ), f"Data for {symbol} should have OHLCV columns"
         except ImportError:
             pytest.skip("pyarrow not available")
 
@@ -350,8 +356,9 @@ class TestHDF5DataSource:
             # Verify data structure
             for symbol, df in data.items():
                 assert len(df) > 0, f"Data for {symbol} should not be empty"
-                assert all(col in df.columns for col in ["open", "high", "low", "close", "volume"]), \
-                    f"Data for {symbol} should have OHLCV columns"
+                assert all(
+                    col in df.columns for col in ["open", "high", "low", "close", "volume"]
+                ), f"Data for {symbol} should have OHLCV columns"
         except ImportError:
             pytest.skip("tables (PyTables) not available")
 
@@ -389,7 +396,7 @@ class TestAPIDataSources:
 
     @pytest.mark.skipif(
         not os.getenv("ALPHAVANTAGE_API_KEY"),
-        reason="ALPHAVANTAGE_API_KEY not set. Set environment variable to test API source."
+        reason="ALPHAVANTAGE_API_KEY not set. Set environment variable to test API source.",
     )
     def test_alphavantage_source_loads_data(self):
         """Test that AlphaVantage source loads data (requires API key)."""
@@ -409,8 +416,7 @@ class TestAPIDataSources:
             pytest.skip(f"AlphaVantage API test failed (may be rate limited): {e}")
 
     @pytest.mark.skipif(
-        not os.getenv("POLYGON_API_KEY"),
-        reason="POLYGON_API_KEY not set. Set environment variable to test API source."
+        not os.getenv("POLYGON_API_KEY"), reason="POLYGON_API_KEY not set. Set environment variable to test API source."
     )
     def test_polygon_source_loads_data(self):
         """Test that Polygon source loads data (requires API key)."""
@@ -467,4 +473,3 @@ class TestDataSourceInterchangeability:
         sqlite_source = SQLiteSource(sqlite_db, table_name="ohlcv_data")
         sqlite_data = load_ohlcv_data(sqlite_source, ["AAPL", "MSFT"])
         assert len(sqlite_data) == 2, "SQLite loader should load 2 symbols"
-

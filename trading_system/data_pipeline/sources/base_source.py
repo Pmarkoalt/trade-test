@@ -17,9 +17,7 @@ class BaseDataSource(ABC):
     """
 
     @abstractmethod
-    async def fetch_daily_bars(
-        self, symbol: str, start_date: date, end_date: date
-    ) -> pd.DataFrame:
+    async def fetch_daily_bars(self, symbol: str, start_date: date, end_date: date) -> pd.DataFrame:
         """Fetch daily OHLCV bars for a symbol over a date range.
 
         Args:
@@ -54,4 +52,3 @@ class BaseDataSource(ABC):
             DataValidationError: If fetched data fails validation
         """
         pass
-

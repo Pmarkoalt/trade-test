@@ -47,64 +47,67 @@ class TestDataSourceFailures:
 
     def test_api_timeout_error(self):
         """Test that API timeout errors are handled gracefully."""
+
         # Create a mock API data source that raises TimeoutError
         class MockAPISource(APIDataSource):
             def __init__(self):
                 super().__init__(rate_limit_delay=0.0)
-            
+
             def _fetch_symbol_data(self, symbol, start_date, end_date):
                 raise TimeoutError("API request timed out after 30 seconds")
-        
+
         source = MockAPISource()
-        
+
         with pytest.raises(DataSourceError) as exc_info:
             source.load_ohlcv(["AAPL"])
-        
+
         assert "Network error loading AAPL" in str(exc_info.value)
         assert exc_info.value.symbol == "AAPL"
         assert exc_info.value.source_type == "MockAPISource"
 
     def test_api_connection_error(self):
         """Test that connection errors are handled gracefully."""
+
         class MockAPISource(APIDataSource):
             def __init__(self):
                 super().__init__(rate_limit_delay=0.0)
-            
+
             def _fetch_symbol_data(self, symbol, start_date, end_date):
                 raise ConnectionError("Connection refused")
-        
+
         source = MockAPISource()
-        
+
         with pytest.raises(DataSourceError) as exc_info:
             source.load_ohlcv(["AAPL"])
-        
+
         assert "Network error loading AAPL" in str(exc_info.value)
         assert exc_info.value.symbol == "AAPL"
 
     def test_csv_file_not_found(self):
         """Test that missing CSV files raise appropriate errors."""
         source = CSVDataSource("/nonexistent/path")
-        
+
         with pytest.raises((FileNotFoundError, DataSourceError)) as exc_info:
             source.load_ohlcv(["AAPL"])
-        
+
         # Should raise error about file not found
         assert "AAPL" in str(exc_info.value).upper() or "not found" in str(exc_info.value).lower()
 
     def test_api_unexpected_error(self):
         """Test that unexpected API errors are handled gracefully."""
+
         class MockAPISource(APIDataSource):
             def __init__(self):
                 super().__init__(rate_limit_delay=0.0)
-            
+
             def _fetch_symbol_data(self, symbol, start_date, end_date):
                 raise ValueError("Invalid API response format")
-        
+
         source = MockAPISource()
-        
+
         with pytest.raises(DataSourceError) as exc_info:
             source.load_ohlcv(["AAPL"])
-        
+
         assert "Data format error for AAPL" in str(exc_info.value) or "error loading AAPL" in str(exc_info.value).lower()
         assert exc_info.value.symbol == "AAPL"
 
@@ -125,7 +128,7 @@ class TestInvalidDataFormats:
             },
             index=pd.date_range("2023-01-01", periods=2),
         )
-        
+
         result = validate_ohlcv(df, "TEST")
         assert result is False  # Should fail validation
 
@@ -142,7 +145,7 @@ class TestInvalidDataFormats:
             },
             index=pd.date_range("2023-01-01", periods=2),
         )
-        
+
         result = validate_ohlcv(df, "TEST")
         assert result is False  # Should fail validation
 
@@ -158,7 +161,7 @@ class TestInvalidDataFormats:
             },
             index=pd.date_range("2023-01-01", periods=2),
         )
-        
+
         # Should fail validation or raise error during validation
         try:
             result = validate_ohlcv(df, "TEST")
@@ -181,7 +184,7 @@ class TestInvalidDataFormats:
             },
             index=pd.date_range("2023-01-01", periods=2),
         )
-        
+
         result = validate_ohlcv(df, "TEST")
         assert result is False  # Should fail validation
 
@@ -197,7 +200,7 @@ class TestInvalidDataFormats:
             },
             index=pd.DatetimeIndex(["2023-01-01", "2023-01-02", "2023-01-02"]),  # Duplicate
         )
-        
+
         result = validate_ohlcv(df, "TEST")
         assert result is False  # Should fail validation
 
@@ -219,10 +222,10 @@ class TestInsufficientDataForIndicators:
             },
             index=dates,
         )
-        
+
         # Validate data is valid
         assert validate_ohlcv(df, "TEST") is True
-        
+
         # The actual indicator calculation would handle insufficient data
         # by returning None or NaN for the indicator value
         # This is tested in indicator-specific tests
@@ -241,7 +244,7 @@ class TestInsufficientDataForIndicators:
             },
             index=dates,
         )
-        
+
         assert validate_ohlcv(df, "TEST") is True
         # Indicator calculation should handle this gracefully (returns None/NaN)
 
@@ -251,7 +254,7 @@ class TestInsufficientDataForIndicators:
             columns=["open", "high", "low", "close", "volume"],
             index=pd.DatetimeIndex([]),
         )
-        
+
         result = validate_ohlcv(df, "TEST")
         # Empty dataframe should either fail validation or be handled gracefully
         assert result is False or result is True  # Depending on implementation
@@ -269,11 +272,12 @@ class TestPortfolioConstraintViolations:
             cash=100000.0,
             equity=100000.0,
         )
-        
+
         # Create signals for more positions than max
         signals = []
         for i in range(10):  # More than typical max (usually 8)
             from trading_system.models.signals import Signal
+
             signals.append(
                 Signal(
                     symbol=f"SYMBOL{i}",
@@ -298,7 +302,7 @@ class TestPortfolioConstraintViolations:
                     capacity_passed=True,
                 )
             )
-        
+
         # Select signals with max_positions=8
         selected = select_signals_from_queue(
             signals,
@@ -311,7 +315,7 @@ class TestPortfolioConstraintViolations:
             portfolio_returns={},
             lookback=20,
         )
-        
+
         # Should only select up to 8 signals
         assert len(selected) <= 8
 
@@ -324,10 +328,11 @@ class TestPortfolioConstraintViolations:
             cash=100000.0,
             equity=100000.0,
         )
-        
+
         # Create signals with large notional values
         signals = []
         from trading_system.models.signals import Signal
+
         for i in range(5):
             signals.append(
                 Signal(
@@ -353,7 +358,7 @@ class TestPortfolioConstraintViolations:
                     capacity_passed=True,
                 )
             )
-        
+
         # Select signals with max_exposure=0.80 (80%)
         selected = select_signals_from_queue(
             signals,
@@ -366,7 +371,7 @@ class TestPortfolioConstraintViolations:
             portfolio_returns={},
             lookback=20,
         )
-        
+
         # Total exposure should not exceed 80%
         # With 25% per position, max 3 positions can be selected (75% < 80%)
         assert len(selected) <= 3
@@ -380,7 +385,7 @@ class TestPortfolioConstraintViolations:
             cash=10000.0,
             equity=10000.0,
         )
-        
+
         # Try to calculate position size that exceeds available capital
         position_size = calculate_position_size(
             equity=portfolio.equity,
@@ -392,7 +397,7 @@ class TestPortfolioConstraintViolations:
             available_cash=5000.0,  # Only $5000 available
             risk_multiplier=1.0,
         )
-        
+
         # Position size should be constrained by available cash
         notional = position_size * 100.0
         assert notional <= 5000.0  # Should not exceed available cash
@@ -406,7 +411,7 @@ class TestPortfolioConstraintViolations:
             cash=100000.0,
             equity=100000.0,
         )
-        
+
         # Calculate position size with max_position_notional=0.15 (15%)
         position_size = calculate_position_size(
             equity=portfolio.equity,
@@ -418,7 +423,7 @@ class TestPortfolioConstraintViolations:
             available_cash=100000.0,
             risk_multiplier=1.0,
         )
-        
+
         # Position notional should not exceed 15% of equity
         notional = position_size * 100.0
         assert notional <= 15000.0  # 15% of $100,000
@@ -439,10 +444,10 @@ class TestExecutionFailures:
             expected_fill_price=100.0,
             stop_price=95.0,
         )
-        
+
         # Reject order due to missing data
         fill = reject_order_missing_data(order, "MISSING_DATA")
-        
+
         assert fill.order_id == order.order_id
         assert fill.quantity == 0  # No fill
         assert order.status == OrderStatus.REJECTED
@@ -459,10 +464,10 @@ class TestExecutionFailures:
             expected_fill_price=100.0,
             stop_price=95.0,
         )
-        
+
         # Reject order due to missing features
         fill = reject_order_missing_data(order, "MISSING_FEATURES")
-        
+
         assert fill.order_id == order.order_id
         assert fill.quantity == 0
         assert order.status == OrderStatus.REJECTED
@@ -479,7 +484,7 @@ class TestExecutionFailures:
             expected_fill_price=100.0,
             stop_price=95.0,
         )
-        
+
         # Create bar with invalid price (zero or negative)
         bar = Bar(
             date=pd.Timestamp("2024-01-01"),
@@ -490,7 +495,7 @@ class TestExecutionFailures:
             close=0.0,
             volume=0.0,
         )
-        
+
         # Fill simulation should handle invalid prices gracefully
         try:
             fill = simulate_fill(
@@ -522,7 +527,7 @@ class TestExecutionFailures:
             expected_fill_price=100.0,
             stop_price=95.0,
         )
-        
+
         bar = Bar(
             date=pd.Timestamp("2024-01-01"),
             symbol="TEST",
@@ -532,7 +537,7 @@ class TestExecutionFailures:
             close=101.0,
             volume=10000.0,  # Very low volume (insufficient liquidity)
         )
-        
+
         # Fill simulation should handle this (may increase slippage significantly)
         try:
             fill = simulate_fill(
@@ -568,7 +573,7 @@ class TestErrorHandlingIntegration:
             },
             index=pd.date_range("2023-01-01", periods=2),
         )
-        
+
         # Validation should fail
         result = validate_ohlcv(df, "TEST")
         assert result is False
@@ -582,12 +587,12 @@ class TestErrorHandlingIntegration:
             cash=100000.0,
             equity=100000.0,
         )
-        
+
         # Add positions up to max
         from trading_system.models.positions import Position
         from trading_system.models.orders import Fill
         from trading_system.models.signals import SignalSide
-        
+
         # Add 7 positions (just under max of 8)
         for i in range(7):
             fill = Fill(
@@ -609,7 +614,7 @@ class TestErrorHandlingIntegration:
                 stress_mult=1.0,
                 notional=10000.0,
             )
-            
+
             position = portfolio.process_fill(
                 fill=fill,
                 stop_price=95.0,
@@ -618,13 +623,14 @@ class TestErrorHandlingIntegration:
                 adv20_at_entry=1000000.0,
             )
             portfolio.add_position(position)
-        
+
         # Verify we have 7 positions
         assert len(portfolio.positions) == 7
-        
+
         # Try to add 3 more signals - only 1 should be selected (to stay at max 8)
         signals = []
         from trading_system.models.signals import Signal, SignalType
+
         for i in range(3):
             signals.append(
                 Signal(
@@ -650,7 +656,7 @@ class TestErrorHandlingIntegration:
                     capacity_passed=True,
                 )
             )
-        
+
         selected = select_signals_from_queue(
             signals,
             portfolio,
@@ -662,11 +668,10 @@ class TestErrorHandlingIntegration:
             portfolio_returns={},
             lookback=20,
         )
-        
+
         # Should only select 1 signal (to reach max of 8 total)
         assert len(selected) == 1
 
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
-

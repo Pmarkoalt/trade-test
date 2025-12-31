@@ -8,9 +8,11 @@ from loguru import logger
 
 try:
     import streamlit as st
+
     STREAMLIT_AVAILABLE = True
 except ImportError:
     STREAMLIT_AVAILABLE = False
+
     # Create a mock st object for when streamlit is not available
     class MockStreamlit:
         class cache_data:
@@ -18,6 +20,7 @@ except ImportError:
             def __call__(ttl=None):
                 def decorator(func):
                     return func
+
                 return decorator
 
             @staticmethod
@@ -48,18 +51,23 @@ class CacheService:
         Returns:
             Cached function decorator.
         """
+
         def decorator(func: Callable):
             if STREAMLIT_AVAILABLE:
+
                 @st.cache_data(ttl=ttl_seconds)
                 @wraps(func)
                 def wrapper(*args, **kwargs):
                     return func(*args, **kwargs)
+
             else:
                 # Fallback when streamlit is not available
                 @wraps(func)
                 def wrapper(*args, **kwargs):
                     return func(*args, **kwargs)
+
             return wrapper
+
         return decorator
 
     @staticmethod
@@ -112,6 +120,7 @@ class CacheService:
 
 # Cached data fetchers using Streamlit decorators
 if STREAMLIT_AVAILABLE:
+
     @st.cache_data(ttl=300)
     def get_cached_dashboard_data(_service) -> dict:
         """Get cached dashboard data."""
@@ -131,6 +140,7 @@ if STREAMLIT_AVAILABLE:
     def get_cached_strategy_comparison(_service):
         """Get cached strategy comparison."""
         return _service.get_strategy_comparison()
+
 else:
     # Fallback functions when streamlit is not available
     def get_cached_dashboard_data(_service) -> dict:
@@ -148,4 +158,3 @@ else:
     def get_cached_strategy_comparison(_service):
         """Get cached strategy comparison."""
         return _service.get_strategy_comparison()
-

@@ -96,12 +96,14 @@ def load_config(config_path: Optional[str] = None) -> Dict:
                 equity_strategy_config_path = run_config.strategies.equity.config_path
                 if equity_strategy_config_path and Path(equity_strategy_config_path).exists():
                     from ...configs.strategy_config import StrategyConfig
+
                     equity_strategy = StrategyConfig.from_yaml(equity_strategy_config_path)
                     universe_config["equity"] = equity_strategy.universe
             if run_config.strategies.crypto and run_config.strategies.crypto.enabled:
                 crypto_strategy_config_path = run_config.strategies.crypto.config_path
                 if crypto_strategy_config_path and Path(crypto_strategy_config_path).exists():
                     from ...configs.strategy_config import StrategyConfig
+
                     crypto_strategy = StrategyConfig.from_yaml(crypto_strategy_config_path)
                     universe_config["crypto"] = crypto_strategy.universe
         except Exception as e:
@@ -199,6 +201,7 @@ async def send_error_alert(error: Exception) -> None:
         # Note: EmailService.send_daily_report is not async, but we'll call it anyway
         # In a real implementation, we might want to make it async or use a thread pool
         import asyncio
+
         await asyncio.to_thread(
             email_service._send_email,
             to=email_recipients,
@@ -293,11 +296,7 @@ async def daily_signals_job(asset_class: str) -> None:
         logger.info(f"Fetching data for {len(symbols)} symbols")
 
         # 4. Fetch data
-        ohlcv_data = await data_fetcher.fetch_daily_data(
-            symbols=symbols,
-            asset_class=asset_class,
-            lookback_days=252
-        )
+        ohlcv_data = await data_fetcher.fetch_daily_data(symbols=symbols, asset_class=asset_class, lookback_days=252)
 
         if not ohlcv_data:
             logger.warning(f"No data fetched for {asset_class}")
@@ -374,4 +373,3 @@ async def daily_signals_job(asset_class: str) -> None:
         # Send error alert
         await send_error_alert(e)
         raise
-

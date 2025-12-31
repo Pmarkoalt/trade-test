@@ -93,7 +93,7 @@ class QualityFilter:
             return False
 
         # Check stop distance (ATR multiples)
-        if hasattr(signal, 'atr') and signal.atr > 0:
+        if hasattr(signal, "atr") and signal.atr > 0:
             stop_distance_atr = self._calculate_stop_atr_multiple(signal)
             if stop_distance_atr > self.config.max_stop_atr_multiple:
                 logger.debug(f"{signal.symbol}: Stop distance {stop_distance_atr:.2f} ATR too wide")
@@ -130,7 +130,7 @@ class QualityFilter:
             reward = abs(signal.entry_price - signal.target_price)
 
         if risk <= 0:
-            return float('inf')
+            return float("inf")
 
         return reward / risk
 
@@ -143,7 +143,7 @@ class QualityFilter:
         Returns:
             Stop distance in ATR
         """
-        if not hasattr(signal, 'atr') or signal.atr <= 0:
+        if not hasattr(signal, "atr") or signal.atr <= 0:
             return 0.0
 
         stop_distance = abs(signal.entry_price - signal.stop_price)

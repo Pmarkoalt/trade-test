@@ -48,11 +48,19 @@ def render_signals_table(
 
     # Select columns to display
     display_cols = [
-        col for col in [
-            "symbol", "direction", "conviction", "status",
-            "entry_price", "target_price", "stop_price",
-            "combined_score", "created_at"
-        ] if col in df_display.columns
+        col
+        for col in [
+            "symbol",
+            "direction",
+            "conviction",
+            "status",
+            "entry_price",
+            "target_price",
+            "stop_price",
+            "combined_score",
+            "created_at",
+        ]
+        if col in df_display.columns
     ]
 
     st.dataframe(
@@ -125,14 +133,16 @@ def render_leaderboard_table(leaderboard: dict):
         else:
             trend = "➡️"
 
-        data.append({
-            "Rank": f"#{entry.get('rank', 0)}",
-            "Strategy": entry.get("display_name", entry.get("strategy_name", "")),
-            "Total R": f"{entry.get('total_r', 0):+.1f}R",
-            "Win Rate": f"{entry.get('win_rate', 0) * 100:.0f}%",
-            "Trades": entry.get("trade_count", 0),
-            "Trend": trend,
-        })
+        data.append(
+            {
+                "Rank": f"#{entry.get('rank', 0)}",
+                "Strategy": entry.get("display_name", entry.get("strategy_name", "")),
+                "Total R": f"{entry.get('total_r', 0):+.1f}R",
+                "Win Rate": f"{entry.get('win_rate', 0) * 100:.0f}%",
+                "Trades": entry.get("trade_count", 0),
+                "Trend": trend,
+            }
+        )
 
     df = pd.DataFrame(data)
     st.dataframe(df, hide_index=True, use_container_width=True)
@@ -155,14 +165,15 @@ def render_recent_trades_table(trades: List[dict], max_rows: int = 10):
         r_mult = trade.get("r_multiple", 0)
         result_color = "green" if r_mult > 0 else "red"
 
-        data.append({
-            "Symbol": trade.get("symbol", ""),
-            "Direction": trade.get("direction", ""),
-            "Result": f"{r_mult:+.2f}R",
-            "Exit": trade.get("exit_reason", "Manual"),
-            "Date": trade.get("exit_date", ""),
-        })
+        data.append(
+            {
+                "Symbol": trade.get("symbol", ""),
+                "Direction": trade.get("direction", ""),
+                "Result": f"{r_mult:+.2f}R",
+                "Exit": trade.get("exit_reason", "Manual"),
+                "Date": trade.get("exit_date", ""),
+            }
+        )
 
     df = pd.DataFrame(data)
     st.dataframe(df, hide_index=True, use_container_width=True)
-

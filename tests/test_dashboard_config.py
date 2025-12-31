@@ -69,4 +69,3 @@ def test_dashboard_config_custom_values():
     assert config.refresh_interval_seconds == 600
     assert config.auto_refresh is False
     assert config.require_auth is True
-

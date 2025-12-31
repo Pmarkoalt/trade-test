@@ -73,9 +73,7 @@ class PerformanceCalculator:
             PerformanceMetrics with all calculated values.
         """
         # Get signals and outcomes
-        signals = self._get_filtered_signals(
-            start_date, end_date, symbol, asset_class, signal_type
-        )
+        signals = self._get_filtered_signals(start_date, end_date, symbol, asset_class, signal_type)
         outcomes = self._get_outcomes_for_signals(signals)
 
         if not signals:
@@ -252,12 +250,14 @@ class PerformanceCalculator:
             high_water_mark = max(high_water_mark, equity)
             drawdown = (equity - high_water_mark) / high_water_mark if high_water_mark > 0 else 0
 
-            curve.append({
-                "date": outcome.actual_exit_date.isoformat() if outcome.actual_exit_date else None,
-                "equity": equity,
-                "high_water_mark": high_water_mark,
-                "drawdown_pct": drawdown,
-            })
+            curve.append(
+                {
+                    "date": outcome.actual_exit_date.isoformat() if outcome.actual_exit_date else None,
+                    "equity": equity,
+                    "high_water_mark": high_water_mark,
+                    "drawdown_pct": drawdown,
+                }
+            )
 
         return curve
 
@@ -338,7 +338,7 @@ class PerformanceCalculator:
         # Downside returns only
         downside = [r for r in returns if r < 0]
         if not downside:
-            return float('inf') if avg_return > 0 else 0.0
+            return float("inf") if avg_return > 0 else 0.0
 
         downside_std = np.std(downside, ddof=1)
 
