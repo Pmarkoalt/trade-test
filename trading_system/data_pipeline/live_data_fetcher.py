@@ -11,7 +11,7 @@ from trading_system.data_pipeline.config import DataPipelineConfig
 from trading_system.data_pipeline.exceptions import DataFetchError
 from trading_system.data_pipeline.sources.base_source import BaseDataSource
 from trading_system.data_pipeline.sources.binance_client import BinanceClient
-from trading_system.data_pipeline.sources.polygon_client import PolygonClient
+from trading_system.data_pipeline.sources.massive_client import MassiveClient
 from trading_system.models.bar import Bar
 
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class LiveDataFetcher:
     """Orchestrates data fetching from multiple sources with caching.
 
-    Coordinates data fetching from Polygon (equities) and Binance (crypto)
+    Coordinates data fetching from Massive (equities) and Binance (crypto)
     with intelligent caching to minimize API calls.
     """
 
@@ -34,9 +34,9 @@ class LiveDataFetcher:
         self.cache = DataCache(config.cache_path, config.cache_ttl_hours)
 
         # Initialize data sources
-        self.polygon: Optional[PolygonClient] = None
-        if config.polygon_api_key:
-            self.polygon = PolygonClient(config.polygon_api_key)
+        self.massive: Optional[MassiveClient] = None
+        if config.massive_api_key:
+            self.massive = MassiveClient(config.massive_api_key)
 
         self.binance = BinanceClient()
 
@@ -50,13 +50,13 @@ class LiveDataFetcher:
             Data source instance
 
         Raises:
-            DataFetchError: If Polygon API key is required but not provided
+            DataFetchError: If Massive API key is required but not provided
             ValueError: If asset class is unknown
         """
         if asset_class == "equity":
-            if not self.polygon:
-                raise DataFetchError("Polygon API key required for equities. Set polygon_api_key in config.")
-            return self.polygon
+            if not self.massive:
+                raise DataFetchError("Massive API key required for equities. Set massive_api_key in config.")
+            return self.massive
         elif asset_class == "crypto":
             return self.binance
         else:
@@ -194,9 +194,9 @@ class LiveDataFetcher:
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit - close data source sessions."""
-        # Close Polygon session if exists
-        if self.polygon:
-            await self.polygon._close_session()
+        # Close Massive session if exists
+        if self.massive:
+            await self.massive._close_session()
 
         # Close Binance session
         await self.binance._close_session()

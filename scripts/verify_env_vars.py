@@ -179,7 +179,7 @@ def check_env_var_usage() -> Tuple[bool, Dict[str, List[str]]]:
     """
     print_section("Checking environment variable usage...")
     env_vars = {
-        "POLYGON_API_KEY": [],
+        "MASSIVE_API_KEY": [],
         "ALPHA_VANTAGE_API_KEY": [],
         "NEWSAPI_KEY": [],
         "SENDGRID_API_KEY": [],
@@ -242,7 +242,7 @@ def test_missing_env_vars() -> Tuple[bool, List[str]]:
     # Save current environment
     original_env = {}
     test_vars = [
-        "POLYGON_API_KEY",
+        "MASSIVE_API_KEY",
         "ALPHA_VANTAGE_API_KEY",
         "NEWSAPI_KEY",
         "SENDGRID_API_KEY",
@@ -264,10 +264,10 @@ def test_missing_env_vars() -> Tuple[bool, List[str]]:
                 # Check if None values are handled
                 data_config = config.get("data_pipeline")
                 if data_config:
-                    if data_config.polygon_api_key is None:
-                        print_success("POLYGON_API_KEY: None handled gracefully")
+                    if data_config.massive_api_key is None:
+                        print_success("MASSIVE_API_KEY: None handled gracefully")
                     else:
-                        issues.append("POLYGON_API_KEY: Should be None when not set")
+                        issues.append("MASSIVE_API_KEY: Should be None when not set")
                         passed = False
 
                     if data_config.alpha_vantage_api_key is None:
@@ -323,7 +323,7 @@ def test_missing_env_vars() -> Tuple[bool, List[str]]:
         try:
             from trading_system.data_pipeline.live_data_fetcher import LiveDataFetcher, DataPipelineConfig
 
-            config = DataPipelineConfig(polygon_api_key=None)
+            config = DataPipelineConfig(massive_api_key=None)
             fetcher = LiveDataFetcher(config)
 
             # Test that it fails gracefully when trying to use equity without API key

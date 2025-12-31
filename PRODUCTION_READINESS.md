@@ -596,9 +596,9 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   export ALPHAVANTAGE_API_KEY=your_api_key
   pytest tests/integration/test_data_sources.py::TestAPIDataSources::test_alphavantage_source_loads_data -v
   
-  # Polygon.io API (requires paid account)
-  export POLYGON_API_KEY=your_api_key
-  pytest tests/integration/test_data_sources.py::TestAPIDataSources::test_polygon_source_loads_data -v
+  # Massive API (requires paid account, formerly Polygon.io)
+  export MASSIVE_API_KEY=your_api_key
+  pytest tests/integration/test_data_sources.py::TestAPIDataSources::test_massive_source_loads_data -v
   ```
   - ⚠️ API tests are optional (skip if API keys not set)
   - ✅ If configured, verify data loads correctly

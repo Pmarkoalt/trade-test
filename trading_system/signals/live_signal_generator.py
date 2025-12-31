@@ -95,7 +95,7 @@ class LiveSignalGenerator:
         if self.news_analyzer and self.config.news_enabled:
             symbols = list(ohlcv_data.keys())
             try:
-                news_analysis = await self.news_analyzer.analyze_symbols(
+                news_analysis = await self.news_analyzer.analyze_symbols(  # type: ignore[attr-defined]
                     symbols=symbols, lookback_hours=self.config.news_lookback_hours
                 )
             except Exception:
@@ -147,7 +147,7 @@ class LiveSignalGenerator:
                     signal_id = self.tracker.record_from_recommendation(recommendation)
                     # Store tracking_id on recommendation for later use
                     if not hasattr(recommendation, "tracking_id"):
-                        recommendation.tracking_id = signal_id
+                        recommendation.tracking_id = signal_id  # type: ignore[attr-defined]
                     else:
                         recommendation.tracking_id = signal_id
                     logger.info(f"Tracked signal {signal_id} for {recommendation.symbol}")
@@ -236,12 +236,12 @@ class LiveSignalGenerator:
             # News score and headlines
             news_score = 5.0  # Default neutral
             news_reasoning = "News analysis disabled" if not self.config.news_enabled else "No news data"
-            news_headlines = []
+            news_headlines: List[str] = []
             news_sentiment = None
 
             if news_analysis and self.news_analyzer:
                 try:
-                    news_score, news_reasoning = self.news_analyzer.get_news_score_for_signal(signal.symbol, news_analysis)
+                    news_score, news_reasoning = self.news_analyzer.get_news_score_for_signal(signal.symbol, news_analysis)  # type: ignore[attr-defined]
                     # Extract headlines from news_analysis
                     if hasattr(news_analysis, "symbol_summaries"):
                         symbol_summary = news_analysis.symbol_summaries.get(signal.symbol)

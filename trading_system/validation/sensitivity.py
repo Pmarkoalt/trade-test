@@ -501,7 +501,7 @@ def generate_parameter_grid_from_config(sensitivity_config: "SensitivityConfig",
             if exit_modes:
                 unique_modes = list(set(exit_modes))
                 if len(unique_modes) > 1:
-                    parameter_ranges["exit.mode"] = unique_modes
+                    parameter_ranges["exit.mode"] = unique_modes  # type: ignore[assignment]
                 unique_mas = list(set(exit_mas))
                 if len(unique_mas) > 1:
                     parameter_ranges["exit.exit_ma"] = [float(x) for x in unique_mas]
@@ -512,7 +512,7 @@ def generate_parameter_grid_from_config(sensitivity_config: "SensitivityConfig",
 
     # Portfolio-level parameters
     if hasattr(sensitivity_config, "vol_scaling_mode") and sensitivity_config.vol_scaling_mode:
-        parameter_ranges["volatility_scaling.mode"] = sensitivity_config.vol_scaling_mode
+        parameter_ranges["volatility_scaling.mode"] = sensitivity_config.vol_scaling_mode  # type: ignore[assignment]
 
     # Convert all values to lists of Union[int, float, str] for type consistency
     converted_ranges: Dict[str, List[Union[int, float, str]]] = {}
@@ -523,12 +523,9 @@ def generate_parameter_grid_from_config(sensitivity_config: "SensitivityConfig",
                 converted_list.append(v)
             elif isinstance(v, (int, float)):
                 converted_list.append(v)
-            else:
-                # Try to convert to float, fallback to string
-                try:
-                    converted_list.append(float(v))
-                except (ValueError, TypeError):
-                    converted_list.append(str(v))
+            else:  # pragma: no cover
+                # Type narrowing means this is unreachable, but handle for runtime safety
+                converted_list.append(str(v))
         converted_ranges[key] = converted_list
     
     return converted_ranges

@@ -33,4 +33,6 @@ tqdm>=4.65.0,<5.0.0
 
 # Visualization
 matplotlib>=3.5.0,<4.0.0
+streamlit>=1.28.0,<2.0.0
+plotly>=5.0.0,<6.0.0
 

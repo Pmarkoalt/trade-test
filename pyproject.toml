@@ -71,10 +71,10 @@ database = [
     "psycopg2-binary>=2.9.0,<3.0.0",
 ]
 
-# API data sources (Alpha Vantage, Polygon, etc.)
+# API data sources (Alpha Vantage, Massive, etc.)
 api = [
     "requests>=2.28.0,<3.0.0",
-    "aiohttp>=3.8.0,<4.0.0",  # Async HTTP for Polygon.io and other async APIs
+    "aiohttp>=3.8.0,<4.0.0",  # Async HTTP for Massive and other async APIs
 ]
 
 # Alternative file format support
@@ -209,10 +209,15 @@ module = [
 ]
 ignore_missing_imports = true
 
+# Ignore unreachable code warnings in sensitivity.py (type narrowing is too aggressive)
+[[tool.mypy.overrides]]
+module = "trading_system.validation.sensitivity"
+warn_unreachable = false
+
 # Ignore errors in files with optional dependencies
 [[tool.mypy.overrides]]
 module = [
-    "trading_system.data_pipeline.sources.polygon_client",
+    "trading_system.data_pipeline.sources.massive_client",
     "trading_system.data_pipeline.sources.binance_client",
     "trading_system.data_pipeline.sources.news.*",
     "trading_system.research.*",

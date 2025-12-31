@@ -277,14 +277,20 @@ class BacktestRunner:
             combined_start = min(start_date, val_start)
             combined_end = max(end_date, val_end)
             # Try SPY first, fall back to BTC
-            benchmark_symbol = "SPY" if "SPY" in (self.market_data.benchmarks or {}) else "BTC"
+            if self.market_data is None:
+                benchmark_symbol = "BTC"
+            else:
+                benchmark_symbol = "SPY" if "SPY" in (self.market_data.benchmarks or {}) else "BTC"
             actual_date_filter = self._create_bear_market_filter(combined_start, combined_end, benchmark_symbol)
         elif date_filter == "range":
             start_date, end_date = split.get_period_dates("train")
             val_start, val_end = split.get_period_dates("validation")
             combined_start = min(start_date, val_start)
             combined_end = max(end_date, val_end)
-            benchmark_symbol = "SPY" if "SPY" in (self.market_data.benchmarks or {}) else "BTC"
+            if self.market_data is None:
+                benchmark_symbol = "BTC"
+            else:
+                benchmark_symbol = "SPY" if "SPY" in (self.market_data.benchmarks or {}) else "BTC"
             actual_date_filter = self._create_range_market_filter(combined_start, combined_end, benchmark_symbol)
         elif callable(date_filter):
             actual_date_filter = date_filter
@@ -301,6 +307,8 @@ class BacktestRunner:
         # If parameters changed, recreate engine with new parameters
         if slippage_multiplier != 1.0 or actual_crash_dates is not None or actual_date_filter is not None:
             # Create new engine with stress test parameters
+            if self.market_data is None:
+                raise ValueError("market_data is required")
             engine = BacktestEngine(
                 market_data=self.market_data,
                 strategies=self.strategies,
@@ -345,6 +353,8 @@ class BacktestRunner:
         start_date, end_date = split.get_period_dates(period)
 
         # Get all available dates from market data
+        if self.engine is None:
+            raise ValueError("engine is not initialized")
         all_dates = self.engine._get_all_dates()
         trading_dates = [d for d in all_dates if start_date <= d <= end_date]
 
@@ -394,13 +404,15 @@ class BacktestRunner:
             return [d for d in dates if date_filter(d)]
 
         # Temporarily override
-        self.engine._get_all_dates = filtered_get_all_dates
+        if self.engine is None:
+            raise ValueError("engine is not initialized")
+        self.engine._get_all_dates = filtered_get_all_dates  # type: ignore[method-assign]
 
         try:
             results = self.engine.run(split=filtered_split, period=period)
         finally:
             # Restore original method
-            self.engine._get_all_dates = original_get_all_dates
+            self.engine._get_all_dates = original_get_all_dates  # type: ignore[method-assign]
 
         return results
 
@@ -520,10 +532,10 @@ class BacktestRunner:
         current = start_date
 
         # Get all available dates from market data
-        all_dates = set()
+        all_dates: set[Any] = set()
         for symbol, bars_df in self.market_data.bars.items():
             all_dates.update(bars_df.index)
-        all_dates = sorted(list(all_dates))
+        all_dates = sorted(list(all_dates))  # type: ignore[assignment]
 
         while current < end_date:
             # Get quarter end
@@ -655,7 +667,7 @@ class BacktestRunner:
         benchmark_df = self.market_data.benchmarks[benchmark_symbol]
 
         # Extract close prices for the dates
-        returns = []
+        returns: List[float] = []
         prev_close = None
 
         for date in dates:
@@ -705,6 +717,8 @@ class BacktestRunner:
         json_writer = JSONWriter(str(output_dir))
 
         # Get portfolio data
+        if self.engine is None:
+            raise ValueError("engine is not initialized")
         portfolio = self.engine.portfolio
         daily_events = self.engine.daily_events
         closed_trades = self.engine.closed_trades
@@ -923,11 +937,14 @@ def run_validation(config_path: str) -> Dict[str, Any]:
     # We'll run train and validation separately, then combine results
     logger.info("Running train period backtest...")
     train_results = runner.run_backtest(period="train")
-    train_daily_events = runner.engine.daily_events.copy() if hasattr(runner.engine, "daily_events") else []
+    train_daily_events = runner.engine.daily_events.copy() if runner.engine and hasattr(runner.engine, "daily_events") else []
 
     logger.info("Running validation period backtest...")
     validation_results = runner.run_backtest(period="validation")
-    validation_daily_events = runner.engine.daily_events.copy() if hasattr(runner.engine, "daily_events") else []
+    if runner.engine is None:
+        validation_daily_events = []
+    else:
+        validation_daily_events = runner.engine.daily_events.copy() if hasattr(runner.engine, "daily_events") else []
 
     # Combine closed trades from both periods
     all_closed_trades = train_results.get("closed_trades", []) + validation_results.get("closed_trades", [])
@@ -1004,7 +1021,7 @@ def run_validation(config_path: str) -> Dict[str, Any]:
             # Annualize (assume ~15 trades per year)
             trades_per_year = 15.0
             sharpe = mean_r / std_r * np.sqrt(trades_per_year)
-            return sharpe
+            return float(sharpe)
 
         # Get period dates (train+validation combined)
         train_start, train_end = split.get_period_dates("train")
@@ -1307,10 +1324,14 @@ def run_sensitivity_analysis(
                     # Temporarily save modified strategy config and use it
                     temp_config_path = Path(strategy_config_path).parent / f"temp_{asset_class_name}_sensitivity.yaml"
                     modified_strategy_config.to_yaml(str(temp_config_path))
+                    if modified_run_config.strategies.equity is None:
+                        raise ValueError("strategies.equity is required")
                     modified_run_config.strategies.equity.config_path = str(temp_config_path)
                 elif asset_class_name == "crypto":
                     temp_config_path = Path(strategy_config_path).parent / f"temp_{asset_class_name}_sensitivity.yaml"
                     modified_strategy_config.to_yaml(str(temp_config_path))
+                    if modified_run_config.strategies.crypto is None:
+                        raise ValueError("strategies.crypto is required")
                     modified_run_config.strategies.crypto.config_path = str(temp_config_path)
 
                 # Run backtest
@@ -1319,6 +1340,8 @@ def run_sensitivity_analysis(
                 results = runner.run_backtest(period=period)
 
                 # Calculate metric
+                if runner.engine is None:
+                    raise ValueError("engine is not initialized")
                 portfolio = runner.engine.portfolio
                 daily_events = runner.engine.daily_events
                 closed_trades = runner.engine.closed_trades

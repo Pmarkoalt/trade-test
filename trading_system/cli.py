@@ -1715,9 +1715,9 @@ def cmd_fetch_data(args: argparse.Namespace) -> int:
         symbols = [s.strip() for s in args.symbols.split(",")]
 
         # Create config
-        polygon_api_key = os.getenv("POLYGON_API_KEY")
+        massive_api_key = os.getenv("MASSIVE_API_KEY")
         config = DataPipelineConfig(
-            polygon_api_key=polygon_api_key,
+            massive_api_key=massive_api_key,
             cache_path=Path("data/cache"),
             cache_ttl_hours=24,
         )
@@ -2145,7 +2145,7 @@ def main() -> int:
         "fetch-data",
         aliases=["fetch"],
         help="Fetch OHLCV data for symbols",
-        description="Fetch daily OHLCV data from APIs (Polygon for equities, Binance for crypto) with caching",
+        description="Fetch daily OHLCV data from APIs (Massive for equities, Binance for crypto) with caching",
     )
     fetch_data_parser.add_argument(
         "--symbols",

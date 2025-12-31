@@ -1,0 +1,47 @@
+# MCP Server Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+COPY pyproject.toml .
+
+# Install trading system package and MCP server dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -e ".[api]" && \
+    pip install --no-cache-dir fastapi>=0.100.0 uvicorn[standard]>=0.23.0 python-multipart>=0.0.6
+
+# Copy MCP server code
+COPY mcp_server/ ./mcp_server/
+
+# Copy trading system code
+COPY trading_system/ ./trading_system/
+COPY pytest.ini .
+
+# Create directories for data, configs, and results
+RUN mkdir -p /app/data /app/configs /app/results /app/tests/fixtures
+
+# Copy example configs (if needed)
+COPY EXAMPLE_CONFIGS/ ./EXAMPLE_CONFIGS/
+
+# Set environment variables
+ENV PYTHONPATH=/app:$PYTHONPATH
+ENV PYTHONUNBUFFERED=1
+ENV MCP_HOST=0.0.0.0
+ENV MCP_PORT=8000
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"
+
+# Run MCP server
+CMD ["python", "-m", "uvicorn", "mcp_server.server:app", "--host", "0.0.0.0", "--port", "8000"]
+

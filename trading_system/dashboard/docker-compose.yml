@@ -18,7 +18,7 @@ services:
       - ./config:/app/config:ro
     environment:
       # API Keys (set in .env file)
-      - POLYGON_API_KEY=${POLYGON_API_KEY:-}
+      - MASSIVE_API_KEY=${MASSIVE_API_KEY:-}
       - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY:-}
       - NEWSAPI_API_KEY=${NEWSAPI_API_KEY:-}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY:-}
@@ -45,7 +45,7 @@ services:
       - ./data:/app/data
       - ./config:/app/config:ro
     environment:
-      - POLYGON_API_KEY=${POLYGON_API_KEY:-}
+      - MASSIVE_API_KEY=${MASSIVE_API_KEY:-}
       - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY:-}
       - NEWSAPI_API_KEY=${NEWSAPI_API_KEY:-}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY:-}

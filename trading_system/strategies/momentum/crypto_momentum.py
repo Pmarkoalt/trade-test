@@ -136,7 +136,7 @@ class CryptoMomentumStrategy(MomentumBaseStrategy):
                 # Tighten stop to 2.0 * ATR14
                 if features.atr14 is not None and not np.isnan(features.atr14):
                     atr14_val = float(features.atr14)
-                    tightened_stop = position.entry_price - (self.config.exit.tightened_stop_atr_mult * atr14_val)
+                    tightened_stop = position.entry_price - (self.config.exit.tightened_stop_atr_mult * atr14_val)  # type: ignore[operator]
 
                     # Only tighten if new stop is higher than current (can't move down)
                     if tightened_stop > position.stop_price:

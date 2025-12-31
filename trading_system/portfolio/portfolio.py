@@ -588,7 +588,7 @@ class Portfolio:
             entry_slippage_bps=fill.slippage_bps,
             entry_fee_bps=fill.fee_bps,
             entry_total_cost=fill.total_cost,
-            triggered_on=triggered_on,
+            triggered_on=triggered_on if triggered_on is not None else BreakoutType.FAST_20D,
             adv20_at_entry=adv20_at_entry,
             strategy_name=strategy_name,
         )
@@ -954,7 +954,7 @@ class Portfolio:
         return {
             "gross_exposure": self.gross_exposure,
             "gross_exposure_pct": self.gross_exposure_pct,
-            "per_position_exposure": {k: float(v) for k, v in self.per_position_exposure.items()},
+            "per_position_exposure": dict(self.per_position_exposure),  # type: ignore[dict-item]
             "cash": self.cash,
             "equity": self.equity,
             "unrealized_pnl": self.unrealized_pnl,

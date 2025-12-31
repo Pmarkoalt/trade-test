@@ -1,4 +1,4 @@
-"""Polygon.io client for fetching equity data."""
+"""Massive client for fetching equity data."""
 
 import asyncio
 import logging
@@ -20,8 +20,8 @@ from trading_system.models.bar import Bar
 logger = logging.getLogger(__name__)
 
 
-class PolygonClient(BaseDataSource):
-    """Client for fetching equity data from Polygon.io.
+class MassiveClient(BaseDataSource):
+    """Client for fetching equity data from Massive.
 
     Handles rate limiting, exponential backoff, and error handling.
     """
@@ -29,14 +29,14 @@ class PolygonClient(BaseDataSource):
     BASE_URL = "https://api.polygon.io/v2/aggs/ticker"
 
     def __init__(self, api_key: str, rate_limit_per_minute: int = 5):
-        """Initialize the Polygon.io client.
+        """Initialize the Massive client.
 
         Args:
-            api_key: Polygon.io API key
+            api_key: Massive API key
             rate_limit_per_minute: Maximum API calls per minute (default: 5 for free tier)
         """
         if aiohttp is None:
-            raise ImportError("aiohttp is required for PolygonClient. Install with: pip install aiohttp")
+            raise ImportError("aiohttp is required for MassiveClient. Install with: pip install aiohttp")
 
         self.api_key = api_key
         self.rate_limit_per_minute = rate_limit_per_minute
@@ -47,7 +47,7 @@ class PolygonClient(BaseDataSource):
     async def _get_session(self) -> "aiohttp.ClientSession":
         """Get or create aiohttp session."""
         if aiohttp is None:
-            raise ImportError("aiohttp is required for PolygonClient. Install it with: pip install aiohttp")
+            raise ImportError("aiohttp is required for MassiveClient. Install it with: pip install aiohttp")
         if self._session is None or self._session.closed:
             self._session = aiohttp.ClientSession()
         return self._session
@@ -116,7 +116,7 @@ class PolygonClient(BaseDataSource):
 
                         logger.warning(f"Rate limit exceeded. Waiting {wait_time:.2f} seconds...")
                         await asyncio.sleep(wait_time)
-                        raise APIRateLimitError(f"Rate limit exceeded for Polygon.io API")
+                        raise APIRateLimitError(f"Rate limit exceeded for Massive API")
 
                     if response.status == 200:
                         data = await response.json()
@@ -125,7 +125,7 @@ class PolygonClient(BaseDataSource):
                             return dict(data) if data else {}
                         elif status == "ERROR":
                             error_msg = data.get("error", "Unknown error")
-                            raise DataFetchError(f"Polygon.io API error: {error_msg}")
+                            raise DataFetchError(f"Massive API error: {error_msg}")
                         else:
                             raise DataFetchError(f"Unexpected API status: {status}")
 
@@ -156,7 +156,7 @@ class PolygonClient(BaseDataSource):
         raise DataFetchError(f"Request failed after {max_retries} attempts")
 
     def _parse_response(self, data: Dict, symbol: str) -> pd.DataFrame:
-        """Parse Polygon.io API response into DataFrame.
+        """Parse Massive API response into DataFrame.
 
         Args:
             data: JSON response from API
@@ -176,7 +176,7 @@ class PolygonClient(BaseDataSource):
         rows = []
         for item in results:
             try:
-                # Polygon returns timestamps in milliseconds
+                # Massive returns timestamps in milliseconds
                 timestamp_ms = item.get("t", 0)
                 date_val = pd.Timestamp.fromtimestamp(timestamp_ms / 1000.0, tz="UTC").date()
 
@@ -334,3 +334,4 @@ class PolygonClient(BaseDataSource):
         """Async context manager exit - close session."""
         await self._close_session()
         return False
+

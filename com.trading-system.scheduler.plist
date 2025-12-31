@@ -23,8 +23,8 @@
         <key>PYTHONPATH</key>
         <string>/opt/trading-system</string>
         <!-- API Keys -->
-        <key>POLYGON_API_KEY</key>
-        <string>your_polygon_key_here</string>
+        <key>MASSIVE_API_KEY</key>
+        <string>your_massive_key_here</string>
         <key>ALPHA_VANTAGE_API_KEY</key>
         <string>your_alpha_vantage_key_here</string>
         <!-- Email Configuration -->

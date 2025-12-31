@@ -124,7 +124,7 @@ The scheduler requires the following environment variables:
 
 ### Optional
 
-- `POLYGON_API_KEY` - Polygon.io API key for data fetching
+- `MASSIVE_API_KEY` - Massive API key for data fetching (formerly Polygon.io)
 - `ALPHA_VANTAGE_API_KEY` - Alpha Vantage API key
 - `SMTP_HOST` - SMTP server (default: smtp.sendgrid.net)
 - `SMTP_PORT` - SMTP port (default: 587)

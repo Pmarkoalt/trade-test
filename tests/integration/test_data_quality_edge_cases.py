@@ -60,10 +60,10 @@ class TestMissingDays:
 
     def test_equity_missing_holidays(self):
         """Test that equity data correctly handles missing holidays."""
-        # Create data missing a holiday (e.g., Jan 2, 2023 is a Monday, but let's say it's a holiday)
+        # Create data missing a holiday (e.g., Jan 3, 2023 is a Tuesday, simulating a holiday)
         dates = pd.bdate_range("2023-01-01", "2023-01-31", freq="B")
-        # Remove a specific date (simulating holiday)
-        dates = dates.drop(pd.Timestamp("2023-01-02"))
+        # Remove a specific business day (simulating holiday)
+        dates = dates.drop(pd.Timestamp("2023-01-03"))
         df = create_sample_ohlcv_data("TEST", dates)
 
         # Detect missing data
@@ -71,7 +71,7 @@ class TestMissingDays:
 
         # Should detect the missing holiday
         assert "missing_dates" in missing_info, "Should detect missing dates"
-        # The missing date should be in the list (if it's a business day)
+        # The missing date should be in the list (it's a business day)
 
     def test_crypto_missing_days(self):
         """Test that crypto data correctly handles missing days (crypto trades 24/7)."""
@@ -100,7 +100,7 @@ class TestMissingDays:
 
     def test_missing_days_in_backtest(self, tmp_path):
         """Test that backtest handles missing days gracefully."""
-        # Create data with missing days
+        # Create data with missing days (Feb 15, 16, 2023 are Wed, Thu - business days)
         dates = pd.bdate_range("2023-01-01", "2023-03-31", freq="B")
         dates = dates.drop([pd.Timestamp("2023-02-15"), pd.Timestamp("2023-02-16")])  # Remove days
         df = create_sample_ohlcv_data("TEST", dates)
@@ -281,7 +281,8 @@ class TestGapsInData:
     def test_single_day_gap(self):
         """Test detection of single day gap."""
         dates = pd.bdate_range("2023-01-01", "2023-01-31", freq="B")
-        dates = dates.drop(pd.Timestamp("2023-01-15"))  # Single day gap
+        # Use a date that's actually in the business day range (Jan 13, 2023 is a Friday)
+        dates = dates.drop(pd.Timestamp("2023-01-13"))  # Single day gap
         df = create_sample_ohlcv_data("TEST", dates)
 
         missing_info = detect_missing_data(df, "TEST", asset_class="equity")
@@ -293,8 +294,8 @@ class TestGapsInData:
     def test_consecutive_gaps(self):
         """Test detection of consecutive missing days (2+ days)."""
         dates = pd.bdate_range("2023-01-01", "2023-01-31", freq="B")
-        # Remove 3 consecutive days
-        dates = dates.drop([pd.Timestamp("2023-01-15"), pd.Timestamp("2023-01-16"), pd.Timestamp("2023-01-17")])
+        # Remove 3 consecutive business days (Jan 10, 11, 12, 2023 are Tue, Wed, Thu)
+        dates = dates.drop([pd.Timestamp("2023-01-10"), pd.Timestamp("2023-01-11"), pd.Timestamp("2023-01-12")])
         df = create_sample_ohlcv_data("TEST", dates)
 
         missing_info = detect_missing_data(df, "TEST", asset_class="equity")
@@ -306,8 +307,8 @@ class TestGapsInData:
     def test_multiple_gaps(self):
         """Test detection of multiple gaps."""
         dates = pd.bdate_range("2023-01-01", "2023-01-31", freq="B")
-        # Remove multiple non-consecutive days
-        dates = dates.drop([pd.Timestamp("2023-01-05"), pd.Timestamp("2023-01-15"), pd.Timestamp("2023-01-25")])
+        # Remove multiple non-consecutive business days (Jan 4, 6, 11, 2023 are Wed, Fri, Wed)
+        dates = dates.drop([pd.Timestamp("2023-01-04"), pd.Timestamp("2023-01-06"), pd.Timestamp("2023-01-11")])
         df = create_sample_ohlcv_data("TEST", dates)
 
         missing_info = detect_missing_data(df, "TEST", asset_class="equity")
@@ -320,8 +321,9 @@ class TestGapsInData:
     def test_large_gap_handling(self):
         """Test handling of large gaps (e.g., > 5 days)."""
         dates = pd.bdate_range("2023-01-01", "2023-01-31", freq="B")
-        # Remove 7 consecutive days (large gap)
-        dates = dates.drop(pd.bdate_range("2023-01-10", "2023-01-18", freq="B"))
+        # Remove 7 consecutive business days (large gap) - Jan 10-18, 2023
+        gap_dates = pd.bdate_range("2023-01-10", "2023-01-18", freq="B")
+        dates = dates.drop(gap_dates)
         df = create_sample_ohlcv_data("TEST", dates)
 
         missing_info = detect_missing_data(df, "TEST", asset_class="equity")
@@ -333,6 +335,7 @@ class TestGapsInData:
     def test_gaps_validation_passes(self):
         """Test that gaps don't cause validation to fail."""
         dates = pd.bdate_range("2023-01-01", "2023-01-31", freq="B")
+        # Remove 2 consecutive business days (Jan 10, 11, 2023 are Tue, Wed)
         dates = dates.drop([pd.Timestamp("2023-01-10"), pd.Timestamp("2023-01-11")])  # 2-day gap
         df = create_sample_ohlcv_data("TEST", dates)
 
@@ -429,11 +432,12 @@ class TestCombinedEdgeCases:
     def test_missing_days_and_extreme_moves(self):
         """Test handling of both missing days and extreme moves."""
         dates = pd.bdate_range("2023-01-01", "2023-01-31", freq="B")
-        dates = dates.drop(pd.Timestamp("2023-01-15"))  # Missing day
+        dates = dates.drop(pd.Timestamp("2023-01-13"))  # Missing day (Friday)
         df = create_sample_ohlcv_data("TEST", dates)
 
-        # Add extreme move
-        df.loc[pd.Timestamp("2023-01-10"), "close"] = df.loc[pd.Timestamp("2023-01-09"), "close"] * 1.6  # 60% move
+        # Add extreme move on Jan 10 (Tuesday)
+        prev_date = df.index[df.index < pd.Timestamp("2023-01-10")][-1]  # Get previous date in the dataframe
+        df.loc[pd.Timestamp("2023-01-10"), "close"] = df.loc[prev_date, "close"] * 1.6  # 60% move
         df.loc[pd.Timestamp("2023-01-10"), "high"] = df.loc[pd.Timestamp("2023-01-10"), "close"] * 1.02
         df.loc[pd.Timestamp("2023-01-10"), "low"] = df.loc[pd.Timestamp("2023-01-10"), "close"] * 0.98
         df.loc[pd.Timestamp("2023-01-10"), "open"] = df.loc[pd.Timestamp("2023-01-10"), "close"] * 0.99
@@ -452,7 +456,7 @@ class TestCombinedEdgeCases:
     def test_low_volume_and_gaps(self):
         """Test handling of both low volume days and gaps."""
         dates = pd.bdate_range("2023-01-01", "2023-01-31", freq="B")
-        dates = dates.drop([pd.Timestamp("2023-01-10"), pd.Timestamp("2023-01-11")])  # Gap
+        dates = dates.drop([pd.Timestamp("2023-01-10"), pd.Timestamp("2023-01-11")])  # Gap (Tue, Wed)
         df = create_sample_ohlcv_data("TEST", dates)
 
         # Add low volume days

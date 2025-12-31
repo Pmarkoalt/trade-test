@@ -1,6 +1,6 @@
 """Data source implementations for loading OHLCV data from various sources."""
 
-from .api_source import AlphaVantageSource, APIDataSource, PolygonSource
+from .api_source import AlphaVantageSource, APIDataSource, MassiveSource
 from .base_source import BaseDataSource
 from .cache import CachedDataSource, DataCache
 from .csv_source import CSVDataSource
@@ -16,7 +16,7 @@ __all__ = [
     "SQLiteSource",
     "APIDataSource",
     "AlphaVantageSource",
-    "PolygonSource",
+    "MassiveSource",
     "ParquetDataSource",
     "HDF5DataSource",
     "DataCache",

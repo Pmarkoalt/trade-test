@@ -1,0 +1,73 @@
+# Production Docker Compose override
+# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  trading-system:
+    restart: unless-stopped
+    # Remove development volumes, use mounted data/configs instead
+    volumes:
+      - ./data:/app/data:ro # Read-only in production
+      - ./configs:/app/configs:ro
+      - ./results:/app/results # Write access for results
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.mcp
+    image: trading-system-mcp:latest
+    container_name: trading-system-mcp
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+      - MCP_HOST=0.0.0.0
+      - MCP_PORT=8000
+      # Set MCP_API_TOKEN environment variable for authentication
+      # - MCP_API_TOKEN=${MCP_API_TOKEN}
+    depends_on:
+      - trading-system
+    volumes:
+      - ./data:/app/data:ro
+      - ./configs:/app/configs:ro
+      - ./EXAMPLE_CONFIGS:/app/EXAMPLE_CONFIGS:ro
+      - ./results:/app/results
+      - ./tests/fixtures:/app/tests/fixtures:ro
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+  # Optional: Streamlit Dashboard (uncomment to enable)
+  # dashboard:
+  #   build:
+  #     context: .
+  #     dockerfile: trading_system/dashboard/Dockerfile
+  #   image: trading-system-dashboard:latest
+  #   container_name: trading-system-dashboard
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8501:8501"
+  #   environment:
+  #     - PYTHONPATH=/app
+  #     - PYTHONUNBUFFERED=1
+  #     - TRACKING_DB_PATH=/app/data/tracking.db
+  #     - FEATURE_DB_PATH=/app/data/features.db
+  #   volumes:
+  #     - ./data:/app/data
+  #     - ./configs:/app/configs:ro
+  #     - ./results:/app/results
+  #     - ./tests/fixtures:/app/tests/fixtures:ro
+  #   depends_on:
+  #     - trading-system
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 10s

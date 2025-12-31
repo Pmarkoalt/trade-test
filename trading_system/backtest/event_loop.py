@@ -984,8 +984,9 @@ class DailyEventLoop:
             date: Date at which to update (day t+1 close)
         """
         # Get current prices for all positions
-        current_prices = {}
-        for symbol in self.portfolio.positions.keys():
+        current_prices: Dict[str, float] = {}
+        for pos_key in self.portfolio.positions.keys():
+            symbol = pos_key if isinstance(pos_key, str) else pos_key[1]  # Extract symbol from tuple
             bar = self.market_data.get_bar(symbol, date)
             if bar:
                 current_prices[symbol] = bar.close

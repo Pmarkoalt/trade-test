@@ -6,8 +6,10 @@ services:
     image: trading-system:latest
     container_name: trading-system
     volumes:
-      # Mount data directory for input data files
-      - ./data:/app/data:ro
+      # Mount data directory for input/output data files (read-write for downloads)
+      - ./data:/app/data
+      # Mount scripts directory for utility scripts
+      - ./scripts:/app/scripts:ro
       # Mount configs directory for configuration files
       - ./EXAMPLE_CONFIGS:/app/configs:ro
       # Mount results directory for output (read-write)
@@ -22,6 +24,8 @@ services:
       - ./trading_system:/app/trading_system
       # Optional: Mount custom config directory
       - ./configs:/app/custom_configs:ro
+    env_file:
+      - .env
     environment:
       - PYTHONPATH=/app
       - PYTHONUNBUFFERED=1

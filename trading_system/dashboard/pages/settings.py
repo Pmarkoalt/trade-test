@@ -135,7 +135,7 @@ def render_api_settings():
     st.markdown("**API Key Status**")
 
     api_keys = [
-        ("POLYGON_API_KEY", "Polygon.io", "Real-time stock data"),
+        ("MASSIVE_API_KEY", "Massive", "Real-time stock data"),
         ("ALPHA_VANTAGE_API_KEY", "Alpha Vantage", "Stock data & news"),
         ("NEWSAPI_API_KEY", "NewsAPI", "News articles"),
         ("SENDGRID_API_KEY", "SendGrid", "Email notifications"),
@@ -178,7 +178,7 @@ def render_api_settings():
             """
         **Option 1: Environment Variables**
         ```bash
-        export POLYGON_API_KEY="your_key_here"
+        export MASSIVE_API_KEY="your_key_here"
         export ALPHA_VANTAGE_API_KEY="your_key_here"
         export NEWSAPI_API_KEY="your_key_here"
         export SENDGRID_API_KEY="your_key_here"
@@ -187,7 +187,7 @@ def render_api_settings():
         **Option 2: .env File**
         Create a `.env` file in the project root:
         ```
-        POLYGON_API_KEY=your_key_here
+        MASSIVE_API_KEY=your_key_here
         ALPHA_VANTAGE_API_KEY=your_key_here
         NEWSAPI_API_KEY=your_key_here
         SENDGRID_API_KEY=your_key_here
@@ -196,7 +196,7 @@ def render_api_settings():
         Then load it with `python-dotenv` or source it before running the dashboard.
 
         **Getting API Keys:**
-        - Polygon.io: https://polygon.io (Free tier: 5 calls/min)
+        - Massive: https://polygon.io (Free tier: 5 calls/min) - Note: Polygon.io has been rebranded to Massive
         - Alpha Vantage: https://www.alphavantage.co (Free tier: 5 calls/min)
         - NewsAPI: https://newsapi.org (Free tier: 100 requests/day)
         - SendGrid: https://sendgrid.com (Free tier: 100 emails/day)
@@ -472,7 +472,7 @@ def render_about_section():
         ("Tracking Database", _check_file_exists("tracking.db")),
         ("Feature Database", _check_file_exists("features.db")),
         ("Config File", _check_file_exists("config/trading_config.yaml")),
-        ("Polygon API", bool(os.environ.get("POLYGON_API_KEY"))),
+        ("Massive API", bool(os.environ.get("MASSIVE_API_KEY"))),
         ("Alpha Vantage API", bool(os.environ.get("ALPHA_VANTAGE_API_KEY"))),
         ("NewsAPI", bool(os.environ.get("NEWSAPI_API_KEY"))),
         ("SendGrid API", bool(os.environ.get("SENDGRID_API_KEY"))),

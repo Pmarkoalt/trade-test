@@ -8,7 +8,7 @@ Data sources tested:
 - SQLite (if available)
 - PostgreSQL (if configured)
 - AlphaVantage API (if API key provided)
-- Polygon API (if API key provided)
+- Massive API (if API key provided, formerly Polygon.io)
 - Parquet (if pyarrow available)
 - HDF5 (if tables available)
 """
@@ -29,7 +29,7 @@ from trading_system.data.sources import (
     CSVDataSource,
     HDF5DataSource,
     ParquetDataSource,
-    PolygonSource,
+    MassiveSource,
     SQLiteSource,
     PostgreSQLSource,
 )
@@ -142,6 +142,11 @@ class TestSQLiteDataSource:
     @pytest.fixture
     def sqlite_db(self, tmp_path):
         """Create temporary SQLite database with sample data."""
+        try:
+            import sqlite3
+        except ImportError:
+            pytest.skip("sqlite3 module not available")
+        
         db_file = tmp_path / "test.db"
         conn = sqlite3.connect(str(db_file))
 
@@ -386,10 +391,10 @@ class TestAPIDataSources:
         assert source.api_key == api_key, "API key should be set"
         assert source.rate_limit_delay > 0, "Rate limit delay should be positive"
 
-    def test_polygon_source_initialization(self):
-        """Test that Polygon source can be initialized."""
-        api_key = os.getenv("POLYGON_API_KEY", "test_key")
-        source = PolygonSource(api_key)
+    def test_massive_source_initialization(self):
+        """Test that Massive source can be initialized."""
+        api_key = os.getenv("MASSIVE_API_KEY", "test_key")
+        source = MassiveSource(api_key)
 
         assert source.api_key == api_key, "API key should be set"
         assert source.rate_limit_delay > 0, "Rate limit delay should be positive"
@@ -416,12 +421,12 @@ class TestAPIDataSources:
             pytest.skip(f"AlphaVantage API test failed (may be rate limited): {e}")
 
     @pytest.mark.skipif(
-        not os.getenv("POLYGON_API_KEY"), reason="POLYGON_API_KEY not set. Set environment variable to test API source."
+        not os.getenv("MASSIVE_API_KEY"), reason="MASSIVE_API_KEY not set. Set environment variable to test API source."
     )
-    def test_polygon_source_loads_data(self):
-        """Test that Polygon source loads data (requires API key)."""
-        api_key = os.getenv("POLYGON_API_KEY")
-        source = PolygonSource(api_key, rate_limit_delay=0.1)
+    def test_massive_source_loads_data(self):
+        """Test that Massive source loads data (requires API key)."""
+        api_key = os.getenv("MASSIVE_API_KEY")
+        source = MassiveSource(api_key, rate_limit_delay=0.1)
 
         # Test with a single symbol
         try:
@@ -433,7 +438,7 @@ class TestAPIDataSources:
                 df = data["AAPL"]
                 assert len(df) > 0, "Data should not be empty"
         except Exception as e:
-            pytest.skip(f"Polygon API test failed (may be rate limited): {e}")
+            pytest.skip(f"Massive API test failed (may be rate limited): {e}")
 
 
 class TestDataSourceInterchangeability:

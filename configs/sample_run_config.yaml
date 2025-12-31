@@ -1,0 +1,123 @@
+# Sample Backtest Run Configuration
+# Uses Alpha Vantage free tier data (100 days, Aug-Dec 2025)
+
+# Dataset configuration
+dataset:
+  equity_path: "data/equity/daily/"  # Path to equity OHLCV files
+  crypto_path: "data/crypto/daily/"  # Path to crypto OHLCV files
+  benchmark_path: "data/test_benchmarks/"  # Path to SPY/BTC data
+  format: "csv"
+
+  # Date range for 2-year dataset from Massive
+  start_date: "2024-01-01"
+  end_date: "2025-12-31"
+
+  # Standard lookback with sufficient data
+  min_lookback_days: 60  # Need lookback for indicators
+
+# Data splits for 2-year dataset (~500 trading days)
+# Train: 15 months, Validation: 3 months, Holdout: 6 months
+splits:
+  train_start: "2024-01-01"
+  train_end: "2025-03-31"  # ~15 months
+
+  validation_start: "2025-04-01"
+  validation_end: "2025-06-30"  # ~3 months
+
+  holdout_start: "2025-07-01"
+  holdout_end: "2025-12-31"  # ~6 months
+
+# Strategy configurations
+strategies:
+  equity:
+    config_path: "custom_configs/sample_equity_config.yaml"
+    enabled: true
+
+  crypto:
+    config_path: "custom_configs/production_crypto_config.yaml"  # Use production crypto config
+    enabled: false  # No crypto in sample
+
+# Portfolio configuration
+portfolio:
+  starting_equity: 100000  # USD
+
+# Volatility scaling
+volatility_scaling:
+  enabled: true
+  mode: "continuous"
+  lookback: 20
+  baseline_lookback: 50  # Reduced from 252 for limited data
+  min_multiplier: 0.33
+  max_multiplier: 1.0
+
+# Correlation guard
+correlation_guard:
+  enabled: true
+  min_positions: 3  # Reduced for small universe
+  avg_pairwise_threshold: 0.70
+  candidate_threshold: 0.75
+
+# Scoring function
+scoring:
+  weights:
+    breakout: 0.50
+    momentum: 0.30
+    diversification: 0.20
+
+# Execution configuration
+execution:
+  signal_timing: "close"
+  execution_timing: "next_open"
+  slippage_model: "full"
+
+# Output configuration
+output:
+  base_path: "results/"
+  run_id: null  # Auto-generated
+
+  equity_curve: "equity_curve.csv"
+  trade_log: "trade_log.csv"
+  weekly_summary: "weekly_summary.csv"
+  monthly_report: "monthly_report.json"
+  scenario_comparison: "scenario_comparison.json"
+
+  log_level: "INFO"
+  log_file: "backtest.log"
+
+# Reproducibility
+random_seed: 42
+
+# Validation configuration (simplified for sample)
+validation:
+  sensitivity:
+    enabled: false  # Disabled for sample run
+
+  stress_tests:
+    slippage_multipliers: [1.0, 2.0]
+    bear_market_test: false
+    range_market_test: false
+    flash_crash_test: false
+
+  statistical:
+    bootstrap_iterations: 100  # Reduced for speed
+    permutation_iterations: 100
+    bootstrap_5th_percentile_threshold: 0.0  # Relaxed for sample
+
+# Relaxed metrics targets for sample data
+metrics:
+  primary:
+    sharpe_ratio_min: 0.0  # Relaxed for sample
+    max_drawdown_max: 0.30
+    calmar_ratio_min: 0.0
+    min_trades: 1
+
+  secondary:
+    expectancy_R_min: -1.0
+    profit_factor_min: 0.0
+    correlation_to_benchmark_max: 1.0
+    percentile_99_daily_loss_max: 0.10
+
+  rejection:
+    max_drawdown_max: 0.50
+    sharpe_ratio_min: -1.0
+    calmar_ratio_min: -1.0

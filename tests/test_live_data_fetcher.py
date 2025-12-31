@@ -23,20 +23,20 @@ def temp_cache_dir():
 
 
 @pytest.fixture
-def config_with_polygon(temp_cache_dir):
-    """Create config with Polygon API key."""
+def config_with_massive(temp_cache_dir):
+    """Create config with Massive API key."""
     return DataPipelineConfig(
-        polygon_api_key="test_polygon_key",
+        massive_api_key="test_massive_key",
         cache_path=temp_cache_dir,
         cache_ttl_hours=24,
     )
 
 
 @pytest.fixture
-def config_no_polygon(temp_cache_dir):
-    """Create config without Polygon API key."""
+def config_no_massive(temp_cache_dir):
+    """Create config without Massive API key."""
     return DataPipelineConfig(
-        polygon_api_key=None,
+        massive_api_key=None,
         cache_path=temp_cache_dir,
         cache_ttl_hours=24,
     )
@@ -62,9 +62,9 @@ class TestLiveDataFetcher:
     """Test LiveDataFetcher class."""
 
     @pytest.mark.asyncio
-    async def test_fetch_daily_data_crypto_cache_hit(self, config_no_polygon, sample_dataframe):
+    async def test_fetch_daily_data_crypto_cache_hit(self, config_no_massive, sample_dataframe):
         """Test fetching crypto data with cache hit."""
-        fetcher = LiveDataFetcher(config_no_polygon)
+        fetcher = LiveDataFetcher(config_no_massive)
 
         # Pre-populate cache
         cache_key = fetcher.cache.get_cache_key("BTC", "crypto", date(2023, 1, 1), date(2023, 1, 3))
@@ -79,9 +79,9 @@ class TestLiveDataFetcher:
         await fetcher.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    async def test_fetch_daily_data_crypto_cache_miss(self, config_no_polygon, sample_dataframe):
+    async def test_fetch_daily_data_crypto_cache_miss(self, config_no_massive, sample_dataframe):
         """Test fetching crypto data with cache miss."""
-        fetcher = LiveDataFetcher(config_no_polygon)
+        fetcher = LiveDataFetcher(config_no_massive)
 
         with patch.object(fetcher.binance, "fetch_daily_bars", new_callable=AsyncMock) as mock_fetch:
             mock_fetch.return_value = sample_dataframe
@@ -102,13 +102,13 @@ class TestLiveDataFetcher:
         await fetcher.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    async def test_fetch_daily_data_equity_with_polygon(self, config_with_polygon, sample_dataframe):
-        """Test fetching equity data with Polygon API key."""
-        fetcher = LiveDataFetcher(config_with_polygon)
+    async def test_fetch_daily_data_equity_with_massive(self, config_with_massive, sample_dataframe):
+        """Test fetching equity data with Massive API key."""
+        fetcher = LiveDataFetcher(config_with_massive)
 
-        assert fetcher.polygon is not None
+        assert fetcher.massive is not None
 
-        with patch.object(fetcher.polygon, "fetch_daily_bars", new_callable=AsyncMock) as mock_fetch:
+        with patch.object(fetcher.massive, "fetch_daily_bars", new_callable=AsyncMock) as mock_fetch:
             mock_fetch.return_value = sample_dataframe
 
             results = await fetcher.fetch_daily_data(["AAPL"], "equity", lookback_days=3)
@@ -122,19 +122,19 @@ class TestLiveDataFetcher:
         await fetcher.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    async def test_fetch_daily_data_equity_no_polygon_key(self, config_no_polygon):
-        """Test that equity fetching fails without Polygon API key."""
-        fetcher = LiveDataFetcher(config_no_polygon)
+    async def test_fetch_daily_data_equity_no_massive_key(self, config_no_massive):
+        """Test that equity fetching fails without Massive API key."""
+        fetcher = LiveDataFetcher(config_no_massive)
 
-        with pytest.raises(DataFetchError, match="Polygon API key required"):
+        with pytest.raises(DataFetchError, match="Massive API key required"):
             await fetcher.fetch_daily_data(["AAPL"], "equity", lookback_days=3)
 
         await fetcher.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    async def test_fetch_daily_data_partial_cache_hits(self, config_no_polygon, sample_dataframe):
+    async def test_fetch_daily_data_partial_cache_hits(self, config_no_massive, sample_dataframe):
         """Test fetching multiple symbols with partial cache hits."""
-        fetcher = LiveDataFetcher(config_no_polygon)
+        fetcher = LiveDataFetcher(config_no_massive)
 
         # Pre-populate cache for one symbol
         cache_key_btc = fetcher.cache.get_cache_key("BTC", "crypto", date.today() - timedelta(days=3), date.today())
@@ -157,9 +157,9 @@ class TestLiveDataFetcher:
         await fetcher.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    async def test_fetch_latest_bars_crypto(self, config_no_polygon):
+    async def test_fetch_latest_bars_crypto(self, config_no_massive):
         """Test fetching latest bars for crypto."""
-        fetcher = LiveDataFetcher(config_no_polygon)
+        fetcher = LiveDataFetcher(config_no_massive)
 
         sample_bar = Bar(
             date=pd.Timestamp(date.today()),
@@ -182,9 +182,9 @@ class TestLiveDataFetcher:
         await fetcher.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    async def test_fetch_latest_bars_equity(self, config_with_polygon):
+    async def test_fetch_latest_bars_equity(self, config_with_massive):
         """Test fetching latest bars for equity."""
-        fetcher = LiveDataFetcher(config_with_polygon)
+        fetcher = LiveDataFetcher(config_with_massive)
 
         sample_bar = Bar(
             date=pd.Timestamp(date.today()),
@@ -196,7 +196,7 @@ class TestLiveDataFetcher:
             volume=50000000,
         )
 
-        with patch.object(fetcher.polygon, "fetch_latest_bar", new_callable=AsyncMock) as mock_fetch:
+        with patch.object(fetcher.massive, "fetch_latest_bar", new_callable=AsyncMock) as mock_fetch:
             mock_fetch.return_value = sample_bar
 
             results = await fetcher.fetch_latest_bars(["AAPL"], "equity")
@@ -207,9 +207,9 @@ class TestLiveDataFetcher:
         await fetcher.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    async def test_fetch_latest_bars_no_data(self, config_no_polygon):
+    async def test_fetch_latest_bars_no_data(self, config_no_massive):
         """Test fetching latest bars when no data is available."""
-        fetcher = LiveDataFetcher(config_no_polygon)
+        fetcher = LiveDataFetcher(config_no_massive)
 
         with patch.object(fetcher.binance, "fetch_latest_bar", new_callable=AsyncMock) as mock_fetch:
             mock_fetch.return_value = None
@@ -222,36 +222,36 @@ class TestLiveDataFetcher:
         await fetcher.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    async def test_get_source_equity(self, config_with_polygon):
+    async def test_get_source_equity(self, config_with_massive):
         """Test _get_source for equity."""
-        fetcher = LiveDataFetcher(config_with_polygon)
+        fetcher = LiveDataFetcher(config_with_massive)
 
         source = fetcher._get_source("equity")
-        assert source == fetcher.polygon
+        assert source == fetcher.massive
 
         await fetcher.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    async def test_get_source_crypto(self, config_no_polygon):
+    async def test_get_source_crypto(self, config_no_massive):
         """Test _get_source for crypto."""
-        fetcher = LiveDataFetcher(config_no_polygon)
+        fetcher = LiveDataFetcher(config_no_massive)
 
         source = fetcher._get_source("crypto")
         assert source == fetcher.binance
 
         await fetcher.__aexit__(None, None, None)
 
-    def test_get_source_invalid_asset_class(self, config_no_polygon):
+    def test_get_source_invalid_asset_class(self, config_no_massive):
         """Test _get_source with invalid asset class."""
-        fetcher = LiveDataFetcher(config_no_polygon)
+        fetcher = LiveDataFetcher(config_no_massive)
 
         with pytest.raises(ValueError, match="Unknown asset class"):
             fetcher._get_source("invalid")
 
     @pytest.mark.asyncio
-    async def test_fetch_daily_data_error_handling(self, config_no_polygon):
+    async def test_fetch_daily_data_error_handling(self, config_no_massive):
         """Test error handling when API fetch fails."""
-        fetcher = LiveDataFetcher(config_no_polygon)
+        fetcher = LiveDataFetcher(config_no_massive)
 
         with patch.object(fetcher.binance, "fetch_daily_bars", new_callable=AsyncMock) as mock_fetch:
             mock_fetch.side_effect = DataFetchError("API error")
@@ -265,9 +265,9 @@ class TestLiveDataFetcher:
         await fetcher.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    async def test_fetch_daily_data_multiple_symbols_partial_failure(self, config_no_polygon, sample_dataframe):
+    async def test_fetch_daily_data_multiple_symbols_partial_failure(self, config_no_massive, sample_dataframe):
         """Test fetching multiple symbols when one fails."""
-        fetcher = LiveDataFetcher(config_no_polygon)
+        fetcher = LiveDataFetcher(config_no_massive)
 
         call_count = 0
 
@@ -291,9 +291,9 @@ class TestLiveDataFetcher:
         await fetcher.__aexit__(None, None, None)
 
     @pytest.mark.asyncio
-    async def test_context_manager(self, config_no_polygon):
+    async def test_context_manager(self, config_no_massive):
         """Test async context manager."""
-        async with LiveDataFetcher(config_no_polygon) as fetcher:
+        async with LiveDataFetcher(config_no_massive) as fetcher:
             assert fetcher is not None
             assert fetcher.binance is not None
 

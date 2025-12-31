@@ -21,7 +21,7 @@ from .multi_timeframe.equity_mtf_strategy import EquityMultiTimeframeStrategy
 try:
     from .pairs.pairs_strategy import PairsTradingStrategy
 except ImportError:
-    PairsTradingStrategy = None  # type: ignore[assignment]  # Pairs strategy may not exist yet
+    PairsTradingStrategy = None  # type: ignore[misc, assignment]  # Pairs strategy may not exist yet
 
 
 # Registry mapping: (strategy_type, asset_class) -> StrategyClass

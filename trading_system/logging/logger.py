@@ -155,12 +155,22 @@ class PerformanceContext:
             except Exception:
                 pass
 
+        memory_mb_val = metrics.get("memory_mb")
+        memory_delta_mb_val = metrics.get("memory_delta_mb")
+        memory_mb_float: Optional[float] = None
+        memory_delta_mb_float: Optional[float] = None
+        if memory_mb_val is not None:
+            memory_mb_float = float(memory_mb_val)  # type: ignore[arg-type]
+        if memory_delta_mb_val is not None:
+            memory_delta_mb_float = float(memory_delta_mb_val)  # type: ignore[arg-type]
+        duration_seconds_val = metrics.get("duration_seconds")
+        duration_seconds = float(duration_seconds_val) if duration_seconds_val is not None else 0.0  # type: ignore[arg-type]  # metrics dict values are Any
         log_performance_metric(
             self.logger,
             operation=str(metrics["operation"]),
-            duration_seconds=float(metrics["duration_seconds"]),
-            memory_mb=float(metrics.get("memory_mb")) if metrics.get("memory_mb") is not None else None,
-            memory_delta_mb=float(metrics.get("memory_delta_mb")) if metrics.get("memory_delta_mb") is not None else None,
+            duration_seconds=duration_seconds,
+            memory_mb=memory_mb_float,
+            memory_delta_mb=memory_delta_mb_float,
         )
 
         return False
@@ -236,7 +246,7 @@ def setup_logging(config: "RunConfig", use_json: Optional[bool] = None, use_rich
             format="{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}",
             level="DEBUG",
             rotation="10 MB",
-            retention="5",
+            retention=5,
             compression="zip",
         )
 

@@ -24,9 +24,9 @@ def temp_cache_dir():
 @pytest.fixture
 def fetcher(temp_cache_dir):
     """Create a LiveDataFetcher instance for testing."""
-    polygon_api_key = os.getenv("POLYGON_API_KEY")
+    massive_api_key = os.getenv("MASSIVE_API_KEY")
     config = DataPipelineConfig(
-        polygon_api_key=polygon_api_key,
+        massive_api_key=massive_api_key,
         cache_path=temp_cache_dir,
         cache_ttl_hours=24,
     )
@@ -59,7 +59,7 @@ class TestLiveDataFetcherIntegration:
         """Test fetching equity data."""
         # Skip if no Polygon API key
         if not fetcher.polygon:
-            pytest.skip("POLYGON_API_KEY not set, skipping integration test")
+            pytest.skip("MASSIVE_API_KEY not set, skipping integration test")
 
         # Mock the API call to avoid actual API requests in tests
         with patch.object(fetcher.polygon, "fetch_daily_bars", new_callable=AsyncMock) as mock_fetch:
@@ -102,7 +102,7 @@ class TestLiveDataFetcherIntegration:
     async def test_fetch_equity_data_with_cache(self, fetcher, sample_dataframe):
         """Test fetching equity data with cache."""
         if not fetcher.polygon:
-            pytest.skip("POLYGON_API_KEY not set, skipping integration test")
+            pytest.skip("MASSIVE_API_KEY not set, skipping integration test")
 
         # Pre-populate cache
         cache_key = fetcher.cache.get_cache_key("AAPL", "equity", date.today() - timedelta(days=30), date.today())
@@ -147,7 +147,7 @@ class TestLiveDataFetcherIntegration:
     async def test_fetch_multiple_symbols_mixed_cache(self, fetcher, sample_dataframe):
         """Test fetching multiple symbols with mixed cache hits/misses."""
         if not fetcher.polygon:
-            pytest.skip("POLYGON_API_KEY not set, skipping integration test")
+            pytest.skip("MASSIVE_API_KEY not set, skipping integration test")
 
         # Pre-populate cache for one symbol
         cache_key_aapl = fetcher.cache.get_cache_key("AAPL", "equity", date.today() - timedelta(days=30), date.today())

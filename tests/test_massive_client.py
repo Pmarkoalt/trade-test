@@ -1,4 +1,4 @@
-"""Unit tests for Polygon.io client."""
+"""Unit tests for Massive client."""
 
 import asyncio
 from datetime import date, timedelta
@@ -8,19 +8,19 @@ import pandas as pd
 import pytest
 
 from trading_system.data_pipeline.exceptions import APIRateLimitError, DataFetchError, DataValidationError
-from trading_system.data_pipeline.sources.polygon_client import PolygonClient
+from trading_system.data_pipeline.sources.massive_client import MassiveClient
 from trading_system.models.bar import Bar
 
 
 @pytest.fixture
-def polygon_client():
-    """Create a PolygonClient instance for testing."""
-    return PolygonClient(api_key="test_api_key", rate_limit_per_minute=5)
+def massive_client():
+    """Create a MassiveClient instance for testing."""
+    return MassiveClient(api_key="test_api_key", rate_limit_per_minute=5)
 
 
 @pytest.fixture
-def sample_polygon_response():
-    """Sample Polygon.io API response."""
+def sample_massive_response():
+    """Sample Massive API response."""
     return {
         "status": "OK",
         "results": [
@@ -45,23 +45,23 @@ def sample_polygon_response():
 
 
 @pytest.fixture
-def empty_polygon_response():
-    """Empty Polygon.io API response."""
+def empty_massive_response():
+    """Empty Massive API response."""
     return {"status": "OK", "results": []}
 
 
-class TestPolygonClient:
-    """Test PolygonClient class."""
+class TestMassiveClient:
+    """Test MassiveClient class."""
 
     @pytest.mark.asyncio
-    async def test_fetch_daily_bars_success(self, polygon_client, sample_polygon_response):
+    async def test_fetch_daily_bars_success(self, massive_client, sample_massive_response):
         """Test successful data fetch."""
-        with patch.object(polygon_client, "_make_request", new_callable=AsyncMock) as mock_request:
-            mock_request.return_value = sample_polygon_response
+        with patch.object(massive_client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = sample_massive_response
 
             start_date = date(2023, 1, 1)
             end_date = date(2023, 1, 2)
-            df = await polygon_client.fetch_daily_bars("AAPL", start_date, end_date)
+            df = await massive_client.fetch_daily_bars("AAPL", start_date, end_date)
 
             assert isinstance(df, pd.DataFrame)
             assert len(df) == 2
@@ -83,47 +83,47 @@ class TestPolygonClient:
             assert "2023-01-02" in call_args[0][0]  # URL contains end date
 
     @pytest.mark.asyncio
-    async def test_fetch_daily_bars_empty_response(self, polygon_client, empty_polygon_response):
+    async def test_fetch_daily_bars_empty_response(self, massive_client, empty_massive_response):
         """Test handling of empty response."""
-        with patch.object(polygon_client, "_make_request", new_callable=AsyncMock) as mock_request:
-            mock_request.return_value = empty_polygon_response
+        with patch.object(massive_client, "_make_request", new_callable=AsyncMock) as mock_request:
+            mock_request.return_value = empty_massive_response
 
             start_date = date(2023, 1, 1)
             end_date = date(2023, 1, 2)
-            df = await polygon_client.fetch_daily_bars("AAPL", start_date, end_date)
+            df = await massive_client.fetch_daily_bars("AAPL", start_date, end_date)
 
             assert isinstance(df, pd.DataFrame)
             assert len(df) == 0
             assert all(col in df.columns for col in ["date", "symbol", "open", "high", "low", "close", "volume"])
 
     @pytest.mark.asyncio
-    async def test_fetch_daily_bars_rate_limit(self, polygon_client):
+    async def test_fetch_daily_bars_rate_limit(self, massive_client):
         """Test rate limit handling."""
-        with patch.object(polygon_client, "_make_request", new_callable=AsyncMock) as mock_request:
+        with patch.object(massive_client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.side_effect = APIRateLimitError("Rate limit exceeded")
 
             start_date = date(2023, 1, 1)
             end_date = date(2023, 1, 2)
 
             with pytest.raises(APIRateLimitError):
-                await polygon_client.fetch_daily_bars("AAPL", start_date, end_date)
+                await massive_client.fetch_daily_bars("AAPL", start_date, end_date)
 
     @pytest.mark.asyncio
-    async def test_fetch_daily_bars_network_error(self, polygon_client):
+    async def test_fetch_daily_bars_network_error(self, massive_client):
         """Test handling of network errors."""
-        with patch.object(polygon_client, "_make_request", new_callable=AsyncMock) as mock_request:
+        with patch.object(massive_client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.side_effect = DataFetchError("Network error")
 
             start_date = date(2023, 1, 1)
             end_date = date(2023, 1, 2)
 
             with pytest.raises(DataFetchError, match="Network error"):
-                await polygon_client.fetch_daily_bars("AAPL", start_date, end_date)
+                await massive_client.fetch_daily_bars("AAPL", start_date, end_date)
 
     @pytest.mark.asyncio
-    async def test_fetch_latest_bar_success(self, polygon_client, sample_polygon_response):
+    async def test_fetch_latest_bar_success(self, massive_client, sample_massive_response):
         """Test fetching latest bar."""
-        with patch.object(polygon_client, "fetch_daily_bars", new_callable=AsyncMock) as mock_fetch:
+        with patch.object(massive_client, "fetch_daily_bars", new_callable=AsyncMock) as mock_fetch:
             # Create DataFrame with sample data
             df = pd.DataFrame(
                 {
@@ -138,7 +138,7 @@ class TestPolygonClient:
             )
             mock_fetch.return_value = df
 
-            bar = await polygon_client.fetch_latest_bar("AAPL")
+            bar = await massive_client.fetch_latest_bar("AAPL")
 
             assert isinstance(bar, Bar)
             assert bar.symbol == "AAPL"
@@ -147,19 +147,19 @@ class TestPolygonClient:
             assert bar.volume == 1200000
 
     @pytest.mark.asyncio
-    async def test_fetch_latest_bar_no_data(self, polygon_client):
+    async def test_fetch_latest_bar_no_data(self, massive_client):
         """Test fetching latest bar when no data is available."""
-        with patch.object(polygon_client, "fetch_daily_bars", new_callable=AsyncMock) as mock_fetch:
+        with patch.object(massive_client, "fetch_daily_bars", new_callable=AsyncMock) as mock_fetch:
             mock_fetch.return_value = pd.DataFrame(columns=["date", "symbol", "open", "high", "low", "close", "volume"])
 
-            bar = await polygon_client.fetch_latest_bar("AAPL")
+            bar = await massive_client.fetch_latest_bar("AAPL")
 
             assert bar is None
 
     @pytest.mark.asyncio
-    async def test_fetch_multiple_symbols(self, polygon_client, sample_polygon_response):
+    async def test_fetch_multiple_symbols(self, massive_client, sample_massive_response):
         """Test fetching multiple symbols."""
-        with patch.object(polygon_client, "fetch_daily_bars", new_callable=AsyncMock) as mock_fetch:
+        with patch.object(massive_client, "fetch_daily_bars", new_callable=AsyncMock) as mock_fetch:
             # Create sample DataFrame
             df = pd.DataFrame(
                 {
@@ -177,7 +177,7 @@ class TestPolygonClient:
             symbols = ["AAPL", "MSFT"]
             start_date = date(2023, 1, 1)
             end_date = date(2023, 1, 2)
-            results = await polygon_client.fetch_multiple_symbols(symbols, start_date, end_date)
+            results = await massive_client.fetch_multiple_symbols(symbols, start_date, end_date)
 
             assert isinstance(results, dict)
             assert "AAPL" in results
@@ -190,7 +190,7 @@ class TestPolygonClient:
             assert mock_fetch.call_count == 2
 
     @pytest.mark.asyncio
-    async def test_fetch_multiple_symbols_partial_failure(self, polygon_client):
+    async def test_fetch_multiple_symbols_partial_failure(self, massive_client):
         """Test fetching multiple symbols when one fails."""
         call_count = 0
 
@@ -212,11 +212,11 @@ class TestPolygonClient:
             else:
                 raise DataFetchError(f"Failed to fetch {symbol}")
 
-        with patch.object(polygon_client, "fetch_daily_bars", side_effect=mock_fetch):
+        with patch.object(massive_client, "fetch_daily_bars", side_effect=mock_fetch):
             symbols = ["AAPL", "MSFT"]
             start_date = date(2023, 1, 1)
             end_date = date(2023, 1, 2)
-            results = await polygon_client.fetch_multiple_symbols(symbols, start_date, end_date)
+            results = await massive_client.fetch_multiple_symbols(symbols, start_date, end_date)
 
             # Should continue with other symbols even if one fails
             assert "AAPL" in results
@@ -225,10 +225,10 @@ class TestPolygonClient:
             assert len(results["MSFT"]) == 0  # Empty DataFrame for failed symbol
 
     @pytest.mark.asyncio
-    async def test_rate_limit_enforcement(self, polygon_client):
+    async def test_rate_limit_enforcement(self, massive_client):
         """Test that rate limiting is enforced."""
         # Create a client with very low rate limit for testing
-        client = PolygonClient(api_key="test_key", rate_limit_per_minute=2)
+        client = MassiveClient(api_key="test_key", rate_limit_per_minute=2)
 
         with patch("aiohttp.ClientSession.get") as mock_get:
             # Mock successful response
@@ -254,32 +254,33 @@ class TestPolygonClient:
             await client._close_session()
 
     @pytest.mark.asyncio
-    async def test_parse_response_invalid_data(self, polygon_client):
+    async def test_parse_response_invalid_data(self, massive_client):
         """Test parsing of invalid response data."""
         invalid_response = {"status": "OK", "results": [{"invalid": "data"}]}
 
-        with patch.object(polygon_client, "_make_request", new_callable=AsyncMock) as mock_request:
+        with patch.object(massive_client, "_make_request", new_callable=AsyncMock) as mock_request:
             mock_request.return_value = invalid_response
 
             start_date = date(2023, 1, 1)
             end_date = date(2023, 1, 2)
 
             # Should handle gracefully and return empty or partial DataFrame
-            df = await polygon_client.fetch_daily_bars("AAPL", start_date, end_date)
+            df = await massive_client.fetch_daily_bars("AAPL", start_date, end_date)
             # Should either be empty or raise DataValidationError
             assert isinstance(df, pd.DataFrame)
 
     @pytest.mark.asyncio
-    async def test_context_manager(self, polygon_client):
+    async def test_context_manager(self, massive_client):
         """Test async context manager."""
-        async with polygon_client as client:
-            assert client is polygon_client
+        async with massive_client as client:
+            assert client is massive_client
 
         # Session should be closed after context exit
-        assert polygon_client._session is None or polygon_client._session.closed
+        assert massive_client._session is None or massive_client._session.closed
 
     def test_missing_aiohttp_raises_error(self):
         """Test that missing aiohttp raises ImportError."""
-        with patch("trading_system.data_pipeline.sources.polygon_client.aiohttp", None):
+        with patch("trading_system.data_pipeline.sources.massive_client.aiohttp", None):
             with pytest.raises(ImportError, match="aiohttp is required"):
-                PolygonClient(api_key="test_key")
+                MassiveClient(api_key="test_key")
+

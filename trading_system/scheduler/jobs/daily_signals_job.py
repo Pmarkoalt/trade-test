@@ -44,7 +44,7 @@ def load_config(config_path: Optional[str] = None) -> Dict:
 
     # Load data pipeline config
     data_pipeline_config = DataPipelineConfig(
-        polygon_api_key=os.getenv("POLYGON_API_KEY"),
+        massive_api_key=os.getenv("MASSIVE_API_KEY"),
         alpha_vantage_api_key=os.getenv("ALPHA_VANTAGE_API_KEY"),
         cache_path=Path(os.getenv("DATA_CACHE_PATH", "data/cache")),
         cache_ttl_hours=int(os.getenv("CACHE_TTL_HOURS", "24")),

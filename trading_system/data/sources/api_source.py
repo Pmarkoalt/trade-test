@@ -1,4 +1,4 @@
-"""API data source implementations (Alpha Vantage, Polygon, etc.)."""
+"""API data source implementations (Alpha Vantage, Massive, etc.)."""
 
 import logging
 import time
@@ -193,14 +193,14 @@ class AlphaVantageSource(APIDataSource):
             return None
 
 
-class PolygonSource(APIDataSource):
-    """Polygon.io API data source."""
+class MassiveSource(APIDataSource):
+    """Massive API data source (formerly Polygon.io)."""
 
     def __init__(self, api_key: str, rate_limit_delay: float = 0.1):
-        """Initialize Polygon source.
+        """Initialize Massive source.
 
         Args:
-            api_key: Polygon.io API key
+            api_key: Massive API key
             rate_limit_delay: Delay between API calls
         """
         super().__init__(api_key, rate_limit_delay)
@@ -209,7 +209,7 @@ class PolygonSource(APIDataSource):
     def _fetch_symbol_data(
         self, symbol: str, start_date: Optional[pd.Timestamp], end_date: Optional[pd.Timestamp]
     ) -> Optional[pd.DataFrame]:
-        """Fetch data from Polygon.io API."""
+        """Fetch data from Massive API."""
         try:
             import requests
         except ImportError:
@@ -217,7 +217,7 @@ class PolygonSource(APIDataSource):
 
         self._rate_limit()
 
-        # Polygon.io aggregates endpoint (daily bars)
+        # Massive aggregates endpoint (daily bars)
         # Format dates for API
         if start_date is None:
             start_date = pd.Timestamp("2020-01-01")  # Default start
@@ -234,7 +234,7 @@ class PolygonSource(APIDataSource):
             data = response.json()
 
             if data.get("status") != "OK" or "results" not in data:
-                logger.error(f"Polygon API error for {symbol}: {data.get('statusMessage', 'Unknown error')}")
+                logger.error(f"Massive API error for {symbol}: {data.get('statusMessage', 'Unknown error')}")
                 return None
 
             results = data["results"]
@@ -263,5 +263,5 @@ class PolygonSource(APIDataSource):
             return df
 
         except Exception as e:
-            logger.error(f"Polygon API error for {symbol}: {e}")
+            logger.error(f"Massive API error for {symbol}: {e}")
             return None

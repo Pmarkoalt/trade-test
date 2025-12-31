@@ -10,7 +10,7 @@ WorkingDirectory=/opt/trading-system
 Environment="PATH=/opt/trading-system/venv/bin:/usr/local/bin:/usr/bin:/bin"
 Environment="PYTHONPATH=/opt/trading-system"
 # Environment variables for configuration
-Environment="POLYGON_API_KEY=your_polygon_key_here"
+Environment="MASSIVE_API_KEY=your_massive_key_here"
 Environment="ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key_here"
 Environment="SMTP_HOST=smtp.sendgrid.net"
 Environment="SMTP_PORT=587"

@@ -23,7 +23,7 @@ from trading_system.scheduler.jobs.ml_retrain_job import MLRetrainJob
 @pytest.fixture
 def mock_env_vars(monkeypatch):
     """Set up mock environment variables."""
-    monkeypatch.setenv("POLYGON_API_KEY", "test_polygon_key")
+    monkeypatch.setenv("MASSIVE_API_KEY", "test_massive_key")
     monkeypatch.setenv("ALPHA_VANTAGE_API_KEY", "test_av_key")
     monkeypatch.setenv("DATA_CACHE_PATH", "data/cache")
     monkeypatch.setenv("CACHE_TTL_HOURS", "24")
@@ -84,7 +84,7 @@ class TestLoadConfig:
         assert "universe" in config
 
         # Check data pipeline config
-        assert config["data_pipeline"].polygon_api_key == "test_polygon_key"
+        assert config["data_pipeline"].massive_api_key == "test_massive_key"
         assert config["data_pipeline"].alpha_vantage_api_key == "test_av_key"
 
         # Check signals config

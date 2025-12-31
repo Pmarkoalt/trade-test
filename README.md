@@ -192,6 +192,84 @@ If you plan to use broker API adapters (e.g., Alpaca, Interactive Brokers) for l
 
 For backtesting, no API credentials are needed as the system uses local CSV/Parquet data files.
 
+## Market Data
+
+### Getting Started with Data
+
+The trading system requires OHLCV (Open, High, Low, Close, Volume) market data in CSV format. We recommend a phased approach:
+
+#### Phase 1: Free Data for Development & Testing
+
+Start with **Alpha Vantage** (free tier) to validate your setup and refine your strategy:
+
+```bash
+# 1. Get a free API key at https://www.alphavantage.co/support/#api-key
+
+# 2. Add to your .env file
+echo "ALPHA_VANTAGE_API_KEY=your_key_here" >> .env
+
+# 3. Download sample data (uses 6 API calls)
+python scripts/download_data.py --preset small
+```
+
+**Free tier limits**: 25 API calls/day, 5 calls/minute. This is sufficient for:
+- Downloading 5-10 symbols for initial testing
+- Validating your backtest configuration
+- Developing and refining your strategy
+
+#### Phase 2: Production Data
+
+Once you've validated your strategy and are ready for production-scale backtesting, upgrade to a paid data source:
+
+| Source | Coverage | Price | Best For |
+|--------|----------|-------|----------|
+| **Massive** | US equities, crypto | $29-199/mo | Production backtesting, real-time data |
+| **Tiingo** | US equities, crypto | $10-30/mo | Cost-effective historical data |
+| **EOD Historical** | Global equities | $20-80/mo | International markets |
+
+The system has built-in support for Massive (formerly Polygon.io):
+
+```bash
+# Add Massive API key to .env
+echo "MASSIVE_API_KEY=your_key_here" >> .env
+
+# Download data using Massive (faster, no rate limits)
+python scripts/download_data.py --source massive --preset large
+```
+
+### Data Directory Structure
+
+After downloading, your data should be organized as:
+
+```
+data/
+├── equity/
+│   ├── daily/           # OHLCV CSV files (AAPL.csv, MSFT.csv, etc.)
+│   └── universe/        # Universe files (small.csv, custom.csv)
+├── crypto/
+│   └── daily/           # Crypto OHLCV files (BTC.csv, ETH.csv)
+└── benchmarks/          # Benchmark data (SPY.csv)
+```
+
+### Download Script Options
+
+```bash
+# Download small universe (5 symbols + SPY benchmark)
+python scripts/download_data.py --preset small
+
+# Download specific symbols
+python scripts/download_data.py --symbols AAPL MSFT GOOGL AMZN
+
+# Download crypto data
+python scripts/download_data.py --preset crypto
+
+# Download compact data (100 days, faster for testing)
+python scripts/download_data.py --preset small --compact
+
+# Download benchmark only
+python scripts/download_data.py --benchmark
+```
+
 ## Quick Start
 
 ### 1. Run Tests (Docker Recommended)

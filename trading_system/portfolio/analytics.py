@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -393,7 +393,7 @@ class PortfolioAnalyticsCalculator:
         weights: Dict[str, float],
         returns_data: Optional[pd.DataFrame] = None,
         asset_returns: Optional[Dict[str, float]] = None,
-        benchmark_returns: Optional[List[float]] = None,
+        benchmark_returns: Optional[Union[List[float], Dict[str, float]]] = None,
         benchmark_weights: Optional[Dict[str, float]] = None,
         prev_weights: Optional[Dict[str, float]] = None,
     ) -> PortfolioAnalytics:
@@ -416,7 +416,10 @@ class PortfolioAnalyticsCalculator:
         total_return, ann_return, vol, sharpe, max_dd, calmar = self.calculate_basic_metrics(equity_curve, returns)
 
         # Risk metrics
-        var, cvar, beta, alpha, tracking_error = self.calculate_risk_metrics(returns, benchmark_returns)
+        benchmark_returns_list: Optional[List[float]] = None
+        if benchmark_returns is not None and isinstance(benchmark_returns, list):
+            benchmark_returns_list = benchmark_returns
+        var, cvar, beta, alpha, tracking_error = self.calculate_risk_metrics(returns, benchmark_returns_list)
 
         # Risk attribution
         risk_attribution = []
@@ -428,12 +431,14 @@ class PortfolioAnalyticsCalculator:
         if asset_returns is not None:
             # Convert benchmark_returns from list to dict if needed
             benchmark_returns_dict: Optional[Dict[str, float]] = None
-            if benchmark_returns is not None:
-                if not isinstance(benchmark_returns, list):
-                    benchmark_returns_dict = benchmark_returns
-            performance_attribution = self.calculate_performance_attribution(
-                weights, asset_returns, total_return, benchmark_weights, benchmark_returns_dict
-            )
+            if benchmark_returns is not None and not isinstance(benchmark_returns, list):
+                benchmark_returns_dict = benchmark_returns
+            if benchmark_returns_dict is not None:
+                performance_attribution = self.calculate_performance_attribution(
+                    weights, asset_returns, total_return, benchmark_weights, benchmark_returns_dict
+                )
+            else:
+                performance_attribution = []
 
         # Concentration metrics
         herfindahl, effective_positions, largest_pct = self.calculate_concentration_metrics(weights)
