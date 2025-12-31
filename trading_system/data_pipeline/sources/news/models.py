@@ -27,7 +27,7 @@ class NewsArticle:
     summary: Optional[str] = None
     content: Optional[str] = None  # Full article text (if available)
     url: str = ""
-    published_at: datetime = None
+    published_at: Optional[datetime] = None
     fetched_at: datetime = field(default_factory=datetime.now)
 
     # Extracted data (populated by analyzers)

@@ -40,8 +40,8 @@ Welcome to the Trading System documentation. This directory contains comprehensi
 ### Project Documentation
 
 - **[Main README](../README.md)** - Project overview and quick start
-- **[Review Summary](../REVIEW_SUMMARY.md)** - Codebase review and status
-- **[Next Steps](../NEXT_STEPS.md)** - Roadmap and future enhancements
+- **[Review Summary](../agent-files/REVIEW_SUMMARY.md)** - Codebase review and status
+- **[Next Steps](../agent-files/NEXT_STEPS.md)** - Roadmap and future enhancements
 
 ## 🗺️ Quick Navigation
 
@@ -71,11 +71,14 @@ Documentation is organized across three main locations:
    - Technical specifications
    - Implementation details
    - Algorithm pseudocode
+   - Agent task specifications
+   - Implementation status documents
 
 3. **Root directory**
    - Main README
    - Testing guides
-   - Project status documents
+   - Deployment documentation
+   - User-facing references
 
 ## 🔍 Building API Documentation
 

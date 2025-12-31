@@ -2,7 +2,7 @@
 
 import logging
 import uuid
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
@@ -40,7 +40,7 @@ class AlpacaAdapter(BaseAdapter):
             config: AdapterConfig with Alpaca API credentials
         """
         super().__init__(config)
-        self._api = None  # Will be alpaca.tradeapi.REST instance
+        self._api: Optional[Any] = None  # Will be alpaca.tradeapi.REST instance
         self._positions_cache: Dict[str, Position] = {}
         self._order_status_cache: Dict[str, OrderStatus] = {}
 
@@ -110,6 +110,7 @@ class AlpacaAdapter(BaseAdapter):
         if not self.is_connected():
             raise ConnectionError("Not connected to Alpaca")
 
+        assert self._api is not None  # checked by is_connected()
         try:
             account = self._api.get_account()
 
@@ -151,6 +152,7 @@ class AlpacaAdapter(BaseAdapter):
         if not self.is_connected():
             raise ConnectionError("Not connected to Alpaca")
 
+        assert self._api is not None  # checked by is_connected()
         # Convert Order to Alpaca order format
         # Alpaca uses market orders for simplicity (as per our system design)
         side = "buy" if order.side == SignalSide.BUY else "sell"
@@ -279,6 +281,7 @@ class AlpacaAdapter(BaseAdapter):
         Returns:
             OrderStatus enum value
         """
+        assert self._api is not None  # Should only be called when connected
         try:
             alpaca_order = self._api.get_order(alpaca_order_id)
             status = alpaca_order.status.lower()
@@ -308,6 +311,7 @@ class AlpacaAdapter(BaseAdapter):
         if not self.is_connected():
             raise ConnectionError("Not connected to Alpaca")
 
+        assert self._api is not None  # checked by is_connected()
         try:
             # Find order by client_order_id
             orders = self._api.list_orders(status="open", limit=100)
@@ -346,6 +350,7 @@ class AlpacaAdapter(BaseAdapter):
         if not self.is_connected():
             raise ConnectionError("Not connected to Alpaca")
 
+        assert self._api is not None  # checked by is_connected()
         try:
             # Find order by client_order_id
             orders = self._api.list_orders(status="all", limit=100)
@@ -368,6 +373,7 @@ class AlpacaAdapter(BaseAdapter):
         if not self.is_connected():
             raise ConnectionError("Not connected to Alpaca")
 
+        assert self._api is not None  # checked by is_connected()
         try:
             alpaca_positions = self._api.list_positions()
             positions = {}
@@ -447,6 +453,7 @@ class AlpacaAdapter(BaseAdapter):
         if not self.is_connected():
             raise ConnectionError("Not connected to Alpaca")
 
+        assert self._api is not None  # checked by is_connected()
         try:
             # Get latest trade price
             trade = self._api.get_latest_trade(symbol)

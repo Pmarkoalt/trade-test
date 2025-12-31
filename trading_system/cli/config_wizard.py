@@ -2,9 +2,12 @@
 
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import yaml
+
+if TYPE_CHECKING:
+    from rich.console import Console
 
 try:
     from rich.console import Console
@@ -28,9 +31,9 @@ class ConfigWizard:
         """
         self.use_rich = use_rich and RICH_AVAILABLE
         if self.use_rich:
-            self.console = Console()
+            self.console: Optional["Console"] = Console()  # type: ignore[assignment]
         else:
-            self.console = None
+            self.console: Optional["Console"] = None
 
     def print(self, message: str, style: Optional[str] = None):
         """Print a message.

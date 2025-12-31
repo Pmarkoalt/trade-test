@@ -184,10 +184,10 @@ class SQLiteTrackingStore(BaseTrackingStore):
                 SET status = ?, {timestamp_field} = ?
                 WHERE id = ?
             """
-            params = (status.value, timestamp.isoformat(), signal_id)
+            params: tuple[str, str, str] = (status.value, timestamp.isoformat(), signal_id)
         else:
             sql = "UPDATE tracked_signals SET status = ? WHERE id = ?"
-            params = (status.value, signal_id)
+            params: tuple[str, str] = (status.value, signal_id)
 
         with self.transaction():
             cursor = self.connection.execute(sql, params)

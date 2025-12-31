@@ -1,6 +1,6 @@
 """Technical indicator feature extractors."""
 
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -13,7 +13,7 @@ from trading_system.ml_refinement.features.extractors.base_extractor import (
 class TrendFeatures(OHLCVExtractor):
     """Extract trend-related features."""
 
-    def __init__(self, lookbacks: List[int] = None):
+    def __init__(self, lookbacks: Optional[List[int]] = None):
         """
         Initialize with lookback periods.
 
@@ -165,7 +165,7 @@ class TrendFeatures(OHLCVExtractor):
 class MomentumFeatures(OHLCVExtractor):
     """Extract momentum-related features."""
 
-    def __init__(self, lookbacks: List[int] = None):
+    def __init__(self, lookbacks: Optional[List[int]] = None):
         self.lookbacks = lookbacks or [5, 10, 20, 50]
 
     @property

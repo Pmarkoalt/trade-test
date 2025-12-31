@@ -63,7 +63,7 @@ for ticker, aliases in TICKER_ALIASES.items():
 class TickerExtractor:
     """Extract stock/crypto tickers from text."""
 
-    def __init__(self, valid_tickers: Set[str] = None):
+    def __init__(self, valid_tickers: Optional[Set[str]] = None):
         """Initialize extractor.
 
         Args:

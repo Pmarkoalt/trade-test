@@ -505,7 +505,7 @@ This gives you an interactive shell in the container.
 2. Add ML config options to strategy configs
 3. Integrate into `DailyEventLoop` for signal enhancement
 
-See `REVIEW_SUMMARY.md` for details on ML integration status.
+See `agent-files/REVIEW_SUMMARY.md` for details on ML integration status.
 
 ### Q: Can I use this for live trading?
 
@@ -559,7 +559,7 @@ This prevents overfitting and provides realistic performance estimates.
 - Check documentation in `agent-files/` for detailed architecture
 - Review example configs in `EXAMPLE_CONFIGS/`
 - Check test files in `tests/` for usage examples
-- Review `REVIEW_SUMMARY.md` for implementation status
+- Review `agent-files/REVIEW_SUMMARY.md` for implementation status
 
 ---
 

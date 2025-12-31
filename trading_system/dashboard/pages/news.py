@@ -272,7 +272,7 @@ def _render_news_card(article: dict):
     if isinstance(published, str):
         try:
             published = datetime.fromisoformat(published.replace("Z", "+00:00"))
-        except:
+        except (ValueError, AttributeError):
             published = datetime.now()
 
     time_ago = _format_time_ago(published)

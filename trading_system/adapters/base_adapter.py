@@ -28,7 +28,7 @@ class AdapterConfig:
     client_id: int = 1
 
     # Additional broker-specific config
-    extra_config: Dict = None
+    extra_config: Optional[Dict[str, Any]] = None
 
     def __post_init__(self):
         """Initialize extra_config if not provided."""

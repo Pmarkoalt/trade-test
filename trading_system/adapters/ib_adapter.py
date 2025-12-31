@@ -4,7 +4,7 @@ import logging
 import queue
 import threading
 import uuid
-from typing import Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 import pandas as pd
 
@@ -48,7 +48,7 @@ class IBAdapter(BaseAdapter):
             config: AdapterConfig with IB connection details
         """
         super().__init__(config)
-        self._ib = None  # Will be ib_insync.IB instance
+        self._ib: Optional[Any] = None  # Will be ib_insync.IB instance
         self._positions_cache: Dict[str, Position] = {}
         self._order_status_cache: Dict[str, OrderStatus] = {}
         self._account_id: Optional[str] = None
@@ -83,10 +83,12 @@ class IBAdapter(BaseAdapter):
 
             time.sleep(1)
 
-            if not self._ib.isConnected():
+            if self._ib is None or not self._ib.isConnected():
                 raise ConnectionError("Failed to connect to IB TWS/Gateway")
 
             # Get account ID (use first account if multiple)
+            if self._ib is None:
+                raise ConnectionError("IB connection not established")
             accounts = self._ib.accountValues()
             if accounts:
                 self._account_id = accounts[0].account
@@ -103,7 +105,7 @@ class IBAdapter(BaseAdapter):
 
         except Exception as e:
             self._connected = False
-            if self._ib:
+            if self._ib is not None:
                 try:
                     self._ib.disconnect()
                 except Exception:
@@ -121,7 +123,7 @@ class IBAdapter(BaseAdapter):
 
     def disconnect(self) -> None:
         """Disconnect from IB TWS/Gateway."""
-        if self._ib and self._ib.isConnected():
+        if self._ib is not None and self._ib.isConnected():
             try:
                 self._ib.disconnect()
             except Exception as e:
@@ -136,7 +138,7 @@ class IBAdapter(BaseAdapter):
 
     def is_connected(self) -> bool:
         """Check if connected to IB."""
-        return self._connected and self._ib is not None and self._ib.isConnected()
+        return self._connected and self._ib is not None and self._ib.isConnected()  # type: ignore[attr-defined]
 
     def get_account_info(self) -> AccountInfo:
         """Get account information from IB.
@@ -153,6 +155,7 @@ class IBAdapter(BaseAdapter):
         if not self._account_id:
             raise RuntimeError("Account ID not set")
 
+        assert self._ib is not None  # checked by is_connected()
         try:
             # Get account summary
             account_values = self._ib.accountValues(self._account_id)
@@ -212,6 +215,7 @@ class IBAdapter(BaseAdapter):
         if not self.is_connected():
             raise ConnectionError("Not connected to IB")
 
+        assert self._ib is not None  # checked by is_connected()
         try:
             from ib_insync import Crypto, MarketOrder
             from ib_insync import Order as IBOrder
@@ -397,6 +401,7 @@ class IBAdapter(BaseAdapter):
         if not self.is_connected():
             raise ConnectionError("Not connected to IB")
 
+        assert self._ib is not None  # checked by is_connected()
         try:
             ib_positions = self._ib.positions()
             positions = {}
@@ -480,6 +485,7 @@ class IBAdapter(BaseAdapter):
         if not self.is_connected():
             raise ConnectionError("Not connected to IB")
 
+        assert self._ib is not None  # checked by is_connected()
         try:
             from ib_insync import Crypto, Stock
 

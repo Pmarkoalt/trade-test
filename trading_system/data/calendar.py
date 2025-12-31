@@ -1,6 +1,6 @@
 """Trading calendar handling for equity and crypto markets."""
 
-from typing import Any, List, Optional
+from typing import Any, List, Optional, cast
 
 import pandas as pd
 
@@ -27,9 +27,9 @@ def get_trading_days(all_dates: pd.DatetimeIndex, end_date: pd.Timestamp, lookba
 
     # Get last N
     if len(trading_days) < lookback:
-        return trading_days.tolist()
+        return cast(List[pd.Timestamp], trading_days.tolist())
 
-    return trading_days[-lookback:].tolist()
+    return cast(List[pd.Timestamp], trading_days[-lookback:].tolist())
 
 
 def get_trading_calendar(exchange: str = "NASDAQ") -> Optional[Any]:
@@ -95,4 +95,4 @@ def get_crypto_days(end_date: pd.Timestamp, lookback: int = 7) -> List[pd.Timest
     """
     start_date = end_date - pd.Timedelta(days=lookback - 1)
     dates = pd.date_range(start=start_date, end=end_date, freq="D")
-    return dates.tolist()
+    return cast(List[pd.Timestamp], dates.tolist())

@@ -8,13 +8,13 @@ from uuid import uuid4
 import numpy as np
 import pandas as pd
 
-from ...configs.strategy_config import StrategyConfig
-from ...models.features import FeatureRow
-from ...models.signals import Signal
-from ...portfolio.portfolio import Portfolio
-from ...strategies.base.strategy_interface import StrategyInterface
-from ...tracking.signal_tracker import SignalTracker
-from ...tracking.storage.sqlite_store import SQLiteTrackingStore
+from ..configs.strategy_config import StrategyConfig
+from ..models.features import FeatureRow
+from ..models.signals import Signal
+from ..portfolio.portfolio import Portfolio
+from ..strategies.base.strategy_interface import StrategyInterface
+from ..tracking.signal_tracker import SignalTracker
+from ..tracking.storage.sqlite_store import SQLiteTrackingStore
 from .config import SignalConfig
 from .generators.technical_signals import TechnicalSignalGenerator
 from .rankers.signal_scorer import SignalScorer
@@ -173,7 +173,7 @@ class LiveSignalGenerator:
         Returns:
             Dictionary mapping symbol to FeatureRow
         """
-        from ...indicators.feature_computer import compute_features, compute_features_for_date
+        from ..indicators.feature_computer import compute_features, compute_features_for_date
 
         features_dict = {}
 

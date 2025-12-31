@@ -57,7 +57,7 @@ class WalkForwardSplit:
             True if date is within the period (inclusive)
         """
         start, end = self.get_period_dates(period)
-        return start <= date <= end
+        return bool(start <= date <= end)
 
     def validate(self) -> bool:
         """Validate split configuration.

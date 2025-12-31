@@ -13,7 +13,7 @@ from trading_system.dashboard.config import ChartConfig
 
 def create_equity_curve(
     df: pd.DataFrame,
-    config: ChartConfig = None,
+    config: Optional[ChartConfig] = None,
 ) -> go.Figure:
     """
     Create equity curve chart.
@@ -95,7 +95,7 @@ def create_equity_curve(
 
 def create_win_rate_gauge(
     win_rate: float,
-    config: ChartConfig = None,
+    config: Optional[ChartConfig] = None,
 ) -> go.Figure:
     """
     Create win rate gauge chart.
@@ -151,7 +151,7 @@ def create_win_rate_gauge(
 
 def create_returns_distribution(
     returns: List[float],
-    config: ChartConfig = None,
+    config: Optional[ChartConfig] = None,
 ) -> go.Figure:
     """
     Create returns distribution histogram.
@@ -214,7 +214,7 @@ def create_returns_distribution(
 def create_strategy_comparison_chart(
     df: pd.DataFrame,
     metric: str = "total_r",
-    config: ChartConfig = None,
+    config: Optional[ChartConfig] = None,
 ) -> go.Figure:
     """
     Create strategy comparison bar chart.
@@ -268,7 +268,7 @@ def create_strategy_comparison_chart(
 
 def create_performance_by_day(
     analytics: dict,
-    config: ChartConfig = None,
+    config: Optional[ChartConfig] = None,
 ) -> go.Figure:
     """
     Create performance by day of week chart.
@@ -332,7 +332,7 @@ def create_performance_by_day(
 
 def create_conviction_breakdown(
     analytics: dict,
-    config: ChartConfig = None,
+    config: Optional[ChartConfig] = None,
 ) -> go.Figure:
     """
     Create conviction level breakdown chart.
@@ -389,7 +389,7 @@ def create_conviction_breakdown(
 
 def create_monthly_performance_heatmap(
     performance_data: List[dict],
-    config: ChartConfig = None,
+    config: Optional[ChartConfig] = None,
 ) -> go.Figure:
     """
     Create monthly performance heatmap.

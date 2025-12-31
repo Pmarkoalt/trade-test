@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from loguru import logger
 
@@ -118,7 +118,7 @@ if STREAMLIT_AVAILABLE:
         return _service.get_dashboard_data()
 
     @st.cache_data(ttl=300)
-    def get_cached_signals_df(_service, days: int, status: str = None):
+    def get_cached_signals_df(_service, days: int, status: Optional[str] = None):
         """Get cached signals DataFrame."""
         return _service.get_signals_dataframe(days=days, status=status)
 
@@ -137,7 +137,7 @@ else:
         """Get cached dashboard data."""
         return _service.get_dashboard_data()
 
-    def get_cached_signals_df(_service, days: int, status: str = None):
+    def get_cached_signals_df(_service, days: int, status: Optional[str] = None):
         """Get cached signals DataFrame."""
         return _service.get_signals_dataframe(days=days, status=status)
 

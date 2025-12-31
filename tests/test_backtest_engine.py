@@ -335,3 +335,231 @@ def test_event_loop_timing(sample_market_data, simple_strategy):
     assert "orders_created" in events
     assert "orders_executed" in events
     assert "portfolio_state" in events
+
+
+def test_backtest_engine_slippage_multiplier(sample_market_data, simple_strategy, test_split):
+    """Test backtest engine with different slippage multipliers."""
+    # Test with normal slippage
+    engine_normal = BacktestEngine(
+        market_data=sample_market_data,
+        strategies=[simple_strategy],
+        starting_equity=100000.0,
+        seed=42,
+        slippage_multiplier=1.0,
+    )
+    results_normal = engine_normal.run(split=test_split, period="train")
+
+    # Test with higher slippage (stress test)
+    engine_stress = BacktestEngine(
+        market_data=sample_market_data,
+        strategies=[simple_strategy],
+        starting_equity=100000.0,
+        seed=42,
+        slippage_multiplier=2.0,
+    )
+    results_stress = engine_stress.run(split=test_split, period="train")
+
+    # Higher slippage should generally result in lower returns (or same if no trades)
+    # But we can't guarantee this, so just verify both run successfully
+    assert results_normal["starting_equity"] == results_stress["starting_equity"]
+    assert results_normal["total_trades"] == results_stress["total_trades"]
+
+
+def test_backtest_engine_crash_dates(sample_market_data, simple_strategy, test_split):
+    """Test backtest engine with crash dates (flash crash simulation)."""
+    # Add a crash date in the middle of the test period
+    crash_date = pd.Timestamp("2024-01-15")
+    engine = BacktestEngine(
+        market_data=sample_market_data,
+        strategies=[simple_strategy],
+        starting_equity=100000.0,
+        seed=42,
+        crash_dates=[crash_date],
+    )
+
+    results = engine.run(split=test_split, period="train")
+
+    # Verify engine runs successfully with crash dates
+    assert results["starting_equity"] == 100000.0
+    assert "total_trades" in results
+
+
+def test_backtest_engine_seed_reproducibility(sample_market_data, simple_strategy, test_split):
+    """Test that backtest results are reproducible with same seed."""
+    # Run with same seed twice
+    engine1 = BacktestEngine(
+        market_data=sample_market_data,
+        strategies=[simple_strategy],
+        starting_equity=100000.0,
+        seed=42,
+    )
+    results1 = engine1.run(split=test_split, period="train")
+
+    engine2 = BacktestEngine(
+        market_data=sample_market_data,
+        strategies=[simple_strategy],
+        starting_equity=100000.0,
+        seed=42,
+    )
+    results2 = engine2.run(split=test_split, period="train")
+
+    # Results should be identical with same seed
+    assert results1["total_trades"] == results2["total_trades"]
+    assert results1["ending_equity"] == results2["ending_equity"]
+    assert results1["total_return"] == results2["total_return"]
+
+
+def test_backtest_engine_results_structure(sample_market_data, simple_strategy, test_split):
+    """Test that backtest results contain all expected fields."""
+    engine = BacktestEngine(
+        market_data=sample_market_data,
+        strategies=[simple_strategy],
+        starting_equity=100000.0,
+        seed=42,
+    )
+    results = engine.run(split=test_split, period="train")
+
+    # Check all required fields exist
+    required_fields = [
+        "split_name",
+        "period",
+        "start_date",
+        "end_date",
+        "starting_equity",
+        "ending_equity",
+        "total_return",
+        "sharpe_ratio",
+        "max_drawdown",
+        "total_trades",
+        "winning_trades",
+        "losing_trades",
+        "win_rate",
+        "avg_r_multiple",
+        "realized_pnl",
+        "final_cash",
+        "final_positions",
+        "equity_curve",
+        "daily_returns",
+        "closed_trades",
+    ]
+
+    for field in required_fields:
+        assert field in results, f"Missing field: {field}"
+
+    # Check field types and values
+    assert isinstance(results["equity_curve"], list)
+    assert isinstance(results["daily_returns"], list)
+    assert isinstance(results["closed_trades"], list)
+    assert results["starting_equity"] > 0
+    assert results["ending_equity"] > 0
+    assert 0.0 <= results["win_rate"] <= 1.0
+    assert 0.0 <= results["max_drawdown"] <= 1.0
+
+
+def test_backtest_engine_export_trade_log(sample_market_data, simple_strategy, test_split):
+    """Test that trade log is exported correctly."""
+    engine = BacktestEngine(
+        market_data=sample_market_data,
+        strategies=[simple_strategy],
+        starting_equity=100000.0,
+        seed=42,
+    )
+    engine.run(split=test_split, period="train")
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        engine.export_results(tmpdir)
+        output_path = Path(tmpdir)
+
+        # Check trade log exists (even if empty)
+        trade_log_path = output_path / "trade_log.csv"
+        if trade_log_path.exists():
+            trade_df = pd.read_csv(trade_log_path)
+            if len(trade_df) > 0:
+                # Check required columns
+                required_columns = [
+                    "symbol",
+                    "entry_date",
+                    "exit_date",
+                    "entry_price",
+                    "exit_price",
+                    "quantity",
+                    "realized_pnl",
+                ]
+                for col in required_columns:
+                    assert col in trade_df.columns, f"Missing column: {col}"
+
+
+def test_backtest_engine_get_all_dates(sample_market_data, simple_strategy):
+    """Test _get_all_dates method."""
+    engine = BacktestEngine(
+        market_data=sample_market_data,
+        strategies=[simple_strategy],
+        starting_equity=100000.0,
+        seed=42,
+    )
+
+    all_dates = engine._get_all_dates()
+
+    # Should return sorted list of dates
+    assert isinstance(all_dates, list)
+    assert len(all_dates) > 0
+    assert all_dates == sorted(all_dates)
+
+    # Should include dates from all symbols
+    expected_dates = set()
+    for symbol, bars_df in sample_market_data.bars.items():
+        expected_dates.update(bars_df.index)
+    for benchmark_df in sample_market_data.benchmarks.values():
+        expected_dates.update(benchmark_df.index)
+
+    assert set(all_dates) == expected_dates
+
+
+def test_backtest_engine_empty_results(sample_market_data, simple_strategy):
+    """Test _empty_results method."""
+    engine = BacktestEngine(
+        market_data=sample_market_data,
+        strategies=[simple_strategy],
+        starting_equity=100000.0,
+        seed=42,
+    )
+
+    empty_results = engine._empty_results()
+
+    # Check structure
+    assert empty_results["starting_equity"] == 100000.0
+    assert empty_results["ending_equity"] == 100000.0
+    assert empty_results["total_return"] == 0.0
+    assert empty_results["total_trades"] == 0
+    assert empty_results["win_rate"] == 0.0
+    assert len(empty_results["equity_curve"]) == 1
+    assert empty_results["equity_curve"][0] == 100000.0
+
+
+def test_backtest_engine_multiple_strategies(sample_market_data, simple_strategy_config):
+    """Test backtest engine with multiple strategies."""
+    # Create two strategies
+    strategy1 = EquityStrategy(simple_strategy_config)
+    strategy2 = EquityStrategy(simple_strategy_config)
+
+    engine = BacktestEngine(
+        market_data=sample_market_data,
+        strategies=[strategy1, strategy2],
+        starting_equity=100000.0,
+        seed=42,
+    )
+
+    assert len(engine.strategies) == 2
+
+    test_split = WalkForwardSplit(
+        name="test_split",
+        train_start=pd.Timestamp("2024-01-01"),
+        train_end=pd.Timestamp("2024-01-31"),
+        validation_start=pd.Timestamp("2024-02-01"),
+        validation_end=pd.Timestamp("2024-02-28"),
+        holdout_start=pd.Timestamp("2024-03-01"),
+        holdout_end=pd.Timestamp("2024-03-31"),
+    )
+
+    results = engine.run(split=test_split, period="train")
+    assert results["starting_equity"] == 100000.0

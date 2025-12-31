@@ -7,8 +7,8 @@ This is the main documentation index for the Trading System. All documentation i
 Documentation is organized across three main locations:
 
 1. **`docs/`** - Organized user and developer documentation
-2. **`agent-files/`** - Architecture and technical design documentation
-3. **Root directory** - Project overview, testing guides, and status documents
+2. **`agent-files/`** - Architecture, technical design, agent tasks, and implementation status
+3. **Root directory** - Project overview, testing guides, deployment docs, and user-facing references
 
 ## 🗺️ Quick Navigation
 
@@ -55,9 +55,9 @@ Documentation is organized across three main locations:
 
 ### Project Status
 
-- **[Review Summary](REVIEW_SUMMARY.md)** - Codebase review and status
-- **[Next Steps](NEXT_STEPS.md)** - Roadmap and future enhancements
-- **[Type Safety Improvements](TYPE_SAFETY_AND_ERROR_HANDLING_IMPROVEMENTS.md)** - Type safety enhancements
+- **[Review Summary](agent-files/REVIEW_SUMMARY.md)** - Codebase review and status
+- **[Production Readiness](PRODUCTION_READINESS.md)** - Production deployment checklist
+- **[Next Steps](agent-files/NEXT_STEPS.md)** - Roadmap and future enhancements
 
 ## 📖 Documentation Structure
 
@@ -75,16 +75,18 @@ trade-test/
 │   ├── api/                      # API reference (Sphinx)
 │   └── index.rst                 # Sphinx main index
 │
-├── agent-files/                  # Architecture & design docs
+├── agent-files/                  # Architecture, design, & agent docs
 │   ├── 01_ARCHITECTURE_OVERVIEW.md
 │   ├── 02_CONFIGS_AND_PARAMETERS.md
 │   ├── 03_DATA_PIPELINE_AND_VALIDATION.md
-│   └── ... (25+ files)
+│   ├── AGENT_TASKS_PHASE*.md     # Agent task specifications
+│   ├── REVIEW_SUMMARY.md         # Codebase review
+│   ├── COMPLETE_SYSTEM_VISION.md  # System vision document
+│   └── ... (30+ files)
 │
 ├── README.md                      # Main project README
 ├── TESTING_GUIDE.md              # Testing documentation
 ├── QUICK_START_TESTING.md        # Quick testing reference
-├── REVIEW_SUMMARY.md             # Codebase review
 └── DOCUMENTATION.md              # This file
 ```
 
@@ -102,7 +104,7 @@ trade-test/
 - **Learn about validation**: [Validation Suite](agent-files/12_VALIDATION_SUITE.md)
 - **Troubleshoot errors**: [Troubleshooting Guide](TROUBLESHOOTING.md) | [Error Code Reference](ERROR_CODE_REFERENCE.md)
 - **Set up development**: [Developer Guide](docs/developer_guide/README.md)
-- **Check project status**: [Review Summary](REVIEW_SUMMARY.md)
+- **Check project status**: [Review Summary](agent-files/REVIEW_SUMMARY.md) | [Production Readiness](PRODUCTION_READINESS.md)
 
 ## 📝 Building Documentation
 
