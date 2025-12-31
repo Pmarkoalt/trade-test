@@ -1,15 +1,17 @@
 """Technical signal generator using existing strategy logic."""
 
 from datetime import date
-from typing import Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional
 
 import pandas as pd
 
 from ...models.features import FeatureRow
 from ...models.signals import Signal
-from ...portfolio.portfolio import Portfolio
-from ...strategies.base.strategy_interface import StrategyInterface
 from ...indicators.feature_computer import compute_features, compute_features_for_date
+
+if TYPE_CHECKING:
+    from ...portfolio.portfolio import Portfolio
+    from ...strategies.base.strategy_interface import StrategyInterface
 
 
 class TechnicalSignalGenerator:
@@ -17,7 +19,7 @@ class TechnicalSignalGenerator:
 
     def __init__(
         self,
-        strategies: List[StrategyInterface],
+        strategies: List["StrategyInterface"],
         feature_computer: Optional[Callable] = None,
     ):
         """Initialize technical signal generator.
@@ -47,9 +49,9 @@ class TechnicalSignalGenerator:
 
     def _estimate_order_notional(
         self,
-        strategy: StrategyInterface,
+        strategy: "StrategyInterface",
         features: FeatureRow,
-        portfolio_state: Optional[Portfolio] = None,
+        portfolio_state: Optional["Portfolio"] = None,
     ) -> float:
         """Estimate order notional for capacity check.
 
@@ -95,7 +97,7 @@ class TechnicalSignalGenerator:
         self,
         ohlcv_data: Dict[str, pd.DataFrame],
         current_date: date,
-        portfolio_state: Optional[Portfolio] = None,
+        portfolio_state: Optional["Portfolio"] = None,
     ) -> List[Signal]:
         """Generate signals for current date.
 

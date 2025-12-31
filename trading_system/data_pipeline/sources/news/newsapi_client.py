@@ -8,7 +8,7 @@ from urllib.parse import urlencode
 try:
     import aiohttp
 except ImportError:
-    raise ImportError("aiohttp is required for NewsAPIClient. Install it with: pip install aiohttp")
+    aiohttp = None  # type: ignore
 
 from .base_news_source import BaseNewsSource
 from .models import NewsArticle, NewsFetchResult
@@ -54,7 +54,12 @@ class NewsAPIClient(BaseNewsSource):
         Args:
             api_key: NewsAPI.org API key
             rate_limit_per_minute: Max requests per minute (free tier: 100/day)
+            
+        Raises:
+            ImportError: If aiohttp is not installed
         """
+        if aiohttp is None:
+            raise ImportError("aiohttp is required for NewsAPIClient. Install it with: pip install aiohttp")
         super().__init__(api_key, rate_limit_per_minute)
         if not api_key:
             raise ValueError("NewsAPI API key is required")
@@ -191,6 +196,8 @@ class NewsAPIClient(BaseNewsSource):
 
         url = f"{self.BASE_URL}/everything?{urlencode(params)}"
 
+        if aiohttp is None:
+            raise ImportError("aiohttp is required for NewsAPIClient. Install it with: pip install aiohttp")
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 if response.status == 429:
@@ -231,6 +238,8 @@ class NewsAPIClient(BaseNewsSource):
 
         url = f"{self.BASE_URL}/top-headlines?{urlencode(params)}"
 
+        if aiohttp is None:
+            raise ImportError("aiohttp is required for NewsAPIClient. Install it with: pip install aiohttp")
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
                 if response.status != 200:

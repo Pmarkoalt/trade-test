@@ -3,7 +3,13 @@
 from typing import Tuple
 import logging
 
-from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+try:
+    from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+    VADER_AVAILABLE = True
+except ImportError:
+    VADER_AVAILABLE = False
+    SentimentIntensityAnalyzer = None  # type: ignore
 
 from trading_system.data_pipeline.sources.news.models import SentimentLabel
 from .base_analyzer import BaseSentimentAnalyzer
@@ -25,7 +31,15 @@ class VADERSentimentAnalyzer(BaseSentimentAnalyzer):
         Args:
             positive_threshold: Compound score threshold for positive
             negative_threshold: Compound score threshold for negative
+            
+        Raises:
+            ImportError: If vaderSentiment is not installed
         """
+        if not VADER_AVAILABLE:
+            raise ImportError(
+                "vaderSentiment is required for VADERSentimentAnalyzer. "
+                "Install it with: pip install vaderSentiment"
+            )
         self.positive_threshold = positive_threshold
         self.negative_threshold = negative_threshold
 

@@ -2,17 +2,19 @@
 
 import logging
 from datetime import date
-from typing import Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
 from uuid import uuid4
 
 import numpy as np
 import pandas as pd
 
-from ..configs.strategy_config import StrategyConfig
 from ..models.features import FeatureRow
 from ..models.signals import Signal
-from ..portfolio.portfolio import Portfolio
-from ..strategies.base.strategy_interface import StrategyInterface
+
+if TYPE_CHECKING:
+    from ..configs.strategy_config import StrategyConfig
+    from ..portfolio.portfolio import Portfolio
+    from ..strategies.base.strategy_interface import StrategyInterface
 from ..tracking.signal_tracker import SignalTracker
 from ..tracking.storage.sqlite_store import SQLiteTrackingStore
 from .config import SignalConfig
@@ -28,8 +30,8 @@ class LiveSignalGenerator:
 
     def __init__(
         self,
-        strategies: List[StrategyInterface],
-        signal_config: SignalConfig,
+        strategies: List["StrategyInterface"],
+        signal_config: "SignalConfig",
         news_analyzer: Optional[object] = None,  # NewsAnalyzer type
         tracking_db: Optional[str] = None,
     ):
@@ -63,7 +65,7 @@ class LiveSignalGenerator:
         self,
         ohlcv_data: Dict[str, pd.DataFrame],
         current_date: date,
-        portfolio_state: Optional[Portfolio] = None,
+        portfolio_state: Optional["Portfolio"] = None,
     ) -> List[Recommendation]:
         """Generate trading recommendations for current date.
 
@@ -292,7 +294,7 @@ class LiveSignalGenerator:
         signal: Signal,
         combined_score: float,
         feature: FeatureRow,
-        config: StrategyConfig,
+        config: "StrategyConfig",
         metadata: Optional[Dict] = None,
     ) -> Recommendation:
         """Convert signal to recommendation.

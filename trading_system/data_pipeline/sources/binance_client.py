@@ -86,8 +86,10 @@ class BinanceClient(BaseDataSource):
         logger.warning(f"Symbol {symbol} not in SYMBOL_MAP, using {mapped} as fallback")
         return mapped
 
-    async def _get_session(self) -> aiohttp.ClientSession:
+    async def _get_session(self) -> "aiohttp.ClientSession":
         """Get or create aiohttp session."""
+        if aiohttp is None:
+            raise ImportError("aiohttp is required for BinanceClient. Install it with: pip install aiohttp")
         if self._session is None or self._session.closed:
             self._session = aiohttp.ClientSession()
         return self._session

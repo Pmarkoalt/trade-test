@@ -1,7 +1,7 @@
 """Ticker/symbol extraction from news articles."""
 
 import re
-from typing import List, Set, Tuple
+from typing import List, Optional, Set, Tuple
 import logging
 
 logger = logging.getLogger(__name__)

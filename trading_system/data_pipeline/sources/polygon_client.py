@@ -44,8 +44,10 @@ class PolygonClient(BaseDataSource):
         self._call_times: deque = deque()  # Track API call timestamps
         self._session: Optional[aiohttp.ClientSession] = None
 
-    async def _get_session(self) -> aiohttp.ClientSession:
+    async def _get_session(self) -> "aiohttp.ClientSession":
         """Get or create aiohttp session."""
+        if aiohttp is None:
+            raise ImportError("aiohttp is required for PolygonClient. Install it with: pip install aiohttp")
         if self._session is None or self._session.closed:
             self._session = aiohttp.ClientSession()
         return self._session

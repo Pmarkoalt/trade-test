@@ -9,7 +9,10 @@ import traceback
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
+
+if TYPE_CHECKING:
+    from ..configs.run_config import RunConfig
 
 try:
     import psutil
@@ -34,8 +37,6 @@ try:
     RICH_AVAILABLE = True
 except ImportError:
     RICH_AVAILABLE = False
-
-from ..configs.run_config import RunConfig
 
 
 class TradeEventType(str, Enum):
@@ -154,7 +155,7 @@ class PerformanceContext:
         return False
 
 
-def setup_logging(config: RunConfig, use_json: Optional[bool] = None, use_rich: Optional[bool] = None) -> None:
+def setup_logging(config: "RunConfig", use_json: Optional[bool] = None, use_rich: Optional[bool] = None) -> None:
     """Setup enhanced logging configuration.
 
     Args:

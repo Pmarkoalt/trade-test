@@ -1,9 +1,24 @@
 """Cron scheduler runner for automated daily signal generation."""
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.cron import CronTrigger
+try:
+    from apscheduler.schedulers.asyncio import AsyncIOScheduler
+    from apscheduler.triggers.cron import CronTrigger
+
+    APSCHEDULER_AVAILABLE = True
+except ImportError:
+    APSCHEDULER_AVAILABLE = False
+    # Create dummy classes for type checking
+    AsyncIOScheduler = None  # type: ignore
+    CronTrigger = None  # type: ignore
+
+if TYPE_CHECKING:
+    from apscheduler.schedulers.asyncio import AsyncIOScheduler as AsyncIOSchedulerType
+    from apscheduler.triggers.cron import CronTrigger as CronTriggerType
+else:
+    AsyncIOSchedulerType = AsyncIOScheduler
+    CronTriggerType = CronTrigger
 
 from ..logging.logger import get_logger
 from .config import SchedulerConfig
@@ -20,7 +35,14 @@ class CronRunner:
 
         Args:
             config: Optional scheduler configuration. If None, uses default config.
+            
+        Raises:
+            ImportError: If apscheduler is not installed
         """
+        if not APSCHEDULER_AVAILABLE:
+            raise ImportError(
+                "apscheduler is required for CronRunner. Install it with: pip install apscheduler"
+            )
         self.config = config or SchedulerConfig()
         self.scheduler = AsyncIOScheduler()
 
@@ -69,6 +91,9 @@ class CronRunner:
 
     def stop(self) -> None:
         """Stop the scheduler."""
+        if not APSCHEDULER_AVAILABLE:
+            logger.warning("apscheduler not available, cannot stop scheduler")
+            return
         if self.scheduler.running:
             self.scheduler.shutdown(wait=True)
             logger.info("Scheduler stopped")
@@ -81,5 +106,7 @@ class CronRunner:
         Returns:
             True if scheduler is running, False otherwise
         """
+        if not APSCHEDULER_AVAILABLE:
+            return False
         return self.scheduler.running
 

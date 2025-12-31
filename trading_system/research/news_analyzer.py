@@ -13,9 +13,16 @@ from trading_system.data_pipeline.sources.news import (
     NewsAPIClient,
     AlphaVantageNewsClient,
 )
-from .sentiment.vader_analyzer import VADERSentimentAnalyzer
 from .entity_extraction.ticker_extractor import TickerExtractor
 from .config import ResearchConfig
+
+# Import VADER analyzer conditionally (optional dependency)
+try:
+    from .sentiment.vader_analyzer import VADERSentimentAnalyzer
+    VADER_AVAILABLE = True
+except ImportError:
+    VADER_AVAILABLE = False
+    VADERSentimentAnalyzer = None  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +92,12 @@ class NewsAnalyzer:
             # Create empty aggregator if no keys provided
             self.news_aggregator = NewsAggregator(sources=[])
 
+        # Initialize sentiment analyzer (optional dependency)
+        if not VADER_AVAILABLE or VADERSentimentAnalyzer is None:
+            raise ImportError(
+                "vaderSentiment is required for NewsAnalyzer. "
+                "Install it with: pip install vaderSentiment"
+            )
         self.sentiment_analyzer = VADERSentimentAnalyzer(
             positive_threshold=config.sentiment.vader_threshold_positive,
             negative_threshold=config.sentiment.vader_threshold_negative

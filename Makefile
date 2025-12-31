@@ -15,7 +15,7 @@
 #   make test               - Default: run unit tests
 
 .PHONY: help test test-unit test-integration test-validation test-all test-coverage
-.PHONY: docker-build docker-test-unit docker-test-integration docker-test-validation docker-test-all
+.PHONY: docker-build docker-test-unit docker-test-integration docker-test-validation docker-test-all docker-test-coverage
 .PHONY: docker-debug-shell docker-debug-integration docker-debug-test docker-test-integration-verbose
 .PHONY: docker-test-integration-capture docker-test-integration-last-failed
 .PHONY: install-dev format format-check lint type-check check-code
@@ -39,6 +39,7 @@ help:
 	@echo "  make docker-test-integration - Run integration tests in Docker"
 	@echo "  make docker-test-validation - Run validation suite in Docker"
 	@echo "  make docker-test-all        - Run all tests in Docker"
+	@echo "  make docker-test-coverage   - Run tests with coverage in Docker"
 	@echo ""
 	@echo "ALTERNATIVE: Native Python test targets:"
 	@echo "  make test              - Run unit tests (default)"
@@ -162,6 +163,22 @@ docker-test-validation:
 
 docker-test-all: docker-test-unit docker-test-integration
 	@echo "$(GREEN)✓ All tests complete$(NC)"
+
+docker-test-coverage:
+	@echo "$(YELLOW)Running tests with coverage in Docker...$(NC)"
+	@echo "$(YELLOW)This avoids environment-specific issues (e.g., numpy segfaults on macOS)$(NC)"
+	@echo "========================================="
+	docker-compose run --rm --entrypoint pytest trading-system tests/ \
+		--cov=trading_system \
+		--cov-report=html \
+		--cov-report=term-missing \
+		--cov-report=xml \
+		-v \
+		--tb=short \
+		$(ARGS)
+	@echo "$(GREEN)✓ Coverage report generated$(NC)"
+	@echo "   HTML report: htmlcov/index.html"
+	@echo "   XML report: coverage.xml"
 
 # Docker debugging commands
 docker-debug-shell:

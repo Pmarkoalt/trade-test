@@ -167,7 +167,8 @@ class TestValidationPerformance:
         """Benchmark: Bootstrap resampling."""
         from trading_system.validation.bootstrap import BootstrapTest
 
-        test = BootstrapTest(large_r_multiples, n_iterations=1000, random_seed=42)
+        # Reduced iterations for benchmark (performance test, not validation test)
+        test = BootstrapTest(large_r_multiples, n_iterations=100, random_seed=42)
 
         result = benchmark(test.run)
         assert "sharpe_5th" in result
@@ -191,7 +192,8 @@ class TestValidationPerformance:
             r_multiples = [t.get("r_multiple", 0.0) for t in trades]
             return compute_sharpe_from_r_multiples(r_multiples)
 
-        test = PermutationTest(actual_trades, period, compute_sharpe_func, n_iterations=1000, random_seed=42)
+        # Reduced iterations for benchmark (performance test, not validation test)
+        test = PermutationTest(actual_trades, period, compute_sharpe_func, n_iterations=100, random_seed=42)
 
         result = benchmark(test.run)
         assert "actual_sharpe" in result
@@ -206,8 +208,8 @@ class TestBacktestEnginePerformance:
         """Create market data with many symbols and long time series."""
         market_data = MarketData()
 
-        # Create 20 symbols with 5 years of daily data
-        dates = pd.bdate_range("2019-01-01", "2024-01-01")
+        # Create 20 symbols with 2 years of daily data (reduced from 5 years for CI/CD speed)
+        dates = pd.bdate_range("2022-01-01", "2024-01-01")
         symbols = [f"SYM{i:02d}" for i in range(20)]
 
         np.random.seed(42)
@@ -300,14 +302,15 @@ class TestBacktestEnginePerformance:
         from trading_system.backtest import BacktestEngine, WalkForwardSplit
         from trading_system.strategies import EquityMomentumStrategy
 
+        # Reduced period from 6 months to 3 months for CI/CD speed
         split = WalkForwardSplit(
             name="perf_test",
-            train_start=pd.Timestamp("2020-01-01"),
-            train_end=pd.Timestamp("2020-06-30"),
-            validation_start=pd.Timestamp("2020-07-01"),
-            validation_end=pd.Timestamp("2020-12-31"),
-            holdout_start=pd.Timestamp("2021-01-01"),
-            holdout_end=pd.Timestamp("2021-06-30"),
+            train_start=pd.Timestamp("2022-01-01"),
+            train_end=pd.Timestamp("2022-03-31"),
+            validation_start=pd.Timestamp("2022-04-01"),
+            validation_end=pd.Timestamp("2022-06-30"),
+            holdout_start=pd.Timestamp("2022-07-01"),
+            holdout_end=pd.Timestamp("2022-09-30"),
         )
 
         strategy = EquityMomentumStrategy(strategy_config)
@@ -330,8 +333,8 @@ class TestDataLoadingPerformance:
         """Create temporary directory with CSV files."""
         temp_dir = tempfile.mkdtemp()
 
-        # Create 10 CSV files with 5 years of data each
-        dates = pd.bdate_range("2019-01-01", "2024-01-01")
+        # Create 10 CSV files with 2 years of data each (reduced from 5 years for CI/CD speed)
+        dates = pd.bdate_range("2022-01-01", "2024-01-01")
         symbols = [f"TEST{i:02d}" for i in range(10)]
 
         np.random.seed(42)
@@ -372,12 +375,13 @@ class TestDataLoadingPerformance:
         result = benchmark(load_data)
         assert len(result) == len(symbols)
 
-    @pytest.mark.parametrize("n_symbols", [1, 5, 10, 20])
+    @pytest.mark.parametrize("n_symbols", [1, 5, 10])
     def test_multi_symbol_scaling(self, benchmark, n_symbols):
         """Benchmark: Feature computation scales with number of symbols."""
         from trading_system.indicators.feature_computer import compute_features
 
-        dates = pd.bdate_range("2020-01-01", "2023-01-01")
+        # Reduced from 3 years to 1 year for CI/CD speed
+        dates = pd.bdate_range("2022-01-01", "2023-01-01")
         symbols = [f"SYM{i:02d}" for i in range(n_symbols)]
         test_data = {}
 
@@ -554,8 +558,9 @@ class TestStrategyEvaluationPerformance:
         """Create large set of features for strategy evaluation."""
         from trading_system.models.features import FeatureRow
 
-        dates = pd.bdate_range("2020-01-01", "2023-01-01")
-        symbols = [f"SYM{i:02d}" for i in range(50)]
+        # Reduced from 3 years/50 symbols to 1 year/20 symbols for CI/CD speed
+        dates = pd.bdate_range("2022-01-01", "2023-01-01")
+        symbols = [f"SYM{i:02d}" for i in range(20)]
 
         features = {}
         np.random.seed(42)
