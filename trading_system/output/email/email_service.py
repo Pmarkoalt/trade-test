@@ -9,13 +9,14 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 try:
-    from jinja2 import Environment, FileSystemLoader
+    from jinja2 import Environment, FileSystemLoader  # type: ignore[import-untyped]
 
     JINJA2_AVAILABLE = True
 except ImportError:
     JINJA2_AVAILABLE = False
-    Environment = None
-    FileSystemLoader = None
+    # Type stubs for when jinja2 is not available
+    Environment: Any = None  # type: ignore[assignment, misc]
+    FileSystemLoader: Any = None  # type: ignore[assignment, misc]
 
 from ...logging.logger import get_logger
 from ..formatters.recommendation_formatter import RecommendationFormatter

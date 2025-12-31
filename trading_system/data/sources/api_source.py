@@ -211,7 +211,7 @@ class MassiveSource(APIDataSource):
     ) -> Optional[pd.DataFrame]:
         """Fetch data from Massive API."""
         try:
-            import requests  # type: ignore[import-untyped]
+            import requests
         except ImportError:
             raise ImportError("requests module not available. Install with: pip install requests")
 

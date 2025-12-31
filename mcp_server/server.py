@@ -5,7 +5,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
-import subprocess  # noqa: S404 - subprocess needed for running trading system CLI
+import subprocess  # nosec B404 - subprocess needed for running trading system CLI
 import json
 import os
 from pathlib import Path
@@ -105,7 +105,7 @@ async def run_backtest(request: BacktestRequest, token: Optional[str] = Depends(
         raise HTTPException(status_code=400, detail=f"Invalid period: {request.period}. Must be train, validation, or holdout")
 
     try:
-        result = subprocess.run(  # noqa: S603 - subprocess needed for CLI invocation
+        result = subprocess.run(  # nosec B603,B607 - subprocess needed for CLI invocation, python is from PATH
             ["python", "-m", "trading_system", "backtest", "--config", str(config_full_path), "--period", request.period],
             capture_output=True,
             text=True,
@@ -147,7 +147,7 @@ async def run_validation(request: ValidateRequest, token: Optional[str] = Depend
         raise HTTPException(status_code=404, detail=f"Config file not found: {request.config_path}")
 
     try:
-        result = subprocess.run(  # noqa: S603 - subprocess needed for CLI invocation
+        result = subprocess.run(  # nosec B603,B607 - subprocess needed for CLI invocation, python is from PATH
             ["python", "-m", "trading_system", "validate", "--config", str(config_full_path)],
             capture_output=True,
             text=True,
@@ -245,6 +245,6 @@ async def get_results(run_id: str, period: Optional[str] = None, token: Optional
 if __name__ == "__main__":
     import uvicorn
 
-    host = os.getenv("MCP_HOST", "0.0.0.0")  # noqa: S104 - binding configurable via env var
+    host = os.getenv("MCP_HOST", "0.0.0.0")  # nosec B104 - binding configurable via env var, default for container deployment
     port = int(os.getenv("MCP_PORT", "8000"))
     uvicorn.run(app, host=host, port=port)

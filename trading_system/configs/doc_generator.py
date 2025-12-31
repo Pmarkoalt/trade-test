@@ -30,9 +30,9 @@ def get_field_info(model_class: type[BaseModel]) -> Dict[str, Any]:
         # Get default from default_factory if present
         if default is None and hasattr(field_info, "default_factory"):
             default_factory = field_info.default_factory
-            if default_factory is not ... and default_factory is not None and callable(default_factory):
+            if default_factory is not None and default_factory is not ... and callable(default_factory):  # type: ignore[comparison-overlap]
                 try:
-                    default = default_factory()
+                    default = default_factory()  # type: ignore[call-arg]
                 except Exception:
                     default = "<default_factory>"
 

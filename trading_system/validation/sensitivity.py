@@ -41,7 +41,7 @@ try:
     HAS_MATPLOTLIB = True
 except ImportError:
     HAS_MATPLOTLIB = False
-    plt = None
+    plt = None  # type: ignore[assignment]
 
 # Plotly for interactive visualization (optional)
 try:

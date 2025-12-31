@@ -307,7 +307,7 @@ def wrap_validation_error(
         # Convert Pydantic error format (list of dicts) to the expected format
         # e.errors() already returns List[Dict[str, Any]], so we can use it directly
         message = f"{config_type} validation failed. Please fix the following errors:"
-        return ConfigValidationError(message, list(errors), config_path=config_path)
+        return ConfigValidationError(message, errors, config_path=config_path)
     else:
         # Not a ValidationError, just wrap the message
         message = f"{config_type} validation failed: {str(e)}"

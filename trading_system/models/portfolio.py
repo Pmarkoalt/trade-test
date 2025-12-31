@@ -132,9 +132,9 @@ class Portfolio:
             self.median_vol_252d = vol_20d
 
         # Compute risk multiplier
-        median_vol: Optional[float] = self.median_vol_252d
-        if median_vol is not None and isinstance(median_vol, (int, float)) and median_vol > 0.0:
-            vol_ratio = vol_20d / median_vol
+        median_vol_value: Optional[float] = self.median_vol_252d
+        if median_vol_value is not None and isinstance(median_vol_value, (int, float)) and median_vol_value > 0.0:
+            vol_ratio = vol_20d / median_vol_value
         else:
             vol_ratio = 1.0
         self.risk_multiplier = max(0.33, min(1.0, 1.0 / max(vol_ratio, 1.0)))
