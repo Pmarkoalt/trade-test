@@ -248,7 +248,9 @@ class BacktestEngine:
             DailyEventLoop instance
         """
 
-        def compute_features_fn(df_ohlc, symbol, asset_class, benchmark_roc60=None, benchmark_returns=None, use_cache=False, parallel=False):
+        def compute_features_fn(
+            df_ohlc, symbol, asset_class, benchmark_roc60=None, benchmark_returns=None, use_cache=False, parallel=False
+        ):
             """Wrapper for compute_features."""
             return compute_features(
                 df_ohlc=df_ohlc,

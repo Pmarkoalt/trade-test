@@ -146,7 +146,7 @@ class TestSQLiteDataSource:
             import sqlite3
         except ImportError:
             pytest.skip("sqlite3 module not available")
-        
+
         db_file = tmp_path / "test.db"
         conn = sqlite3.connect(str(db_file))
 

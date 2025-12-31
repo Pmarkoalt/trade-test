@@ -334,4 +334,3 @@ class MassiveClient(BaseDataSource):
         """Async context manager exit - close session."""
         await self._close_session()
         return False
-

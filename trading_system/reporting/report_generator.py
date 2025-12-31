@@ -240,6 +240,7 @@ class ReportGenerator:
 
         # Generate summary report
         from typing import Dict, Any
+
         report: Dict[str, Any] = {
             "generated_at": datetime.now().isoformat(),
             "run_id": self.run_id,
@@ -502,7 +503,9 @@ class ReportGenerator:
 
             # Create metrics table for each period
             for period, metrics in period_metrics.items():
-                table = Table(title=f"{period.upper()} Period", box=rich_box.ROUNDED, show_header=True, header_style="bold magenta")
+                table = Table(
+                    title=f"{period.upper()} Period", box=rich_box.ROUNDED, show_header=True, header_style="bold magenta"
+                )
                 table.add_column("Metric", style="cyan", no_wrap=True)
                 table.add_column("Value", style="green", justify="right")
 

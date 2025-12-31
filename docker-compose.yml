@@ -24,6 +24,10 @@ services:
       - ./trading_system:/app/trading_system
       # Optional: Mount custom config directory
       - ./configs:/app/custom_configs:ro
+      # Mount pre-commit config for code quality checks
+      - ./.pre-commit-config.yaml:/app/.pre-commit-config.yaml:ro
+      # Mount pyproject.toml for tool configurations
+      - ./pyproject.toml:/app/pyproject.toml:ro
     env_file:
       - .env
     environment:
@@ -38,4 +42,3 @@ services:
     # command: pytest tests/ -v
     stdin_open: true
     tty: true
-

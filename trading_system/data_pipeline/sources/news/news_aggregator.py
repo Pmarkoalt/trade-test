@@ -154,7 +154,7 @@ class NewsAggregator:
         for article in articles:
             # Create hash from normalized title
             title_normalized = article.title.lower().strip()
-            title_hash = hashlib.md5(title_normalized.encode()).hexdigest()[:16]
+            title_hash = hashlib.md5(title_normalized.encode(), usedforsecurity=False).hexdigest()[:16]  # noqa: S324 - MD5 used for deduplication, not security
 
             if title_hash not in seen_hashes:
                 seen_hashes.add(title_hash)

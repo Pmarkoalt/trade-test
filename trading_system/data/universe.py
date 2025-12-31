@@ -318,7 +318,9 @@ class CryptoUniverseManager:
 
         if self.config.rebalance_frequency == "monthly":
             # Rebalance if we've passed into a new month
-            return bool(current_date.year != self.last_rebalance_date.year or current_date.month != self.last_rebalance_date.month)
+            return bool(
+                current_date.year != self.last_rebalance_date.year or current_date.month != self.last_rebalance_date.month
+            )
 
         elif self.config.rebalance_frequency == "quarterly":
             # Rebalance if we've passed into a new quarter

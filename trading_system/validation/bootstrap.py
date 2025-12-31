@@ -196,9 +196,7 @@ class BootstrapTest:
 
         # Log completion
         total_time = time.time() - start_time
-        logger.info(
-            f"Bootstrap test completed: {iterations_completed}/{self.n_iterations} iterations in {total_time:.1f}s"
-        )
+        logger.info(f"Bootstrap test completed: {iterations_completed}/{self.n_iterations} iterations in {total_time:.1f}s")
 
         # Convert to numpy arrays for percentile calculations
         sharpe_arr = np.array(sharpe_samples)

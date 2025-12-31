@@ -74,7 +74,7 @@ class DataCache:
         """
         # Create hash of request parameters
         key_str = f"{source_id}:{symbol}:{start_date}:{end_date}"
-        return hashlib.md5(key_str.encode()).hexdigest()
+        return hashlib.md5(key_str.encode(), usedforsecurity=False).hexdigest()  # noqa: S324 - MD5 used for cache key, not security
 
     def _get_cache_path(self, cache_key: str) -> Path:
         """Get file path for cache entry.

@@ -22,6 +22,7 @@ class DataQualityReport(TypedDict, total=False):
     zero_volumes: int  # Only present when available=True
     null_values: Dict[str, int]  # Only present when available=True
 
+
 logger = logging.getLogger(__name__)
 
 

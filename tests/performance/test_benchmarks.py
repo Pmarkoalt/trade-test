@@ -17,6 +17,7 @@ from trading_system.indicators.momentum import roc
 from trading_system.indicators.volume import adv
 from trading_system.models.market_data import MarketData
 from trading_system.models.orders import Fill
+from trading_system.models.positions import ExitReason, PositionSide
 from trading_system.models.signals import BreakoutType, SignalSide
 from trading_system.portfolio.portfolio import Portfolio
 
@@ -95,13 +96,19 @@ class TestPortfolioPerformance:
         """Create portfolio with many positions."""
         portfolio = Portfolio(date=pd.Timestamp("2020-01-01"), starting_equity=1000000.0, cash=1000000.0, equity=1000000.0)
 
-        # Add 50 positions
-        for i in range(50):
-            symbol = f"SYM{i}"
-            price = 100.0
-            quantity = 100
-            notional = price * quantity
+        # Add positions, but limit to stay within 80% exposure
+        # With 1000000 equity and 80% max exposure, max gross notional = 800000
+        # Reduce number of positions or quantity to stay within limit
+        max_positions = 30  # Reduced from 50 to stay within exposure limit
+        price = 100.0
+        quantity = 100  # Each position = 10k notional
+        notional = price * quantity
+        max_total_notional = 1000000.0 * 0.80  # 80% of equity
+        max_positions_by_exposure = int(max_total_notional / notional)
+        num_positions = min(max_positions, max_positions_by_exposure)
 
+        for i in range(num_positions):
+            symbol = f"SYM{i}"
             fill = Fill(
                 fill_id=f"fill_{i}",
                 order_id=f"order_{i}",
@@ -344,13 +351,27 @@ class TestDataLoadingPerformance:
             returns = np.random.randn(len(dates)) * 0.02
             prices = base_price * np.exp(np.cumsum(returns))
 
+            # Ensure OHLC relationships are valid (low <= open,close <= high)
+            random_offsets = np.random.randn(len(dates)) * 0.001
+            high_offsets = abs(np.random.randn(len(dates)) * 0.005)
+            low_offsets = abs(np.random.randn(len(dates)) * 0.005)
+            
+            opens = prices * (1 + random_offsets)
+            highs = prices * (1 + high_offsets)
+            lows = prices * (1 - low_offsets)
+            closes = prices
+            
+            # Ensure high >= max(open, close) and low <= min(open, close)
+            highs = np.maximum(highs, np.maximum(opens, closes))
+            lows = np.minimum(lows, np.minimum(opens, closes))
+            
             df = pd.DataFrame(
                 {
                     "date": dates,
-                    "open": prices * (1 + np.random.randn(len(dates)) * 0.001),
-                    "high": prices * (1 + abs(np.random.randn(len(dates)) * 0.005)),
-                    "low": prices * (1 - abs(np.random.randn(len(dates)) * 0.005)),
-                    "close": prices,
+                    "open": opens,
+                    "high": highs,
+                    "low": lows,
+                    "close": closes,
                     "volume": np.random.randint(1000000, 10000000, len(dates)),
                 }
             )
@@ -444,6 +465,7 @@ class TestSignalScoringPerformance:
                 breakout_strength=np.random.rand(),
                 momentum_strength=np.random.rand(),
                 diversification_bonus=np.random.rand(),
+                adv20=entry_price * 50000000,  # Set positive adv20 to pass validation
             )
             signals.append(signal)
 
@@ -498,6 +520,9 @@ class TestSignalScoringPerformance:
                 symbol=signal.symbol,
                 asset_class=signal.asset_class,
                 close=signal.entry_price,
+                open=signal.entry_price * 0.99,  # Required: open
+                high=signal.entry_price * 1.01,  # Required: high
+                low=signal.entry_price * 0.99,   # Required: low
                 ma20=signal.entry_price * 0.98,
                 ma50=signal.entry_price * 0.95,
                 atr14=signal.entry_price * 0.02,
@@ -576,6 +601,9 @@ class TestStrategyEvaluationPerformance:
                     symbol=symbol,
                     asset_class="equity",
                     close=price,
+                    open=price * 0.99,  # Required: open
+                    high=price * 1.01,  # Required: high
+                    low=price * 0.99,   # Required: low
                     ma20=price * 0.98,
                     ma50=price * 0.95,
                     ma200=price * 0.90,
@@ -674,16 +702,64 @@ class TestReportingPerformance:
 
     def test_report_generation_performance(self, benchmark, sample_backtest_results):
         """Benchmark: Generating backtest report."""
+        from trading_system.models.positions import Position, PositionSide
         from trading_system.reporting.metrics import MetricsCalculator
         from trading_system.reporting.report_generator import ReportGenerator
 
-        calc = MetricsCalculator()
+        # Convert trades dict to Position objects and compute daily returns
+        equity_curve = sample_backtest_results["equity_curve"]
+        dates = sample_backtest_results["dates"]
+        
+        # Compute daily returns from equity curve
+        daily_returns = []
+        for i in range(1, len(equity_curve)):
+            if equity_curve[i - 1] > 0:
+                daily_returns.append((equity_curve[i] / equity_curve[i - 1]) - 1.0)
+            else:
+                daily_returns.append(0.0)
+        
+        # Convert trades to Position objects
+        closed_trades = []
+        for i, trade in enumerate(sample_backtest_results["trades"]):
+            entry_price = trade["entry_price"]
+            quantity = trade["quantity"]
+            position = Position(
+                symbol=trade["symbol"],
+                asset_class="equity",
+                entry_date=trade["entry_date"],
+                entry_price=entry_price,
+                entry_fill_id=f"fill_{i}",
+                quantity=quantity,
+                side=PositionSide.LONG,
+                stop_price=entry_price * 0.95,
+                initial_stop_price=entry_price * 0.95,
+                hard_stop_atr_mult=2.5,
+                entry_slippage_bps=10.0,
+                entry_fee_bps=5.0,
+                entry_total_cost=quantity * entry_price * 1.0015,
+                triggered_on=BreakoutType.FAST_20D,
+                adv20_at_entry=entry_price * quantity * 20,
+                exit_date=trade["exit_date"],
+                exit_price=trade["exit_price"],
+                exit_fill_id=f"exit_fill_{i}",
+                exit_reason=ExitReason.MANUAL,
+                exit_slippage_bps=10.0,
+                exit_fee_bps=5.0,
+                exit_total_cost=trade["quantity"] * trade["exit_price"] * 1.0015,
+                realized_pnl=trade["pnl"],
+            )
+            closed_trades.append(position)
+        
+        calc = MetricsCalculator(
+            equity_curve=equity_curve,
+            daily_returns=daily_returns,
+            closed_trades=closed_trades,
+            dates=dates,
+        )
 
         def generate_full_report():
             # Compute metrics
-            metrics = calc.compute_all_metrics(
-                equity_curve=sample_backtest_results["equity_curve"], trades=sample_backtest_results["trades"]
-            )
+            metrics = calc.compute_all_metrics()
             return metrics
 
         result = benchmark(generate_full_report)

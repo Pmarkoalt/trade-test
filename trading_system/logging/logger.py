@@ -120,6 +120,7 @@ class PerformanceContext:
         self.operation = operation
         self.log_memory = log_memory
         from typing import Optional
+
         self.start_time: Optional[float] = None
         self.start_memory: Optional[float] = None
 
@@ -198,6 +199,7 @@ def setup_logging(config: "RunConfig", use_json: Optional[bool] = None, use_rich
     log_level = getattr(logging, config.output.log_level.upper(), logging.INFO)
 
     # Setup console handler
+    console_handler: logging.Handler
     if RICH_AVAILABLE and use_rich:
         console_handler = RichHandler(rich_tracebacks=True, show_path=False, console=Console(stderr=True))
         console_handler.setLevel(log_level)

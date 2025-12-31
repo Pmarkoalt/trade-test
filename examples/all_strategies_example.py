@@ -119,7 +119,7 @@ def demonstrate_all_strategies():
         print(f"  Config: {config_info['path']}")
         print(f"  Description: {config_info['description']}")
         print(f"  Best for: {config_info['best_for']}")
-        print(f"  Key features:")
+        print("  Key features:")
         for feature in config_info['key_features']:
             print(f"    - {feature}")
         print()
@@ -148,7 +148,7 @@ def demonstrate_all_strategies():
                 "strategy": strategy
             }
             
-            print(f"  ✓ Loaded successfully")
+            print("  ✓ Loaded successfully")
             print(f"    Name: {strategy_config.name}")
             print(f"    Asset class: {strategy_config.asset_class}")
             print(f"    Universe: {strategy_config.universe}")
@@ -157,7 +157,7 @@ def demonstrate_all_strategies():
             
         except FileNotFoundError:
             print(f"  ⚠️  Config file not found: {config_path}")
-            print(f"    (This is OK if you haven't set up example configs)")
+            print("    (This is OK if you haven't set up example configs)")
             print()
         except Exception as e:
             print(f"  ❌ Error loading strategy: {e}")

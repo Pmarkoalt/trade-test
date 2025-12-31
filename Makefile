@@ -19,6 +19,7 @@
 .PHONY: docker-debug-shell docker-debug-integration docker-debug-test docker-test-integration-verbose
 .PHONY: docker-test-integration-capture docker-test-integration-last-failed
 .PHONY: install-dev format format-check lint type-check check-code
+.PHONY: docker-precommit docker-precommit-install
 
 # Default test config for validation suite
 TEST_CONFIG ?= tests/fixtures/configs/run_test_config.yaml
@@ -69,6 +70,10 @@ help:
 	@echo "  make lint              - Lint code with flake8"
 	@echo "  make type-check        - Type check code with mypy"
 	@echo "  make check-code        - Run all code quality checks"
+	@echo ""
+	@echo "Pre-commit targets:"
+	@echo "  make docker-precommit  - Run pre-commit hooks in Docker"
+	@echo "  make docker-precommit-install - Install pre-commit hooks in Docker"
 
 test: test-unit
 	@echo "$(GREEN)✓ Unit tests complete$(NC)"
@@ -323,4 +328,16 @@ type-check:
 
 check-code: format-check lint type-check
 	@echo "$(GREEN)✓ All code quality checks passed$(NC)"
+
+# Pre-commit hooks
+docker-precommit:
+	@echo "$(YELLOW)Running pre-commit hooks in Docker...$(NC)"
+	@echo "========================================="
+	docker-compose run --rm --entrypoint bash trading-system -c "cd /app && pip install pre-commit && pre-commit run --all-files"
+	@echo "$(GREEN)✓ Pre-commit complete$(NC)"
+
+docker-precommit-install:
+	@echo "$(YELLOW)Installing pre-commit hooks in Docker...$(NC)"
+	docker-compose run --rm --entrypoint bash trading-system -c "pip install pre-commit && pre-commit install"
+	@echo "$(GREEN)✓ Pre-commit hooks installed$(NC)"
 

@@ -12,6 +12,7 @@ try:
 except ImportError:
     # Fallback if news models not available
     from typing import Any
+
     SentimentLabel = Any  # type: ignore[assignment, misc]
 
 

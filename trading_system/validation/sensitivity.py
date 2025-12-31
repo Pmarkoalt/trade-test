@@ -41,7 +41,7 @@ try:
     HAS_MATPLOTLIB = True
 except ImportError:
     HAS_MATPLOTLIB = False
-    plt = None
+    plt = None  # type: ignore[assignment]
 
 # Plotly for interactive visualization (optional)
 try:
@@ -446,7 +446,9 @@ def run_parameter_sensitivity(
     return grid.run()
 
 
-def generate_parameter_grid_from_config(sensitivity_config: "SensitivityConfig", asset_class: str = "equity") -> Dict[str, List[Union[int, float, str]]]:
+def generate_parameter_grid_from_config(
+    sensitivity_config: "SensitivityConfig", asset_class: str = "equity"
+) -> Dict[str, List[Union[int, float, str]]]:
     """Generate parameter grid from SensitivityConfig.
 
     Maps config parameter ranges to actual strategy parameter names.
@@ -527,7 +529,7 @@ def generate_parameter_grid_from_config(sensitivity_config: "SensitivityConfig",
                 # Type narrowing means this is unreachable, but handle for runtime safety
                 converted_list.append(str(v))
         converted_ranges[key] = converted_list
-    
+
     return converted_ranges
 
 

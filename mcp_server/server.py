@@ -3,8 +3,8 @@ from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
-import subprocess
+from typing import Optional
+import subprocess  # noqa: S404 - subprocess needed for running trading system CLI
 import json
 import os
 from pathlib import Path
@@ -104,7 +104,7 @@ async def run_backtest(request: BacktestRequest, token: Optional[str] = Depends(
         raise HTTPException(status_code=400, detail=f"Invalid period: {request.period}. Must be train, validation, or holdout")
     
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603 - subprocess needed for CLI invocation
             [
                 "python", "-m", "trading_system", "backtest",
                 "--config", str(config_full_path),
@@ -153,7 +153,7 @@ async def run_validation(request: ValidateRequest, token: Optional[str] = Depend
         raise HTTPException(status_code=404, detail=f"Config file not found: {request.config_path}")
     
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603 - subprocess needed for CLI invocation
             [
                 "python", "-m", "trading_system", "validate",
                 "--config", str(config_full_path)
@@ -267,7 +267,7 @@ async def get_results(
 
 if __name__ == "__main__":
     import uvicorn
-    host = os.getenv("MCP_HOST", "0.0.0.0")
+    host = os.getenv("MCP_HOST", "0.0.0.0")  # noqa: S104 - binding configurable via env var
     port = int(os.getenv("MCP_PORT", "8000"))
     uvicorn.run(app, host=host, port=port)
 

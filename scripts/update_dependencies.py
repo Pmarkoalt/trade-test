@@ -26,7 +26,7 @@ try:
     import tomli  # For Python < 3.11
 except ImportError:
     try:
-        import tomllib  # For Python >= 3.11
+        import tomllib  # noqa: F401 - conditionally used later
         tomli = None
     except ImportError:
         print("Error: tomli or tomllib required. Install with: pip install tomli")
@@ -66,7 +66,7 @@ def parse_version_spec(spec: str) -> Tuple[str, str, str]:
     
     # Try to get current installed version
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603 - subprocess needed for pip execution
             [sys.executable, "-m", "pip", "show", spec.split(">=")[0].split(",")[0].strip()],
             capture_output=True,
             text=True,
@@ -77,7 +77,7 @@ def parse_version_spec(spec: str) -> Tuple[str, str, str]:
                 if line.startswith("Version:"):
                     current_version = line.split(":", 1)[1].strip()
                     return (min_version, max_version, current_version)
-    except Exception:
+    except Exception:  # noqa: S110 - exception handling needed for version parsing
         pass
     
     return (min_version, max_version, None)
@@ -88,7 +88,7 @@ def check_outdated() -> Dict[str, Dict]:
     print("Checking for outdated packages...")
     
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603 - subprocess needed for pip execution
             [sys.executable, "-m", "pip", "list", "--outdated", "--format=json"],
             capture_output=True,
             text=True,
@@ -252,7 +252,7 @@ def run_tests() -> bool:
     """Run the test suite."""
     print("\nRunning tests...")
     try:
-        result = subprocess.run(
+        result = subprocess.run(  # noqa: S603 - subprocess needed for pytest execution
             [sys.executable, "-m", "pytest", "tests/", "-v"],
             check=False
         )

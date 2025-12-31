@@ -283,4 +283,3 @@ class TestMassiveClient:
         with patch("trading_system.data_pipeline.sources.massive_client.aiohttp", None):
             with pytest.raises(ImportError, match="aiohttp is required"):
                 MassiveClient(api_key="test_key")
-

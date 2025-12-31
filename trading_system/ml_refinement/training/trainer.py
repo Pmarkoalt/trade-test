@@ -28,6 +28,7 @@ from trading_system.ml_refinement.validation.metrics import (
 # Try to import base models, create minimal interface if not available
 try:
     from trading_system.ml_refinement.models.base_model import BaseModel, SignalQualityModel
+
     BaseModelType = BaseModel
     SignalQualityModelType = SignalQualityModel
 except ImportError:
@@ -78,8 +79,9 @@ except ImportError:
 
     class _SignalQualityModelStub(_BaseModelStub):
         """Signal quality model."""
+
         pass
-    
+
     BaseModelType = _BaseModelStub
     SignalQualityModelType = _SignalQualityModelStub
 

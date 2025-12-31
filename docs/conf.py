@@ -1,6 +1,5 @@
 """Sphinx configuration for Trading System API documentation."""
 
-import os
 import sys
 from pathlib import Path
 

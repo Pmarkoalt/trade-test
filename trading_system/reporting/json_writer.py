@@ -285,7 +285,7 @@ class JSONWriter:
             filtered_values = {k: v for k, v in values.items() if v is not None}
             if not filtered_values:
                 continue
-            
+
             if metric == "max_drawdown":
                 best_scenario = min(filtered_values.items(), key=lambda x: x[1] or 0.0)
                 worst_scenario = max(filtered_values.items(), key=lambda x: x[1] or 0.0)

@@ -43,7 +43,7 @@ def run_benchmarks() -> Dict:
     os.chdir(project_root)
     
     # Run benchmarks
-    result = subprocess.run(
+    result = subprocess.run(  # noqa: S603 - subprocess needed for pytest execution
         [
             sys.executable,
             "-m",
@@ -160,7 +160,7 @@ def print_report(passed: List[str], warnings: List[str], failed: List[str]):
 def save_baseline():
     """Save the current benchmark results as baseline."""
     print("\nSaving baseline...")
-    result = subprocess.run(
+    result = subprocess.run(  # noqa: S603 - subprocess needed for pytest execution
         [
             sys.executable,
             "-m",

@@ -132,14 +132,17 @@ def select_signals_from_queue(
         # Note: portfolio.gross_exposure is current exposure, but we need to add
         # selected signals' exposure as well
         selected_exposure = sum(
-            float(s.entry_price * estimate_position_size(
-                equity=portfolio.equity,
-                risk_pct=risk_per_trade,
-                entry_price=s.entry_price,
-                stop_price=s.stop_price,
-                max_position_notional=max_position_notional,
-                risk_multiplier=portfolio.risk_multiplier,
-            ))
+            float(
+                s.entry_price
+                * estimate_position_size(
+                    equity=portfolio.equity,
+                    risk_pct=risk_per_trade,
+                    entry_price=s.entry_price,
+                    stop_price=s.stop_price,
+                    max_position_notional=max_position_notional,
+                    risk_multiplier=portfolio.risk_multiplier,
+                )
+            )
             for s in selected
         )
         total_exposure = portfolio.gross_exposure + selected_exposure + estimated_notional

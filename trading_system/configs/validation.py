@@ -304,8 +304,10 @@ def wrap_validation_error(
 
     if isinstance(e, ValidationError):
         errors = e.errors()
+        # Convert Pydantic error format (list of dicts) to the expected format
+        # e.errors() already returns List[Dict[str, Any]], so we can use it directly
         message = f"{config_type} validation failed. Please fix the following errors:"
-        return ConfigValidationError(message, errors, config_path=config_path)
+        return ConfigValidationError(message, list(errors), config_path=config_path)  # type: ignore[arg-type]
     else:
         # Not a ValidationError, just wrap the message
         message = f"{config_type} validation failed: {str(e)}"
@@ -381,7 +383,7 @@ def validate_config_file(config_path: str, config_type: str = "auto") -> tuple[b
         else:
             # Try to load as run config first
             try:
-                config = RunConfig.from_yaml(config_path)
+                config: BaseModel = RunConfig.from_yaml(config_path)
                 return True, None, config
             except Exception:
                 try:
@@ -395,7 +397,7 @@ def validate_config_file(config_path: str, config_type: str = "auto") -> tuple[b
     # Validate based on type
     try:
         if config_type == "run":
-            config = RunConfig.from_yaml(config_path)
+            config: BaseModel = RunConfig.from_yaml(config_path)
             return True, None, config
         elif config_type == "strategy":
             config = StrategyConfig.from_yaml(config_path)

@@ -148,7 +148,7 @@ class AlphaVantageSource(APIDataSource):
     ) -> Optional[pd.DataFrame]:
         """Fetch data from Alpha Vantage API."""
         try:
-            import requests
+            import requests  # type: ignore[import-untyped]
         except ImportError:
             raise ImportError("requests module not available. Install with: pip install requests")
 
@@ -211,7 +211,7 @@ class MassiveSource(APIDataSource):
     ) -> Optional[pd.DataFrame]:
         """Fetch data from Massive API."""
         try:
-            import requests
+            import requests  # type: ignore[import-untyped]
         except ImportError:
             raise ImportError("requests module not available. Install with: pip install requests")
 

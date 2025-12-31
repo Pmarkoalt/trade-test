@@ -14,6 +14,8 @@ try:
     JINJA2_AVAILABLE = True
 except ImportError:
     JINJA2_AVAILABLE = False
+    Environment = None  # type: ignore[assignment, misc]
+    FileSystemLoader = None  # type: ignore[assignment, misc]
 
 from ...logging.logger import get_logger
 from ..formatters.recommendation_formatter import RecommendationFormatter
@@ -24,6 +26,8 @@ logger = get_logger(__name__)
 
 class EmailService:
     """Service for sending email notifications."""
+
+    jinja_env: Optional[Environment]
 
     def __init__(self, config: EmailConfig):
         """Initialize email service.
@@ -37,7 +41,7 @@ class EmailService:
         # Setup Jinja2 environment
         if JINJA2_AVAILABLE:
             templates_dir = Path(__file__).parent / "templates"
-            self.jinja_env = Environment(
+            self.jinja_env: Optional[Environment] = Environment(
                 loader=FileSystemLoader(str(templates_dir)),
                 autoescape=True,
             )

@@ -80,7 +80,7 @@ class IndicatorCache:
             str(hash_data.iloc[-10:].sum()) if len(hash_data) >= 10 else "",
         ]
         data_str = "_".join(data_parts)
-        return hashlib.md5(data_str.encode()).hexdigest()
+        return hashlib.md5(data_str.encode(), usedforsecurity=False).hexdigest()  # noqa: S324 - MD5 used for cache key, not security
 
     def _hash_dataframe(self, df: pd.DataFrame, symbol: str) -> str:
         """Create hash of DataFrame for cache key.
@@ -108,7 +108,7 @@ class IndicatorCache:
             str(hash_data["close"].iloc[-10:].sum()) if "close" in hash_data.columns and len(hash_data) >= 10 else "",
         ]
         data_str = "_".join(data_parts)
-        return hashlib.md5(data_str.encode()).hexdigest()
+        return hashlib.md5(data_str.encode(), usedforsecurity=False).hexdigest()  # noqa: S324 - MD5 used for cache key, not security
 
     def _create_cache_key(self, data_hash: str, indicator_name: str, window: int, **kwargs) -> Tuple[str, str, int]:
         """Create cache key from components.
@@ -125,7 +125,7 @@ class IndicatorCache:
         # Include additional params in hash if provided
         if kwargs:
             param_str = "_".join(f"{k}={v}" for k, v in sorted(kwargs.items()))
-            data_hash = hashlib.md5(f"{data_hash}_{param_str}".encode()).hexdigest()
+            data_hash = hashlib.md5(f"{data_hash}_{param_str}".encode(), usedforsecurity=False).hexdigest()  # noqa: S324 - MD5 used for cache key, not security
 
         return (data_hash, indicator_name, window)
 

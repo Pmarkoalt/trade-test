@@ -110,9 +110,7 @@ class PermutationTest:
 
         # Log completion
         total_time = time.time() - start_time
-        logger.info(
-            f"Permutation test completed: {iterations_completed}/{self.n_iterations} iterations in {total_time:.1f}s"
-        )
+        logger.info(f"Permutation test completed: {iterations_completed}/{self.n_iterations} iterations in {total_time:.1f}s")
 
         if not random_sharpes:
             # Return default structure if no valid iterations

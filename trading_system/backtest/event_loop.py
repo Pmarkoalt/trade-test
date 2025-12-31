@@ -516,7 +516,12 @@ class DailyEventLoop:
                 max_position_notional=self.portfolio.equity * strategy.config.risk.max_position_notional,
                 available_cash=self.portfolio.cash,
                 risk_multiplier=self.portfolio.risk_multiplier,
-                max_exposure=self.portfolio.equity * (strategy.config.risk.max_exposure if hasattr(strategy.config.risk, 'max_exposure') and strategy.config.risk.max_exposure is not None else 0.8),
+                max_exposure=self.portfolio.equity
+                * (
+                    strategy.config.risk.max_exposure
+                    if hasattr(strategy.config.risk, "max_exposure") and strategy.config.risk.max_exposure is not None
+                    else 0.8
+                ),
             )
 
             if qty < 1:
@@ -681,6 +686,7 @@ class DailyEventLoop:
                     signal_metadata = self.order_signal_metadata.get(order.order_id, {})
                     atr_mult = signal_metadata.get("atr_mult", strategy.config.exit.hard_stop_atr_mult)
                     from ..models.signals import BreakoutType
+
                     triggered_on = signal_metadata.get("triggered_on")
                     if triggered_on is not None and not isinstance(triggered_on, BreakoutType):
                         triggered_on = None
@@ -691,6 +697,7 @@ class DailyEventLoop:
 
                     # Provide default BreakoutType if None
                     from ..models.signals import BreakoutType
+
                     final_triggered_on = triggered_on if triggered_on is not None else BreakoutType.FAST_20D
                     position = self.portfolio.process_fill(
                         fill=fill,
