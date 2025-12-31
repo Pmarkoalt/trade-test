@@ -150,7 +150,7 @@ Invalid OHLC data at dates: ['2023-01-15']
    ```python
    import pandas as pd
    df = pd.read_csv('AAPL.csv', index_col='date')
-   
+
    # Check for invalid relationships
    invalid = (df['low'] > df['high']) | \
              (df['open'] < df['low']) | (df['open'] > df['high']) | \
@@ -231,10 +231,10 @@ Error loading AAPL from /path/to/data/AAPL.csv: Permission denied
    ```bash
    # Check file permissions
    ls -la /path/to/data/AAPL.csv
-   
+
    # Check disk space
    df -h /path/to/data
-   
+
    # Test file readability
    head -5 /path/to/data/AAPL.csv
    ```
@@ -310,7 +310,7 @@ Configuration file: /path/to/config.yaml
    ```yaml
    # Wrong
    start_date: 01/01/2023
-   
+
    # Correct
    start_date: 2023-01-01
    ```
@@ -360,7 +360,7 @@ Strategy error: Invalid clearance_20d: must be between 0 and 1, got 50
 2. **Verify strategy registration:**
    ```python
    from trading_system.strategies.strategy_registry import get_strategy_class
-   
+
    # Check if strategy exists
    strategy_class = get_strategy_class('EquityMomentumStrategy')
    print(strategy_class)
@@ -657,7 +657,7 @@ Backtest error: Unexpected error during backtest execution
    ```python
    from trading_system.data.loader import DataLoader
    from trading_system.configs.run_config import RunConfig
-   
+
    config = RunConfig.from_yaml('config.yaml')
    loader = DataLoader(config.data_paths)
    data = loader.load_universe(
@@ -665,7 +665,7 @@ Backtest error: Unexpected error during backtest execution
        config.start_date,
        config.end_date
    )
-   
+
    # Check date coverage for each symbol
    for symbol, df in data.items():
        print(f"{symbol}: {df.index.min()} to {df.index.max()}")

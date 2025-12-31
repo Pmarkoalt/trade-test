@@ -481,10 +481,10 @@ async def health():
 async def run_backtest(request: BacktestRequest):
     """Run a backtest."""
     config_full_path = BASE_DIR / request.config_path.lstrip("/")
-    
+
     if not config_full_path.exists():
         raise HTTPException(status_code=404, detail=f"Config file not found: {request.config_path}")
-    
+
     try:
         result = subprocess.run(
             [
@@ -497,13 +497,13 @@ async def run_backtest(request: BacktestRequest):
             timeout=3600,  # 1 hour timeout
             cwd=str(BASE_DIR)
         )
-        
+
         if result.returncode != 0:
             raise HTTPException(
                 status_code=500,
                 detail=f"Backtest failed: {result.stderr}"
             )
-        
+
         return {
             "status": "success",
             "stdout": result.stdout,
@@ -519,10 +519,10 @@ async def run_backtest(request: BacktestRequest):
 async def run_validation(request: ValidateRequest):
     """Run validation suite."""
     config_full_path = BASE_DIR / request.config_path.lstrip("/")
-    
+
     if not config_full_path.exists():
         raise HTTPException(status_code=404, detail=f"Config file not found: {request.config_path}")
-    
+
     try:
         result = subprocess.run(
             [
@@ -534,13 +534,13 @@ async def run_validation(request: ValidateRequest):
             timeout=3600,
             cwd=str(BASE_DIR)
         )
-        
+
         if result.returncode != 0:
             raise HTTPException(
                 status_code=500,
                 detail=f"Validation failed: {result.stderr}"
             )
-        
+
         return {
             "status": "success",
             "stdout": result.stdout,
@@ -560,7 +560,7 @@ async def list_configs():
         BASE_DIR / "EXAMPLE_CONFIGS",
         BASE_DIR / "tests" / "fixtures" / "configs"
     ]
-    
+
     configs = []
     for config_dir in config_dirs:
         if config_dir.exists():
@@ -569,7 +569,7 @@ async def list_configs():
                     "name": config_file.name,
                     "path": str(config_file.relative_to(BASE_DIR))
                 })
-    
+
     return {"configs": configs}
 
 
@@ -577,21 +577,21 @@ async def list_configs():
 async def get_results(run_id: str, period: Optional[str] = None):
     """Get backtest results."""
     results_dir = BASE_DIR / "results" / run_id
-    
+
     if not results_dir.exists():
         raise HTTPException(status_code=404, detail=f"Results not found for run_id: {run_id}")
-    
+
     if period:
         results_dir = results_dir / period
-    
+
     if not results_dir.exists():
         raise HTTPException(status_code=404, detail=f"Period not found: {period}")
-    
+
     results = {}
     for result_file in results_dir.glob("*.json"):
         with open(result_file, "r") as f:
             results[result_file.stem] = json.load(f)
-    
+
     return {"run_id": run_id, "period": period, "results": results}
 
 
@@ -794,7 +794,7 @@ Once deployed:
    ```bash
    # Via CLI (inside container or locally)
    python -m trading_system dashboard --run-id <run_id>
-   
+
    # Or directly via Streamlit
    streamlit run trading_system/reporting/dashboard.py -- --base_path results --run_id <run_id>
    ```
@@ -803,7 +803,7 @@ Once deployed:
    ```bash
    # Via CLI
    python -m trading_system trading-dashboard
-   
+
    # Or directly via Streamlit
    streamlit run trading_system/dashboard/app.py
    ```

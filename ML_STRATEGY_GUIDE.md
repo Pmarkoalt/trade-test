@@ -60,7 +60,7 @@ feature_rows, r_multiples, returns, wins = extract_features_and_labels(
 
 This function extracts:
 - **Features**: All technical indicators (MA, ATR, RSI, MACD, etc.) at the entry date
-- **Labels**: 
+- **Labels**:
   - `r_multiples`: Risk-adjusted returns (target for regression)
   - `wins`: Win/loss boolean (target for classification)
 
@@ -314,7 +314,7 @@ print(f"ML-enhanced return: {results_ml['total_return']:.2%}")
 - Not enough training samples (need 100+)
 - Model overfitting to training data
 - Features not predictive
-- **Solution**: 
+- **Solution**:
   - Collect more data
   - Use simpler model (reduce max_depth)
   - Add regularization

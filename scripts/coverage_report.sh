@@ -54,7 +54,7 @@ echo "   HTML report: htmlcov/index.html"
 echo "   XML report: coverage.xml"
 if [ "$COVERAGE_PCT" != "N/A" ]; then
     echo "   Coverage: ${COVERAGE_PCT}"
-    
+
     # Check if coverage meets target (90%) - works without bc
     COVERAGE_NUM=$(echo "$COVERAGE_PCT" | sed 's/%//' | cut -d. -f1)
     if [ "$COVERAGE_NUM" -ge 90 ] 2>/dev/null; then

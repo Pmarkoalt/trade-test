@@ -64,7 +64,7 @@ echo ""
 echo "3. Checking test data..."
 if [ -d "tests/fixtures" ]; then
     echo -e "   ${GREEN}✓${NC} Test fixtures directory exists"
-    
+
     # Check for key files
     KEY_FILES=("AAPL.csv" "MSFT.csv" "GOOGL.csv" "BTC_sample.csv")
     for file in "${KEY_FILES[@]}"; do

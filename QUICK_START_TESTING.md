@@ -64,11 +64,11 @@ Check results in: `tests/results/*/train/`
 
 ## 🎯 Success Criteria
 
-✅ All unit tests pass  
-✅ Integration test passes  
-✅ Backtest completes without errors  
-✅ Output files generated  
-✅ Portfolio equity updates correctly  
+✅ All unit tests pass
+✅ Integration test passes
+✅ Backtest completes without errors
+✅ Output files generated
+✅ Portfolio equity updates correctly
 
 ## 📚 Full Documentation
 

@@ -115,11 +115,11 @@ if $PYTHON_CMD -c "import numpy; print('NumPy version:', numpy.__version__)" 2>&
 elif $PYTHON_CMD -c "import numpy" 2>/dev/null; then
     NUMPY_VERSION=$($PYTHON_CMD -c "import numpy; print(numpy.__version__)" 2>/dev/null || echo "unknown")
     echo "   NumPy version: $NUMPY_VERSION"
-    
+
     # Check if version is >= 1.24.0 (better macOS compatibility)
     NUMPY_MAJOR=$(echo $NUMPY_VERSION | cut -d. -f1)
     NUMPY_MINOR=$(echo $NUMPY_VERSION | cut -d. -f2)
-    
+
     if [[ $NUMPY_MAJOR -eq 1 && $NUMPY_MINOR -lt 24 ]] || [[ $NUMPY_MAJOR -lt 1 ]]; then
         echo -e "   ${YELLOW}⚠${NC} NumPy < 1.24.0 may have macOS compatibility issues"
         if [[ "$IS_MACOS" == true ]]; then
@@ -159,11 +159,11 @@ echo ""
 # Fix issues if requested
 if [[ "$FIX_ISSUES" == true ]] && [[ "$NUMPY_ISSUE" == true || ${#MISSING_DEPS[@]} -gt 0 ]]; then
     echo "4. Attempting to fix issues..."
-    
+
     # Detect package manager
     if command -v conda &> /dev/null && [[ -n "$CONDA_DEFAULT_ENV" ]]; then
         echo "   Using conda environment: $CONDA_DEFAULT_ENV"
-        
+
         if [[ "$NUMPY_ISSUE" == true ]]; then
             echo "   Fixing NumPy issue..."
             echo "   Installing NumPy >= 1.24.0 from conda-forge..."
@@ -172,29 +172,29 @@ if [[ "$FIX_ISSUES" == true ]] && [[ "$NUMPY_ISSUE" == true || ${#MISSING_DEPS[@
                 pip install --upgrade "numpy>=1.24.0"
             }
         fi
-        
+
         if [ ${#MISSING_DEPS[@]} -gt 0 ]; then
             echo "   Installing missing dependencies..."
             pip install "${MISSING_DEPS[@]}"
         fi
     else
         echo "   Using pip"
-        
+
         if [[ "$NUMPY_ISSUE" == true ]]; then
             echo "   Fixing NumPy issue..."
             echo "   Installing/upgrading NumPy >= 1.24.0..."
             pip install --upgrade "numpy>=1.24.0"
         fi
-        
+
         if [ ${#MISSING_DEPS[@]} -gt 0 ]; then
             echo "   Installing missing dependencies..."
             pip install "${MISSING_DEPS[@]}"
         fi
     fi
-    
+
     echo ""
     echo "5. Verifying fixes..."
-    
+
     # Re-check NumPy
     if $PYTHON_CMD -c "import numpy; print('NumPy version:', numpy.__version__)" 2>&1 | grep -q "Segmentation fault\|Fatal Python error"; then
         echo -e "   ${RED}✗${NC} NumPy issue persists"

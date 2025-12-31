@@ -27,7 +27,7 @@
 
 ### Q: How do I install the system?
 
-**A:** 
+**A:**
 ```bash
 # Install dependencies
 pip install -r requirements.txt
@@ -40,7 +40,7 @@ See the [README.md](README.md) for detailed installation instructions, including
 
 ### Q: Where do I start?
 
-**A:** 
+**A:**
 1. Run the quick test: `./quick_test.sh`
 2. Review example configs in `EXAMPLE_CONFIGS/`
 3. Run a simple backtest: `python -m trading_system backtest --config tests/fixtures/configs/run_test_config.yaml --period train`
@@ -70,7 +70,7 @@ Example configs are in `EXAMPLE_CONFIGS/` directory.
 
 ### Q: How do I create a new configuration?
 
-**A:** 
+**A:**
 1. Copy an example config from `EXAMPLE_CONFIGS/`
 2. Modify the parameters for your use case
 3. Validate it: `python -m trading_system config validate --path your_config.yaml`
@@ -78,7 +78,7 @@ Example configs are in `EXAMPLE_CONFIGS/` directory.
 
 ### Q: What's the difference between equity and crypto configs?
 
-**A:** 
+**A:**
 - **Equity**: Uses MA50 trend filter, 0.5% capacity limit, 1 bps fees
 - **Crypto**: Uses MA200 trend filter (stricter), 0.25% capacity limit, staged exits, different stop loss logic
 
@@ -182,7 +182,7 @@ See `trading_system/strategies/` for implementations.
 
 ### Q: How do I create a custom strategy?
 
-**A:** 
+**A:**
 1. Create a new strategy class inheriting from `BaseStrategy`
 2. Implement the required methods (generate_signals, etc.)
 3. Register it in `trading_system/strategies/strategy_registry.py`
@@ -207,7 +207,7 @@ These are configurable in strategy configs.
 
 ### Q: What's the difference between equity and crypto strategies?
 
-**A:** 
+**A:**
 - **Equity**: MA50 trend filter, 0.5% capacity, simpler exit logic
 - **Crypto**: MA200 trend filter (stricter), 0.25% capacity, staged exits (MA20 warning → tighten stop → MA50 exit)
 
@@ -229,7 +229,7 @@ Crypto strategies are more conservative due to higher volatility.
 
 ### Q: What execution costs are included?
 
-**A:** 
+**A:**
 - **Slippage**: Based on ADV (average dollar volume) and volatility
 - **Fees**: 1 bps per side for equity (configurable)
 - **Capacity constraints**: Order size limited by ADV percentage
@@ -237,7 +237,7 @@ Crypto strategies are more conservative due to higher volatility.
 
 ### Q: How do I run a backtest?
 
-**A:** 
+**A:**
 ```bash
 python -m trading_system backtest \
     --config path/to/run_config.yaml \
@@ -293,7 +293,7 @@ See `trading_system/reporting/metrics.py` for full list.
 
 ### Q: How do I run validation?
 
-**A:** 
+**A:**
 ```bash
 python -m trading_system validate --config path/to/run_config.yaml
 ```
@@ -302,7 +302,7 @@ This runs all validation tests and reports results.
 
 ### Q: What do validation results mean?
 
-**A:** 
+**A:**
 - **Bootstrap**: P-value indicates probability results are due to chance
 - **Permutation**: Tests if strategy outperforms random trading
 - **Stress Tests**: Shows performance under adverse conditions
@@ -312,7 +312,7 @@ See `trading_system/validation/` for details.
 
 ### Q: How do I run tests?
 
-**A:** 
+**A:**
 ```bash
 # All tests
 pytest tests/ -v
@@ -339,7 +339,7 @@ See `tests/fixtures/README.md` for details.
 
 ### Q: How can I speed up backtests?
 
-**A:** 
+**A:**
 1. Reduce date range or number of symbols
 2. Use faster data sources (Parquet/HDF5 instead of CSV)
 3. Disable detailed logging
@@ -366,7 +366,7 @@ This runs a grid search over parameter ranges.
 
 ### Q: How do I compare different strategies?
 
-**A:** 
+**A:**
 1. Run backtests with different strategy configs
 2. Use the report command to compare results:
 ```bash
@@ -375,7 +375,7 @@ python -m trading_system report --run-id <run_id>
 
 ### Q: What's the best way to tune parameters?
 
-**A:** 
+**A:**
 1. Start with example configs
 2. Run sensitivity analysis to find promising ranges
 3. Use walk-forward validation (train → validation → holdout)
@@ -397,7 +397,7 @@ Fix the config and validate again: `python -m trading_system config validate --p
 
 ### Q: I get "DataError" or "DataNotFoundError" - what's wrong?
 
-**A:** 
+**A:**
 - Check data file paths in your config
 - Verify data files exist and are readable
 - Check file format (CSV with correct columns)
@@ -405,14 +405,14 @@ Fix the config and validate again: `python -m trading_system config validate --p
 
 ### Q: I get "StrategyError" - what should I check?
 
-**A:** 
+**A:**
 - Verify strategy type matches asset class (equity vs crypto)
 - Check strategy configuration parameters
 - Ensure strategy is registered in the system
 
 ### Q: My backtest is very slow - why?
 
-**A:** 
+**A:**
 - Check date range length
 - Reduce number of symbols
 - Check if detailed logging is enabled
@@ -427,7 +427,7 @@ Fix the config and validate again: `python -m trading_system config validate --p
 
 ### Q: Results look wrong - how do I debug?
 
-**A:** 
+**A:**
 1. Check the log file: `{output_dir}/{run_id}/{period}/backtest.log`
 2. Review trade log: `trade_log.csv`
 3. Check equity curve: `equity_curve.csv`
@@ -436,7 +436,7 @@ Fix the config and validate again: `python -m trading_system config validate --p
 
 ### Q: How do I see detailed error information?
 
-**A:** 
+**A:**
 - Check log files in the output directory
 - Use `--verbose` flag for more output
 - Review exception messages (they include context like date, symbol, step)
@@ -463,7 +463,7 @@ If you suspect issues, check the event loop logic in `trading_system/backtest/ev
 
 ### Q: How do I use Docker?
 
-**A:** 
+**A:**
 ```bash
 # Build image
 docker build -t trading-system:latest .
@@ -479,7 +479,7 @@ docker-compose run --rm trading-system backtest --config /app/configs/run_config
 
 ### Q: What volumes do I need to mount?
 
-**A:** 
+**A:**
 - `./data` → `/app/data` (read-only) - Input data files
 - `./EXAMPLE_CONFIGS` → `/app/configs` (read-only) - Configuration files
 - `./results` → `/app/results` (read-write) - Output results
@@ -517,7 +517,7 @@ See `agent-files/REVIEW_SUMMARY.md` for details on ML integration status.
 
 ### Q: How do I add a new data source?
 
-**A:** 
+**A:**
 1. Create a new source class inheriting from `BaseDataSource`
 2. Implement required methods (`load_data`, etc.)
 3. Register it in the data loader
@@ -527,7 +527,7 @@ See `trading_system/data/sources/` for examples.
 
 ### Q: How do I add custom indicators?
 
-**A:** 
+**A:**
 1. Create indicator function in `trading_system/indicators/`
 2. Register it in `FeatureComputer`
 3. Use it in your strategy config
@@ -544,7 +544,7 @@ See existing indicators for examples.
 
 ### Q: What's the difference between train, validation, and holdout periods?
 
-**A:** 
+**A:**
 - **Train**: Period for strategy development and parameter tuning
 - **Validation**: Period for out-of-sample validation (don't tune on this!)
 - **Holdout**: Final test period (never tune on this - final validation only)

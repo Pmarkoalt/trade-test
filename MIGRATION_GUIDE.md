@@ -1,6 +1,6 @@
 # Migration Guide
 
-**Last Updated**: 2024-12-19  
+**Last Updated**: 2024-12-19
 **Current System Version**: 0.0.2
 
 This guide helps you migrate between different versions of the Trading System and update your configuration files when breaking changes occur.
@@ -40,7 +40,7 @@ This guide helps you migrate between different versions of the Trading System an
 ## Version History
 
 ### Version 0.0.2 (Current)
-**Release Date**: 2024-12-19  
+**Release Date**: 2024-12-19
 **Status**: Initial Release
 
 **Features**:
@@ -246,7 +246,7 @@ python -m trading_system backtest --config path/to/run_config.yaml --period trai
    ```bash
    # Update to latest version
    pip install --upgrade -r requirements.txt
-   
+
    # Or if using editable install
    pip install -e . --upgrade
    ```
@@ -255,10 +255,10 @@ python -m trading_system backtest --config path/to/run_config.yaml --period trai
    ```bash
    # For database support
    pip install -e ".[database]"
-   
+
    # For ML features
    pip install -e ".[ml]"
-   
+
    # For all optional features
    pip install -e ".[all]"
    ```
@@ -267,7 +267,7 @@ python -m trading_system backtest --config path/to/run_config.yaml --period trai
    ```bash
    # Run quick test
    ./quick_test.sh
-   
+
    # Or manually
    pytest tests/test_data_loading.py -v
    ```
@@ -280,7 +280,7 @@ python -m trading_system backtest --config path/to/run_config.yaml --period trai
    ```bash
    # Run integration test
    pytest tests/integration/test_end_to_end.py -v
-   
+
    # Run a small backtest
    python -m trading_system backtest \
      --config tests/fixtures/configs/run_test_config.yaml \
@@ -498,7 +498,7 @@ If you encounter issues not covered here:
    ```bash
    # Run quick test
    ./quick_test.sh
-   
+
    # Check configs
    python -m trading_system backtest --config your_config.yaml --dry-run
    ```
@@ -555,6 +555,6 @@ See `scripts/` directory for migration utilities (when available).
 
 ---
 
-**Last Updated**: 2024-12-19  
+**Last Updated**: 2024-12-19
 **Maintained By**: Trading System Contributors
 

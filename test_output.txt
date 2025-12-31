@@ -40,4 +40,4 @@ tests/performance/test_benchmarks.py::TestPortfolioPerformance::test_portfolio_e
 tests/performance/test_benchmarks.py::TestValidationPerformance::test_bootstrap_performance PASSED [  6%]
 tests/performance/test_benchmarks.py::TestValidationPerformance::test_permutation_performance PASSED [  6%]
 tests/performance/test_benchmarks.py::TestBacktestEnginePerformance::test_event_loop_process_day_performance FAILED [  6%]
-tests/performance/test_benchmarks.py::TestBacktestEnginePerformance::test_backtest_engine_full_run_performance 
+tests/performance/test_benchmarks.py::TestBacktestEnginePerformance::test_backtest_engine_full_run_performance

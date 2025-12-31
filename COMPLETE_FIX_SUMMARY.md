@@ -6,7 +6,7 @@
 **Status**: RESOLVED
 
 - **vaderSentiment dependency**: Made optional with graceful error handling
-- **Files fixed**: 
+- **Files fixed**:
   - `trading_system/research/sentiment/vader_analyzer.py`
   - `trading_system/research/news_analyzer.py`
 - **Result**: All 3 previously failing test files now collect successfully

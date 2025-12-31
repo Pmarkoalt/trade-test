@@ -6,15 +6,15 @@ dataset:
   equity_path: "data/equity/ohlcv/"  # Path to equity OHLCV files
   crypto_path: "data/crypto/ohlcv/"  # Path to crypto OHLCV files
   benchmark_path: "data/benchmarks/"  # Path to SPY and BTC data
-  
+
   # File format: CSV with columns: date, symbol, open, high, low, close, volume
   # Or specify format: "parquet", "csv", "database"
   format: "csv"
-  
+
   # Date range for entire dataset
   start_date: "2023-01-01"
   end_date: "2024-12-31"
-  
+
   # Minimum lookback required (for indicators)
   min_lookback_days: 250
 
@@ -23,13 +23,13 @@ splits:
   # 24-month dataset (preferred)
   train_start: "2023-01-01"
   train_end: "2024-03-31"  # Months 1-15 (15 months)
-  
+
   validation_start: "2024-04-01"
   validation_end: "2024-06-30"  # Months 16-18 (3 months)
-  
+
   holdout_start: "2024-07-01"
   holdout_end: "2024-12-31"  # Months 19-24 (6 months) - LOCKED
-  
+
   # Alternative: 18-month minimum
   # train_end: "2023-12-31"  # Months 1-12
   # validation_start: "2024-01-01"
@@ -42,7 +42,7 @@ strategies:
   equity:
     config_path: "configs/equity_config.yaml"
     enabled: true
-  
+
   crypto:
     config_path: "configs/crypto_config.yaml"
     enabled: true
@@ -85,14 +85,14 @@ execution:
 output:
   base_path: "results/"  # Base directory for outputs
   run_id: null  # Auto-generated if null: "run_YYYYMMDD_HHMMSS"
-  
+
   # Output files
   equity_curve: "equity_curve.csv"
   trade_log: "trade_log.csv"
   weekly_summary: "weekly_summary.csv"
   monthly_report: "monthly_report.json"
   scenario_comparison: "scenario_comparison.json"
-  
+
   # Logging
   log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
   log_file: "backtest.log"
@@ -112,14 +112,14 @@ validation:
     crypto_breakout_clearance: [0.000, 0.005, 0.010, 0.015]
     crypto_exit_mode: ["MA20", "MA50", "staged"]
     vol_scaling_mode: ["continuous", "regime", "off"]
-  
+
   # Stress tests
   stress_tests:
     slippage_multipliers: [1.0, 2.0, 3.0]  # Baseline, 2x, 3x
     bear_market_test: true
     range_market_test: true
     flash_crash_test: true
-  
+
   # Statistical tests
   statistical:
     bootstrap_iterations: 1000
@@ -133,13 +133,13 @@ metrics:
     max_drawdown_max: 0.15  # 15%
     calmar_ratio_min: 1.5
     min_trades: 50  # Combined equities + crypto
-  
+
   secondary:
     expectancy_R_min: 0.3
     profit_factor_min: 1.4
     correlation_to_benchmark_max: 0.80
     percentile_99_daily_loss_max: 0.05  # 5%
-  
+
   rejection:
     max_drawdown_max: 0.20  # >20% = reject
     sharpe_ratio_min: 0.75  # <0.75 = reject

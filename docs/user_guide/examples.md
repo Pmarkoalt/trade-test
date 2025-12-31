@@ -579,7 +579,7 @@ import pandas as pd
 import json
 
 # Load equity curve
-equity_df = pd.read_csv('results/run_20231219_120000/train/equity_curve.csv', 
+equity_df = pd.read_csv('results/run_20231219_120000/train/equity_curve.csv',
                         parse_dates=['date'], index_col='date')
 
 # Load trade log
@@ -611,24 +611,24 @@ from pathlib import Path
 def analyze_backtest_results(results_dir: str):
     """Analyze backtest results and print summary."""
     results_path = Path(results_dir)
-    
+
     # Load data
-    equity_df = pd.read_csv(results_path / 'equity_curve.csv', 
+    equity_df = pd.read_csv(results_path / 'equity_curve.csv',
                            parse_dates=['date'], index_col='date')
     trades_df = pd.read_csv(results_path / 'trade_log.csv',
                            parse_dates=['entry_date', 'exit_date'])
-    
+
     with open(results_path / 'monthly_report.json') as f:
         metrics = json.load(f)
-    
+
     # Compute additional metrics
     equity_df['daily_return'] = equity_df['equity'].pct_change()
     equity_df['cumulative_return'] = (equity_df['equity'] / equity_df['equity'].iloc[0]) - 1
-    
+
     # Drawdown analysis
     equity_df['running_max'] = equity_df['equity'].expanding().max()
     equity_df['drawdown'] = (equity_df['equity'] - equity_df['running_max']) / equity_df['running_max']
-    
+
     # Print summary
     print("=" * 60)
     print("BACKTEST RESULTS SUMMARY")
@@ -638,7 +638,7 @@ def analyze_backtest_results(results_dir: str):
     print(f"  Sharpe Ratio: {metrics['sharpe_ratio']:.2f}")
     print(f"  Calmar Ratio: {metrics['calmar_ratio']:.2f}")
     print(f"  Max Drawdown: {metrics['max_drawdown']:.2%}")
-    
+
     print(f"\nTrade Statistics:")
     print(f"  Total Trades: {len(trades_df)}")
     print(f"  Winning Trades: {metrics['winning_trades']}")
@@ -646,13 +646,13 @@ def analyze_backtest_results(results_dir: str):
     print(f"  Win Rate: {metrics['win_rate']:.2%}")
     print(f"  Avg R-Multiple: {metrics['avg_r_multiple']:.2f}")
     print(f"  Profit Factor: {metrics['profit_factor']:.2f}")
-    
+
     print(f"\nPortfolio Stats:")
     print(f"  Starting Equity: ${equity_df['equity'].iloc[0]:,.2f}")
     print(f"  Ending Equity: ${equity_df['equity'].iloc[-1]:,.2f}")
     print(f"  Peak Equity: ${equity_df['equity'].max():,.2f}")
     print(f"  Max Drawdown Date: {equity_df['drawdown'].idxmin()}")
-    
+
     return {
         'equity_df': equity_df,
         'trades_df': trades_df,
@@ -673,9 +673,9 @@ import pandas as pd
 def compare_multiple_runs(results_base_dir: str):
     """Compare multiple backtest runs."""
     base_path = Path(results_base_dir)
-    
+
     all_metrics = []
-    
+
     # Find all run directories
     for run_dir in base_path.iterdir():
         if run_dir.is_dir() and run_dir.name.startswith('run_'):
@@ -685,17 +685,17 @@ def compare_multiple_runs(results_base_dir: str):
                     metrics = json.load(f)
                     metrics['run_id'] = run_dir.name
                     all_metrics.append(metrics)
-    
+
     # Create comparison DataFrame
     comparison_df = pd.DataFrame(all_metrics)
-    
+
     # Sort by Sharpe ratio
     comparison_df = comparison_df.sort_values('sharpe_ratio', ascending=False)
-    
+
     print("Strategy Comparison (sorted by Sharpe Ratio):")
-    print(comparison_df[['run_id', 'sharpe_ratio', 'total_return', 
+    print(comparison_df[['run_id', 'sharpe_ratio', 'total_return',
                          'max_drawdown', 'win_rate', 'total_trades']].to_string())
-    
+
     return comparison_df
 
 # Usage

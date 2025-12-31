@@ -35,7 +35,7 @@ Performance benchmarks for indicator calculations on large datasets (10,000 data
 | ADV (20D) | < 8ms | Dollar volume rolling average |
 | Compute Features (full set) | < 50ms | All indicators + feature engineering |
 
-**Data**: 10,000 daily bars per symbol  
+**Data**: 10,000 daily bars per symbol
 **Target**: Sub-50ms for full feature computation per symbol
 
 ### Portfolio Operations
@@ -48,7 +48,7 @@ Performance benchmarks for portfolio operations:
 | Exposure Calculation (50 positions) | < 2ms | Gross exposure computation |
 | Process Fill | < 1ms | Single position creation |
 
-**Data**: Portfolio with 50 open positions  
+**Data**: Portfolio with 50 open positions
 **Target**: Portfolio updates should scale linearly with position count
 
 ### Validation Suite
@@ -60,7 +60,7 @@ Performance benchmarks for statistical validation:
 | Bootstrap Test (10,000 R-multiples, 1000 iterations) | < 2s | Resampling-based validation |
 | Permutation Test (100 trades, 1000 iterations) | < 3s | Date permutation validation |
 
-**Data**: Large datasets as specified  
+**Data**: Large datasets as specified
 **Target**: Statistical tests complete in reasonable time for CI/CD
 
 ### Backtest Engine
@@ -72,12 +72,12 @@ Performance benchmarks for backtest execution:
 | Event Loop (process_day) | < 100ms | Single day processing with 20 symbols |
 | Full Backtest (6 months, 20 symbols) | < 30s | Complete backtest run |
 
-**Data**: 
+**Data**:
 - 20 symbols
 - 6 months of daily data (~130 trading days)
 - Full feature computation and signal generation
 
-**Target**: 
+**Target**:
 - Single day processing: < 100ms
 - Full 6-month backtest: < 30s
 - Should scale roughly linearly with symbol count and time period
@@ -91,11 +91,11 @@ Performance benchmarks for data loading operations:
 | CSV Loading (10 symbols, 5 years) | < 500ms | Includes validation and dtype optimization |
 | Feature Computation Scaling | Linear | Time should scale roughly linearly with symbol count |
 
-**Data**: 
+**Data**:
 - 10 symbols
 - 5 years of daily data (~1,250 trading days per symbol)
 
-**Target**: 
+**Target**:
 - Bulk loading: < 500ms for 10 symbols
 - Linear scaling with symbol count
 
@@ -108,12 +108,12 @@ Performance benchmarks for signal processing:
 | Signal Scoring (100 signals) | < 50ms | Includes breakout, momentum, diversification scoring |
 | Queue Selection (100 signals, 10 existing positions) | < 30ms | Ranking and constraint checking |
 
-**Data**: 
+**Data**:
 - 100 candidate signals
 - Portfolio with 10 existing positions
 - Full correlation and constraint checking
 
-**Target**: 
+**Target**:
 - Scoring: < 50ms for 100 signals
 - Selection: < 30ms for 100 signals
 
@@ -126,12 +126,12 @@ Performance benchmarks for strategy evaluation:
 | Equity Strategy Evaluation (50 symbols, single date) | < 200ms | Eligibility + entry signal generation |
 | Multi-Symbol Scaling | Linear | Time should scale linearly with symbol count |
 
-**Data**: 
+**Data**:
 - 50 symbols
 - 3 years of historical data per symbol
 - Single date evaluation
 
-**Target**: 
+**Target**:
 - 50 symbols evaluated: < 200ms
 - Linear scaling with symbol count
 
@@ -144,11 +144,11 @@ Performance benchmarks for report generation:
 | Metrics Calculation (100 trades, 3 years equity curve) | < 100ms | All performance metrics |
 | CSV Export (100 trades) | < 10ms | DataFrame to CSV |
 
-**Data**: 
+**Data**:
 - 100 closed trades
 - 3 years of daily equity curve (~750 data points)
 
-**Target**: 
+**Target**:
 - Metrics: < 100ms
 - CSV export: < 10ms
 

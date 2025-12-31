@@ -140,7 +140,7 @@ Data error: Symbol 'AAPL' not found in data source
    ```bash
    # Check if file exists
    ls -la /path/to/data/AAPL.csv
-   
+
    # Check config path
    cat <config.yaml> | grep -A 5 data_paths
    ```
@@ -149,7 +149,7 @@ Data error: Symbol 'AAPL' not found in data source
    ```bash
    # Quick check
    head -5 /path/to/data/AAPL.csv
-   
+
    # Should see columns like:
    # date,open,high,low,close,volume
    # 2023-01-01,150.0,152.0,149.0,151.0,1000000
@@ -170,7 +170,7 @@ Data error: Symbol 'AAPL' not found in data source
    ```yaml
    # Instead of relative paths
    equity_path: ./data/equity
-   
+
    # Use absolute paths
    equity_path: /full/path/to/data/equity
    ```
@@ -195,12 +195,12 @@ Data validation error: Invalid OHLC data for AAPL at 2023-01-15
    ```python
    import pandas as pd
    df = pd.read_csv('AAPL.csv', index_col='date')
-   
+
    # Check for invalid relationships
    invalid = (df['low'] > df['high']) | \
              (df['open'] < df['low']) | (df['open'] > df['high']) | \
              (df['close'] < df['low']) | (df['close'] > df['high'])
-   
+
    print(df[invalid])  # Shows problematic rows
    ```
 
@@ -219,7 +219,7 @@ Data validation error: Invalid OHLC data for AAPL at 2023-01-15
    ```python
    from trading_system.data.validator import validate_ohlcv
    import pandas as pd
-   
+
    df = pd.read_csv('AAPL.csv', index_col='date')
    if not validate_ohlcv(df, 'AAPL'):
        # Check logs for specific issues
@@ -256,7 +256,7 @@ Strategy error: Invalid strategy configuration for symbol AAPL
 2. **Verify strategy registration:**
    ```python
    from trading_system.strategies.strategy_registry import get_strategy_class
-   
+
    # Check if strategy exists
    strategy_class = get_strategy_class('EquityMomentumStrategy')
    print(strategy_class)
@@ -323,7 +323,7 @@ Backtest error at date: 2023-01-15, step: process_signals
    ```python
    from trading_system.data.loader import DataLoader
    from trading_system.configs.run_config import RunConfig
-   
+
    config = RunConfig.from_yaml('config.yaml')
    loader = DataLoader(config.data_paths)
    data = loader.load_universe(
@@ -331,7 +331,7 @@ Backtest error at date: 2023-01-15, step: process_signals
        config.start_date,
        config.end_date
    )
-   
+
    # Check date coverage for each symbol
    for symbol, df in data.items():
        print(f"{symbol}: {df.index.min()} to {df.index.max()}")
@@ -376,7 +376,7 @@ Backtest error at date: 2023-01-15, step: process_signals
    ```python
    from trading_system.data.validator import detect_missing_data
    import pandas as pd
-   
+
    df = pd.read_csv('AAPL.csv', index_col='date', parse_dates=True)
    missing = detect_missing_data(df, 'AAPL', asset_class='equity')
    print(f"Missing dates: {missing['missing_dates']}")
@@ -419,10 +419,10 @@ Backtest error at date: 2023-01-15, step: process_signals
    ```python
    import pandas as pd
    df = pd.read_csv('AAPL.csv', index_col='date', parse_dates=True)
-   
+
    returns = df['close'].pct_change()
    extreme = abs(returns) > 0.50
-   
+
    print(df[extreme])  # Review these dates manually
    ```
 
@@ -490,7 +490,7 @@ Backtest error at date: 2023-01-15, step: process_signals
    # Caching is enabled by default in feature_computer
    # Check if cache is working:
    from trading_system.indicators.cache import IndicatorCache
-   
+
    cache = IndicatorCache(max_size=1000)
    # Cache will automatically store computed indicators
    ```
@@ -499,7 +499,7 @@ Backtest error at date: 2023-01-15, step: process_signals
    ```python
    # For multi-symbol computations
    from trading_system.indicators.parallel import compute_features_parallel
-   
+
    # Parallel computation for multiple symbols
    results = compute_features_parallel(symbols, data, config)
    ```
@@ -508,7 +508,7 @@ Backtest error at date: 2023-01-15, step: process_signals
    ```python
    # Use built-in profiling
    from trading_system.indicators.profiling import IndicatorProfiler
-   
+
    profiler = IndicatorProfiler()
    # Profiling will show which indicators take longest
    ```
@@ -544,7 +544,7 @@ Backtest error at date: 2023-01-15, step: process_signals
    ```python
    # Use memory profiler
    from trading_system.data.memory_profiler import MemoryProfiler
-   
+
    profiler = MemoryProfiler()
    # Monitor memory usage during backtest
    ```
@@ -576,7 +576,7 @@ Backtest error at date: 2023-01-15, step: process_signals
 3. **Profile specific indicators:**
    ```python
    from trading_system.indicators.profiling import IndicatorProfiler
-   
+
    profiler = IndicatorProfiler()
    # Run backtest with profiling enabled
    # Check which indicators are slowest

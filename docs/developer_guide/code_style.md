@@ -33,14 +33,14 @@ Use Google-style docstrings:
 ```python
 def calculate_ma(data: pd.DataFrame, window: int) -> pd.Series:
     """Calculate moving average.
-    
+
     Args:
         data: DataFrame with 'close' column
         window: Rolling window size
-        
+
     Returns:
         Series with moving average values
-        
+
     Raises:
         ValueError: If window is <= 0
     """

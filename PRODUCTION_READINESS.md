@@ -1,7 +1,7 @@
 # Production Readiness Checklist
 
-**Date**: 2024-12-19  
-**Version**: 0.0.2  
+**Date**: 2024-12-19
+**Version**: 0.0.2
 **Status**: Pre-Production Verification Guide
 
 ---
@@ -18,9 +18,9 @@ This document provides a comprehensive checklist for verifying production readin
 
 #### Test Coverage Verification
 - [ ] **Generate test coverage report**
-  
+
   **Note**: If you encounter a segmentation fault when running coverage (numpy import issue on macOS), use Docker instead:
-  
+
   **Option 1: Using Docker (Recommended - avoids environment issues)**
   ```bash
   make docker-test-coverage
@@ -28,48 +28,48 @@ This document provides a comprehensive checklist for verifying production readin
   docker-compose run --rm --entrypoint pytest trading-system tests/ \
     --cov=trading_system --cov-report=html --cov-report=term-missing
   ```
-  
+
   **Option 2: Using Makefile**
   ```bash
   make test-coverage
   ```
-  
+
   **Option 3: Direct pytest (if environment is stable)**
   ```bash
   pytest --cov=trading_system --cov-report=html --cov-report=term
   ```
-  
+
   **Option 4: Using coverage script**
   ```bash
   ./scripts/coverage_report.sh
   ```
-  
+
   - Target: >90% coverage
   - Review uncovered code paths in `htmlcov/index.html`
   - Add tests for any critical uncovered paths
   - **Troubleshooting**: If you see "Segmentation fault" during test collection, this is likely a numpy/macOS compatibility issue. Use Docker (Option 1) to avoid this.
 
 - [ ] **Run full test suite**
-  
+
   **Note**: If you encounter a segmentation fault when running tests (numpy import issue on macOS), use Docker instead:
-  
+
   **Option 1: Using Docker (Recommended - avoids environment issues)**
   ```bash
   make docker-test-all
   # Or directly:
   docker-compose run --rm --entrypoint pytest trading-system tests/ -v --tb=short
   ```
-  
+
   **Option 2: Using Makefile**
   ```bash
   make test-all
   ```
-  
+
   **Option 3: Direct pytest (if environment is stable)**
   ```bash
   pytest tests/ -v --tb=short
   ```
-  
+
   **Option 4: Run unit and integration tests separately**
   ```bash
   # Unit tests only
@@ -77,16 +77,16 @@ This document provides a comprehensive checklist for verifying production readin
   # Integration tests only
   make test-integration
   ```
-  
+
   - All tests must pass
   - No skipped critical tests
   - Verify integration tests run successfully
   - **Troubleshooting**: If you see "Segmentation fault" during test collection, this is likely a numpy/macOS compatibility issue. Use Docker (Option 1) to avoid this.
 
 - [ ] **Run end-to-end integration test**
-  
+
   **Note**: If you encounter a segmentation fault when running tests (numpy import issue on macOS), use Docker instead:
-  
+
   **Option 1: Using Docker (Recommended - avoids environment issues)**
   ```bash
   make docker-test-integration
@@ -94,24 +94,24 @@ This document provides a comprehensive checklist for verifying production readin
   docker-compose run --rm --entrypoint pytest trading-system \
     tests/integration/test_end_to_end.py::TestFullBacktest -v
   ```
-  
+
   **Option 2: Using Makefile (runs all integration tests)**
   ```bash
   make test-integration
   ```
-  
+
   **Option 3: Direct pytest (if environment is stable)**
   ```bash
   pytest tests/integration/test_end_to_end.py::TestFullBacktest -v
   ```
-  
+
   **What to verify:**
   - Verify `TestFullBacktest` is not skipped
   - Verify expected trades match specifications
   - Verify all output files are generated correctly
   - Verify metrics are reasonable (finite values, valid ranges)
   - Check that results contain: `total_trades`, `total_return`, `sharpe_ratio`, `max_drawdown`, `win_rate`
-  
+
   **Troubleshooting**: If you see "Segmentation fault" during test collection, this is likely a numpy/macOS compatibility issue. Use Docker (Option 1) to avoid this.
 
 #### Code Quality Checks
@@ -241,7 +241,7 @@ This document provides a comprehensive checklist for verifying production readin
   #   equity_path: "/nonexistent/data/path/equity"
   #   crypto_path: "/nonexistent/data/path/crypto"
   #   benchmark_path: "/nonexistent/data/path/benchmarks"
-  
+
   # Run backtest with the test config
   python -m trading_system backtest --config /tmp/test_nonexistent_data_config.yaml
   ```
@@ -257,11 +257,11 @@ This document provides a comprehensive checklist for verifying production readin
   # Create a test config file with YAML syntax errors (e.g., missing closing quote, wrong indentation)
   # Then run:
   python -m trading_system backtest --config /tmp/invalid_yaml_config.yaml
-  
+
   # Test 2: Missing required fields
   # Create a config file missing required sections (e.g., dataset section)
   python -m trading_system backtest --config /tmp/invalid_missing_fields.yaml
-  
+
   # Test 3: Invalid field values
   # Copy an existing config and modify values to be invalid:
   cp EXAMPLE_CONFIGS/run_config.yaml /tmp/invalid_values.yaml
@@ -269,7 +269,7 @@ This document provides a comprehensive checklist for verifying production readin
   #   - start_date to "01/01/2023" (wrong format, should be "2023-01-01")
   #   - Or change a percentage field to 150 (should be 0-1 range like 0.50)
   python -m trading_system backtest --config /tmp/invalid_values.yaml
-  
+
   # Test 4: Use config validate command for cleaner error output
   python -m trading_system config validate --path /tmp/invalid_yaml_config.yaml
   ```
@@ -289,7 +289,7 @@ This document provides a comprehensive checklist for verifying production readin
   python -m trading_system backtest --config /tmp/test_missing_files_config.yaml
   # Restore: mv data/equity/AAPL.csv.bak data/equity/AAPL.csv
   # Expected: System should log warnings for missing files but continue processing other symbols
-  
+
   # Test 2: Corrupted data files
   # Create a test directory with a corrupted CSV file
   mkdir -p /tmp/test_corrupted_data/equity
@@ -298,12 +298,12 @@ This document provides a comprehensive checklist for verifying production readin
   #   - Change one row so low > high (invalid OHLC relationship)
   #   - Or change a price to negative value
   #   - Or remove a required column header
-  
+
   cp tests/fixtures/configs/run_test_config.yaml /tmp/test_corrupted_config.yaml
   # Edit /tmp/test_corrupted_config.yaml: set dataset.equity_path to "/tmp/test_corrupted_data/equity"
   python -m trading_system backtest --config /tmp/test_corrupted_config.yaml
   # Expected: System should log validation errors and skip the corrupted symbol, continue with others
-  
+
   # Test 3: Insufficient data for indicators
   # Create a config with a very short date range (insufficient for indicator calculations)
   cp tests/fixtures/configs/run_test_config.yaml /tmp/test_insufficient_data_config.yaml
@@ -324,13 +324,13 @@ This document provides a comprehensive checklist for verifying production readin
   ```bash
   # Run all edge case tests
   pytest tests/test_edge_cases.py -v
-  
+
   # Run missing data handling tests
   pytest tests/test_missing_data_handling.py -v
-  
+
   # Run edge case integration tests (weekend gaps, extreme moves in end-to-end scenarios)
   pytest tests/integration/test_end_to_end.py::TestEdgeCaseIntegration -v
-  
+
   # Run specific edge case test classes if needed
   pytest tests/test_edge_cases.py::TestExtremePriceMoves -v
   pytest tests/test_edge_cases.py::TestInsufficientCash -v
@@ -466,15 +466,15 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
 
 #### Test with Production-Like Data
 - [ ] **Test with real market data**
-  
+
   **Step 1: Download real market data**
   ```bash
   # Install yfinance if not already installed
   pip install yfinance
-  
+
   # Download real historical market data
   python scripts/download_real_market_data.py --output data/real_market_data/
-  
+
   # Or download specific symbols and date range
   python scripts/download_real_market_data.py \
     --equity-symbols AAPL MSFT GOOGL AMZN TSLA \
@@ -483,21 +483,21 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
     --end-date 2024-01-01 \
     --output data/real_market_data/
   ```
-  
+
   **Step 2: Run real market data tests**
   ```bash
   # Run all real market data tests
   pytest tests/integration/test_real_market_data.py -v
-  
+
   # Run specific test
   pytest tests/integration/test_real_market_data.py::TestRealMarketData::test_real_data_validation -v
-  
+
   # Test different market conditions
   pytest tests/integration/test_real_market_data.py::TestRealMarketData::test_bull_market_condition -v
   pytest tests/integration/test_real_market_data.py::TestRealMarketData::test_bear_market_condition -v
   pytest tests/integration/test_real_market_data.py::TestRealMarketData::test_range_market_condition -v
   ```
-  
+
   **What to verify:**
   - ✅ Real data loads correctly (not just test fixtures)
   - ✅ System handles real-world data quality issues:
@@ -512,7 +512,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ Full backtest completes with real data
   - ✅ Metrics are reasonable and finite
   - ✅ No crashes or errors with real data quality issues
-  
+
   **Expected results:**
   - All real data tests should pass
   - System should handle missing days gracefully
@@ -521,19 +521,19 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - Results should show realistic performance metrics
 
 - [ ] **Test with various data sources**
-  
+
   **Step 1: Run data source integration tests**
   ```bash
   # Run all data source tests
   pytest tests/integration/test_data_sources.py -v
-  
+
   # Test specific data source
   pytest tests/integration/test_data_sources.py::TestCSVDataSource -v
   pytest tests/integration/test_data_sources.py::TestSQLiteDataSource -v
   pytest tests/integration/test_data_sources.py::TestParquetDataSource -v
   pytest tests/integration/test_data_sources.py::TestHDF5DataSource -v
   ```
-  
+
   **Step 2: Test CSV data source (primary)**
   ```bash
   # CSV is the default and should always work
@@ -543,7 +543,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ Date filtering works
   - ✅ Symbol listing works
   - ✅ Date range queries work
-  
+
   **Step 3: Test SQLite database source**
   ```bash
   # SQLite tests create temporary databases
@@ -553,7 +553,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ Date filtering works
   - ✅ Symbol listing works
   - ✅ Works with load_ohlcv_data() function
-  
+
   **Step 4: Test PostgreSQL database source (if configured)**
   ```bash
   # Requires PostgreSQL database to be set up
@@ -563,7 +563,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   export POSTGRES_DB=test_db
   export POSTGRES_USER=test_user
   export POSTGRES_PASSWORD=test_password
-  
+
   # Then test (if database is available)
   pytest tests/integration/test_data_sources.py::TestPostgreSQLDataSource -v
   ```
@@ -571,7 +571,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ If configured, verify data loads correctly
   - ✅ Verify date filtering works
   - ✅ Verify symbol listing works
-  
+
   **Step 5: Test Parquet data source (if pyarrow available)**
   ```bash
   # Requires pyarrow: pip install pyarrow
@@ -580,7 +580,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ⚠️ Parquet tests are optional (skip if pyarrow not installed)
   - ✅ If available, verify data loads correctly
   - ✅ Verify works with load_ohlcv_data() function
-  
+
   **Step 6: Test HDF5 data source (if tables available)**
   ```bash
   # Requires tables (PyTables): pip install tables
@@ -589,13 +589,13 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ⚠️ HDF5 tests are optional (skip if tables not installed)
   - ✅ If available, verify data loads correctly
   - ✅ Verify works with load_ohlcv_data() function
-  
+
   **Step 7: Test API data sources (if API keys configured)**
   ```bash
   # AlphaVantage API (free tier available)
   export ALPHAVANTAGE_API_KEY=your_api_key
   pytest tests/integration/test_data_sources.py::TestAPIDataSources::test_alphavantage_source_loads_data -v
-  
+
   # Massive API (requires paid account, formerly Polygon.io)
   export MASSIVE_API_KEY=your_api_key
   pytest tests/integration/test_data_sources.py::TestAPIDataSources::test_massive_source_loads_data -v
@@ -604,7 +604,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ If configured, verify data loads correctly
   - ✅ Verify rate limiting works
   - ✅ Verify error handling for API failures
-  
+
   **Step 8: Test data source interchangeability**
   ```bash
   # Verify all sources produce same data format
@@ -613,7 +613,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ All sources produce data in same format
   - ✅ All sources work with load_ohlcv_data() function
   - ✅ Data structure is consistent across sources
-  
+
   **What to verify:**
   - ✅ CSV source works (primary, always available)
   - ✅ SQLite source works (if sqlite3 available)
@@ -625,7 +625,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ All sources work with load_ohlcv_data() function
   - ✅ Date filtering works for all sources
   - ✅ Symbol listing works for all sources
-  
+
   **Expected results:**
   - CSV tests should always pass (primary source)
   - SQLite tests should pass (built-in Python module)
@@ -634,12 +634,12 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - All sources should work with the same load_ohlcv_data() interface
 
 - [ ] **Test data quality edge cases**
-  
+
   **Step 1: Run data quality edge case tests**
   ```bash
   # Run all data quality edge case tests
   pytest tests/integration/test_data_quality_edge_cases.py -v
-  
+
   # Test specific edge case category
   pytest tests/integration/test_data_quality_edge_cases.py::TestMissingDays -v
   pytest tests/integration/test_data_quality_edge_cases.py::TestExtremePriceMoves -v
@@ -647,7 +647,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   pytest tests/integration/test_data_quality_edge_cases.py::TestGapsInData -v
   pytest tests/integration/test_data_quality_edge_cases.py::TestDuplicateDates -v
   ```
-  
+
   **Step 2: Test missing days (holidays, weekends)**
   ```bash
   pytest tests/integration/test_data_quality_edge_cases.py::TestMissingDays -v
@@ -657,7 +657,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ Crypto data correctly detects missing days (crypto trades 24/7)
   - ✅ Missing days don't cause validation to fail (warnings only)
   - ✅ Backtest handles missing days gracefully
-  
+
   **Step 3: Test extreme price moves (>50%)**
   ```bash
   pytest tests/integration/test_data_quality_edge_cases.py::TestExtremePriceMoves -v
@@ -667,7 +667,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ Validation passes with warnings (doesn't fail)
   - ✅ Multiple extreme moves are detected
   - ✅ System skips extreme move bars during signal generation
-  
+
   **Step 4: Test low volume days**
   ```bash
   pytest tests/integration/test_data_quality_edge_cases.py::TestLowVolumeDays -v
@@ -676,7 +676,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ Zero volume is handled correctly (volume >= 0 is valid)
   - ✅ Very low volume days (< 1000 shares) are handled
   - ✅ Validation passes with low volume days
-  
+
   **Step 5: Test gaps in data (consecutive missing days)**
   ```bash
   pytest tests/integration/test_data_quality_edge_cases.py::TestGapsInData -v
@@ -686,7 +686,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ Multiple gaps are detected correctly
   - ✅ Large gaps (>5 days) are handled
   - ✅ Gaps don't cause validation to fail (warnings only)
-  
+
   **Step 6: Test duplicate dates**
   ```bash
   pytest tests/integration/test_data_quality_edge_cases.py::TestDuplicateDates -v
@@ -695,7 +695,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ Validation fails with duplicate dates (errors, not warnings)
   - ✅ Multiple duplicate dates are detected
   - ✅ Backtest rejects data with duplicate dates (or cleans it)
-  
+
   **Step 7: Test combined edge cases**
   ```bash
   pytest tests/integration/test_data_quality_edge_cases.py::TestCombinedEdgeCases -v
@@ -703,7 +703,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ System handles multiple edge cases simultaneously
   - ✅ Missing days + extreme moves
   - ✅ Low volume + gaps
-  
+
   **What to verify:**
   - ✅ Missing days (holidays, weekends):
     - Equity: Missing weekends are expected (not errors)
@@ -728,7 +728,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
     - Detected during validation
     - Cause validation to fail (errors, not warnings)
     - Backtest rejects or cleans duplicate dates
-  
+
   **Expected results:**
   - All edge case tests should pass
   - Missing days, extreme moves, low volume, and gaps: warnings only (validation passes)
@@ -810,7 +810,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   - ✅ Logs are written to appropriate location: `{output_dir}/{log_file}` (default: `results/{run_id}/backtest.log`)
     - Location configured via `config.output.base_path` and `config.output.log_file`
     - Directory is created automatically if it doesn't exist
-  - ✅ Log levels are configured correctly: 
+  - ✅ Log levels are configured correctly:
     - Configurable via `config.output.log_level` (default: "INFO")
     - Validated against allowed values: DEBUG, INFO, WARNING, ERROR, CRITICAL
     - Console handler uses configured level, file handler always uses DEBUG for full detail
@@ -826,11 +826,11 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
   ```bash
   # Run a backtest and capture logs
   python -m trading_system backtest --config EXAMPLE_CONFIGS/run_config.yaml 2>&1 | tee test.log
-  
+
   # Or check the log file directly
   tail -100 results/{run_id}/train/backtest.log
   ```
-  
+
   **Verify log content:**
   - ✅ **Logs contain sufficient detail:**
     - Logging initialization message: `"Logging initialized. Log file: {path}, JSON format: {bool}, Rich: {bool}"`
@@ -838,18 +838,18 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
     - Signal generation logged: `SIGNAL_GENERATED` or `SIGNAL_NOT_GENERATED` with reasons
     - Portfolio snapshots: `PORTFOLIO_SNAPSHOT` with equity, cash, positions, P&L, exposure
     - Daily processing: Error messages include date context when failures occur
-  
+
   - ✅ **Error messages are clear:**
     - Errors include context: date, step (load_data, compute_features, generate_signals, process_signals, update_portfolio)
     - Error messages are descriptive (e.g., "Backtest error at date: 2023-01-15, step: process_signals")
     - Warnings for data issues: `MISSING_DATA_1DAY`, `DATA_UNHEALTHY`, `CONSECUTIVE_GAP`
     - Exception stack traces are logged (when exceptions occur)
-  
+
   - ✅ **Performance metrics are logged:**
     - Performance metrics: `PERFORMANCE: {operation} | Duration: {seconds}s | Memory: {MB} MB`
     - Metrics include operation name, duration, and memory usage (if psutil available)
     - Performance context manager logs timing for operations
-  
+
   **Expected log structure:**
   ```
   INFO - Logging initialized. Log file: results/run_20240101_120000/train/backtest.log, JSON format: False, Rich: True
@@ -862,7 +862,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
 
 #### Monitoring Recommendations
 - [x] **Built-in application monitoring** (available)
-  - ✅ **Memory monitoring**: 
+  - ✅ **Memory monitoring**:
     - `MemoryProfiler` class tracks RSS, VMS, and memory percentage via psutil
     - `PerformanceContext` logs memory usage for operations
     - Memory snapshots and profiling utilities available
@@ -894,7 +894,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
     - Monitor CPU usage during backtests
     - Monitor disk I/O for data loading operations
     - Set up alerts for resource thresholds (e.g., >80% CPU, >90% memory, >85% disk)
-  
+
   - **Application health checks**:
     ```bash
     # Create health check endpoint (if needed):
@@ -903,19 +903,19 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
     # - Check data source availability
     # - Verify log file write permissions
     ```
-  
+
   - **Error rate monitoring**:
     ```bash
     # Parse log files for error rates:
     grep -c "ERROR" results/*/train/backtest.log
     grep -c "WARNING" results/*/train/backtest.log
-    
+
     # Or use log aggregation tools to:
     # - Track error rates over time
     # - Alert on error rate spikes
     # - Monitor specific error codes
     ```
-  
+
   - **Performance baseline tracking**:
     ```bash
     # Monitor key performance metrics:
@@ -924,7 +924,7 @@ Based on `docs/PERFORMANCE_CHARACTERISTICS.md`:
     # - Feature computation time (should be consistent)
     # - Compare against baseline benchmarks
     ```
-  
+
   **Recommended monitoring stack:**
   - **Logs**: Centralized logging (ELK, Splunk, or cloud logging)
   - **Metrics**: Prometheus + Grafana for system and application metrics
@@ -1029,7 +1029,7 @@ chmod +x production_verification.sh
 ### Common Issues and Solutions
 
 #### Issue: Tests Fail
-**Symptoms**: Tests fail during verification  
+**Symptoms**: Tests fail during verification
 **Solutions**:
 - Check Python version (3.9+ required)
 - Verify all dependencies are installed: `pip install -r requirements.txt`
@@ -1037,7 +1037,7 @@ chmod +x production_verification.sh
 - Review test output for specific error messages
 
 #### Issue: Config Validation Fails
-**Symptoms**: Config files fail validation  
+**Symptoms**: Config files fail validation
 **Solutions**:
 - Verify YAML syntax is correct
 - Check for deprecated parameters
@@ -1045,7 +1045,7 @@ chmod +x production_verification.sh
 - Review config schema documentation
 
 #### Issue: Performance Degradation
-**Symptoms**: Benchmarks are slower than expected  
+**Symptoms**: Benchmarks are slower than expected
 **Solutions**:
 - Check system load (CPU, memory)
 - Verify data size matches expected
@@ -1053,7 +1053,7 @@ chmod +x production_verification.sh
 - Review recent code changes
 
 #### Issue: Missing Data Errors
-**Symptoms**: System fails with missing data  
+**Symptoms**: System fails with missing data
 **Solutions**:
 - Verify data files exist and are readable
 - Check data file format (CSV structure)
@@ -1061,7 +1061,7 @@ chmod +x production_verification.sh
 - Review missing data handling logic
 
 #### Issue: Docker Build Fails
-**Symptoms**: Docker image build fails  
+**Symptoms**: Docker image build fails
 **Solutions**:
 - Check Docker version (20.10+)
 - Verify Dockerfile syntax

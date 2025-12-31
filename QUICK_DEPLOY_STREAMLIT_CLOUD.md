@@ -32,7 +32,7 @@ git push origin main
    - Branch: `main` (or your default branch)
    - Main file path: `trading_system/reporting/dashboard.py`
    - App URL: (choose a name, e.g., `trading-dashboard`)
-   
+
 5. **Advanced Settings** (click "Advanced settings"):
    - Python version: 3.11
    - Command (optional - leave default):
@@ -68,7 +68,7 @@ If you want to deploy the full trading assistant dashboard instead:
 
 Make sure these exist in your repo:
 - ✅ `trading_system/reporting/dashboard.py` - Backtest results dashboard
-- ✅ `trading_system/dashboard/app.py` - Trading assistant dashboard  
+- ✅ `trading_system/dashboard/app.py` - Trading assistant dashboard
 - ✅ `requirements.txt` or `pyproject.toml` - Dependencies
 
 ## What You Get

@@ -708,5 +708,5 @@ Built with:
 
 ---
 
-For detailed testing instructions, see [TESTING_GUIDE.md](TESTING_GUIDE.md)  
+For detailed testing instructions, see [TESTING_GUIDE.md](TESTING_GUIDE.md)
 For quick testing reference, see [QUICK_START_TESTING.md](QUICK_START_TESTING.md)
