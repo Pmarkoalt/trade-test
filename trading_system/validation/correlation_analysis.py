@@ -148,11 +148,14 @@ class CorrelationStressAnalysis:
                 return None
             
             returns = self.returns_data[symbol]
-            
+
             # Get window ending at date
             try:
-                date_idx = returns.index.get_loc(date, method='nearest')
-            except KeyError:
+                # Use get_indexer for nearest match (compatible with newer pandas)
+                date_idx = returns.index.get_indexer([date], method='nearest')[0]
+                if date_idx == -1:
+                    return None
+            except (KeyError, IndexError):
                 return None
             
             if date_idx < lookback - 1:

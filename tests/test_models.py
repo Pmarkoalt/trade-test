@@ -7,7 +7,7 @@ from datetime import datetime
 
 from trading_system.models.bar import Bar
 from trading_system.models.features import FeatureRow
-from trading_system.models.signals import Signal, SignalSide, BreakoutType
+from trading_system.models.signals import Signal, SignalSide, SignalType, BreakoutType
 from trading_system.models.orders import Order, Fill, OrderStatus
 from trading_system.models.positions import Position, ExitReason
 from trading_system.models.portfolio import Portfolio
@@ -237,6 +237,8 @@ class TestSignal:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason='test_breakout',
             entry_price=100.0,
             stop_price=95.0,
             atr_mult=2.5,
@@ -264,6 +266,8 @@ class TestSignal:
                 asset_class='equity',
                 date=pd.Timestamp('2024-01-01'),
                 side=SignalSide.BUY,
+                signal_type=SignalType.ENTRY_LONG,
+                trigger_reason='test_breakout',
                 entry_price=100.0,
                 stop_price=105.0,  # Above entry
                 atr_mult=2.5,
@@ -287,6 +291,8 @@ class TestSignal:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason='test_breakout',
             entry_price=100.0,
             stop_price=95.0,
             atr_mult=2.5,
@@ -311,6 +317,8 @@ class TestSignal:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason='test_breakout',
             entry_price=100.0,
             stop_price=95.0,
             atr_mult=2.5,
@@ -394,7 +402,10 @@ class TestFill:
         )
         
         assert fill.fill_id == 'FILL001'
-        assert fill.compute_total_cost() == pytest.approx(60.5, rel=1e-2)
+        # slippage_cost = 10050 * (5.0 / 10000) = 5.025
+        # fee_cost = 10050 * (1.0 / 10000) = 1.005
+        # total = 6.03
+        assert fill.compute_total_cost() == pytest.approx(6.03, rel=1e-2)
     
     def test_compute_total_cost(self):
         """Test total cost computation."""
@@ -414,7 +425,8 @@ class TestFill:
             vol_mult=1.0,
             size_penalty=1.0,
             weekend_penalty=1.0,
-            stress_mult=1.0
+            stress_mult=1.0,
+            notional=10000.0
         )
         
         # slippage_cost = 10000 * 0.001 = 10.0
@@ -442,7 +454,8 @@ class TestFill:
                 vol_mult=1.0,
                 size_penalty=1.0,
                 weekend_penalty=1.0,
-                stress_mult=1.0
+                stress_mult=1.0,
+                notional=9900.0
             )
 
 

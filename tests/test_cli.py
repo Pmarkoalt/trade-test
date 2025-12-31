@@ -6,8 +6,9 @@ import shutil
 from pathlib import Path
 import yaml
 
-from trading_system.cli import cmd_backtest, cmd_validate, cmd_holdout, cmd_report, setup_logging
+from trading_system.cli import cmd_backtest, cmd_validate, cmd_holdout, cmd_report, setup_logging, cmd_strategy_template, cmd_strategy_create
 from trading_system.configs.run_config import RunConfig
+from trading_system.strategies.strategy_template_generator import generate_strategy_template
 
 
 @pytest.fixture
@@ -127,15 +128,40 @@ def test_cmd_holdout_validation(sample_config_file):
     pass
 
 
-def test_cmd_report_validation():
+def test_cmd_report_validation(temp_dir):
     """Test report command argument parsing."""
+    # Create a minimal run directory structure
+    base_path = temp_dir / 'results'
+    run_id = 'test_run_123'
+    run_dir = base_path / run_id / 'train'
+    run_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Create minimal equity curve file
+    import pandas as pd
+    dates = pd.date_range(start='2023-01-01', periods=10, freq='D')
+    equity_df = pd.DataFrame({
+        'date': dates,
+        'equity': [100000.0] * 10,
+        'cash': [50000.0] * 10,
+        'positions': [0] * 10,
+        'exposure': [0.0] * 10,
+        'exposure_pct': [0.0] * 10
+    })
+    equity_df.to_csv(run_dir / 'equity_curve.csv', index=False)
+    
+    # Create empty trade log
+    trade_df = pd.DataFrame()
+    trade_df.to_csv(run_dir / 'trade_log.csv', index=False)
+    
     class Args:
         def __init__(self):
-            self.run_id = 'test_run_123'
+            self.run_id = run_id
+            self.base_path = str(base_path)
     
     args = Args()
-    # Test skipped - requires report generation implementation
-    pass
+    # Should succeed with valid run directory
+    result = cmd_report(args)
+    assert result == 0
 
 
 def test_run_config_get_output_dir(sample_config_file):
@@ -180,4 +206,166 @@ def test_run_config_splits_get_dates(sample_config_file):
     assert holdout_start.month == 11
     assert holdout_end.year == 2023
     assert holdout_end.month == 12
+
+
+def test_generate_strategy_template_basic(temp_dir):
+    """Test basic strategy template generation."""
+    strategy_name = "test_strategy"
+    strategy_type = "custom"
+    asset_class = "equity"
+    
+    output_path = str(temp_dir / "test_strategy.py")
+    content = generate_strategy_template(
+        strategy_name=strategy_name,
+        strategy_type=strategy_type,
+        asset_class=asset_class,
+        output_path=output_path
+    )
+    
+    # Check file was created
+    assert Path(output_path).exists()
+    
+    # Check content contains expected elements
+    assert strategy_name.replace('_', ' ').title() in content
+    assert "EquityTestStrategy" in content  # Class name
+    assert "StrategyInterface" in content  # Base class
+    assert "check_eligibility" in content
+    assert "check_entry_triggers" in content
+    assert "check_exit_signals" in content
+    assert "update_stop_price" in content
+
+
+def test_generate_strategy_template_momentum(temp_dir):
+    """Test momentum strategy template generation."""
+    strategy_name = "my_momentum"
+    strategy_type = "momentum"
+    asset_class = "equity"
+    
+    output_path = str(temp_dir / "momentum_strategy.py")
+    content = generate_strategy_template(
+        strategy_name=strategy_name,
+        strategy_type=strategy_type,
+        asset_class=asset_class,
+        output_path=output_path
+    )
+    
+    assert Path(output_path).exists()
+    assert "MomentumBaseStrategy" in content
+    assert "EquityMyMomentumMomentumStrategy" in content or "EquityMomentumStrategy" in content
+
+
+def test_generate_strategy_template_crypto(temp_dir):
+    """Test crypto strategy template generation."""
+    strategy_name = "crypto_custom"
+    strategy_type = "custom"
+    asset_class = "crypto"
+    
+    output_path = str(temp_dir / "crypto_strategy.py")
+    content = generate_strategy_template(
+        strategy_name=strategy_name,
+        strategy_type=strategy_type,
+        asset_class=asset_class,
+        output_path=output_path
+    )
+    
+    assert Path(output_path).exists()
+    assert "CryptoCryptoCustomStrategy" in content
+    assert asset_class in content.lower()
+
+
+def test_generate_strategy_template_invalid_type():
+    """Test that invalid strategy type raises error."""
+    with pytest.raises(ValueError, match="Invalid strategy_type"):
+        generate_strategy_template(
+            strategy_name="test",
+            strategy_type="invalid_type",
+            asset_class="equity"
+        )
+
+
+def test_generate_strategy_template_invalid_asset_class():
+    """Test that invalid asset class raises error."""
+    with pytest.raises(ValueError, match="asset_class must be"):
+        generate_strategy_template(
+            strategy_name="test",
+            strategy_type="custom",
+            asset_class="invalid"
+        )
+
+
+def test_generate_strategy_template_directory(temp_dir):
+    """Test strategy template generation with custom directory."""
+    strategy_name = "test_strategy"
+    custom_dir = temp_dir / "custom_strategies"
+    
+    content = generate_strategy_template(
+        strategy_name=strategy_name,
+        strategy_type="custom",
+        asset_class="equity",
+        directory=str(custom_dir)
+    )
+    
+    # Check file was created in custom directory
+    expected_file = custom_dir / f"{strategy_name}_equity.py"
+    assert expected_file.exists()
+    
+    # Check content
+    assert "EquityTestStrategyStrategy" in content or "EquityTestStrategy" in content
+
+
+def test_cmd_strategy_template(temp_dir):
+    """Test strategy template CLI command."""
+    class Args:
+        def __init__(self):
+            self.name = "test_cli_strategy"
+            self.type = "custom"
+            self.asset_class = "equity"
+            self.output = str(temp_dir / "cli_strategy.py")
+            self.directory = None
+    
+    args = Args()
+    result = cmd_strategy_template(args)
+    
+    assert result == 0
+    assert Path(temp_dir / "cli_strategy.py").exists()
+
+
+def test_cmd_strategy_create_with_name(temp_dir):
+    """Test strategy create CLI command with name (non-interactive)."""
+    class Args:
+        def __init__(self):
+            self.name = "test_create_strategy"
+            self.type = "custom"
+            self.asset_class = "equity"
+            self.output = str(temp_dir / "create_strategy.py")
+            self.directory = None
+    
+    args = Args()
+    result = cmd_strategy_create(args)
+    
+    assert result == 0
+    assert Path(temp_dir / "create_strategy.py").exists()
+
+
+def test_generate_strategy_template_all_types(temp_dir):
+    """Test template generation for all strategy types."""
+    strategy_types = ["momentum", "mean_reversion", "factor", "multi_timeframe", "pairs", "custom"]
+    asset_classes = ["equity", "crypto"]
+    
+    for strategy_type in strategy_types:
+        for asset_class in asset_classes:
+            strategy_name = f"test_{strategy_type}_{asset_class}"
+            output_path = str(temp_dir / f"{strategy_name}.py")
+            
+            content = generate_strategy_template(
+                strategy_name=strategy_name,
+                strategy_type=strategy_type,
+                asset_class=asset_class,
+                output_path=output_path
+            )
+            
+            assert Path(output_path).exists()
+            assert asset_class in content.lower()
+            assert "class" in content
+            assert "def check_eligibility" in content
 

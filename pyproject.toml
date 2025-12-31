@@ -1,0 +1,228 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trading-system"
+version = "0.0.2"
+description = "A config-driven daily momentum trading system for equities and cryptocurrency"
+requires-python = ">=3.9"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Trading System Contributors"}
+]
+keywords = ["trading", "backtesting", "quantitative", "finance", "crypto", "equities"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial :: Investment",
+]
+
+# Core dependencies (required for basic functionality)
+dependencies = [
+    "pandas>=1.5.0,<3.0.0",
+    "numpy>=1.23.0,<2.0.0",
+    "scipy>=1.9.0,<2.0.0",
+    "pydantic>=1.10.0,<3.0.0",
+    "pyyaml>=6.0,<7.0",
+    "rich>=13.0.0,<14.0.0",
+    "loguru>=0.7.0,<1.0.0",
+    "psutil>=5.9.0,<6.0.0",
+    "tqdm>=4.65.0,<5.0.0",
+    "matplotlib>=3.5.0,<4.0.0",
+]
+
+[project.optional-dependencies]
+# Development dependencies (testing, linting, type checking)
+dev = [
+    "pytest>=7.0.0,<8.0.0",
+    "pytest-cov>=4.0.0,<6.0.0",
+    "pytest-benchmark>=4.0.0,<5.0.0",
+    "hypothesis>=6.0.0,<7.0.0",
+    "black>=23.0.0,<25.0.0",
+    "flake8>=6.0.0,<8.0.0",
+    "mypy>=1.0.0,<2.0.0",
+    "types-PyYAML>=6.0.0,<7.0.0",
+    "coverage>=7.0.0,<8.0.0",
+    "tomli>=2.0.0,<3.0.0; python_version < '3.11'",  # For parsing TOML in Python < 3.11
+    "sphinx>=7.0.0,<8.0.0",
+    "sphinx-rtd-theme>=1.3.0,<2.0.0",
+    "pre-commit>=3.0.0,<4.0.0",
+]
+
+# Database support (PostgreSQL, SQLite)
+database = [
+    "psycopg2-binary>=2.9.0,<3.0.0",
+]
+
+# API data sources (Alpha Vantage, Polygon, etc.)
+api = [
+    "requests>=2.28.0,<3.0.0",
+]
+
+# Alternative file format support
+storage = [
+    "pyarrow>=10.0.0,<16.0.0",
+    "tables>=3.8.0,<4.0.0",
+]
+
+# Machine learning features
+ml = [
+    "scikit-learn>=1.3.0,<2.0.0",
+    "xgboost>=2.0.0,<3.0.0",
+    "lightgbm>=4.0.0,<5.0.0",
+]
+
+# Enhanced visualization
+visualization = [
+    "plotly>=5.0.0,<6.0.0",
+    "kaleido>=0.2.1,<1.0.0",
+    "streamlit>=1.28.0,<2.0.0",
+]
+
+# Performance optimizations
+performance = [
+    "polars>=0.18.0,<1.0.0",
+]
+
+# All optional dependencies (convenience group)
+all = [
+    "psycopg2-binary>=2.9.0,<3.0.0",
+    "requests>=2.28.0,<3.0.0",
+    "pyarrow>=10.0.0,<16.0.0",
+    "tables>=3.8.0,<4.0.0",
+    "scikit-learn>=1.3.0,<2.0.0",
+    "xgboost>=2.0.0,<3.0.0",
+    "lightgbm>=4.0.0,<5.0.0",
+    "plotly>=5.0.0,<6.0.0",
+    "kaleido>=0.2.1,<1.0.0",
+    "streamlit>=1.28.0,<2.0.0",
+    "polars>=0.18.0,<1.0.0",
+]
+
+# Black configuration
+[tool.black]
+line-length = 127
+target-version = ['py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | __pycache__
+)/
+'''
+
+# Flake8 configuration (via setup.cfg or .flake8 would be alternative)
+[tool.flake8]
+max-line-length = 127
+extend-ignore = ["E203", "E266", "E501", "W503"]
+max-complexity = 10
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    ".eggs",
+    "*.egg",
+    "build",
+    "dist",
+    ".mypy_cache",
+]
+
+# mypy configuration
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+ignore_missing_imports = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pandas.*",
+    "numpy.*",
+    "yaml.*",
+    "loguru.*",
+    "rich.*",
+    "psutil.*",
+    "tqdm.*",
+    "matplotlib.*",
+]
+ignore_missing_imports = true
+
+# Pytest configuration
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--verbose",
+    "--tb=short",
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "slow: Slow running tests",
+    "benchmark: Performance benchmark tests",
+]
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["trading_system"]
+omit = [
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/__init__.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+precision = 2
+show_missing = true
+skip_covered = false
+

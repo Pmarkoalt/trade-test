@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  trading-system:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: trading-system:latest
+    container_name: trading-system
+    volumes:
+      # Mount data directory for input data files
+      - ./data:/app/data:ro
+      # Mount configs directory for configuration files
+      - ./EXAMPLE_CONFIGS:/app/configs:ro
+      # Mount results directory for output (read-write)
+      - ./results:/app/results
+      # Mount test fixtures if you want to run tests
+      - ./tests/fixtures:/app/tests/fixtures:ro
+      # Optional: Mount custom config directory
+      - ./configs:/app/custom_configs:ro
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    working_dir: /app
+    # Example: Run backtest
+    # command: backtest --config /app/configs/run_config.yaml --period train
+    # Example: Run validation
+    # command: validate --config /app/configs/run_config.yaml
+    # Example: Run tests
+    # command: pytest tests/ -v
+    stdin_open: true
+    tty: true
+

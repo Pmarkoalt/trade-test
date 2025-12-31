@@ -1,9 +1,10 @@
 """Daily event loop for backtesting with no lookahead."""
 
-from typing import List, Dict, Optional, Callable
+from typing import List, Dict, Optional, Callable, Any, Tuple, Set
 import pandas as pd
 import logging
 import uuid
+import numpy as np
 
 from ..models.market_data import MarketData
 from ..portfolio.portfolio import Portfolio
@@ -12,12 +13,20 @@ from ..models.orders import Order, OrderStatus, Fill
 from ..models.positions import Position, ExitReason
 from ..models.bar import Bar
 from ..models.features import FeatureRow
-from ..strategies.base_strategy import BaseStrategy
+from ..strategies.base.strategy_interface import StrategyInterface
 from ..execution.fill_simulator import simulate_fill, reject_order_missing_data
 from ..strategies.scoring import score_signals
 from ..strategies.queue import select_signals_from_queue
 from ..portfolio.position_sizing import calculate_position_size
 from ..data.validator import validate_ohlcv, detect_missing_data
+from ..exceptions import (
+    BacktestError,
+    DataError,
+    DataNotFoundError,
+    StrategyError,
+    ExecutionError,
+    PortfolioError
+)
 from ..logging import (
     log_trade_event,
     log_signal_generation,
@@ -25,6 +34,7 @@ from ..logging import (
     TradeEventType,
     get_logger
 )
+from ..ml.predictor import MLPredictor
 
 logger = get_logger(__name__)
 
@@ -48,12 +58,13 @@ class DailyEventLoop:
         self,
         market_data: MarketData,
         portfolio: Portfolio,
-        strategies: List[BaseStrategy],
-        compute_features_fn: Callable,
+        strategies: List[StrategyInterface],
+        compute_features_fn: Callable[[pd.DataFrame, str, str, Optional[pd.Series], Optional[pd.Series], bool, bool], pd.DataFrame],
         get_next_trading_day: Callable[[pd.Timestamp], pd.Timestamp],
-        rng: Optional = None,
+        rng: Optional[np.random.Generator] = None,
         slippage_multiplier: float = 1.0,
-        crash_dates: Optional[set] = None
+        crash_dates: Optional[Set[pd.Timestamp]] = None,
+        ml_predictor: Optional[MLPredictor] = None
     ):
         """Initialize event loop.
         
@@ -66,6 +77,7 @@ class DailyEventLoop:
             rng: Optional random number generator for reproducibility
             slippage_multiplier: Multiplier for base slippage (for stress tests)
             crash_dates: Set of dates on which to simulate flash crashes
+            ml_predictor: Optional ML predictor for signal enhancement
         """
         self.market_data = market_data
         self.portfolio = portfolio
@@ -75,21 +87,26 @@ class DailyEventLoop:
         self.rng = rng
         self.slippage_multiplier = slippage_multiplier
         self.crash_dates = crash_dates or set()
+        self.ml_predictor = ml_predictor
         
         # Track pending orders and exit orders
         self.pending_orders: List[Order] = []
         self.pending_exit_orders: List[tuple[Order, ExitReason]] = []
         
         # Track signal metadata for orders (order_id -> signal metadata)
-        self.order_signal_metadata: Dict[str, Dict] = {}  # order_id -> {triggered_on, atr_mult, etc}
+        self.order_signal_metadata: Dict[str, Dict[str, Any]] = {}  # order_id -> {triggered_on, atr_mult, etc}
         
         # Track returns data for correlation calculations
         self.returns_data: Dict[str, List[float]] = {}
         
         # Track missing data
         self.missing_data_counts: Dict[str, int] = {}  # symbol -> consecutive missing days
+        
+        # Performance optimization: cache last computed date for each symbol
+        self._last_computed_date: Dict[str, pd.Timestamp] = {}  # symbol -> last date features were computed
+        self._cached_filtered_data: Dict[str, pd.DataFrame] = {}  # symbol -> cached filtered dataframe
     
-    def process_day(self, date: pd.Timestamp) -> Dict:
+    def process_day(self, date: pd.Timestamp) -> Dict[str, Any]:
         """Process a single day in the backtest.
         
         This implements the full daily sequence:
@@ -119,6 +136,47 @@ class DailyEventLoop:
         # Step 2: Generate signals at day t close
         signals = self._generate_signals(date)
         events['signals_generated'] = [s.symbol for s in signals]
+        
+        # Log signal generation for each symbol checked
+        for strategy in self.strategies:
+            for symbol in strategy.universe:
+                features = self.market_data.get_features(symbol, date)
+                if features is None:
+                    continue
+                
+                # Check if signal was generated for this symbol
+                signal = next((s for s in signals if s.symbol == symbol), None)
+                
+                if signal:
+                    log_signal_generation(
+                        logger,
+                        symbol=symbol,
+                        asset_class=strategy.asset_class,
+                        date=date,
+                        signal_generated=True,
+                        triggered_on=signal.triggered_on.value if signal.triggered_on else None,
+                        clearance=signal.breakout_clearance,
+                        score=signal.score,
+                        breakout_strength=signal.breakout_strength,
+                        momentum_strength=signal.momentum_strength,
+                        diversification_bonus=signal.diversification_bonus,
+                        capacity_passed=signal.capacity_passed
+                    )
+                else:
+                    # Check why signal wasn't generated
+                    is_eligible, failure_reasons = strategy.check_eligibility(features)
+                    breakout_type, clearance = strategy.check_entry_triggers(features)
+                    
+                    log_signal_generation(
+                        logger,
+                        symbol=symbol,
+                        asset_class=strategy.asset_class,
+                        date=date,
+                        signal_generated=False,
+                        is_eligible=is_eligible,
+                        failure_reasons=failure_reasons,
+                        has_trigger=breakout_type is not None
+                    )
         
         # Step 3: Create orders for day t+1 open
         orders = self._create_orders(signals, date)
@@ -178,6 +236,23 @@ class DailyEventLoop:
             'positions': positions_dict  # Add serialized positions
         }
         
+        # Log portfolio snapshot
+        log_portfolio_snapshot(
+            logger,
+            date=next_day,
+            equity=self.portfolio.equity,
+            cash=self.portfolio.cash,
+            open_positions=len(self.portfolio.positions),
+            realized_pnl=self.portfolio.realized_pnl,
+            unrealized_pnl=self.portfolio.unrealized_pnl,
+            gross_exposure=self.portfolio.gross_exposure,
+            risk_multiplier=self.portfolio.risk_multiplier,
+            portfolio_vol_20d=self.portfolio.portfolio_vol_20d,
+            median_vol_252d=self.portfolio.median_vol_252d,
+            avg_pairwise_corr=self.portfolio.avg_pairwise_corr,
+            total_trades=self.portfolio.total_trades
+        )
+        
         return events
     
     def _update_data_through_date(self, date: pd.Timestamp) -> None:
@@ -187,6 +262,11 @@ class DailyEventLoop:
         1. Load/update bars up to date
         2. Compute indicators using data <= date (no lookahead)
         3. Update features in market_data
+        
+        Optimized to:
+        - Cache filtered dataframes to avoid repeated filtering
+        - Only compute features for new dates
+        - Use vectorized pandas operations for updates
         """
         # Update features for all symbols in universe
         all_symbols = set()
@@ -199,8 +279,30 @@ class DailyEventLoop:
             
             bars_df = self.market_data.bars[symbol]
             
-            # Filter to data <= date
-            available_data = bars_df[bars_df.index <= date]
+            # Optimization: Use cached filtered data if available and date hasn't changed
+            # For simplicity, we'll still filter each day but cache the result
+            # More advanced: only recompute if date > last_computed_date
+            if symbol in self._cached_filtered_data:
+                cached_df = self._cached_filtered_data[symbol]
+                # Check if we can extend the cache
+                if len(cached_df) > 0 and cached_df.index[-1] < date:
+                    # Extend cache with new data
+                    new_data = bars_df[(bars_df.index > cached_df.index[-1]) & (bars_df.index <= date)]
+                    if len(new_data) > 0:
+                        available_data = pd.concat([cached_df, new_data])
+                        self._cached_filtered_data[symbol] = available_data
+                    else:
+                        available_data = cached_df
+                elif len(cached_df) > 0 and date in cached_df.index:
+                    available_data = cached_df
+                else:
+                    # Need to refilter
+                    available_data = bars_df[bars_df.index <= date]
+                    self._cached_filtered_data[symbol] = available_data
+            else:
+                # First time: filter and cache
+                available_data = bars_df[bars_df.index <= date]
+                self._cached_filtered_data[symbol] = available_data
             
             if len(available_data) == 0:
                 continue
@@ -238,6 +340,12 @@ class DailyEventLoop:
                 if symbol in self.missing_data_counts:
                     del self.missing_data_counts[symbol]
             
+            # Optimization: Only compute features if we haven't computed for this date yet
+            last_computed = self._last_computed_date.get(symbol)
+            if last_computed is not None and date <= last_computed:
+                # Features already computed for this date, skip
+                continue
+            
             # Compute features using data <= date only
             try:
                 features_df = self.compute_features_fn(
@@ -246,21 +354,50 @@ class DailyEventLoop:
                     asset_class=self._get_asset_class(symbol)
                 )
                 
-                # Update market_data.features
+                # Update market_data.features using vectorized operations
                 if symbol not in self.market_data.features:
                     self.market_data.features[symbol] = features_df
                 else:
-                    # Update existing features
-                    for idx, row in features_df.iterrows():
-                        if idx <= date:
-                            self.market_data.features[symbol].loc[idx] = row
+                    # Optimization: Use pandas operations instead of iterrows
+                    # Only update rows up to current date
+                    existing_features = self.market_data.features[symbol]
+                    new_rows = features_df[features_df.index <= date]
+                    
+                    # Use pandas combine_first and update for better performance
+                    # This handles both updates and new rows efficiently
+                    # First, update existing rows
+                    for idx in new_rows.index:
+                        if idx in existing_features.index:
+                            existing_features.loc[idx] = new_rows.loc[idx]
+                    
+                    # Then, add new rows that don't exist
+                    new_index = new_rows.index[~new_rows.index.isin(existing_features.index)]
+                    if len(new_index) > 0:
+                        existing_features = pd.concat([existing_features, new_rows.loc[new_index]]).sort_index()
+                    
+                    self.market_data.features[symbol] = existing_features
                 
-            except Exception as e:
+                # Update last computed date
+                self._last_computed_date[symbol] = date
+                
+            except (ValueError, KeyError, IndexError) as e:
                 logger.warning(f"Error computing features for {symbol} at {date}: {e}")
                 continue
+            except Exception as e:
+                logger.error(
+                    f"Unexpected error computing features for {symbol} at {date}: {e}",
+                    exc_info=True
+                )
+                raise BacktestError(
+                    f"Failed to compute features for {symbol} at {date}: {e}",
+                    date=str(date),
+                    step="feature_computation"
+                ) from e
     
     def _generate_signals(self, date: pd.Timestamp) -> List[Signal]:
         """Generate entry signals for all strategies at day t close.
+        
+        Optimized to batch process symbols and reduce redundant feature lookups.
         
         Args:
             date: Date at which to generate signals
@@ -270,8 +407,15 @@ class DailyEventLoop:
         """
         all_signals = []
         
+        # Batch process: collect all symbols first, then process
         for strategy in self.strategies:
-            for symbol in strategy.universe:
+            # Pre-filter symbols that might have data (optimization)
+            symbols_to_check = [
+                symbol for symbol in strategy.universe 
+                if symbol in self.market_data.bars
+            ]
+            
+            for symbol in symbols_to_check:
                 # Get features for this symbol at date
                 features = self.market_data.get_features(symbol, date)
                 if features is None:
@@ -298,8 +442,19 @@ class DailyEventLoop:
                 
                 if signal is not None and signal.is_valid():
                     all_signals.append(signal)
+                elif signal is not None:
+                    # Signal generated but invalid - log why
+                    log_signal_generation(
+                        logger,
+                        symbol=symbol,
+                        asset_class=strategy.asset_class,
+                        date=date,
+                        signal_generated=False,
+                        reason="Signal generated but invalid",
+                        eligibility_failures=signal.eligibility_failures if hasattr(signal, 'eligibility_failures') else []
+                    )
         
-        # Score signals
+        # Score signals (batch operation)
         if all_signals:
             self._score_signals(all_signals, date)
         
@@ -307,6 +462,8 @@ class DailyEventLoop:
     
     def _score_signals(self, signals: List[Signal], date: pd.Timestamp) -> None:
         """Score signals using breakout strength, momentum, and diversification.
+        
+        Optionally enhances scores with ML predictions if ML predictor is configured.
         
         Args:
             signals: List of signals to score
@@ -329,6 +486,27 @@ class DailyEventLoop:
             portfolio_returns=portfolio_returns,
             lookback=20
         )
+        
+        # Apply ML enhancement if ML predictor is configured
+        if self.ml_predictor is not None and signals:
+            # Get ML config from first strategy (assume same config for all strategies)
+            strategy = self.strategies[0] if self.strategies else None
+            if strategy and strategy.config.ml.enabled:
+                ml_weight = strategy.config.ml.ml_weight
+                
+                # Enhance signal scores with ML predictions
+                self.ml_predictor.enhance_signal_scores(
+                    signals=signals,
+                    get_features=get_features,
+                    ml_weight=ml_weight
+                )
+                
+                # If in filter mode, remove signals below threshold
+                if self.ml_predictor.prediction_mode == "filter":
+                    # Filter signals (this modifies the list in-place conceptually)
+                    # Since enhance_signal_scores sets score to 0 for filtered signals,
+                    # we'll filter them out in signal selection
+                    pass  # Filtering happens implicitly via score = 0
     
     def _create_orders(self, signals: List[Signal], date: pd.Timestamp) -> List[Order]:
         """Create orders from signals for execution at day t+1 open.
@@ -761,11 +939,14 @@ class DailyEventLoop:
                 # On crash dates, force stops at worst possible price (for exits only)
                 if is_crash_date and exit_reason == ExitReason.HARD_STOP:
                     # Force exit at worst price (slippage already applied above, but make it worse)
-                    worst_price = min(fill.fill_price, open_bar.low) if order.side == SignalSide.SELL else max(fill.fill_price, open_bar.high)
                     if order.side == SignalSide.SELL:
-                        fill.fill_price = worst_price  # SELL at worst (lowest) price
+                        # SELL at worst (lowest) price - use the low of the day
+                        worst_price = min(fill.fill_price, open_bar.low)
+                        fill.fill_price = worst_price
                     else:
-                        fill.fill_price = worst_price  # BUY at worst (highest) price
+                        # BUY at worst (highest) price - use the high of the day
+                        worst_price = max(fill.fill_price, open_bar.high)
+                        fill.fill_price = worst_price
                 
                 # Close position
                 closed_position = self.portfolio.close_position(
@@ -785,6 +966,7 @@ class DailyEventLoop:
                     
                     # Log trade exit
                     event_type = TradeEventType.STOP_HIT if exit_reason == ExitReason.HARD_STOP else TradeEventType.EXIT
+                    exit_reason_str = exit_reason.value if isinstance(exit_reason, ExitReason) else str(exit_reason)
                     log_trade_event(
                         logger,
                         event_type,
@@ -792,7 +974,7 @@ class DailyEventLoop:
                         asset_class=order.asset_class,
                         date=fill.date,
                         exit_price=fill.fill_price,
-                        exit_reason=exit_reason.value,
+                        exit_reason=exit_reason_str,
                         realized_pnl=closed_position.realized_pnl,
                         r_multiple=r_multiple,
                         slippage_bps=fill.slippage_bps,
@@ -847,7 +1029,7 @@ class DailyEventLoop:
     
     def _estimate_position_size(
         self,
-        strategy: BaseStrategy,
+        strategy: StrategyInterface,
         features: FeatureRow,
         portfolio: Portfolio
     ) -> int:
@@ -886,7 +1068,7 @@ class DailyEventLoop:
                 return strategy.asset_class
         return "equity"  # Default
     
-    def _get_strategy_for_signal(self, signal: Signal) -> Optional[BaseStrategy]:
+    def _get_strategy_for_signal(self, signal: Signal) -> Optional[StrategyInterface]:
         """Get strategy object for a signal.
         
         Args:
@@ -900,7 +1082,7 @@ class DailyEventLoop:
                 return strategy
         return None
     
-    def _get_strategy_for_signal_symbol(self, symbol: str) -> Optional[BaseStrategy]:
+    def _get_strategy_for_signal_symbol(self, symbol: str) -> Optional[StrategyInterface]:
         """Get strategy object for a symbol.
         
         Args:

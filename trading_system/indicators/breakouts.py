@@ -2,9 +2,10 @@
 
 import pandas as pd
 import numpy as np
+from .cache import get_cache
 
 
-def highest_close(close: pd.Series, window: int) -> pd.Series:
+def highest_close(close: pd.Series, window: int, use_cache: bool = True) -> pd.Series:
     """Compute highest close over window, EXCLUDING today's close.
     
     This is critical for avoiding lookahead bias. We use the highest close
@@ -29,6 +30,15 @@ def highest_close(close: pd.Series, window: int) -> pd.Series:
     if len(close) == 0:
         return pd.Series(dtype=float, index=close.index)
     
+    # Check cache if enabled
+    if use_cache:
+        cache = get_cache()
+        if cache is not None:
+            cache_key = (f"highest_close_{id(close)}_{len(close)}_{close.iloc[-1] if len(close) > 0 else 0}", "highest_close", window)
+            cached_result = cache.get(cache_key)
+            if cached_result is not None:
+                return cached_result
+    
     # Shift by 1 to exclude today, then compute rolling max
     # This ensures we use only prior N days (no lookahead)
     close_shifted = close.shift(1)
@@ -37,6 +47,13 @@ def highest_close(close: pd.Series, window: int) -> pd.Series:
     # Explicitly set NaN for first window values (insufficient lookback)
     if len(highest) > 0 and len(highest) >= window:
         highest.iloc[:window] = np.nan
+    
+    # Cache result if enabled
+    if use_cache:
+        cache = get_cache()
+        if cache is not None:
+            cache_key = (f"highest_close_{id(close)}_{len(close)}_{close.iloc[-1] if len(close) > 0 else 0}", "highest_close", window)
+            cache.set(cache_key, highest)
     
     return highest
 

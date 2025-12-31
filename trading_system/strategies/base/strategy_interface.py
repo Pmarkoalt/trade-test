@@ -1,18 +1,22 @@
-"""Base strategy class for momentum strategies."""
+"""Abstract base class for all trading strategies."""
 
 from abc import ABC, abstractmethod
-from typing import List, Optional, Dict
+from typing import List, Optional
 import pandas as pd
 import numpy as np
 
-from ..configs.strategy_config import StrategyConfig
-from ..models.signals import Signal, SignalSide, BreakoutType
-from ..models.features import FeatureRow
-from ..models.positions import Position, ExitReason
+from ...configs.strategy_config import StrategyConfig
+from ...models.signals import Signal, SignalSide, SignalType, BreakoutType
+from ...models.features import FeatureRow
+from ...models.positions import Position, ExitReason
 
 
-class BaseStrategy(ABC):
-    """Base class for momentum strategies (equity and crypto)."""
+class StrategyInterface(ABC):
+    """Abstract base class for all trading strategies.
+    
+    This interface defines the contract that all strategies must implement,
+    regardless of their type (momentum, mean reversion, pairs, etc.).
+    """
     
     def __init__(self, config: StrategyConfig):
         """Initialize strategy with configuration.
@@ -21,6 +25,7 @@ class BaseStrategy(ABC):
             config: Strategy configuration loaded from YAML
         """
         self.config = config
+        self.name = config.name  # Strategy name for multi-strategy tracking
         self.asset_class = config.asset_class
         self.universe = config.universe
         self.benchmark = config.benchmark
@@ -47,7 +52,8 @@ class BaseStrategy(ABC):
             features: FeatureRow with indicators for the symbol
             
         Returns:
-            Tuple of (breakout_type, clearance) or (None, 0.0) if no trigger
+            Tuple of (breakout_type, clearance) or (None, 0.0) if no trigger.
+            For non-breakout strategies, breakout_type may be a custom enum value.
         """
         pass
     
@@ -89,7 +95,7 @@ class BaseStrategy(ABC):
         Args:
             entry_price: Entry price for the position
             atr14: ATR14 value
-            atr_mult: ATR multiplier (2.5 for equity, 3.0 for crypto)
+            atr_mult: ATR multiplier (e.g., 2.5 for equity, 3.0 for crypto)
             
         Returns:
             Stop price = entry_price - (atr_mult * atr14)
@@ -203,14 +209,34 @@ class BaseStrategy(ABC):
         # Score will be normalized later in signal queue
         score = 0.0  # Placeholder, will be normalized
         
-        # Create signal
+        # Create signal with generic fields
+        trigger_reason = f"momentum_{breakout_type.value.lower()}_breakout"
+        if breakout_type == BreakoutType.FAST_20D:
+            trigger_reason = f"momentum_breakout_20d"
+        elif breakout_type == BreakoutType.SLOW_55D:
+            trigger_reason = f"momentum_breakout_55d"
+        
         signal = Signal(
             symbol=symbol,
             asset_class=self.asset_class,
             date=features.date,
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason=trigger_reason,
+            metadata={
+                'breakout_type': breakout_type.value,
+                'breakout_clearance': clearance,
+                'breakout_strength': breakout_strength,
+                'momentum_strength': momentum_strength,
+                'roc60': features.roc60,
+                'benchmark_roc60': features.benchmark_roc60,
+            },
+            urgency=0.6,  # Default momentum urgency
             entry_price=features.close,
             stop_price=stop_price,
+            suggested_entry_price=features.close,
+            suggested_stop_price=stop_price,
+            # Momentum-specific fields (for backward compatibility)
             atr_mult=atr_mult,
             triggered_on=breakout_type,
             breakout_clearance=clearance,
@@ -226,3 +252,4 @@ class BaseStrategy(ABC):
         )
         
         return signal
+

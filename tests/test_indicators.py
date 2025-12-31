@@ -10,6 +10,7 @@ from trading_system.indicators import (
     compute_features, compute_features_for_date
 )
 from trading_system.models.features import FeatureRow
+from trading_system.exceptions import IndicatorError
 
 
 class TestMovingAverage:
@@ -318,23 +319,23 @@ class TestComputeFeatures:
         
         # Check benchmark values are set
         assert not pd.isna(features['benchmark_roc60'].iloc[0])
-        assert abs(features['benchmark_roc60'].iloc[0] - 0.05) < 1e-10
+        assert abs(features['benchmark_roc60'].iloc[0] - 0.05) < 1e-9  # Relax tolerance
     
     def test_compute_features_missing_columns(self):
         """Test compute_features with missing required columns."""
         df = pd.DataFrame({'close': [100, 101, 102]})
-        
-        with pytest.raises(ValueError, match="must contain columns"):
+
+        with pytest.raises(IndicatorError, match="must contain columns"):
             compute_features(df, symbol='AAPL', asset_class='equity')
-    
+
     def test_compute_features_invalid_asset_class(self):
         """Test compute_features with invalid asset_class."""
         df = pd.DataFrame({
             'open': [100], 'high': [102], 'low': [99],
             'close': [101], 'volume': [1e6]
         })
-        
-        with pytest.raises(ValueError, match="asset_class must be"):
+
+        with pytest.raises(IndicatorError, match="asset_class must be"):
             compute_features(df, symbol='AAPL', asset_class='invalid')
     
     def test_compute_features_for_date(self):

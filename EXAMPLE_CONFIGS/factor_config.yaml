@@ -1,0 +1,74 @@
+# Equity Factor-Based Strategy Configuration
+# Multi-factor strategy: ranks assets by momentum, value, and quality factors
+# Best for: Large-cap equities with sufficient history
+
+name: "equity_factor"
+asset_class: "equity"
+universe: "SP500"  # or explicit list: ["AAPL", "MSFT", ...]
+benchmark: "SPY"
+
+# Indicator calculation parameters
+indicators:
+  ma_periods: [20, 50, 200]
+  atr_period: 14
+  roc_period: 60
+  breakout_fast: 20
+  breakout_slow: 55
+  adv_lookback: 20
+  corr_lookback: 20
+
+# Factor strategy parameters
+parameters:
+  factors:
+    momentum: 0.4  # Weight for momentum factor (12-month return)
+    value: 0.3     # Weight for value factor (distance from 52W high)
+    quality: 0.3   # Weight for quality factor (inverse volatility)
+  rebalance_frequency: monthly  # "monthly" or "quarterly"
+  top_decile_pct: 0.20  # Top 20% of assets by factor score
+  atr_period: 14  # ATR period for stop calculation
+  stop_atr_mult: 2.0  # Stop = entry - 2.0 * ATR14
+  min_adv20: 10000000  # Minimum $10M ADV for liquidity
+  max_hold_days: 90  # Maximum holding period (until next rebalance)
+
+# Eligibility filter (minimal for factor strategy)
+eligibility:
+  trend_ma: 50  # Not used for factor strategy, but required by config
+  ma_slope_lookback: 20
+  ma_slope_min: 0.005
+  require_close_above_trend_ma: false  # Factor strategy doesn't require trend
+  require_close_above_ma200: false
+  relative_strength_enabled: false
+  relative_strength_min: 0.0
+
+# Entry trigger configuration (not used for factor strategy, but required)
+entry:
+  fast_clearance: 0.005
+  slow_clearance: 0.010
+
+# Exit configuration
+exit:
+  mode: "ma_cross"  # Not used for factor strategy (uses rebalance exits)
+  exit_ma: 20
+  hard_stop_atr_mult: 2.0  # Used for hard stop
+  tightened_stop_atr_mult: null
+
+# Risk management
+risk:
+  risk_per_trade: 0.0075  # 0.75% of equity per trade
+  max_positions: 30  # More diversified for factor strategy
+  max_exposure: 0.80  # 80% maximum gross exposure
+  max_position_notional: 0.15  # 15% maximum per position
+
+# Capacity constraints
+capacity:
+  max_order_pct_adv: 0.005  # 0.5% of 20D average dollar volume
+
+# Execution costs
+costs:
+  fee_bps: 1  # 1 basis point per side
+  slippage_base_bps: 8  # Base slippage (8 bps for equity)
+  slippage_std_mult: 0.75  # Standard deviation multiplier
+  weekend_penalty: 1.0  # Not used for equity
+  stress_threshold: -0.03  # SPY weekly return < -3% triggers stress
+  stress_slippage_mult: 2.0  # Double slippage during stress
+

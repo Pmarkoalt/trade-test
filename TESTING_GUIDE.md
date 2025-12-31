@@ -66,7 +66,15 @@ pytest tests/
 pytest tests/ -v
 
 # With coverage report (if pytest-cov installed)
-pytest tests/ --cov=trading_system --cov-report=html
+# Using helper script (recommended)
+./scripts/coverage_report.sh
+
+# Or manually
+pytest tests/ --cov=trading_system --cov-report=html --cov-report=term-missing
+
+# Coverage reports will be generated in:
+# - htmlcov/index.html (interactive HTML report)
+# - Terminal output (shows missing lines)
 ```
 
 ### Run Specific Test Files
@@ -361,6 +369,9 @@ python -m trading_system backtest --config tests/fixtures/configs/run_test_confi
 
 # Run validation
 python -m trading_system validate --config tests/fixtures/configs/run_test_config.yaml
+
+# Generate coverage report
+./scripts/coverage_report.sh
 
 # Check results
 ls -la tests/results/*/train/

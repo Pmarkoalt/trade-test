@@ -1,0 +1,43 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.9.23, pytest-8.4.2, pluggy-1.6.0 -- /Users/pmarko.alt/miniconda3/envs/clean_env/bin/python
+cachedir: .pytest_cache
+benchmark: 5.2.3 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+hypothesis profile 'default'
+rootdir: /Users/pmarko.alt/Desktop/trade-test
+configfile: pytest.ini
+plugins: benchmark-5.2.3, anyio-4.9.0, hypothesis-6.141.1, cov-7.0.0
+collecting ... collected 484 items
+
+tests/integration/test_end_to_end.py::TestEndToEnd::test_data_loading PASSED [  0%]
+tests/integration/test_end_to_end.py::TestEndToEnd::test_strategy_signal_generation PASSED [  0%]
+tests/integration/test_end_to_end.py::TestEndToEnd::test_portfolio_operations FAILED [  0%]
+tests/integration/test_end_to_end.py::TestEndToEnd::test_no_lookahead_bias PASSED [  0%]
+tests/integration/test_end_to_end.py::TestEndToEnd::test_data_validation PASSED [  1%]
+tests/integration/test_end_to_end.py::TestEndToEnd::test_integration_workflow PASSED [  1%]
+tests/integration/test_end_to_end.py::TestFullBacktest::test_full_backtest_run FAILED [  1%]
+tests/integration/test_end_to_end.py::TestFullBacktest::test_expected_trades FAILED [  1%]
+tests/integration/test_end_to_end.py::TestFullBacktest::test_walk_forward_workflow FAILED [  1%]
+tests/integration/test_end_to_end.py::TestFullBacktest::test_validation_suite_end_to_end FAILED [  2%]
+tests/integration/test_end_to_end.py::TestEdgeCaseIntegration::test_weekend_gap_handling_crypto FAILED [  2%]
+tests/integration/test_end_to_end.py::TestEdgeCaseIntegration::test_extreme_move_integration FAILED [  2%]
+tests/integration/test_end_to_end.py::TestEdgeCaseIntegration::test_extreme_move_with_position FAILED [  2%]
+tests/integration/test_end_to_end.py::TestEdgeCaseIntegration::test_flash_crash_integration FAILED [  2%]
+tests/integration/test_end_to_end.py::TestEdgeCaseIntegration::test_consecutive_missing_days_integration PASSED [  3%]
+tests/integration/test_full_workflow.py::TestFullWorkflow::test_backtest_to_validation_workflow FAILED [  3%]
+tests/integration/test_full_workflow.py::TestFullWorkflow::test_backtest_to_reporting_workflow FAILED [  3%]
+tests/integration/test_full_workflow.py::TestFullWorkflow::test_validation_suite_workflow FAILED [  3%]
+tests/integration/test_full_workflow.py::TestFullWorkflow::test_stress_test_workflow FAILED [  3%]
+tests/integration/test_full_workflow.py::TestFullWorkflow::test_correlation_analysis_workflow FAILED [  4%]
+tests/integration/test_full_workflow.py::TestEndToEndWorkflow::test_complete_system_workflow FAILED [  4%]
+tests/performance/test_benchmarks.py::TestIndicatorPerformance::test_ma_performance PASSED [  4%]
+tests/performance/test_benchmarks.py::TestIndicatorPerformance::test_atr_performance PASSED [  4%]
+tests/performance/test_benchmarks.py::TestIndicatorPerformance::test_roc_performance PASSED [  4%]
+tests/performance/test_benchmarks.py::TestIndicatorPerformance::test_highest_close_performance PASSED [  5%]
+tests/performance/test_benchmarks.py::TestIndicatorPerformance::test_adv_performance PASSED [  5%]
+tests/performance/test_benchmarks.py::TestIndicatorPerformance::test_compute_features_performance PASSED [  5%]
+tests/performance/test_benchmarks.py::TestPortfolioPerformance::test_portfolio_update_equity_performance PASSED [  5%]
+tests/performance/test_benchmarks.py::TestPortfolioPerformance::test_portfolio_exposure_calculation_performance FAILED [  5%]
+tests/performance/test_benchmarks.py::TestValidationPerformance::test_bootstrap_performance PASSED [  6%]
+tests/performance/test_benchmarks.py::TestValidationPerformance::test_permutation_performance PASSED [  6%]
+tests/performance/test_benchmarks.py::TestBacktestEnginePerformance::test_event_loop_process_day_performance FAILED [  6%]
+tests/performance/test_benchmarks.py::TestBacktestEnginePerformance::test_backtest_engine_full_run_performance 

@@ -1,0 +1,74 @@
+# Pairs Trading Strategy Configuration
+# Best for: Highly correlated pairs (sector ETFs, index ETFs, etc.)
+
+name: "equity_pairs"
+asset_class: "equity"
+universe: []  # Not used (pairs defined explicitly in parameters)
+benchmark: "SPY"
+
+# Indicator calculation parameters (still computed for individual symbols)
+indicators:
+  ma_periods: [20, 50, 200]
+  atr_period: 14
+  roc_period: 60
+  breakout_fast: 20
+  breakout_slow: 55
+  adv_lookback: 20
+  corr_lookback: 20
+
+# Pairs trading parameters
+parameters:
+  pairs:
+    - ["XLE", "XLK"]  # Energy vs Technology
+    - ["GLD", "TLT"]  # Gold vs Bonds
+    - ["IWM", "SPY"]  # Small cap vs Large cap
+    - ["XLF", "XLK"]  # Financials vs Technology
+  lookback: 60  # Rolling window for spread mean/std calculation
+  entry_zscore: 2.0  # Enter when |spread z-score| > 2.0
+  exit_zscore: 0.5  # Exit when |spread z-score| < 0.5
+  max_hold_days: 10  # Maximum holding period (time stop)
+  atr_period: 14  # ATR period for stop calculation
+  stop_atr_mult: 2.0  # Stop = entry ± 2.0 * ATR14
+
+# Eligibility filter (minimal - checked at pair level)
+eligibility:
+  trend_ma: 50  # Not used for pairs, but required by config
+  ma_slope_lookback: 20
+  ma_slope_min: 0.005
+  require_close_above_trend_ma: false
+  require_close_above_ma200: false
+  relative_strength_enabled: false
+  relative_strength_min: 0.0
+
+# Entry trigger configuration (not used for pairs, but required)
+entry:
+  fast_clearance: 0.005
+  slow_clearance: 0.010
+
+# Exit configuration
+exit:
+  mode: "ma_cross"  # Not used for pairs (uses spread convergence)
+  exit_ma: 20
+  hard_stop_atr_mult: 2.0  # Used for individual leg stops
+  tightened_stop_atr_mult: null
+
+# Risk management
+risk:
+  risk_per_trade: 0.0075  # 0.75% of equity per trade (per leg, so 1.5% total per pair)
+  max_positions: 6  # 3 pairs = 6 positions (3 long + 3 short)
+  max_exposure: 0.60  # Lower exposure (pairs are market-neutral but still risky)
+  max_position_notional: 0.15  # 15% maximum per position
+
+# Capacity constraints
+capacity:
+  max_order_pct_adv: 0.005  # 0.5% of 20D average dollar volume
+
+# Execution costs
+costs:
+  fee_bps: 1  # 1 basis point per side
+  slippage_base_bps: 8  # Base slippage (8 bps for equity)
+  slippage_std_mult: 0.75  # Standard deviation multiplier
+  weekend_penalty: 1.0  # Not used for equity
+  stress_threshold: -0.03  # SPY weekly return < -3% triggers stress
+  stress_slippage_mult: 2.0  # Double slippage during stress
+

@@ -34,8 +34,8 @@ from trading_system.validation.correlation_analysis import (
 
 class TestBootstrap:
     """Test bootstrap resampling."""
-    
-    def setUp(self):
+
+    def setup_method(self):
         """Set up test fixtures."""
         # Create sample R-multiples (mix of wins and losses)
         self.r_multiples = [
@@ -115,7 +115,7 @@ class TestBootstrap:
 class TestSensitivity:
     """Test parameter sensitivity grid."""
     
-    def setUp(self):
+    def setup_method(self):
         """Set up test fixtures."""
         self.parameter_ranges = {
             'atr_mult': [2.0, 2.5, 3.0],
@@ -180,7 +180,7 @@ class TestSensitivity:
 class TestPermutation:
     """Test permutation test."""
     
-    def setUp(self):
+    def setup_method(self):
         """Set up test fixtures."""
         start_date = pd.Timestamp('2023-01-01')
         end_date = pd.Timestamp('2023-12-31')
@@ -254,7 +254,7 @@ class TestPermutation:
 class TestStressTests:
     """Test stress tests."""
     
-    def setUp(self):
+    def setup_method(self):
         """Set up test fixtures."""
         def mock_backtest_func(**kwargs):
             # Mock backtest function
@@ -304,7 +304,7 @@ class TestStressTests:
 class TestCorrelationAnalysis:
     """Test correlation stress analysis."""
     
-    def setUp(self):
+    def setup_method(self):
         """Set up test fixtures."""
         # Create sample returns data
         dates = pd.date_range('2023-01-01', periods=100, freq='D')

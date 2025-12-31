@@ -10,12 +10,12 @@ from ..configs.strategy_config import StrategyConfig
 from ..backtest.engine import BacktestEngine
 from ..backtest.splits import WalkForwardSplit
 from ..data.loader import load_all_data, load_universe
-from ..strategies.equity_strategy import EquityStrategy
-from ..strategies.crypto_strategy import CryptoStrategy
+from ..strategies.strategy_loader import load_strategies_from_run_config
 from ..models.market_data import MarketData
 from ..reporting.csv_writer import CSVWriter
 from ..reporting.json_writer import JSONWriter
 from ..reporting.metrics import MetricsCalculator
+from ..storage import ResultsDatabase
 from ..validation.bootstrap import run_bootstrap_test, check_bootstrap_results
 from ..validation.permutation import run_permutation_test, check_permutation_results
 from ..validation.stress_tests import (
@@ -35,7 +35,9 @@ from ..validation.sensitivity import (
     apply_parameters_to_strategy_config,
     apply_parameters_to_run_config,
     save_sensitivity_results,
-    generate_all_heatmaps
+    generate_all_heatmaps,
+    HAS_PLOTLY,
+    HAS_MATPLOTLIB
 )
 import numpy as np
 
@@ -81,10 +83,25 @@ class BacktestRunner:
                 # Load from universe file
                 equity_universe = load_universe(equity_strategy_config.universe)
         
-        # Crypto universe is fixed
+        # Determine crypto universe
         crypto_universe = None
+        crypto_universe_config = None
         if self.config.strategies.crypto and self.config.strategies.crypto.enabled:
-            crypto_universe = load_universe("crypto")
+            # Load crypto strategy config to get universe
+            crypto_strategy_config = StrategyConfig.from_yaml(
+                self.config.strategies.crypto.config_path
+            )
+            
+            # Check if we have universe_config for dynamic selection
+            if crypto_strategy_config.universe_config is not None:
+                # We'll use dynamic universe selection
+                crypto_universe_config = crypto_strategy_config.universe_config.model_dump()
+            elif isinstance(crypto_strategy_config.universe, list):
+                # Explicit list provided
+                crypto_universe = crypto_strategy_config.universe
+            else:
+                # Use traditional load_universe (backward compatible)
+                crypto_universe = load_universe(crypto_strategy_config.universe)
         
         # Load all data
         market_data, benchmarks = load_all_data(
@@ -93,6 +110,7 @@ class BacktestRunner:
             benchmark_path=self.config.dataset.benchmark_path,
             equity_universe=equity_universe or [],
             crypto_universe=crypto_universe,
+            crypto_universe_config=crypto_universe_config,
             start_date=start_date,
             end_date=end_date
         )
@@ -108,25 +126,23 @@ class BacktestRunner:
             List of strategy objects
         """
         logger.info("Loading strategies...")
-        strategies = []
         
-        # Load equity strategy
-        if self.config.strategies.equity and self.config.strategies.equity.enabled:
-            equity_config = StrategyConfig.from_yaml(
-                self.config.strategies.equity.config_path
-            )
-            equity_strategy = EquityStrategy(equity_config)
-            strategies.append(equity_strategy)
-            logger.info(f"Loaded equity strategy: {equity_config.name}")
+        # Use strategy loader to load strategies from config
+        equity_config_path = (
+            self.config.strategies.equity.config_path
+            if self.config.strategies.equity and self.config.strategies.equity.enabled
+            else None
+        )
+        crypto_config_path = (
+            self.config.strategies.crypto.config_path
+            if self.config.strategies.crypto and self.config.strategies.crypto.enabled
+            else None
+        )
         
-        # Load crypto strategy
-        if self.config.strategies.crypto and self.config.strategies.crypto.enabled:
-            crypto_config = StrategyConfig.from_yaml(
-                self.config.strategies.crypto.config_path
-            )
-            crypto_strategy = CryptoStrategy(crypto_config)
-            strategies.append(crypto_strategy)
-            logger.info(f"Loaded crypto strategy: {crypto_config.name}")
+        strategies = load_strategies_from_run_config(
+            equity_config_path=equity_config_path,
+            crypto_config_path=crypto_config_path
+        )
         
         if not strategies:
             raise ValueError("No strategies enabled in configuration")
@@ -176,16 +192,16 @@ class BacktestRunner:
         self,
         period: str = "train",
         slippage_multiplier: float = 1.0,
-        crash_dates: Optional[List[pd.Timestamp]] = None,
-        date_filter: Optional[Callable[[pd.Timestamp], bool]] = None
+        crash_dates: Optional[Any] = None,
+        date_filter: Optional[Any] = None
     ) -> Dict[str, Any]:
         """Run backtest for specified period.
         
         Args:
-            period: One of "train", "validation", "holdout"
+            period: One of "train", "validation", "holdout", or "train+validation" for combined
             slippage_multiplier: Multiplier for base slippage (for stress tests)
-            crash_dates: List of dates on which to simulate flash crashes
-            date_filter: Optional function to filter trading dates (for bear/range market tests)
+            crash_dates: List of dates or 'auto' to generate one per quarter
+            date_filter: 'bear', 'range', or a callable function to filter trading dates
         
         Returns:
             Dictionary with backtest results
@@ -193,8 +209,53 @@ class BacktestRunner:
         if self.engine is None:
             raise ValueError("Engine not created. Call create_engine() first.")
         
+        split = self.create_split()
+        
+        # Handle crash_dates='auto' - generate one crash per quarter
+        actual_crash_dates = None
+        if crash_dates == 'auto':
+            start_date, end_date = split.get_period_dates("train")
+            val_start, val_end = split.get_period_dates("validation")
+            # Use combined train+validation period for crash generation
+            combined_start = start_date
+            combined_end = val_end
+            
+            # Generate one crash date per quarter
+            actual_crash_dates = self._generate_quarterly_crash_dates(combined_start, combined_end)
+        elif isinstance(crash_dates, list):
+            actual_crash_dates = crash_dates
+        
+        # Handle date_filter string options
+        actual_date_filter = None
+        if date_filter == 'bear':
+            start_date, end_date = split.get_period_dates("train")
+            val_start, val_end = split.get_period_dates("validation")
+            combined_start = min(start_date, val_start)
+            combined_end = max(end_date, val_end)
+            # Try SPY first, fall back to BTC
+            benchmark_symbol = "SPY" if "SPY" in (self.market_data.benchmarks or {}) else "BTC"
+            actual_date_filter = self._create_bear_market_filter(combined_start, combined_end, benchmark_symbol)
+        elif date_filter == 'range':
+            start_date, end_date = split.get_period_dates("train")
+            val_start, val_end = split.get_period_dates("validation")
+            combined_start = min(start_date, val_start)
+            combined_end = max(end_date, val_end)
+            benchmark_symbol = "SPY" if "SPY" in (self.market_data.benchmarks or {}) else "BTC"
+            actual_date_filter = self._create_range_market_filter(combined_start, combined_end, benchmark_symbol)
+        elif callable(date_filter):
+            actual_date_filter = date_filter
+        
+        # Handle combined period
+        if period == "train+validation":
+            # Run train and validation separately, then combine
+            train_results = self.run_backtest("train", slippage_multiplier, actual_crash_dates, actual_date_filter)
+            val_results = self.run_backtest("validation", slippage_multiplier, actual_crash_dates, actual_date_filter)
+            
+            # Combine results
+            return self._combine_results([train_results, val_results])
+        
         # If parameters changed, recreate engine with new parameters
-        if (slippage_multiplier != 1.0 or crash_dates is not None or date_filter is not None):
+        if (slippage_multiplier != 1.0 or actual_crash_dates is not None or actual_date_filter is not None):
             # Create new engine with stress test parameters
             engine = BacktestEngine(
                 market_data=self.market_data,
@@ -202,22 +263,20 @@ class BacktestRunner:
                 starting_equity=self.config.portfolio.starting_equity,
                 seed=self.config.random_seed,
                 slippage_multiplier=slippage_multiplier,
-                crash_dates=crash_dates
+                crash_dates=actual_crash_dates
             )
             old_engine = self.engine
             self.engine = engine
             
             # If date filter is provided, modify the run to filter dates
-            split = self.create_split()
-            if date_filter is not None:
-                results = self._run_backtest_with_date_filter(split, period, date_filter)
+            if actual_date_filter is not None:
+                results = self._run_backtest_with_date_filter(split, period, actual_date_filter)
             else:
                 results = self.engine.run(split=split, period=period)
             
             # Restore original engine
             self.engine = old_engine
         else:
-            split = self.create_split()
             results = self.engine.run(split=split, period=period)
         
         return results
@@ -411,6 +470,140 @@ class BacktestRunner:
         
         return date_filter
     
+    def _generate_quarterly_crash_dates(
+        self,
+        start_date: pd.Timestamp,
+        end_date: pd.Timestamp
+    ) -> List[pd.Timestamp]:
+        """Generate crash dates - one per quarter.
+        
+        Args:
+            start_date: Start date
+            end_date: End date
+        
+        Returns:
+            List of crash dates (one random date per quarter)
+        """
+        if self.market_data is None:
+            return []
+        
+        crash_dates = []
+        current = start_date
+        
+        # Get all available dates from market data
+        all_dates = set()
+        for symbol, bars_df in self.market_data.bars.items():
+            all_dates.update(bars_df.index)
+        all_dates = sorted(list(all_dates))
+        
+        while current < end_date:
+            # Get quarter end
+            quarter_end = current + pd.offsets.QuarterEnd()
+            if quarter_end > end_date:
+                quarter_end = end_date
+            
+            # Get all available dates in this quarter
+            quarter_dates = [d for d in all_dates if current <= d <= quarter_end]
+            
+            if quarter_dates:
+                # Pick a random date in the quarter
+                # Use numpy random if available, otherwise Python random
+                try:
+                    import numpy as np
+                    rng = np.random.default_rng(self.config.random_seed if hasattr(self.config, 'random_seed') else None)
+                    crash_date = rng.choice(quarter_dates)
+                except:
+                    import random
+                    if hasattr(self.config, 'random_seed'):
+                        random.seed(self.config.random_seed)
+                    crash_date = random.choice(quarter_dates)
+                crash_dates.append(crash_date)
+            
+            # Move to next quarter
+            current = quarter_end + pd.Timedelta(days=1)
+        
+        return crash_dates
+    
+    def _combine_results(self, results_list: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Combine results from multiple periods.
+        
+        Args:
+            results_list: List of result dictionaries
+        
+        Returns:
+            Combined results dictionary
+        """
+        if not results_list:
+            return {}
+        
+        # Combine closed trades
+        all_closed_trades = []
+        for results in results_list:
+            all_closed_trades.extend(results.get('closed_trades', []))
+        
+        # Combine equity curves
+        all_equity_curves = []
+        all_daily_returns = []
+        for results in results_list:
+            all_equity_curves.extend(results.get('equity_curve', []))
+            all_daily_returns.extend(results.get('daily_returns', []))
+        
+        # Compute combined metrics
+        if len(all_equity_curves) > 1:
+            total_return = (all_equity_curves[-1] / all_equity_curves[0] - 1) if all_equity_curves[0] > 0 else 0.0
+            
+            # Compute Sharpe
+            if len(all_daily_returns) > 1:
+                mean_return = np.mean(all_daily_returns)
+                std_return = np.std(all_daily_returns)
+                sharpe_ratio = (mean_return / std_return * np.sqrt(252)) if std_return > 0 else 0.0
+            else:
+                sharpe_ratio = 0.0
+            
+            # Compute max drawdown
+            peak = all_equity_curves[0]
+            max_dd = 0.0
+            for equity in all_equity_curves:
+                if equity > peak:
+                    peak = equity
+                dd = (peak - equity) / peak if peak > 0 else 0.0
+                if dd > max_dd:
+                    max_dd = dd
+        else:
+            total_return = 0.0
+            sharpe_ratio = 0.0
+            max_dd = 0.0
+        
+        # Combine trade stats
+        total_trades = len(all_closed_trades)
+        winning_trades = len([t for t in all_closed_trades if t.realized_pnl > 0])
+        losing_trades = len([t for t in all_closed_trades if t.realized_pnl < 0])
+        
+        # Average R-multiple
+        r_multiples = [t.compute_r_multiple() for t in all_closed_trades if t.exit_price is not None]
+        avg_r_multiple = np.mean(r_multiples) if r_multiples else 0.0
+        
+        # Compute Calmar ratio
+        calmar_ratio = abs(total_return / max_dd) if max_dd > 0 else 0.0
+        
+        return {
+            'period': 'combined',
+            'starting_equity': results_list[0].get('starting_equity', 100000.0),
+            'ending_equity': all_equity_curves[-1] if all_equity_curves else results_list[0].get('starting_equity', 100000.0),
+            'total_return': total_return,
+            'sharpe_ratio': sharpe_ratio,
+            'calmar_ratio': calmar_ratio,
+            'max_drawdown': max_dd,
+            'total_trades': total_trades,
+            'winning_trades': winning_trades,
+            'losing_trades': losing_trades,
+            'win_rate': winning_trades / total_trades if total_trades > 0 else 0.0,
+            'avg_r_multiple': avg_r_multiple,
+            'equity_curve': all_equity_curves,
+            'daily_returns': all_daily_returns,
+            'closed_trades': all_closed_trades
+        }
+    
     def _extract_benchmark_returns(
         self,
         dates: List[pd.Timestamp],
@@ -554,6 +747,71 @@ class BacktestRunner:
             closed_trades=closed_trades,
             benchmark_returns=benchmark_returns
         )
+        
+        # Store results in database
+        try:
+            db = ResultsDatabase()
+            
+            # Prepare results dictionary for database storage
+            # Get split name from results if available
+            split_name = results.get('split_name')
+            
+            # Determine strategy name from config
+            strategy_name = None
+            if self.config.strategies.equity and self.config.strategies.equity.enabled:
+                strategy_name = "equity"
+            elif self.config.strategies.crypto and self.config.strategies.crypto.enabled:
+                strategy_name = "crypto"
+            
+            # Get config path (if available)
+            config_path = getattr(self.config, '_config_path', None)
+            
+            # Prepare results dict with all required data
+            db_results = {
+                'start_date': dates[0] if dates else None,
+                'end_date': dates[-1] if dates else None,
+                'starting_equity': self.config.portfolio.starting_equity,
+                'ending_equity': equity_curve[-1] if equity_curve else self.config.portfolio.starting_equity,
+                'equity_curve': equity_curve,
+                'daily_returns': daily_returns,
+                'closed_trades': closed_trades,
+                'daily_events': daily_events,  # Include daily_events for equity curve storage
+                'dates': dates,
+                'benchmark_returns': benchmark_returns,
+            }
+            
+            # Add metrics from results if available, otherwise compute basic ones
+            db_results['sharpe_ratio'] = results.get('sharpe_ratio')
+            db_results['max_drawdown'] = results.get('max_drawdown')
+            db_results['total_return'] = results.get('total_return')
+            db_results['total_trades'] = results.get('total_trades', len(closed_trades))
+            db_results['winning_trades'] = results.get('winning_trades', len([t for t in closed_trades if t.realized_pnl > 0]))
+            db_results['losing_trades'] = results.get('losing_trades', len([t for t in closed_trades if t.realized_pnl < 0]))
+            db_results['win_rate'] = results.get('win_rate')
+            db_results['avg_r_multiple'] = results.get('avg_r_multiple')
+            db_results['realized_pnl'] = results.get('realized_pnl', sum(t.realized_pnl for t in closed_trades))
+            
+            # Get portfolio state for final values
+            if daily_events:
+                last_event = daily_events[-1]
+                portfolio_state = last_event.get('portfolio_state', {})
+                db_results['final_cash'] = portfolio_state.get('cash')
+                db_results['final_positions'] = portfolio_state.get('open_positions', 0)
+            else:
+                db_results['final_cash'] = results.get('final_cash')
+                db_results['final_positions'] = results.get('final_positions', 0)
+            
+            run_id = db.store_results(
+                results=db_results,
+                config_path=config_path,
+                strategy_name=strategy_name,
+                period=period,
+                split_name=split_name
+            )
+            logger.info(f"Results stored in database with run_id={run_id}")
+        except Exception as e:
+            # Don't fail if database storage fails - just log a warning
+            logger.warning(f"Failed to store results in database: {e}", exc_info=True)
         
         logger.info(f"Results saved to {output_dir}")
         return output_dir
@@ -732,19 +990,69 @@ def run_validation(config_path: str) -> Dict[str, Any]:
     # 3. Stress tests
     logger.info("Running stress tests...")
     try:
-        # For stress tests, we need a function that can run backtests with modified parameters
-        # Since the current architecture doesn't easily support parameter modification,
-        # we'll run basic stress tests on the existing results
+        stress_config = validation_config.stress_tests if validation_config and validation_config.stress_tests else None
         
-        # Slippage stress tests would require modifying the engine's execution parameters
-        # For now, we'll note this limitation
-        logger.warning("Stress tests require engine parameter modification - skipping for now")
-        validation_results_dict['stress_tests'] = {
-            'note': 'Stress tests require engine parameter modification - not yet implemented'
-        }
+        # Create a wrapper function for stress tests that calls runner.run_backtest
+        def run_stress_backtest(
+            slippage_multiplier: float = 1.0,
+            crash_dates: Optional[Any] = None,
+            date_filter: Optional[Any] = None
+        ) -> Dict[str, Any]:
+            """Wrapper function for stress tests."""
+            return runner.run_backtest(
+                period="train+validation",
+                slippage_multiplier=slippage_multiplier,
+                crash_dates=crash_dates,
+                date_filter=date_filter
+            )
+        
+        # Initialize stress test suite
+        from ..validation.stress_tests import StressTestSuite
+        stress_suite = StressTestSuite(
+            run_backtest_func=run_stress_backtest,
+            random_seed=random_seed
+        )
+        
+        # Run stress tests
+        stress_results = {}
+        
+        # Slippage stress tests (2x, 3x)
+        if stress_config is None or stress_config.slippage_multipliers:
+            multipliers = stress_config.slippage_multipliers if stress_config else [2.0, 3.0]
+            logger.info(f"Running slippage stress tests (multipliers: {multipliers})...")
+            for mult in multipliers:
+                if mult != 1.0:  # Skip 1x (baseline)
+                    test_name = f'slippage_{int(mult)}x'
+                    logger.info(f"Running {test_name}...")
+                    stress_results[test_name] = stress_suite.run_slippage_stress(multiplier=mult)
+        
+        # Bear market test
+        if stress_config is None or stress_config.bear_market_test:
+            logger.info("Running bear market test...")
+            stress_results['bear_market'] = stress_suite.run_bear_market_test()
+        
+        # Range market test
+        if stress_config is None or stress_config.range_market_test:
+            logger.info("Running range market test...")
+            stress_results['range_market'] = stress_suite.run_range_market_test()
+        
+        # Flash crash simulation
+        if stress_config is None or stress_config.flash_crash_test:
+            logger.info("Running flash crash simulation...")
+            stress_results['flash_crash'] = stress_suite.run_flash_crash_simulation()
+        
+        # Check stress test results
+        stress_passed, stress_warnings = check_stress_results(stress_results)
+        validation_results_dict['stress_tests'] = stress_results
+        validation_results_dict['stress_tests']['passed'] = stress_passed
+        if not stress_passed:
+            rejections.append("Stress tests failed")
+        warnings.extend(stress_warnings)
+        
     except Exception as e:
         logger.error(f"Stress tests failed: {e}", exc_info=True)
         validation_results_dict['stress_tests'] = {'error': str(e)}
+        rejections.append(f"Stress tests error: {e}")
     
     # 4. Correlation analysis
     logger.info("Running correlation stress analysis...")
@@ -995,8 +1303,25 @@ def run_sensitivity_analysis(
                 
                 # Extract data
                 dates = [event['date'] for event in daily_events]
-                equity_curve = [event.get('equity', config.portfolio.starting_equity) for event in daily_events]
-                daily_returns = [event.get('return', 0) for event in daily_events]
+                # Extract equity from portfolio_state if available, otherwise from top-level
+                equity_curve = []
+                daily_returns = []
+                for event in daily_events:
+                    portfolio_state = event.get('portfolio_state', {})
+                    equity = portfolio_state.get('equity', event.get('equity', config.portfolio.starting_equity))
+                    equity_curve.append(equity)
+                    daily_returns.append(event.get('return', 0))
+                
+                # If daily_returns are all zeros, compute from equity curve
+                if all(r == 0 for r in daily_returns) and len(equity_curve) > 1:
+                    daily_returns = []
+                    for i in range(1, len(equity_curve)):
+                        if equity_curve[i-1] > 0:
+                            daily_returns.append((equity_curve[i] / equity_curve[i-1]) - 1.0)
+                        else:
+                            daily_returns.append(0.0)
+                    # Pad first day with 0
+                    daily_returns.insert(0, 0.0)
                 
                 # Get benchmark returns
                 benchmark_returns = runner._extract_benchmark_returns(dates, "SPY" if asset_class_name == "equity" else "BTC")
@@ -1036,8 +1361,13 @@ def run_sensitivity_analysis(
         output_dir = config.get_output_dir() / "sensitivity" / asset_class_name
         save_sensitivity_results(analysis, parameter_ranges, output_dir, metric_name)
         
-        # Generate heatmaps
-        heatmap_paths = generate_all_heatmaps(grid, output_dir, metric_name)
+        # Generate heatmaps (try plotly if available, fallback to matplotlib)
+        use_plotly = HAS_PLOTLY if HAS_PLOTLY else False
+        if not HAS_MATPLOTLIB and not HAS_PLOTLY:
+            logger.warning("No visualization library available (matplotlib or plotly). Skipping heatmap generation.")
+            heatmap_paths = []
+        else:
+            heatmap_paths = generate_all_heatmaps(grid, output_dir, metric_name, use_plotly=use_plotly)
         
         all_results[asset_class_name] = {
             'analysis': analysis,

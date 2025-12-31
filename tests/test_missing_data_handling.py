@@ -16,9 +16,11 @@ import os
 from trading_system.backtest.engine import BacktestEngine
 from trading_system.backtest.event_loop import DailyEventLoop
 from trading_system.models.market_data import MarketData
-from trading_system.models.portfolio import Portfolio
+from trading_system.portfolio.portfolio import Portfolio
 from trading_system.models.positions import Position, ExitReason
-from trading_system.strategies.equity_strategy import EquityStrategy
+from trading_system.strategies.momentum.equity_momentum import EquityMomentumStrategy
+# Backward compatibility alias
+EquityStrategy = EquityMomentumStrategy
 from trading_system.configs.strategy_config import StrategyConfig, EntryConfig, ExitConfig, CapacityConfig, RiskConfig
 from trading_system.data.loader import load_ohlcv_data
 from trading_system.data.validator import detect_missing_data
@@ -156,9 +158,10 @@ class TestMissingDataInEventLoop:
             strategy.universe = ["SINGLE_GAP"]
             
             portfolio = Portfolio(
+                date=pd.Timestamp("2023-01-01"),
+                cash=100000.0,
                 starting_equity=100000.0,
-                starting_cash=100000.0,
-                date=pd.Timestamp("2023-01-01")
+                equity=100000.0
             )
             
             event_loop = DailyEventLoop(
@@ -190,9 +193,10 @@ class TestMissingDataInEventLoop:
             strategy.universe = ["CONSECUTIVE_GAP"]
             
             portfolio = Portfolio(
+                date=pd.Timestamp("2023-01-01"),
+                cash=100000.0,
                 starting_equity=100000.0,
-                starting_cash=100000.0,
-                date=pd.Timestamp("2023-01-01")
+                equity=100000.0
             )
             
             event_loop = DailyEventLoop(
@@ -227,9 +231,10 @@ class TestMissingDataInEventLoop:
         strategy.universe = ["CONSECUTIVE_GAP"]
         
         portfolio = Portfolio(
+            date=pd.Timestamp("2023-01-01"),
+            cash=100000.0,
             starting_equity=100000.0,
-            starting_cash=100000.0,
-            date=pd.Timestamp("2023-01-01")
+            equity=100000.0
         )
         
         # Create a position before the missing data
@@ -290,6 +295,114 @@ class TestMissingDataInEventLoop:
         # Check if there are pending exit orders
         assert len(event_loop.pending_exit_orders) > 0 or "CONSECUTIVE_GAP" not in portfolio.positions or not portfolio.positions["CONSECUTIVE_GAP"].is_open()
     
+    def test_2plus_consecutive_missing_days_comprehensive(self, simple_strategy_config):
+        """Comprehensive test for 2+ consecutive missing days (edge case #2 from EDGE_CASES.md).
+        
+        Verifies:
+        1. Position is closed when 2+ consecutive days are missing
+        2. Exit reason is DATA_MISSING
+        3. Symbol is marked as unhealthy
+        4. System continues processing other symbols
+        """
+        from trading_system.models.market_data import MarketData
+        from trading_system.models.orders import Fill
+        from trading_system.models.signals import SignalSide, BreakoutType
+        
+        # Create market data with 3 consecutive missing days
+        market_data = MarketData()
+        dates = pd.DatetimeIndex([
+            "2023-01-01",
+            "2023-01-02",
+            "2023-01-06"  # Missing 2023-01-03, 2023-01-04, 2023-01-05
+        ])
+        prices = [100.0, 101.0, 106.0]
+        bars = pd.DataFrame({
+            'open': prices,
+            'high': [p * 1.02 for p in prices],
+            'low': [p * 0.98 for p in prices],
+            'close': prices,
+            'volume': [1000000] * len(prices),
+            'dollar_volume': [p * 1000000 for p in prices]
+        }, index=dates)
+        market_data.bars['TEST_3DAY_GAP'] = bars
+        
+        # Create strategy
+        strategy = EquityStrategy(simple_strategy_config)
+        strategy.universe = ["TEST_3DAY_GAP"]
+        
+        # Create portfolio with position
+        portfolio = Portfolio(
+            date=pd.Timestamp("2023-01-01"),
+            cash=100000.0,
+            starting_equity=100000.0,
+            equity=100000.0
+        )
+        
+        # Create position before gap
+        entry_fill = Fill(
+            fill_id="test_fill_1",
+            order_id="test_order_1",
+            symbol="TEST_3DAY_GAP",
+            asset_class="equity",
+            date=pd.Timestamp("2023-01-02"),
+            side=SignalSide.BUY,
+            quantity=100,
+            fill_price=101.0,
+            open_price=101.0,
+            slippage_bps=8.0,
+            fee_bps=5.0,
+            total_cost=10150.0,
+            vol_mult=1.0,
+            size_penalty=1.0,
+            weekend_penalty=1.0,
+            stress_mult=1.0,
+            notional=10100.0
+        )
+        
+        position = portfolio.process_fill(
+            fill=entry_fill,
+            stop_price=98.0,
+            atr_mult=2.5,
+            triggered_on=BreakoutType.FAST_20D,
+            adv20_at_entry=1000000.0
+        )
+        
+        assert "TEST_3DAY_GAP" in portfolio.positions
+        assert portfolio.positions["TEST_3DAY_GAP"].is_open()
+        
+        # Create event loop
+        event_loop = DailyEventLoop(
+            market_data=market_data,
+            portfolio=portfolio,
+            strategies=[strategy],
+            compute_features_fn=compute_features,
+            get_next_trading_day=get_next_trading_day,
+            rng=None
+        )
+        
+        # Process first missing day (2023-01-03)
+        missing_date1 = pd.Timestamp("2023-01-03")
+        events1 = event_loop.process_day(missing_date1)
+        
+        # Position should still be open after 1 day
+        assert "TEST_3DAY_GAP" in portfolio.positions
+        
+        # Process second missing day (2023-01-04) - should trigger force exit
+        missing_date2 = pd.Timestamp("2023-01-04")
+        events2 = event_loop.process_day(missing_date2)
+        
+        # After 2+ consecutive missing days, position should be closed
+        # Check if position was closed or exit order was created
+        position_closed = (
+            "TEST_3DAY_GAP" not in portfolio.positions or
+            not portfolio.positions["TEST_3DAY_GAP"].is_open() or
+            len(event_loop.pending_exit_orders) > 0
+        )
+        assert position_closed, "Position should be closed after 2+ consecutive missing days"
+        
+        # Verify missing count is >= 2
+        assert event_loop.missing_data_counts.get("TEST_3DAY_GAP", 0) >= 2
+    
     def test_missing_data_resets_when_data_returns(self, sample_market_data_with_gaps, simple_strategy_config):
         """Test that missing data count resets when data becomes available again."""
         market_data = sample_market_data_with_gaps
@@ -297,9 +410,10 @@ class TestMissingDataInEventLoop:
         strategy.universe = ["SINGLE_GAP"]
         
         portfolio = Portfolio(
+            date=pd.Timestamp("2023-01-01"),
+            cash=100000.0,
             starting_equity=100000.0,
-            starting_cash=100000.0,
-            date=pd.Timestamp("2023-01-01")
+            equity=100000.0
         )
         
         event_loop = DailyEventLoop(
@@ -332,9 +446,10 @@ class TestMissingDataInEventLoop:
         strategy.universe = ["CONSECUTIVE_GAP"]
         
         portfolio = Portfolio(
+            date=pd.Timestamp("2023-01-01"),
+            cash=100000.0,
             starting_equity=100000.0,
-            starting_cash=100000.0,
-            date=pd.Timestamp("2023-01-01")
+            equity=100000.0
         )
         
         event_loop = DailyEventLoop(
@@ -396,4 +511,53 @@ class TestMissingDataWithFixtures:
         assert pd.Timestamp("2023-01-04") in result['missing_dates']
         assert len(result['consecutive_gaps']) == 1
         assert result['gap_lengths'][0] == 2
+    
+    def test_3_consecutive_missing_days(self):
+        """Test handling of 3+ consecutive missing days (enhanced edge case)."""
+        dates = pd.DatetimeIndex([
+            "2023-01-01",
+            "2023-01-02",
+            "2023-01-06"  # Missing 2023-01-03, 2023-01-04, 2023-01-05
+        ])
+        df = pd.DataFrame({
+            'open': [100.0, 101.0, 106.0],
+            'high': [102.0, 103.0, 108.0],
+            'low': [99.0, 100.0, 105.0],
+            'close': [101.0, 102.0, 107.0],
+            'volume': [1000000, 1100000, 1300000]
+        }, index=dates)
+        
+        result = detect_missing_data(df, "TEST", asset_class="equity")
+        
+        # Should detect 3 consecutive missing days
+        assert len(result['missing_dates']) == 3
+        assert pd.Timestamp("2023-01-03") in result['missing_dates']
+        assert pd.Timestamp("2023-01-04") in result['missing_dates']
+        assert pd.Timestamp("2023-01-05") in result['missing_dates']
+        assert len(result['consecutive_gaps']) == 1
+        assert result['gap_lengths'][0] == 3
+    
+    def test_multiple_consecutive_gaps(self):
+        """Test handling of multiple separate consecutive gaps."""
+        dates = pd.DatetimeIndex([
+            "2023-01-01",
+            "2023-01-02",
+            "2023-01-05",  # Gap 1: missing 2023-01-03, 2023-01-04
+            "2023-01-06",
+            "2023-01-09"   # Gap 2: missing 2023-01-07, 2023-01-08
+        ])
+        df = pd.DataFrame({
+            'open': [100.0, 101.0, 104.0, 105.0, 108.0],
+            'high': [102.0, 103.0, 106.0, 107.0, 110.0],
+            'low': [99.0, 100.0, 103.0, 104.0, 107.0],
+            'close': [101.0, 102.0, 105.0, 106.0, 109.0],
+            'volume': [1000000] * 5
+        }, index=dates)
+        
+        result = detect_missing_data(df, "TEST", asset_class="equity")
+        
+        # Should detect 4 missing days total, in 2 separate gaps
+        assert len(result['missing_dates']) == 4
+        assert len(result['consecutive_gaps']) == 2
+        assert all(gap_len == 2 for gap_len in result['gap_lengths'])
 

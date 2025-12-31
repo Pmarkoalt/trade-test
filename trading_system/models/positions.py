@@ -19,44 +19,42 @@ class ExitReason(str, Enum):
 @dataclass
 class Position:
     """Open position in portfolio."""
-    
+
+    # Required fields (no defaults) - must come first
     symbol: str
     asset_class: str
-    
-    # Entry details
     entry_date: pd.Timestamp  # Date when position was opened
     entry_price: float  # Fill price at entry
     entry_fill_id: str  # Reference to entry fill
     quantity: int  # Number of shares/units
-    
-    # Stop management
     stop_price: float  # Current stop price
     initial_stop_price: float  # Original stop (for R-multiple calculation)
     hard_stop_atr_mult: float  # ATR multiplier (2.5 equity, 3.0 crypto)
+    entry_slippage_bps: float
+    entry_fee_bps: float
+    entry_total_cost: float
+    triggered_on: BreakoutType  # Which breakout triggered entry
+    adv20_at_entry: float  # ADV20 at entry (for diagnostics)
+
+    # Optional fields (with defaults)
+    strategy_name: Optional[str] = None  # Strategy that owns this position (for multi-strategy)
     tightened_stop: bool = False  # True if stop was tightened (crypto staged exit)
     tightened_stop_atr_mult: Optional[float] = None  # 2.0 for crypto after MA20 break
-    
+
     # Exit tracking
     exit_date: Optional[pd.Timestamp] = None
     exit_price: Optional[float] = None
     exit_fill_id: Optional[str] = None
     exit_reason: Optional[ExitReason] = None
-    
-    # Cost tracking
-    entry_slippage_bps: float
-    entry_fee_bps: float
-    entry_total_cost: float
+
+    # Exit cost tracking
     exit_slippage_bps: Optional[float] = None
     exit_fee_bps: Optional[float] = None
     exit_total_cost: Optional[float] = None
-    
+
     # P&L
     realized_pnl: float = 0.0  # Only set when position is closed
     unrealized_pnl: float = 0.0  # Updated daily: (current_price - entry_price) * quantity - costs
-    
-    # Metadata
-    triggered_on: BreakoutType  # Which breakout triggered entry
-    adv20_at_entry: float  # ADV20 at entry (for diagnostics)
     
     def is_open(self) -> bool:
         """Check if position is still open.

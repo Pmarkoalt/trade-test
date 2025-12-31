@@ -55,16 +55,15 @@ class StressTestSuite:
             Backtest results with stress slippage
         """
         # Modify slippage in backtest function
-        # This assumes the backtest function accepts slippage_mult parameter
         results = self.run_backtest_func(slippage_multiplier=multiplier)
         
         return {
             'multiplier': multiplier,
             'results': results,
-            'sharpe': results.get('sharpe', 0.0),
-            'calmar': results.get('calmar', 0.0),
-            'max_dd': results.get('max_dd', 0.0),
-            'expectancy': results.get('expectancy', 0.0)
+            'sharpe': results.get('sharpe_ratio', 0.0),
+            'calmar': results.get('calmar_ratio', 0.0),
+            'max_dd': results.get('max_drawdown', 0.0),
+            'total_return': results.get('total_return', 0.0)
         }
     
     def run_bear_market_test(self) -> Dict:
@@ -76,16 +75,13 @@ class StressTestSuite:
             Backtest results for bear market only
         """
         # Filter to bear market months
-        # This assumes the backtest function accepts date filters
-        results = self.run_backtest_func(
-            filter_months='bear'  # Bear market months only
-        )
+        results = self.run_backtest_func(date_filter='bear')
         
         return {
             'regime': 'bear',
             'results': results,
-            'sharpe': results.get('sharpe', 0.0),
-            'max_dd': results.get('max_dd', 0.0),
+            'sharpe': results.get('sharpe_ratio', 0.0),
+            'max_dd': results.get('max_drawdown', 0.0),
             'total_return': results.get('total_return', 0.0)
         }
     
@@ -98,15 +94,13 @@ class StressTestSuite:
             Backtest results for range market only
         """
         # Filter to range market months
-        results = self.run_backtest_func(
-            filter_months='range'  # Range market months only
-        )
+        results = self.run_backtest_func(date_filter='range')
         
         return {
             'regime': 'range',
             'results': results,
-            'sharpe': results.get('sharpe', 0.0),
-            'max_dd': results.get('max_dd', 0.0),
+            'sharpe': results.get('sharpe_ratio', 0.0),
+            'max_dd': results.get('max_drawdown', 0.0),
             'total_return': results.get('total_return', 0.0)
         }
     
@@ -121,19 +115,19 @@ class StressTestSuite:
             Backtest results with flash crash simulation
         """
         # Run with flash crash simulation
-        # This assumes the backtest function accepts crash_simulation parameter
+        # crash_dates will be passed as a list of dates (one per quarter)
         results = self.run_backtest_func(
-            slippage_multiplier=5.0,
-            crash_simulation=True,
-            crash_frequency='quarterly'  # One crash per quarter
+            slippage_multiplier=1.0,  # Base multiplier, crashes apply 5x
+            crash_dates='auto'  # Will be generated automatically (one per quarter)
         )
+        
+        max_dd = results.get('max_drawdown', 0.0)
         
         return {
             'simulation': 'flash_crash',
             'results': results,
-            'max_dd': results.get('max_dd', 0.0),
-            'recovery_days': results.get('recovery_days', None),
-            'survived': results.get('max_dd', 0.0) > -0.25  # DD < 25%
+            'max_dd': max_dd,
+            'survived': max_dd > -0.25  # DD < 25%
         }
 
 

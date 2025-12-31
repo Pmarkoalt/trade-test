@@ -58,6 +58,33 @@ def get_trading_calendar(exchange: str = "NASDAQ"):
         return None
 
 
+def get_next_trading_day(
+    date: pd.Timestamp,
+    asset_class: str = "equity"
+) -> pd.Timestamp:
+    """
+    Get the next trading day after the given date.
+
+    Args:
+        date: Current date
+        asset_class: "equity" (skip weekends) or "crypto" (next calendar day)
+
+    Returns:
+        Next trading day timestamp
+    """
+    next_day = date + pd.Timedelta(days=1)
+
+    if asset_class == "crypto":
+        # Crypto trades 24/7, next calendar day
+        return next_day
+
+    # Equity: skip weekends (Saturday=5, Sunday=6)
+    while next_day.weekday() >= 5:
+        next_day = next_day + pd.Timedelta(days=1)
+
+    return next_day
+
+
 def get_crypto_days(
     end_date: pd.Timestamp,
     lookback: int = 7

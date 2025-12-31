@@ -1,11 +1,15 @@
 """Run configuration Pydantic models for backtest runs."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 from typing import Dict, Optional, List, Literal
 from datetime import datetime
 import yaml
 import pandas as pd
 from pathlib import Path
+from .validation import (
+    validate_file_exists, validate_yaml_format, validate_date_format,
+    validate_date_range, wrap_validation_error, ConfigValidationError
+)
 
 
 class DatasetConfig(BaseModel):
@@ -16,7 +20,26 @@ class DatasetConfig(BaseModel):
     format: str = "csv"
     start_date: str
     end_date: str
-    min_lookback_days: int = 250
+    min_lookback_days: int = Field(default=250, ge=1, le=1000)
+    
+    @field_validator('format')
+    @classmethod
+    def validate_format(cls, v: str) -> str:
+        allowed = ["csv", "parquet", "database"]
+        if v not in allowed:
+            raise ValueError(f"format must be one of {allowed}, got '{v}'")
+        return v
+    
+    @field_validator('start_date', 'end_date')
+    @classmethod
+    def validate_date(cls, v: str) -> str:
+        validate_date_format(v)
+        return v
+    
+    @model_validator(mode='after')
+    def validate_date_range(self):
+        validate_date_range(self.start_date, self.end_date, "dataset")
+        return self
 
 
 class SplitsConfig(BaseModel):
@@ -27,6 +50,37 @@ class SplitsConfig(BaseModel):
     validation_end: str
     holdout_start: str
     holdout_end: str
+    
+    @field_validator('train_start', 'train_end', 'validation_start', 'validation_end',
+                     'holdout_start', 'holdout_end')
+    @classmethod
+    def validate_date(cls, v: str) -> str:
+        validate_date_format(v)
+        return v
+    
+    @model_validator(mode='after')
+    def validate_splits(self):
+        # Validate each period's date range
+        validate_date_range(self.train_start, self.train_end, "train")
+        validate_date_range(self.validation_start, self.validation_end, "validation")
+        validate_date_range(self.holdout_start, self.holdout_end, "holdout")
+        
+        # Validate split order: train -> validation -> holdout
+        train_end = datetime.strptime(self.train_end, "%Y-%m-%d")
+        validation_start = datetime.strptime(self.validation_start, "%Y-%m-%d")
+        validation_end = datetime.strptime(self.validation_end, "%Y-%m-%d")
+        holdout_start = datetime.strptime(self.holdout_start, "%Y-%m-%d")
+        
+        if train_end >= validation_start:
+            raise ValueError(
+                f"Train end date ({self.train_end}) must be before validation start date ({self.validation_start})"
+            )
+        if validation_end >= holdout_start:
+            raise ValueError(
+                f"Validation end date ({self.validation_end}) must be before holdout start date ({self.holdout_start})"
+            )
+        
+        return self
     
     def get_dates(self, period: str) -> tuple[pd.Timestamp, pd.Timestamp]:
         """Get start and end dates for a period.
@@ -51,35 +105,60 @@ class StrategyConfigRef(BaseModel):
     """Reference to a strategy configuration file."""
     config_path: str
     enabled: bool = True
+    
+    @field_validator('config_path')
+    @classmethod
+    def validate_config_path(cls, v: str) -> str:
+        # Note: We don't validate file exists here to allow relative paths
+        # Actual validation happens when the strategy config is loaded
+        if not v or not v.strip():
+            raise ValueError("config_path cannot be empty")
+        return v
 
 
 class StrategiesConfig(BaseModel):
     """Strategies configuration."""
     equity: Optional[StrategyConfigRef] = None
     crypto: Optional[StrategyConfigRef] = None
+    
+    @model_validator(mode='after')
+    def validate_at_least_one_strategy(self):
+        if not self.equity and not self.crypto:
+            raise ValueError("At least one strategy (equity or crypto) must be enabled")
+        
+        if self.equity and not self.equity.enabled and self.crypto and not self.crypto.enabled:
+            raise ValueError("At least one strategy must be enabled")
+        
+        return self
 
 
 class PortfolioConfig(BaseModel):
     """Portfolio configuration."""
-    starting_equity: float = 100000.0
+    starting_equity: float = Field(default=100000.0, gt=0, description="Starting capital in USD")
 
 
 class VolatilityScalingConfig(BaseModel):
     """Volatility scaling configuration."""
     enabled: bool = True
     mode: Literal["continuous", "regime", "off"] = "continuous"
-    lookback: int = 20
-    baseline_lookback: int = 252
-    min_multiplier: float = 0.33
-    max_multiplier: float = 1.0
+    lookback: int = Field(default=20, ge=1, le=252)
+    baseline_lookback: int = Field(default=252, ge=1)
+    min_multiplier: float = Field(default=0.33, ge=0.0, le=1.0)
+    max_multiplier: float = Field(default=1.0, ge=0.0, le=5.0)
+    
+    @model_validator(mode='after')
+    def validate_multipliers(self):
+        if self.min_multiplier > self.max_multiplier:
+            raise ValueError(f"min_multiplier ({self.min_multiplier}) must be <= max_multiplier ({self.max_multiplier})")
+        return self
 
 
 class CorrelationGuardConfig(BaseModel):
     """Correlation guard configuration."""
     enabled: bool = True
-    min_positions: int = 4
-    avg_pairwise_threshold: float = 0.70
-    candidate_threshold: float = 0.75
+    min_positions: int = Field(default=4, ge=1)
+    avg_pairwise_threshold: float = Field(default=0.70, ge=0.0, le=1.0)
+    candidate_threshold: float = Field(default=0.75, ge=0.0, le=1.0)
 
 
 class ScoringConfig(BaseModel):
@@ -91,13 +170,49 @@ class ScoringConfig(BaseModel):
             "diversification": 0.20
         }
     )
+    
+    @model_validator(mode='after')
+    def validate_weights(self):
+        total = sum(self.weights.values())
+        if abs(total - 1.0) > 0.001:  # Allow small floating point errors
+            raise ValueError(f"Scoring weights must sum to 1.0, got {total}")
+        
+        for key, value in self.weights.items():
+            if value < 0 or value > 1:
+                raise ValueError(f"Scoring weight '{key}' must be between 0 and 1, got {value}")
+        
+        return self
 
 
 class ExecutionConfig(BaseModel):
     """Execution configuration."""
-    signal_timing: str = "close"
-    execution_timing: str = "next_open"
-    slippage_model: str = "full"
+    signal_timing: str = Field(default="close")
+    execution_timing: str = Field(default="next_open")
+    slippage_model: str = Field(default="full")
+    
+    @field_validator('signal_timing')
+    @classmethod
+    def validate_signal_timing(cls, v: str) -> str:
+        allowed = ["close"]
+        if v not in allowed:
+            raise ValueError(f"signal_timing must be one of {allowed}, got '{v}'")
+        return v
+    
+    @field_validator('execution_timing')
+    @classmethod
+    def validate_execution_timing(cls, v: str) -> str:
+        allowed = ["next_open"]
+        if v not in allowed:
+            raise ValueError(f"execution_timing must be one of {allowed}, got '{v}'")
+        return v
+    
+    @field_validator('slippage_model')
+    @classmethod
+    def validate_slippage_model(cls, v: str) -> str:
+        allowed = ["full", "simple", "none"]
+        if v not in allowed:
+            raise ValueError(f"slippage_model must be one of {allowed}, got '{v}'")
+        return v
 
 
 class OutputConfig(BaseModel):
@@ -109,8 +224,18 @@ class OutputConfig(BaseModel):
     weekly_summary: str = "weekly_summary.csv"
     monthly_report: str = "monthly_report.json"
     scenario_comparison: str = "scenario_comparison.json"
-    log_level: str = "INFO"
+    log_level: str = Field(default="INFO")
     log_file: str = "backtest.log"
+    log_json_format: bool = False  # Use JSON format for file logs
+    log_use_rich: bool = True  # Use rich for console output (if available)
+    
+    @field_validator('log_level')
+    @classmethod
+    def validate_log_level(cls, v: str) -> str:
+        allowed = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+        if v.upper() not in allowed:
+            raise ValueError(f"log_level must be one of {allowed}, got '{v}'")
+        return v.upper()
     
     def get_run_id(self) -> str:
         """Get or generate run ID.
@@ -212,15 +337,27 @@ class RunConfig(BaseModel):
             
         Returns:
             RunConfig instance
+            
+        Raises:
+            FileNotFoundError: If config file doesn't exist
+            ConfigValidationError: If configuration validation fails
         """
-        path_obj = Path(path)
-        if not path_obj.exists():
-            raise FileNotFoundError(f"Config file not found: {path}")
+        try:
+            validate_file_exists(path, "run config")
+            data = validate_yaml_format(path)
+        except (FileNotFoundError, ValueError) as e:
+            raise
         
-        with open(path, 'r') as f:
-            data = yaml.safe_load(f)
-        
-        return cls(**data)
+        try:
+            return cls(**data)
+        except Exception as e:
+            if isinstance(e, Exception) and hasattr(e, 'errors'):
+                # Pydantic validation error
+                raise wrap_validation_error(e, "Run configuration", config_path=path) from e
+            raise ConfigValidationError(
+                f"Failed to load run configuration: {str(e)}", 
+                config_path=path
+            ) from e
     
     def to_yaml(self, path: str) -> None:
         """Save run configuration to YAML file.

@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 from unittest.mock import Mock
 
-from trading_system.models.signals import Signal, SignalSide, BreakoutType
+from trading_system.models.signals import Signal, SignalSide, SignalType, BreakoutType
 from trading_system.models.features import FeatureRow
 from trading_system.models.portfolio import Portfolio
 from trading_system.models.positions import Position
@@ -32,6 +32,8 @@ class TestComputeBreakoutStrength:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason="momentum_breakout_20D",
             entry_price=105.0,
             stop_price=100.0,
             atr_mult=2.5,
@@ -72,6 +74,8 @@ class TestComputeBreakoutStrength:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason="momentum_breakout_55D",
             entry_price=105.0,
             stop_price=100.0,
             atr_mult=2.5,
@@ -112,6 +116,8 @@ class TestComputeBreakoutStrength:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason="momentum_breakout_20D",
             entry_price=105.0,
             stop_price=100.0,
             atr_mult=2.5,
@@ -150,6 +156,8 @@ class TestComputeBreakoutStrength:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason="momentum_breakout_20D",
             entry_price=105.0,
             stop_price=100.0,
             atr_mult=2.5,
@@ -280,14 +288,14 @@ class TestRankNormalize:
         """Test normalization handles NaN values."""
         values = [10.0, np.nan, 30.0, np.inf]
         normalized = rank_normalize(values)
-        
+
         assert len(normalized) == 4
         # NaN and inf should get 0.0 rank
         assert normalized[1] == 0.0
         assert normalized[3] == 0.0
-        # Valid values should be normalized
-        assert 0.0 < normalized[0] <= 1.0
-        assert 0.0 < normalized[2] <= 1.0
+        # Valid values should be normalized (lowest valid gets 0.0, highest gets 1.0)
+        assert 0.0 <= normalized[0] <= 1.0  # 10.0 is lowest valid, gets 0.0
+        assert 0.0 <= normalized[2] <= 1.0  # 30.0 is highest valid, gets 1.0
 
 
 class TestComputeDiversificationBonus:
@@ -300,6 +308,8 @@ class TestComputeDiversificationBonus:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason="momentum_breakout_20D",
             entry_price=105.0,
             stop_price=100.0,
             atr_mult=2.5,
@@ -336,6 +346,8 @@ class TestComputeDiversificationBonus:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason="momentum_breakout_20D",
             entry_price=105.0,
             stop_price=100.0,
             atr_mult=2.5,
@@ -396,6 +408,8 @@ class TestScoreSignals:
                 asset_class='equity',
                 date=date,
                 side=SignalSide.BUY,
+                signal_type=SignalType.ENTRY_LONG,
+                trigger_reason="momentum_breakout_20D",
                 entry_price=105.0,
                 stop_price=100.0,
                 atr_mult=2.5,
@@ -416,6 +430,8 @@ class TestScoreSignals:
                 asset_class='equity',
                 date=date,
                 side=SignalSide.BUY,
+                signal_type=SignalType.ENTRY_LONG,
+                trigger_reason="momentum_breakout_20D",
                 entry_price=210.0,
                 stop_price=200.0,
                 atr_mult=2.5,
@@ -497,6 +513,8 @@ class TestViolatesCorrelationGuard:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason="momentum_breakout_20D",
             entry_price=105.0,
             stop_price=100.0,
             atr_mult=2.5,
@@ -536,6 +554,8 @@ class TestViolatesCorrelationGuard:
             asset_class='equity',
             date=pd.Timestamp('2024-01-01'),
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason="momentum_breakout_20D",
             entry_price=105.0,
             stop_price=100.0,
             atr_mult=2.5,
@@ -583,6 +603,8 @@ class TestSelectSignalsFromQueue:
                 asset_class='equity',
                 date=date,
                 side=SignalSide.BUY,
+                signal_type=SignalType.ENTRY_LONG,
+                trigger_reason="momentum_breakout_20D",
                 entry_price=105.0,
                 stop_price=100.0,
                 atr_mult=2.5,
@@ -603,6 +625,8 @@ class TestSelectSignalsFromQueue:
                 asset_class='equity',
                 date=date,
                 side=SignalSide.BUY,
+                signal_type=SignalType.ENTRY_LONG,
+                trigger_reason="momentum_breakout_20D",
                 entry_price=210.0,
                 stop_price=200.0,
                 atr_mult=2.5,
@@ -655,6 +679,8 @@ class TestSelectSignalsFromQueue:
                 asset_class='equity',
                 date=date,
                 side=SignalSide.BUY,
+                signal_type=SignalType.ENTRY_LONG,
+                trigger_reason="momentum_breakout_20D",
                 entry_price=100.0 + i,
                 stop_price=95.0 + i,
                 atr_mult=2.5,
@@ -706,6 +732,8 @@ class TestSelectSignalsFromQueue:
             asset_class='equity',
             date=date,
             side=SignalSide.BUY,
+            signal_type=SignalType.ENTRY_LONG,
+            trigger_reason="momentum_breakout_20D",
             entry_price=105.0,
             stop_price=100.0,
             atr_mult=2.5,

@@ -1,0 +1,4 @@
+# This directory stores pytest-benchmark results
+# Baselines are stored here for regression detection
+# Add .benchmarks/*.json to .gitignore to avoid committing baseline files
+

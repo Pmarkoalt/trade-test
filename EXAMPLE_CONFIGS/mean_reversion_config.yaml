@@ -1,0 +1,70 @@
+# Equity Mean Reversion Strategy Configuration
+# Best for: Liquid ETFs (SPY, QQQ, etc.) with mean-reverting behavior
+
+name: "equity_mean_reversion"
+asset_class: "equity"
+universe: ["SPY", "QQQ", "IWM", "DIA", "XLF", "XLE", "XLK", "XLV", "XLI", "XLP"]  # Liquid ETFs
+benchmark: "SPY"
+
+# Indicator calculation parameters
+indicators:
+  ma_periods: [20, 50, 200]  # Still compute for compatibility
+  atr_period: 14
+  roc_period: 60
+  breakout_fast: 20
+  breakout_slow: 55
+  adv_lookback: 20
+  corr_lookback: 20
+
+# Mean reversion parameters
+parameters:
+  lookback: 20  # Rolling window for mean/std calculation
+  entry_std: 2.0  # Enter when z-score < -2.0 (oversold)
+  exit_std: 0.0  # Exit when z-score >= 0.0 (reverted to mean)
+  max_hold_days: 5  # Maximum holding period (time stop)
+  atr_period: 14  # ATR period for stop calculation
+  stop_atr_mult: 2.0  # Stop = entry - 2.0 * ATR14
+  min_adv20: 10000000  # Minimum $10M ADV for liquidity
+
+# Eligibility filter (minimal for mean reversion)
+eligibility:
+  trend_ma: 50  # Not used for mean reversion, but required by config
+  ma_slope_lookback: 20
+  ma_slope_min: 0.005
+  require_close_above_trend_ma: false  # Mean reversion doesn't require trend
+  require_close_above_ma200: false
+  relative_strength_enabled: false
+  relative_strength_min: 0.0
+
+# Entry trigger configuration (not used for mean reversion, but required)
+entry:
+  fast_clearance: 0.005
+  slow_clearance: 0.010
+
+# Exit configuration
+exit:
+  mode: "ma_cross"  # Not used for mean reversion (uses z-score exits)
+  exit_ma: 20
+  hard_stop_atr_mult: 2.0  # Used for hard stop
+  tightened_stop_atr_mult: null
+
+# Risk management
+risk:
+  risk_per_trade: 0.0075  # 0.75% of equity per trade
+  max_positions: 5  # Fewer positions for mean reversion (faster turnover)
+  max_exposure: 0.50  # Lower exposure (mean reversion is riskier)
+  max_position_notional: 0.15  # 15% maximum per position
+
+# Capacity constraints
+capacity:
+  max_order_pct_adv: 0.005  # 0.5% of 20D average dollar volume
+
+# Execution costs
+costs:
+  fee_bps: 1  # 1 basis point per side
+  slippage_base_bps: 8  # Base slippage (8 bps for equity)
+  slippage_std_mult: 0.75  # Standard deviation multiplier
+  weekend_penalty: 1.0  # Not used for equity
+  stress_threshold: -0.03  # SPY weekly return < -3% triggers stress
+  stress_slippage_mult: 2.0  # Double slippage during stress
+

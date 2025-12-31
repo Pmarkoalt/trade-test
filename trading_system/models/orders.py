@@ -18,26 +18,24 @@ class OrderStatus(str, Enum):
 @dataclass
 class Order:
     """Order to execute at next session open."""
-    
+
+    # Required fields (no defaults)
     order_id: str  # Unique identifier
     symbol: str
     asset_class: str
     date: pd.Timestamp  # Date when order was created (signal date)
     execution_date: pd.Timestamp  # Date when order should execute (next open)
-    
     side: SignalSide  # BUY or SELL
     quantity: int  # Number of shares/units (calculated from risk sizing)
-    limit_price: Optional[float] = None  # Not used (market orders only)
-    
-    # Derived from signal
     signal_date: pd.Timestamp  # Original signal date
     expected_fill_price: float  # Next open price (estimated)
     stop_price: float  # Stop price for position
-    
-    # Status
+
+    # Optional fields (with defaults)
+    limit_price: Optional[float] = None  # Not used (market orders only)
     status: OrderStatus = OrderStatus.PENDING
     rejection_reason: Optional[str] = None  # If REJECTED
-    
+
     # Constraints checked
     capacity_checked: bool = False
     correlation_checked: bool = False

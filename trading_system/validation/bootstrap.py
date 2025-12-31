@@ -108,16 +108,17 @@ class BootstrapTest:
         self.starting_equity = starting_equity
         self.risk_per_trade = risk_per_trade
         self.trades_per_year = trades_per_year
-        
-        if random_seed is not None:
-            np.random.seed(random_seed)
-    
+        self.random_seed = random_seed
+
     def run(self) -> Dict:
         """Run bootstrap analysis.
-        
+
         Returns:
             Dictionary with percentile results and statistics
         """
+        # Seed here so each run() is reproducible
+        if self.random_seed is not None:
+            np.random.seed(self.random_seed)
         # Initialize storage
         sharpe_samples = []
         max_dd_samples = []

@@ -1,17 +1,15 @@
 """Equity momentum strategy implementation."""
 
 from typing import List, Optional
-import pandas as pd
 import numpy as np
 
-from .base_strategy import BaseStrategy
-from ..configs.strategy_config import StrategyConfig
-from ..models.signals import BreakoutType
-from ..models.features import FeatureRow
-from ..models.positions import Position, ExitReason
+from .momentum_base import MomentumBaseStrategy
+from ...configs.strategy_config import StrategyConfig
+from ...models.features import FeatureRow
+from ...models.positions import Position, ExitReason
 
 
-class EquityStrategy(BaseStrategy):
+class EquityMomentumStrategy(MomentumBaseStrategy):
     """Equity momentum strategy with eligibility filters, entry triggers, and exit logic.
     
     Eligibility:
@@ -31,14 +29,14 @@ class EquityStrategy(BaseStrategy):
     """
     
     def __init__(self, config: StrategyConfig):
-        """Initialize equity strategy.
+        """Initialize equity momentum strategy.
         
         Args:
             config: Strategy configuration (must have asset_class="equity")
         """
         if config.asset_class != "equity":
             raise ValueError(
-                f"EquityStrategy requires asset_class='equity', got '{config.asset_class}'"
+                f"EquityMomentumStrategy requires asset_class='equity', got '{config.asset_class}'"
             )
         
         super().__init__(config)
@@ -113,46 +111,6 @@ class EquityStrategy(BaseStrategy):
                 return False, failures
         
         return True, []
-    
-    def check_entry_triggers(
-        self, features: FeatureRow
-    ) -> tuple[Optional[BreakoutType], float]:
-        """Check if entry triggers are met.
-        
-        Entry triggers (OR logic):
-        - Fast: close >= highest_close_20d * (1 + fast_clearance)
-        - Slow: close >= highest_close_55d * (1 + slow_clearance)
-        
-        Args:
-            features: FeatureRow with indicators for the symbol
-        
-        Returns:
-            Tuple of (breakout_type, clearance) or (None, 0.0) if no trigger
-        """
-        fast_clearance = self.config.entry.fast_clearance
-        slow_clearance = self.config.entry.slow_clearance
-        
-        # Check fast trigger (20D)
-        if (
-            features.highest_close_20d is not None
-            and not np.isnan(features.highest_close_20d)
-        ):
-            fast_threshold = features.highest_close_20d * (1 + fast_clearance)
-            if features.close >= fast_threshold:
-                clearance = (features.close / features.highest_close_20d) - 1
-                return BreakoutType.FAST_20D, clearance
-        
-        # Check slow trigger (55D)
-        if (
-            features.highest_close_55d is not None
-            and not np.isnan(features.highest_close_55d)
-        ):
-            slow_threshold = features.highest_close_55d * (1 + slow_clearance)
-            if features.close >= slow_threshold:
-                clearance = (features.close / features.highest_close_55d) - 1
-                return BreakoutType.SLOW_55D, clearance
-        
-        return None, 0.0
     
     def check_exit_signals(
         self, position: Position, features: FeatureRow

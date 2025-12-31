@@ -5,7 +5,9 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 
-from trading_system.strategies.crypto_strategy import CryptoStrategy
+from trading_system.strategies.momentum.crypto_momentum import CryptoMomentumStrategy
+# Backward compatibility alias
+CryptoStrategy = CryptoMomentumStrategy
 from trading_system.configs.strategy_config import (
     StrategyConfig,
     EligibilityConfig,

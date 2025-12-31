@@ -3,9 +3,10 @@
 import pandas as pd
 import numpy as np
 from typing import Union
+from .cache import get_cache
 
 
-def atr(df_ohlc: pd.DataFrame, period: int = 14) -> pd.Series:
+def atr(df_ohlc: pd.DataFrame, period: int = 14, use_cache: bool = True) -> pd.Series:
     """Compute Average True Range using Wilder's exponential smoothing.
     
     ATR measures volatility by calculating the average of true ranges over
@@ -45,13 +46,25 @@ def atr(df_ohlc: pd.DataFrame, period: int = 14) -> pd.Series:
             f"Found: {list(df_ohlc.columns)}"
         )
     
-    # Calculate True Range components
-    tr1 = df_ohlc['high'] - df_ohlc['low']
-    tr2 = abs(df_ohlc['high'] - df_ohlc['close'].shift(1))
-    tr3 = abs(df_ohlc['low'] - df_ohlc['close'].shift(1))
+    # Check cache if enabled
+    if use_cache:
+        cache = get_cache()
+        if cache is not None:
+            cache_key = (f"atr_{id(df_ohlc)}_{len(df_ohlc)}", "atr", period)
+            cached_result = cache.get(cache_key)
+            if cached_result is not None:
+                return cached_result
     
-    # True Range is the maximum of the three
-    tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
+    # Optimized: Calculate True Range components using vectorized operations
+    close_shifted = df_ohlc['close'].shift(1)
+    tr1 = df_ohlc['high'] - df_ohlc['low']
+    tr2 = (df_ohlc['high'] - close_shifted).abs()
+    tr3 = (df_ohlc['low'] - close_shifted).abs()
+    
+    # True Range is the maximum of the three (vectorized)
+    # Use np.maximum.reduce for better performance than pd.concat + max
+    tr = np.maximum.reduce([tr1.values, tr2.values, tr3.values])
+    tr = pd.Series(tr, index=df_ohlc.index)
     
     # Wilder's smoothing: exponential moving average with alpha = 1/period
     # adjust=False means we use the recursive formula:
@@ -63,6 +76,13 @@ def atr(df_ohlc: pd.DataFrame, period: int = 14) -> pd.Series:
     # but we set first period-1 to NaN to be conservative
     if len(atr_series) > 0 and len(atr_series) >= period:
         atr_series.iloc[:period-1] = np.nan
+    
+    # Cache result if enabled
+    if use_cache:
+        cache = get_cache()
+        if cache is not None:
+            cache_key = (f"atr_{id(df_ohlc)}_{len(df_ohlc)}", "atr", period)
+            cache.set(cache_key, atr_series)
     
     return atr_series
 

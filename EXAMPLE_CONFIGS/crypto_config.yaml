@@ -3,8 +3,27 @@
 
 name: "crypto_momentum"
 asset_class: "crypto"
-universe: ["BTC", "ETH", "BNB", "XRP", "ADA", "SOL", "DOT", "MATIC", "LTC", "LINK"]  # Fixed list
+universe: ["BTC", "ETH", "BNB", "XRP", "ADA", "SOL", "DOT", "MATIC", "LTC", "LINK"]  # Fixed list (backward compatible)
 benchmark: "BTC"
+
+# Optional: Dynamic universe configuration (uncomment to enable)
+# If universe_config is provided, it overrides the universe list above
+# universe_config:
+#   mode: "fixed"  # Options: "fixed", "custom", "dynamic"
+#   symbols: ["BTC", "ETH", "BNB", "XRP", "ADA", "SOL", "DOT", "MATIC", "LTC", "LINK"]  # For "fixed" or "custom" mode
+# 
+#   # For "dynamic" mode - filter by:
+#   # min_market_cap_usd: 1000000000  # Minimum $1B market cap (requires market_cap column in data)
+#   # min_volume_usd: 10000000  # Minimum $10M daily dollar volume
+#   # min_liquidity_score: 0.5  # Minimum liquidity score (0-1, normalized percentile)
+#   # max_symbols: 10  # Maximum number of symbols to select
+# 
+#   # Rebalancing (only applies in dynamic mode)
+#   # rebalance_frequency: "monthly"  # Options: "monthly", "quarterly", "never"
+#   # rebalance_lookback_days: 30  # Days to look back for metrics
+# 
+#   # For "custom" mode - load from file
+#   # universe_file_path: "data/crypto/universe/custom_universe.csv"  # CSV with 'symbol' column or first column
 
 # Indicator calculation parameters
 indicators:

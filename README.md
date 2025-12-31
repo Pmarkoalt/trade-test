@@ -1,5 +1,9 @@
 # Trading System V0.1
 
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Coverage](https://img.shields.io/badge/coverage-To%20be%20generated-lightgrey)](./htmlcov/index.html)
+
 A config-driven daily momentum trading system for equities and cryptocurrency with walk-forward backtesting, realistic execution costs, and comprehensive validation suite.
 
 ## Overview
@@ -71,6 +75,89 @@ pip install -r requirements.txt
 # Or manually check
 python -c "import pandas, numpy, pydantic, yaml; print('Dependencies OK')"
 ```
+
+### Docker Installation (Alternative)
+
+The trading system can also be run using Docker, which ensures a consistent environment across different systems.
+
+#### Prerequisites
+- Docker 20.10+ installed
+- Docker Compose 2.0+ (optional, for easier management)
+
+#### Build and Run with Docker
+
+```bash
+# Build the Docker image
+docker build -t trading-system:latest .
+
+# Run a command directly
+docker run --rm -v $(pwd)/EXAMPLE_CONFIGS:/app/configs:ro \
+  -v $(pwd)/results:/app/results \
+  trading-system:latest backtest --config /app/configs/run_config.yaml
+
+# Or use docker-compose (recommended)
+docker-compose build
+docker-compose run --rm trading-system backtest --config /app/configs/run_config.yaml
+```
+
+#### Docker Compose Examples
+
+```bash
+# Run backtest
+docker-compose run --rm trading-system backtest \
+  --config /app/configs/run_config.yaml --period train
+
+# Run validation suite
+docker-compose run --rm trading-system validate \
+  --config /app/configs/run_config.yaml
+
+# Run tests
+docker-compose run --rm trading-system pytest tests/ -v
+
+# Interactive shell
+docker-compose run --rm trading-system /bin/bash
+```
+
+#### Volume Mounts
+
+The `docker-compose.yml` includes pre-configured volume mounts:
+- `./data` → `/app/data` (read-only) - Input data files
+- `./EXAMPLE_CONFIGS` → `/app/configs` (read-only) - Configuration files
+- `./results` → `/app/results` (read-write) - Output results
+- `./tests/fixtures` → `/app/tests/fixtures` (read-only) - Test data
+- `./configs` → `/app/custom_configs` (read-only) - Custom configs (optional)
+
+Ensure your data files and configs are in the correct directories on your host machine before running Docker commands.
+
+### Environment Variables
+
+**Current Status**: No environment variables are required for backtesting functionality.
+
+The trading system is designed to work entirely through configuration files. All settings, data paths, and strategy parameters are specified in YAML configuration files.
+
+#### Docker Environment Variables
+
+When running with Docker (via `docker-compose.yml`), the following environment variables are automatically set:
+
+- **`PYTHONPATH=/app`**: Ensures Python can find the `trading_system` module
+- **`PYTHONUNBUFFERED=1`**: Ensures Python output is not buffered (useful for logging)
+
+These are set automatically in `docker-compose.yml` and do not need to be configured manually.
+
+#### Future API Adapter Support
+
+If you plan to use broker API adapters (e.g., Alpaca, Interactive Brokers) for live trading or paper trading:
+
+- **API credentials** are currently passed via `AdapterConfig` objects in code
+- **No environment variables** are currently used for API keys
+- Credentials should be stored securely and passed programmatically
+
+**Note**: The system does not currently load credentials from environment variables. If you need this functionality, you would need to:
+1. Use a library like `python-dotenv` to load from `.env` files
+2. Modify adapter initialization to read from `os.getenv()`
+3. Ensure `.env` files are in `.gitignore` (already configured ✅)
+
+For backtesting, no API credentials are needed as the system uses local CSV/Parquet data files.
 
 ## Quick Start
 
@@ -222,6 +309,23 @@ pytest tests/ -v
 pytest tests/integration/ -v
 ```
 
+### Test Coverage
+
+Generate a test coverage report:
+
+```bash
+# Using the helper script (recommended)
+./scripts/coverage_report.sh
+
+# Or manually
+pytest --cov=trading_system --cov-report=html --cov-report=term-missing
+```
+
+Coverage reports:
+- **HTML Report**: `htmlcov/index.html` - Interactive coverage browser
+- **Terminal Report**: Shows coverage summary and missing lines
+- **Target**: >90% coverage
+
 ### Test Data
 Test fixtures include 3 months of sample data (Oct-Dec 2023) for:
 - **Equity**: AAPL, MSFT, GOOGL
@@ -267,20 +371,39 @@ After running a backtest, results are saved to `{output_dir}/{period}/`:
 
 ## Documentation
 
-Comprehensive documentation is available in `agent-files/`:
+Comprehensive documentation is organized across multiple locations:
 
-- **Architecture Overview**: System design and module responsibilities
-- **Configuration Guide**: Parameter documentation
-- **Data Pipeline**: Data loading and validation
-- **Indicators Library**: Technical indicator specifications
-- **Strategy Details**: Equity and crypto strategy logic
-- **Backtest Engine**: Event loop and execution flow
-- **Validation Suite**: Statistical and stress testing
-- **Portfolio State Machine**: Portfolio update sequence
+### Quick Start
+- **[Getting Started Guide](docs/user_guide/getting_started.md)** - Installation and first backtest
+- **[Documentation Index](DOCUMENTATION.md)** - Complete documentation navigation
+
+### User Documentation
+- **[User Guide](docs/user_guide/README.md)** - User-facing guides and tutorials
+- **[Example Configurations](EXAMPLE_CONFIGS/README.md)** - Working configuration examples
+
+### Technical Documentation
+- **[Architecture Overview](agent-files/01_ARCHITECTURE_OVERVIEW.md)** - System design and module responsibilities
+- **[Configuration Guide](agent-files/02_CONFIGS_AND_PARAMETERS.md)** - Parameter documentation
+- **[Data Pipeline](agent-files/03_DATA_PIPELINE_AND_VALIDATION.md)** - Data loading and validation
+- **[Indicators Library](agent-files/04_INDICATORS_LIBRARY.md)** - Technical indicator specifications
+- **[Strategy Details](agent-files/06_STRATEGY_EQUITY.md)** - Equity and crypto strategy logic
+- **[Backtest Engine](agent-files/10_BACKTEST_ENGINE.md)** - Event loop and execution flow
+- **[Validation Suite](agent-files/12_VALIDATION_SUITE.md)** - Statistical and stress testing
+- **[Portfolio State Machine](agent-files/PORTFOLIO_STATE_MACHINE.md)** - Portfolio update sequence
+
+### Developer Documentation
+- **[Developer Guide](docs/developer_guide/README.md)** - Development setup and guidelines
+- **[API Reference](docs/api/index.rst)** - Complete API documentation (Sphinx)
+
+### Testing
+- **[Testing Guide](TESTING_GUIDE.md)** - Comprehensive testing instructions
+- **[Quick Start Testing](QUICK_START_TESTING.md)** - Quick testing reference
+
+See [DOCUMENTATION.md](DOCUMENTATION.md) for the complete documentation index.
 
 ## Status
 
-**Version**: 0.1.0
+**Version**: 0.0.2
 
 This is the initial implementation (V0.1) with:
 - ✅ Core backtest engine

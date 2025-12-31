@@ -48,6 +48,11 @@ class FeatureRow:
     benchmark_roc60: Optional[float] = None  # SPY or BTC ROC60
     benchmark_returns_1d: Optional[float] = None  # SPY or BTC daily return
     
+    # Mean reversion indicators
+    zscore: Optional[float] = None  # Z-score: (close - MA) / STD, for mean reversion
+    ma_lookback: Optional[float] = None  # Rolling mean for mean reversion (configurable lookback)
+    std_lookback: Optional[float] = None  # Rolling std for mean reversion
+    
     def is_valid_for_entry(self) -> bool:
         """Check if sufficient data exists for signal generation.
         

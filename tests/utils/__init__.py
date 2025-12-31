@@ -19,6 +19,15 @@ from .assertions import (
     assert_valid_fill,
     assert_valid_portfolio,
 )
+from .data_generator import (
+    SyntheticDataGenerator,
+    DataPattern,
+    TrendType,
+    BreakoutType,
+    generate_trend_data,
+    generate_breakout_data,
+    generate_edge_case_data,
+)
 
 __all__ = [
     # Helpers
@@ -38,5 +47,13 @@ __all__ = [
     "assert_valid_order",
     "assert_valid_fill",
     "assert_valid_portfolio",
+    # Data Generator
+    "SyntheticDataGenerator",
+    "DataPattern",
+    "TrendType",
+    "BreakoutType",
+    "generate_trend_data",
+    "generate_breakout_data",
+    "generate_edge_case_data",
 ]
 

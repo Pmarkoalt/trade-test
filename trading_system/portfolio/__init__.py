@@ -7,6 +7,19 @@ from .correlation import (
     compute_average_pairwise_correlation,
     compute_correlation_to_portfolio
 )
+from .optimization import (
+    PortfolioOptimizer,
+    OptimizationResult,
+    RebalanceTarget,
+    compute_rebalance_targets,
+    should_rebalance
+)
+from .analytics import (
+    PortfolioAnalyticsCalculator,
+    PortfolioAnalytics,
+    RiskAttribution,
+    PerformanceAttribution
+)
 
 __all__ = [
     "Portfolio",
@@ -15,5 +28,14 @@ __all__ = [
     "compute_volatility_scaling",
     "compute_average_pairwise_correlation",
     "compute_correlation_to_portfolio",
+    "PortfolioOptimizer",
+    "OptimizationResult",
+    "RebalanceTarget",
+    "compute_rebalance_targets",
+    "should_rebalance",
+    "PortfolioAnalyticsCalculator",
+    "PortfolioAnalytics",
+    "RiskAttribution",
+    "PerformanceAttribution",
 ]
 

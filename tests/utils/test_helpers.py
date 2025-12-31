@@ -6,7 +6,7 @@ import numpy as np
 
 from trading_system.models.bar import Bar
 from trading_system.models.features import FeatureRow
-from trading_system.models.signals import Signal, SignalSide, BreakoutType
+from trading_system.models.signals import Signal, SignalSide, SignalType, BreakoutType
 from trading_system.models.orders import Order, OrderStatus, Fill
 from trading_system.models.portfolio import Portfolio
 from trading_system.models.positions import Position, ExitReason
@@ -152,6 +152,8 @@ def create_sample_signal(
         asset_class=asset_class,
         date=date,
         side=SignalSide.BUY,
+        signal_type=kwargs.get('signal_type', SignalType.ENTRY_LONG),
+        trigger_reason=kwargs.get('trigger_reason', 'test_breakout'),
         entry_price=entry_price,
         stop_price=stop_price,
         atr_mult=atr_mult,

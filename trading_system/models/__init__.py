@@ -2,7 +2,7 @@
 
 from .bar import Bar
 from .features import FeatureRow
-from .signals import Signal, SignalSide, BreakoutType
+from .signals import Signal, SignalSide, SignalType, BreakoutType
 from .orders import Order, Fill, OrderStatus
 from .positions import Position, ExitReason
 from .portfolio import Portfolio
@@ -13,6 +13,7 @@ __all__ = [
     "FeatureRow",
     "Signal",
     "SignalSide",
+    "SignalType",
     "BreakoutType",
     "Order",
     "Fill",

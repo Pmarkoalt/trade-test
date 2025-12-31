@@ -1,0 +1,71 @@
+# Equity Multi-Timeframe Strategy Configuration
+# Uses higher timeframe (daily MA50) for trend filtering and lower timeframe (weekly breakout) for entry
+# Best for: Trending equities with clear higher timeframe trends
+
+name: "equity_multi_timeframe"
+asset_class: "equity"
+universe: ["SPY", "QQQ", "IWM", "DIA", "XLF", "XLE", "XLK", "XLV", "XLI", "XLP"]  # Liquid ETFs
+benchmark: "SPY"
+
+# Indicator calculation parameters
+indicators:
+  ma_periods: [20, 50, 200]  # MA50 used for higher timeframe trend filter
+  atr_period: 14
+  roc_period: 60
+  breakout_fast: 20
+  breakout_slow: 55  # Used as proxy for weekly breakout (55 days ≈ 4 weeks)
+  adv_lookback: 20
+  corr_lookback: 20
+
+# Multi-timeframe parameters
+parameters:
+  higher_tf_ma: 50  # Daily MA50 (higher timeframe trend filter)
+  weekly_lookback: 4  # 4 weeks for weekly breakout
+  weekly_days: 28  # ~4 weeks in trading days (used for highest_close_55d proxy)
+  atr_period: 14  # ATR period for stop calculation
+  stop_atr_mult: 2.0  # Stop = entry - 2.0 * ATR14
+  max_hold_days: 60  # Longer hold for trend following
+  min_adv20: 10000000  # Minimum $10M ADV for liquidity
+
+# Eligibility filter
+eligibility:
+  trend_ma: 50  # MA50 used as higher timeframe trend filter
+  ma_slope_lookback: 20
+  ma_slope_min: 0.005
+  require_close_above_trend_ma: true  # Price must be above MA50 (higher TF trend)
+  require_close_above_ma200: false
+  relative_strength_enabled: false
+  relative_strength_min: 0.0
+
+# Entry trigger configuration
+entry:
+  fast_clearance: 0.005
+  slow_clearance: 0.010  # Weekly breakout clearance threshold
+
+# Exit configuration
+exit:
+  mode: "ma_cross"  # Exit when price breaks below MA50 (higher TF trend break)
+  exit_ma: 50  # MA50 used for exit
+  hard_stop_atr_mult: 2.0  # Used for hard stop
+  tightened_stop_atr_mult: null
+
+# Risk management
+risk:
+  risk_per_trade: 0.0075  # 0.75% of equity per trade
+  max_positions: 8  # Moderate position count for trend following
+  max_exposure: 0.70  # 70% maximum gross exposure
+  max_position_notional: 0.15  # 15% maximum per position
+
+# Capacity constraints
+capacity:
+  max_order_pct_adv: 0.005  # 0.5% of 20D average dollar volume
+
+# Execution costs
+costs:
+  fee_bps: 1  # 1 basis point per side
+  slippage_base_bps: 8  # Base slippage (8 bps for equity)
+  slippage_std_mult: 0.75  # Standard deviation multiplier
+  weekend_penalty: 1.0  # Not used for equity
+  stress_threshold: -0.03  # SPY weekly return < -3% triggers stress
+  stress_slippage_mult: 2.0  # Double slippage during stress
+

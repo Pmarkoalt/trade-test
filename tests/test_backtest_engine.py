@@ -9,10 +9,12 @@ import shutil
 
 from trading_system.backtest import BacktestEngine, WalkForwardSplit, create_default_split
 from trading_system.models.market_data import MarketData
-from trading_system.models.portfolio import Portfolio
-from trading_system.strategies.equity_strategy import EquityStrategy
-from trading_system.strategies.crypto_strategy import CryptoStrategy
-from trading_system.configs.strategy_config import StrategyConfig, load_config
+from trading_system.portfolio.portfolio import Portfolio
+from trading_system.strategies import EquityMomentumStrategy, CryptoMomentumStrategy
+# Backward compatibility aliases
+EquityStrategy = EquityMomentumStrategy
+CryptoStrategy = CryptoMomentumStrategy
+from trading_system.configs.strategy_config import StrategyConfig
 
 
 @pytest.fixture
@@ -92,6 +94,7 @@ def simple_strategy_config():
     """Create a simple strategy config for testing."""
     # Create minimal config
     config_dict = {
+        'name': 'test_equity_momentum',
         'asset_class': 'equity',
         'universe': ['SYMBOL1', 'SYMBOL2', 'SYMBOL3'],
         'benchmark': 'SPY',

@@ -2,8 +2,46 @@
 
 from typing import List, Dict, Tuple, Optional, Callable, Any
 import numpy as np
-import matplotlib.pyplot as plt
 from itertools import product
+import json
+import pandas as pd
+from pathlib import Path
+import logging
+
+# Matplotlib for basic visualization
+try:
+    import matplotlib
+    matplotlib.use('Agg')  # Use non-interactive backend
+    import matplotlib.pyplot as plt
+    HAS_MATPLOTLIB = True
+except ImportError:
+    HAS_MATPLOTLIB = False
+    plt = None
+
+# Plotly for interactive visualization (optional)
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+    HAS_PLOTLY = True
+except ImportError:
+    HAS_PLOTLY = False
+    go = None
+    px = None
+
+logger = logging.getLogger(__name__)
+
+# Export visualization availability flags
+__all__ = [
+    'ParameterSensitivityGrid',
+    'run_parameter_sensitivity',
+    'generate_parameter_grid_from_config',
+    'apply_parameters_to_strategy_config',
+    'apply_parameters_to_run_config',
+    'save_sensitivity_results',
+    'generate_all_heatmaps',
+    'HAS_MATPLOTLIB',
+    'HAS_PLOTLY'
+]
 
 
 class ParameterSensitivityGrid:
@@ -144,7 +182,8 @@ class ParameterSensitivityGrid:
         self,
         param_x: str,
         param_y: str,
-        output_path: Optional[str] = None
+        output_path: Optional[str] = None,
+        use_plotly: bool = False
     ) -> None:
         """Plot 2D heatmap for two parameters.
         
@@ -152,38 +191,78 @@ class ParameterSensitivityGrid:
             param_x: Name of parameter for x-axis
             param_y: Name of parameter for y-axis
             output_path: Optional path to save figure
+            use_plotly: If True, use plotly for interactive visualization (requires plotly)
         """
         if not self.results:
             raise ValueError("No results to plot. Run grid search first.")
         
+        # Filter results that have both parameters
+        valid_results = [
+            r for r in self.results
+            if param_x in r['params'] and param_y in r['params']
+        ]
+        
+        if not valid_results:
+            raise ValueError(f"No results found with both {param_x} and {param_y}")
+        
         # Extract unique parameter values
-        x_values = sorted(set(r['params'][param_x] for r in self.results))
-        y_values = sorted(set(r['params'][param_y] for r in self.results))
+        x_values = sorted(set(r['params'][param_x] for r in valid_results))
+        y_values = sorted(set(r['params'][param_y] for r in valid_results))
+        
+        if len(x_values) < 2 or len(y_values) < 2:
+            raise ValueError(f"Insufficient unique values for heatmap: {param_x}={len(x_values)}, {param_y}={len(y_values)}")
         
         # Create matrix
         matrix = np.full((len(y_values), len(x_values)), np.nan)
         
-        for result in self.results:
+        for result in valid_results:
             params = result['params']
-            if param_x in params and param_y in params:
+            try:
                 x_idx = x_values.index(params[param_x])
                 y_idx = y_values.index(params[param_y])
                 matrix[y_idx, x_idx] = result['metric']
+            except (ValueError, KeyError):
+                continue
         
-        # Plot
+        # Check if we have any valid values
+        if np.all(np.isnan(matrix)):
+            raise ValueError(f"No valid metric values for {param_x} vs {param_y}")
+        
+        # Use plotly if requested and available
+        if use_plotly and HAS_PLOTLY:
+            self._plot_heatmap_plotly(
+                matrix, x_values, y_values, param_x, param_y, output_path
+            )
+        elif HAS_MATPLOTLIB:
+            self._plot_heatmap_matplotlib(
+                matrix, x_values, y_values, param_x, param_y, output_path
+            )
+        else:
+            raise ImportError("Neither matplotlib nor plotly is available for plotting")
+    
+    def _plot_heatmap_matplotlib(
+        self,
+        matrix: np.ndarray,
+        x_values: List[Any],
+        y_values: List[Any],
+        param_x: str,
+        param_y: str,
+        output_path: Optional[str] = None
+    ) -> None:
+        """Plot heatmap using matplotlib."""
         fig, ax = plt.subplots(figsize=(10, 8))
         im = ax.imshow(matrix, cmap='RdYlGn', aspect='auto', interpolation='nearest')
         
         # Set ticks
         ax.set_xticks(np.arange(len(x_values)))
         ax.set_yticks(np.arange(len(y_values)))
-        ax.set_xticklabels([str(v) for v in x_values])
+        ax.set_xticklabels([str(v) for v in x_values], rotation=45, ha='right')
         ax.set_yticklabels([str(v) for v in y_values])
         
         # Labels
-        ax.set_xlabel(param_x)
-        ax.set_ylabel(param_y)
-        ax.set_title(f'Parameter Sensitivity: {param_x} vs {param_y}')
+        ax.set_xlabel(param_x.replace('.', ' ').title(), fontsize=12)
+        ax.set_ylabel(param_y.replace('.', ' ').title(), fontsize=12)
+        ax.set_title(f'Parameter Sensitivity: {param_x} vs {param_y}', fontsize=14)
         
         # Colorbar
         plt.colorbar(im, ax=ax, label='Metric Value')
@@ -196,6 +275,48 @@ class ParameterSensitivityGrid:
             plt.show()
         
         plt.close()
+    
+    def _plot_heatmap_plotly(
+        self,
+        matrix: np.ndarray,
+        x_values: List[Any],
+        y_values: List[Any],
+        param_x: str,
+        param_y: str,
+        output_path: Optional[str] = None
+    ) -> None:
+        """Plot heatmap using plotly."""
+        # Create heatmap
+        fig = go.Figure(data=go.Heatmap(
+            z=matrix,
+            x=[str(v) for v in x_values],
+            y=[str(v) for v in y_values],
+            colorscale='RdYlGn',
+            colorbar=dict(title='Metric Value'),
+            hovertemplate='%{xaxis.title.text}: %{x}<br>%{yaxis.title.text}: %{y}<br>Metric: %{z:.4f}<extra></extra>'
+        ))
+        
+        fig.update_layout(
+            title=f'Parameter Sensitivity: {param_x} vs {param_y}',
+            xaxis_title=param_x.replace('.', ' ').title(),
+            yaxis_title=param_y.replace('.', ' ').title(),
+            width=800,
+            height=600
+        )
+        
+        if output_path:
+            # Save as HTML for interactive viewing
+            html_path = str(output_path).replace('.png', '.html')
+            fig.write_html(html_path)
+            logger.info(f"Saved interactive heatmap to {html_path}")
+            
+            # Also save as static image if possible
+            try:
+                fig.write_image(output_path)
+            except Exception as e:
+                logger.warning(f"Could not save static image (requires kaleido): {e}")
+        else:
+            fig.show()
 
 
 def run_parameter_sensitivity(
@@ -215,4 +336,241 @@ def run_parameter_sensitivity(
     """
     grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed)
     return grid.run()
+
+
+def generate_parameter_grid_from_config(
+    sensitivity_config: Any,
+    asset_class: str = "equity"
+) -> Dict[str, List[Any]]:
+    """Generate parameter grid from SensitivityConfig.
+    
+    Maps config parameter ranges to actual strategy parameter names.
+    
+    Args:
+        sensitivity_config: SensitivityConfig instance from RunConfig
+        asset_class: "equity" or "crypto"
+    
+    Returns:
+        Dictionary mapping parameter names to value lists
+    """
+    parameter_ranges = {}
+    
+    if asset_class == "equity":
+        # Map equity parameters
+        if hasattr(sensitivity_config, 'equity_atr_mult') and sensitivity_config.equity_atr_mult:
+            parameter_ranges['exit.hard_stop_atr_mult'] = sensitivity_config.equity_atr_mult
+        
+        if hasattr(sensitivity_config, 'equity_breakout_clearance') and sensitivity_config.equity_breakout_clearance:
+            # This affects both fast_clearance and slow_clearance
+            # For simplicity, we'll test fast_clearance (can be extended)
+            parameter_ranges['entry.fast_clearance'] = sensitivity_config.equity_breakout_clearance
+        
+        if hasattr(sensitivity_config, 'equity_exit_ma') and sensitivity_config.equity_exit_ma:
+            parameter_ranges['exit.exit_ma'] = sensitivity_config.equity_exit_ma
+    
+    elif asset_class == "crypto":
+        # Map crypto parameters
+        if hasattr(sensitivity_config, 'crypto_atr_mult') and sensitivity_config.crypto_atr_mult:
+            parameter_ranges['exit.hard_stop_atr_mult'] = sensitivity_config.crypto_atr_mult
+        
+        if hasattr(sensitivity_config, 'crypto_breakout_clearance') and sensitivity_config.crypto_breakout_clearance:
+            parameter_ranges['entry.fast_clearance'] = sensitivity_config.crypto_breakout_clearance
+        
+        if hasattr(sensitivity_config, 'crypto_exit_mode') and sensitivity_config.crypto_exit_mode:
+            # Map exit modes to strategy config format
+            # Handle as separate parameters - mode and exit_ma
+            exit_modes = []
+            exit_mas = []
+            for mode in sensitivity_config.crypto_exit_mode:
+                if mode == "MA20":
+                    exit_modes.append("ma_cross")
+                    exit_mas.append(20)
+                elif mode == "MA50":
+                    exit_modes.append("ma_cross")
+                    exit_mas.append(50)
+                elif mode == "staged":
+                    exit_modes.append("staged")
+                    exit_mas.append(50)  # Default for staged
+            
+            # Add as separate parameters
+            if exit_modes:
+                unique_modes = list(set(exit_modes))
+                if len(unique_modes) > 1:
+                    parameter_ranges['exit.mode'] = unique_modes
+                unique_mas = list(set(exit_mas))
+                if len(unique_mas) > 1:
+                    parameter_ranges['exit.exit_ma'] = unique_mas
+                elif len(unique_mas) == 1:
+                    # If only one MA value, still add it if mode varies
+                    if len(unique_modes) > 1:
+                        parameter_ranges['exit.exit_ma'] = unique_mas
+    
+    # Portfolio-level parameters
+    if hasattr(sensitivity_config, 'vol_scaling_mode') and sensitivity_config.vol_scaling_mode:
+        parameter_ranges['volatility_scaling.mode'] = sensitivity_config.vol_scaling_mode
+    
+    return parameter_ranges
+
+
+def apply_parameters_to_strategy_config(
+    strategy_config: Any,
+    parameters: Dict[str, Any]
+) -> Any:
+    """Apply parameter modifications to a strategy config.
+    
+    Args:
+        strategy_config: StrategyConfig instance
+        parameters: Dictionary of parameter changes (e.g., {'exit.hard_stop_atr_mult': 3.0})
+    
+    Returns:
+        Modified StrategyConfig instance (copy)
+    """
+    from ..configs.strategy_config import StrategyConfig
+    
+    # Create a deep copy by converting to dict and back
+    config_dict = strategy_config.model_dump()
+    
+    # Apply parameter changes using dot notation
+    for param_path, value in parameters.items():
+        parts = param_path.split('.')
+        if len(parts) == 2:
+            section, param = parts
+            if section in config_dict and isinstance(config_dict[section], dict):
+                config_dict[section][param] = value
+    
+    # Recreate config from modified dict
+    return StrategyConfig(**config_dict)
+
+
+def apply_parameters_to_run_config(
+    run_config: Any,
+    parameters: Dict[str, Any]
+) -> Any:
+    """Apply portfolio-level parameter modifications to run config.
+    
+    Args:
+        run_config: RunConfig instance
+        parameters: Dictionary of parameter changes (e.g., {'volatility_scaling.mode': 'regime'})
+    
+    Returns:
+        Modified RunConfig instance (copy)
+    """
+    from ..configs.run_config import RunConfig
+    
+    # Create a deep copy
+    config_dict = run_config.model_dump()
+    
+    # Apply parameter changes
+    for param_path, value in parameters.items():
+        parts = param_path.split('.')
+        if len(parts) == 2:
+            section, param = parts
+            if section in config_dict and isinstance(config_dict[section], dict):
+                config_dict[section][param] = value
+    
+    # Recreate config from modified dict
+    return RunConfig(**config_dict)
+
+
+def save_sensitivity_results(
+    analysis: Dict[str, Any],
+    parameter_ranges: Dict[str, List[Any]],
+    output_dir: Path,
+    metric_name: str = "sharpe_ratio"
+) -> None:
+    """Save sensitivity analysis results to files.
+    
+    Args:
+        analysis: Analysis results from ParameterSensitivityGrid.run()
+        parameter_ranges: Original parameter ranges used
+        output_dir: Directory to save results
+        metric_name: Name of the metric used
+    """
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Save JSON summary
+    summary = {
+        'metric_name': metric_name,
+        'parameter_ranges': {k: [str(v) for v in vals] for k, vals in parameter_ranges.items()},
+        'best_params': {k: str(v) for k, v in analysis['best_params'].items()},
+        'worst_params': {k: str(v) for k, v in analysis['worst_params'].items()},
+        'metric_stats': {
+            'mean': float(analysis['metric_mean']),
+            'std': float(analysis['metric_std']),
+            'min': float(analysis['metric_min']),
+            'max': float(analysis['metric_max'])
+        },
+        'has_sharp_peaks': analysis['has_sharp_peaks'],
+        'stable_neighborhoods_count': len(analysis['stable_neighborhoods']),
+        'total_combinations': len(analysis['results'])
+    }
+    
+    with open(output_dir / 'sensitivity_summary.json', 'w') as f:
+        json.dump(summary, f, indent=2)
+    
+    # Save detailed results CSV
+    results_data = []
+    for result in analysis['results']:
+        row = result['params'].copy()
+        row[metric_name] = result['metric']
+        results_data.append(row)
+    
+    df = pd.DataFrame(results_data)
+    df.to_csv(output_dir / 'sensitivity_results.csv', index=False)
+    
+    logger.info(f"Saved sensitivity results to {output_dir}")
+
+
+def generate_all_heatmaps(
+    grid: ParameterSensitivityGrid,
+    output_dir: Path,
+    metric_name: str = "sharpe_ratio",
+    use_plotly: bool = False
+) -> List[Path]:
+    """Generate heatmaps for all parameter pairs.
+    
+    Args:
+        grid: ParameterSensitivityGrid instance with results
+        output_dir: Directory to save heatmaps
+        metric_name: Name of the metric being visualized
+        use_plotly: If True, use plotly for interactive visualization
+    
+    Returns:
+        List of paths to saved heatmap files
+    """
+    if not grid.results:
+        logger.warning("No results to plot. Run grid search first.")
+        return []
+    
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Get all parameter names
+    param_names = list(set(
+        param_name
+        for result in grid.results
+        for param_name in result['params'].keys()
+    ))
+    
+    if len(param_names) < 2:
+        logger.warning("Need at least 2 parameters to generate heatmaps")
+        return []
+    
+    saved_paths = []
+    
+    # Generate heatmaps for all pairs
+    for i, param_x in enumerate(param_names):
+        for param_y in param_names[i+1:]:
+            try:
+                if use_plotly and HAS_PLOTLY:
+                    output_path = output_dir / f'heatmap_{param_x.replace(".", "_")}_vs_{param_y.replace(".", "_")}.html'
+                else:
+                    output_path = output_dir / f'heatmap_{param_x.replace(".", "_")}_vs_{param_y.replace(".", "_")}.png'
+                
+                grid.plot_heatmap(param_x, param_y, output_path=str(output_path), use_plotly=use_plotly)
+                saved_paths.append(output_path)
+                logger.info(f"Generated heatmap: {output_path}")
+            except (ValueError, Exception) as e:
+                logger.warning(f"Failed to generate heatmap for {param_x} vs {param_y}: {e}")
+    
+    return saved_paths
 

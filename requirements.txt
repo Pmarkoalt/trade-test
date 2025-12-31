@@ -1,19 +1,34 @@
-# Trading System V0.1 - Python Dependencies
+# Trading System V0.1 - Core Dependencies
+#
+# NOTE: This file is maintained for backward compatibility.
+# The source of truth is pyproject.toml. For modern Python packaging:
+#   pip install -e .
+#   OR
+#   pip install -r requirements.txt
+#
+# To install with optional dependencies:
+#   pip install -e ".[database]"      # Database support
+#   pip install -e ".[api]"           # API data sources
+#   pip install -e ".[storage]"       # Alternative file formats
+#   pip install -e ".[ml]"            # Machine learning
+#   pip install -e ".[visualization]" # Enhanced visualization
+#   pip install -e ".[performance]"   # Performance optimizations
+#   pip install -e ".[all]"           # All optional dependencies
+#   pip install -e ".[dev]"           # Development dependencies
 
-# Core dependencies
-pandas>=1.5.0
-numpy>=1.23.0
-pydantic>=1.10.0
-pyyaml>=6.0
+# Core dependencies (required for basic functionality)
+pandas>=1.5.0,<3.0.0
+numpy>=1.23.0,<2.0.0
+scipy>=1.9.0,<2.0.0
+pydantic>=1.10.0,<3.0.0
+pyyaml>=6.0,<7.0
 
-# Testing
-pytest>=7.0.0
-pytest-cov>=4.0.0  # Optional: for coverage reports
+# Logging/UI
+rich>=13.0.0,<14.0.0
+loguru>=0.7.0,<1.0.0
+psutil>=5.9.0,<6.0.0
+tqdm>=4.65.0,<5.0.0
 
-# Optional: Performance
-# polars>=0.18.0  # Faster data processing (optional)
-
-# Optional: Logging/UI
-# rich>=13.0.0  # Better console output (optional)
-# loguru>=0.7.0  # Enhanced logging (optional)
+# Visualization
+matplotlib>=3.5.0,<4.0.0
 
