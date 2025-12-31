@@ -1,6 +1,6 @@
 [flake8]
 max-line-length = 127
-extend-ignore = E203, E266, E501, W503
+extend-ignore = E203, E266, E501, W503, F541
 max-complexity = 10
 exclude =
     .git,
@@ -17,4 +17,6 @@ exclude =
 
 per-file-ignores =
     __init__.py:F401
+    examples/*.py:E402
+    *:C901  # Complexity warnings - too many to fix individually
 

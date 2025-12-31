@@ -203,8 +203,8 @@ def validate_file_exists(path: str, config_type: str = "config") -> None:
     if not path_obj.exists():
         raise FileNotFoundError(
             f"{config_type.capitalize()} file not found: {path}\n"
-            f"Please check the path and ensure the file exists.\n"
-            f"Use 'python -m trading_system.cli config template' to generate a template."
+            "Please check the path and ensure the file exists.\n"
+            "Use 'python -m trading_system.cli config template' to generate a template."
         )
 
     if not path_obj.is_file():
@@ -230,10 +230,10 @@ def validate_yaml_format(path: str) -> Dict[str, Any]:
     except yaml.YAMLError as e:
         raise ValueError(
             f"Invalid YAML format in {path}:\n{str(e)}\n"
-            f"Please check the YAML syntax. Common issues:\n"
-            f"  - Missing colons after keys\n"
-            f"  - Incorrect indentation (use spaces, not tabs)\n"
-            f"  - Unclosed quotes or brackets"
+            "Please check the YAML syntax. Common issues:\n"
+            "  - Missing colons after keys\n"
+            "  - Incorrect indentation (use spaces, not tabs)\n"
+            "  - Unclosed quotes or brackets"
         ) from e
     except Exception as e:
         raise ValueError(f"Error reading YAML file {path}: {str(e)}") from e
@@ -254,8 +254,8 @@ def validate_date_format(date_str: str, field_name: str = "date") -> None:
     except ValueError:
         raise ValueError(
             f"Invalid {field_name} format: '{date_str}'\n"
-            f"Expected format: YYYY-MM-DD (e.g., '2024-01-15')\n"
-            f"Please correct the date format in your configuration."
+            "Expected format: YYYY-MM-DD (e.g., '2024-01-15')\n"
+            "Please correct the date format in your configuration."
         )
 
 
@@ -278,7 +278,7 @@ def validate_date_range(start_date: str, end_date: str, field_prefix: str = "") 
             prefix = f"{field_prefix} " if field_prefix else ""
             raise ValueError(
                 f"Invalid {prefix}date range: start date ({start_date}) must be before end date ({end_date})\n"
-                f"Please correct the date range in your configuration."
+                "Please correct the date range in your configuration."
             )
     except ValueError as e:
         # Re-raise if it's our custom error, otherwise let it propagate
@@ -307,7 +307,7 @@ def wrap_validation_error(
         # Convert Pydantic error format (list of dicts) to the expected format
         # e.errors() already returns List[Dict[str, Any]], so we can use it directly
         message = f"{config_type} validation failed. Please fix the following errors:"
-        return ConfigValidationError(message, list(errors), config_path=config_path)  # type: ignore[arg-type]
+        return ConfigValidationError(message, list(errors), config_path=config_path)
     else:
         # Not a ValidationError, just wrap the message
         message = f"{config_type} validation failed: {str(e)}"
@@ -397,11 +397,11 @@ def validate_config_file(config_path: str, config_type: str = "auto") -> tuple[b
     # Validate based on type
     try:
         if config_type == "run":
-            config: BaseModel = RunConfig.from_yaml(config_path)
-            return True, None, config
+            validated_run_config: BaseModel = RunConfig.from_yaml(config_path)
+            return True, None, validated_run_config
         elif config_type == "strategy":
-            config = StrategyConfig.from_yaml(config_path)
-            return True, None, config
+            strategy_config = StrategyConfig.from_yaml(config_path)
+            return True, None, strategy_config
         else:
             return False, f"Unknown config type: {config_type}", None
     except ConfigValidationError as e:

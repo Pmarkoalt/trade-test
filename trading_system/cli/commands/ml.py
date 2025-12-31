@@ -179,7 +179,7 @@ def cmd_train(args):
     if result.success:
         console.print(
             Panel(
-                f"[green]Model trained successfully![/green]\n\n"
+                "[green]Model trained successfully![/green]\n\n"
                 f"Model ID: {result.model_id}\n"
                 f"Samples: {result.train_samples}\n"
                 f"CV AUC: {result.cv_metrics.get('auc', 0):.3f}\n"

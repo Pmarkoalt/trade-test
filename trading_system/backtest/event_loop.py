@@ -699,7 +699,7 @@ class DailyEventLoop:
                     from ..models.signals import BreakoutType
 
                     final_triggered_on = triggered_on if triggered_on is not None else BreakoutType.FAST_20D
-                    position = self.portfolio.process_fill(
+                    _ = self.portfolio.process_fill(
                         fill=fill,
                         stop_price=order.stop_price,
                         atr_mult=atr_mult,

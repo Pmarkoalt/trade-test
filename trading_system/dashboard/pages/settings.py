@@ -148,7 +148,7 @@ def render_api_settings():
         color = "#22c55e" if is_set else "#ef4444"
 
         st.markdown(
-            f"""
+            """
             <div style="
                 display: flex;
                 justify-content: space-between;

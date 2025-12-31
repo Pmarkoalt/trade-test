@@ -279,6 +279,6 @@ def check_bootstrap_results(results: Dict) -> Tuple[bool, List[str]]:
 
     # Check percentile rank (original should be near median)
     if results["sharpe_percentile_rank"] < 40 or results["sharpe_percentile_rank"] > 60:
-        warnings.append(f"WARNING: Original Sharpe at {results['sharpe_percentile_rank']:.1f}th " f"percentile (unusual)")
+        warnings.append(f"WARNING: Original Sharpe at {results['sharpe_percentile_rank']:.1f}th " "percentile (unusual)")
 
     return (True, warnings)

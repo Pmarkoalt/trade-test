@@ -308,7 +308,7 @@ def run_wizard(config_type: str = "run", output_path: Optional[str] = None) -> N
 
         if output_path is None:
             default_name = "run_config.yaml" if config_type == "run" else "strategy_config.yaml"
-            output_path = wizard.prompt(f"\nSave configuration to", default=default_name, required=True)
+            output_path = wizard.prompt("\nSave configuration to", default=default_name, required=True)
 
         wizard.save_config(config, output_path)
 

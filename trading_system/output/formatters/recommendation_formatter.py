@@ -46,7 +46,7 @@ class RecommendationFormatter:
             elif recommendation.news_score <= 3.0:
                 news_score_class = "negative"
 
-        scores_html = f"""
+        scores_html = """
         <div class="scores">
             <div class="score-item">
                 <span class="label">Technical:</span>
@@ -54,14 +54,14 @@ class RecommendationFormatter:
             </div>
         """
         if recommendation.news_score is not None:
-            scores_html += f"""
+            scores_html += """
             <div class="score-item">
                 <span class="label">News:</span>
                 <span class="value {news_score_class}">{recommendation.news_score:.1f}/10</span>
             </div>
             """
         if recommendation.combined_score > 0:
-            scores_html += f"""
+            scores_html += """
             <div class="score-item combined">
                 <span class="label">Combined:</span>
                 <span class="value">{recommendation.combined_score:.1f}/10</span>
@@ -72,7 +72,7 @@ class RecommendationFormatter:
         # Get symbol name (simplified - in production, use a symbol-to-name mapping)
         symbol_name = recommendation.symbol
 
-        html = f"""
+        html = """
         <div class="recommendation-card">
             <div class="recommendation-header">
                 <h3>{index}. {recommendation.symbol} - {symbol_name} {conviction_badge}</h3>
@@ -115,7 +115,7 @@ class RecommendationFormatter:
             target_pct = ((recommendation.entry_price - recommendation.target_price) / recommendation.entry_price) * 100
             stop_pct = ((recommendation.entry_price - recommendation.stop_price) / recommendation.entry_price) * 100
 
-        text = f"""
+        text = """
 {index}. {recommendation.symbol} - {recommendation.direction} [{recommendation.conviction} CONVICTION]
 Signal Type: {recommendation.signal_type}
 

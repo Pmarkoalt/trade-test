@@ -14,8 +14,7 @@ import sys
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from trading_system.integration.runner import run_sensitivity_analysis
-from trading_system.configs.run_config import RunConfig
+from trading_system.integration.runner import run_sensitivity_analysis  # noqa: E402
 
 
 def example_run_sensitivity_analysis():
@@ -23,9 +22,9 @@ def example_run_sensitivity_analysis():
     print("=" * 60)
     print("Example 1: Running Parameter Sensitivity Analysis")
     print("=" * 60)
-    
+
     config_path = "EXAMPLE_CONFIGS/run_config.yaml"
-    
+
     print(f"\nLoading config from: {config_path}")
     print("Running sensitivity analysis (this may take a while)...")
     print("\nThe analysis will:")
@@ -34,72 +33,72 @@ def example_run_sensitivity_analysis():
     print("  3. Compute metrics (Sharpe ratio, etc.)")
     print("  4. Identify best parameters")
     print("  5. Generate heatmaps")
-    
+
     # Run sensitivity analysis
     print("\nRunning sensitivity analysis for equity strategy...")
     results = run_sensitivity_analysis(
         config_path=config_path,
         period="train",  # or "validation", "holdout"
         metric_name="sharpe_ratio",  # or "total_return", "calmar_ratio", etc.
-        asset_class="equity"  # or "crypto", or None for all
+        asset_class="equity",  # or "crypto", or None for all
     )
-    
+
     # Print summary
     print("\n" + "=" * 60)
     print("Sensitivity Analysis Results")
     print("=" * 60)
-    
-    status = results.get('status', 'unknown')
+
+    status = results.get("status", "unknown")
     print(f"\nStatus: {status.upper()}")
     print(f"Metric: {results.get('metric_name', 'N/A')}")
     print(f"Period: {results.get('period', 'N/A')}")
-    
+
     # Print results for each asset class
-    all_results = results.get('results', {})
-    
+    all_results = results.get("results", {})
+
     for asset_class, class_results in all_results.items():
         print(f"\n{asset_class.upper()} Strategy Results:")
-        
-        analysis = class_results.get('analysis', {})
-        
+
+        analysis = class_results.get("analysis", {})
+
         # Best parameters
-        best_params = analysis.get('best_params', {})
+        best_params = analysis.get("best_params", {})
         if best_params:
-            print(f"\n  Best Parameters:")
+            print("\n  Best Parameters:")
             for param, value in best_params.items():
                 print(f"    {param}: {value}")
-        
+
         # Best metric value
-        results_list = analysis.get('results', [])
+        results_list = analysis.get("results", [])
         if results_list:
-            best_metric = max(r.get('metric', 0) for r in results_list)
+            best_metric = max(r.get("metric", 0) for r in results_list)
             print(f"\n  Best {results.get('metric_name', 'metric')}: {best_metric:.4f}")
-        
+
         # Stability analysis
-        has_sharp_peaks = analysis.get('has_sharp_peaks', False)
-        stable_neighborhoods = analysis.get('stable_neighborhoods', [])
-        
-        print(f"\n  Stability Analysis:")
+        has_sharp_peaks = analysis.get("has_sharp_peaks", False)
+        stable_neighborhoods = analysis.get("stable_neighborhoods", [])
+
+        print("\n  Stability Analysis:")
         print(f"    Has Sharp Peaks: {has_sharp_peaks}")
         print(f"    Stable Neighborhoods: {len(stable_neighborhoods)}")
-        
+
         if stable_neighborhoods:
-            print(f"\n  Stable Parameter Regions:")
+            print("\n  Stable Parameter Regions:")
             for i, neighborhood in enumerate(stable_neighborhoods[:3], 1):  # Show first 3
                 print(f"    Region {i}: {neighborhood.get('params', {})}")
                 print(f"      Metric: {neighborhood.get('metric', 0):.4f}")
-        
+
         # Output directory
-        output_dir = class_results.get('output_dir', '')
+        output_dir = class_results.get("output_dir", "")
         print(f"\n  Results saved to: {output_dir}")
-        
+
         # Heatmaps
-        heatmaps = class_results.get('heatmaps', [])
+        heatmaps = class_results.get("heatmaps", [])
         if heatmaps:
-            print(f"\n  Generated Heatmaps:")
+            print("\n  Generated Heatmaps:")
             for heatmap_path in heatmaps:
                 print(f"    {heatmap_path}")
-    
+
     return results
 
 
@@ -108,8 +107,9 @@ def example_sensitivity_config():
     print("\n" + "=" * 60)
     print("Example 2: Sensitivity Analysis Configuration")
     print("=" * 60)
-    
-    print("""
+
+    print(
+        """
 Configure sensitivity analysis in your run_config.yaml:
 
 validation:
@@ -139,7 +139,8 @@ Example:
   Total = 4 × 4 × 2 = 32 combinations
 
 See EXAMPLE_CONFIGS/run_config.yaml for a complete example.
-    """)
+    """
+    )
 
 
 def example_interpret_results():
@@ -147,8 +148,9 @@ def example_interpret_results():
     print("\n" + "=" * 60)
     print("Example 3: Interpreting Results")
     print("=" * 60)
-    
-    print("""
+
+    print(
+        """
 Interpreting Sensitivity Analysis Results:
 
 1. Best Parameters:
@@ -182,7 +184,8 @@ Best Practices:
   - Test on holdout period (final check)
   - Avoid overfitting to train period
   - Prefer stable, wide parameter ranges
-    """)
+    """
+    )
 
 
 def example_cli_sensitivity():
@@ -190,8 +193,9 @@ def example_cli_sensitivity():
     print("\n" + "=" * 60)
     print("Example 4: CLI Usage for Sensitivity Analysis")
     print("=" * 60)
-    
-    print("""
+
+    print(
+        """
 To run sensitivity analysis from the command line:
 
     python -m trading_system sensitivity \\
@@ -212,30 +216,31 @@ The analysis generates:
   - Heatmap visualizations (if matplotlib/plotly available)
   - Best parameters summary
   - Stability analysis
-    """)
+    """
+    )
 
 
 if __name__ == "__main__":
     print("\n" + "=" * 60)
     print("Sensitivity Analysis Examples")
     print("=" * 60)
-    
+
     try:
         # Example 1: Run sensitivity analysis
         # Note: This may take a long time depending on parameter grid size
         print("\nNote: Sensitivity analysis can take a long time.")
         print("      Uncomment the line below to run it.")
         # results = example_run_sensitivity_analysis()
-        
+
         # Example 2: Configuration
         example_sensitivity_config()
-        
+
         # Example 3: Interpretation
         example_interpret_results()
-        
+
         # Example 4: CLI usage
         example_cli_sensitivity()
-        
+
         print("\n" + "=" * 60)
         print("Sensitivity Analysis Examples Completed!")
         print("=" * 60)
@@ -243,10 +248,10 @@ if __name__ == "__main__":
         print("  1. Ensure validation.sensitivity is configured in run_config.yaml")
         print("  2. Uncomment the run_sensitivity_analysis() call above")
         print("  3. Or use the CLI command shown in Example 4")
-        
+
     except Exception as e:
         print(f"\nError running examples: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
-

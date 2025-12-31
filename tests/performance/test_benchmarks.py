@@ -355,16 +355,16 @@ class TestDataLoadingPerformance:
             random_offsets = np.random.randn(len(dates)) * 0.001
             high_offsets = abs(np.random.randn(len(dates)) * 0.005)
             low_offsets = abs(np.random.randn(len(dates)) * 0.005)
-            
+
             opens = prices * (1 + random_offsets)
             highs = prices * (1 + high_offsets)
             lows = prices * (1 - low_offsets)
             closes = prices
-            
+
             # Ensure high >= max(open, close) and low <= min(open, close)
             highs = np.maximum(highs, np.maximum(opens, closes))
             lows = np.minimum(lows, np.minimum(opens, closes))
-            
+
             df = pd.DataFrame(
                 {
                     "date": dates,
@@ -522,7 +522,7 @@ class TestSignalScoringPerformance:
                 close=signal.entry_price,
                 open=signal.entry_price * 0.99,  # Required: open
                 high=signal.entry_price * 1.01,  # Required: high
-                low=signal.entry_price * 0.99,   # Required: low
+                low=signal.entry_price * 0.99,  # Required: low
                 ma20=signal.entry_price * 0.98,
                 ma50=signal.entry_price * 0.95,
                 atr14=signal.entry_price * 0.02,
@@ -603,7 +603,7 @@ class TestStrategyEvaluationPerformance:
                     close=price,
                     open=price * 0.99,  # Required: open
                     high=price * 1.01,  # Required: high
-                    low=price * 0.99,   # Required: low
+                    low=price * 0.99,  # Required: low
                     ma20=price * 0.98,
                     ma50=price * 0.95,
                     ma200=price * 0.90,
@@ -709,7 +709,7 @@ class TestReportingPerformance:
         # Convert trades dict to Position objects and compute daily returns
         equity_curve = sample_backtest_results["equity_curve"]
         dates = sample_backtest_results["dates"]
-        
+
         # Compute daily returns from equity curve
         daily_returns = []
         for i in range(1, len(equity_curve)):
@@ -717,7 +717,7 @@ class TestReportingPerformance:
                 daily_returns.append((equity_curve[i] / equity_curve[i - 1]) - 1.0)
             else:
                 daily_returns.append(0.0)
-        
+
         # Convert trades to Position objects
         closed_trades = []
         for i, trade in enumerate(sample_backtest_results["trades"]):
@@ -749,7 +749,7 @@ class TestReportingPerformance:
                 realized_pnl=trade["pnl"],
             )
             closed_trades.append(position)
-        
+
         calc = MetricsCalculator(
             equity_curve=equity_curve,
             daily_returns=daily_returns,

@@ -276,7 +276,7 @@ def _render_news_card(article: dict):
     time_ago = _format_time_ago(published)
 
     st.markdown(
-        f"""
+        """
         <div style="
             border: 1px solid #e5e7eb;
             border-left: 4px solid {border_color};
@@ -327,7 +327,7 @@ def _render_compact_news_card(article: dict):
     time_ago = _format_time_ago(published) if isinstance(published, datetime) else "Recently"
 
     st.markdown(
-        f"""
+        """
         <div style="padding: 0.5rem 0; border-bottom: 1px solid #f3f4f6;">
             <div style="display: flex; align-items: flex-start;">
                 <span style="margin-right: 0.5rem;">{emoji}</span>

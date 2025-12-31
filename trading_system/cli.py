@@ -132,9 +132,9 @@ def progress_context(description: str, total: Optional[int] = None, update_callb
                 progress.update(task_id, completed=total if total else 0)
     else:
         # Fallback: just print the description
-        print(f"Starting: {description}")
+        print("Starting: {description}")
         yield None, None
-        print(f"Completed: {description}")
+        print("Completed: {description}")
 
 
 @contextmanager
@@ -166,10 +166,10 @@ def multi_progress_context(steps: list[tuple[str, Optional[int]]]):
     else:
         # Fallback
         for desc, _ in steps:
-            print(f"Starting: {desc}")
+            print("Starting: {desc}")
         yield None, {}
         for desc, _ in steps:
-            print(f"Completed: {desc}")
+            print("Completed: {desc}")
 
 
 def display_results_table(results: Dict[str, Any], title: str = "Results") -> None:
@@ -181,9 +181,9 @@ def display_results_table(results: Dict[str, Any], title: str = "Results") -> No
     """
     if not console or not Table:
         # Fallback: print as formatted text
-        print(f"\n{title}:")
+        print("\n{title}:")
         for key, value in results.items():
-            print(f"  {key}: {value}")
+            print("  {key}: {value}")
         return
 
     table = Table(title=title, box=box.ROUNDED, show_header=True, header_style="bold magenta")
@@ -194,11 +194,11 @@ def display_results_table(results: Dict[str, Any], title: str = "Results") -> No
         # Format value based on type
         if isinstance(value, float):
             if abs(value) < 0.01:
-                formatted_value = f"{value:.6f}"
+                formatted_value = "{value:.6f}"
             elif abs(value) < 1:
-                formatted_value = f"{value:.4f}"
+                formatted_value = "{value:.4f}"
             else:
-                formatted_value = f"{value:.2f}"
+                formatted_value = "{value:.2f}"
         elif isinstance(value, (int, str)):
             formatted_value = str(value)
         else:
@@ -228,7 +228,7 @@ def display_validation_results(results: Dict[str, Any]) -> None:
     # Status panel
     status = results.get("status", "unknown")
     status_color = "green" if status == "passed" else "red"
-    status_text = Text(status.upper(), style=f"bold {status_color}")
+    status_text = Text(status.upper(), style="bold {status_color}")
 
     console.print(Panel(status_text, title="Validation Status", border_style=status_color))
 
@@ -247,14 +247,14 @@ def display_validation_results(results: Dict[str, Any]) -> None:
     if results.get("rejections"):
         console.print("\n[bold red]Rejections:[/bold red]")
         for rejection in results["rejections"]:
-            console.print(f"  • {rejection}")
+            console.print("  • {rejection}")
 
     if results.get("warnings"):
-        console.print(f"\n[bold yellow]Warnings ({len(results['warnings'])}):[/bold yellow]")
+        console.print("\n[bold yellow]Warnings ({len(results['warnings'])}):[/bold yellow]")
         for warning in results["warnings"][:10]:  # Show first 10
-            console.print(f"  • {warning}")
+            console.print("  • {warning}")
         if len(results["warnings"]) > 10:
-            console.print(f"  ... and {len(results['warnings']) - 10} more warnings")
+            console.print("  ... and {len(results['warnings']) - 10} more warnings")
 
 
 def display_sensitivity_results(results: Dict[str, Any]) -> None:
@@ -268,8 +268,8 @@ def display_sensitivity_results(results: Dict[str, Any]) -> None:
         print("\nSensitivity Analysis Results:")
         if "results" in results:
             for asset_class, asset_results in results["results"].items():
-                print(f"\n{asset_class}:")
-                print(f"  Best params: {asset_results['analysis']['best_params']}")
+                print("\n{asset_class}:")
+                print("  Best params: {asset_results['analysis']['best_params']}")
         return
 
     console.print("\n[bold cyan]Sensitivity Analysis Results[/bold cyan]\n")
@@ -279,7 +279,7 @@ def display_sensitivity_results(results: Dict[str, Any]) -> None:
             analysis = asset_results["analysis"]
 
             # Best parameters table
-            best_params_table = Table(title=f"{asset_class.upper()} - Best Parameters", box=box.ROUNDED, show_header=True)
+            best_params_table = Table(title="{asset_class.upper()} - Best Parameters", box=box.ROUNDED, show_header=True)
             best_params_table.add_column("Parameter", style="cyan")
             best_params_table.add_column("Value", style="green")
 
@@ -292,7 +292,7 @@ def display_sensitivity_results(results: Dict[str, Any]) -> None:
             # Best metric value
             if analysis.get("results"):
                 best_metric = max(r["metric"] for r in analysis["results"])
-                console.print(f"\n[bold green]Best {results.get('metric_name', 'metric')}: {best_metric:.4f}[/bold green]")
+                console.print("\n[bold green]Best {results.get('metric_name', 'metric')}: {best_metric:.4f}[/bold green]")
 
 
 def interactive_config_setup() -> Optional[str]:
@@ -320,7 +320,7 @@ def interactive_config_setup() -> Optional[str]:
     if use_existing:
         config_path = Prompt.ask("Enter path to config file", default="EXAMPLE_CONFIGS/run_config.yaml")
         if not Path(config_path).exists():
-            print_error(f"Config file not found: {config_path}")
+            print_error("Config file not found: {config_path}")
             return None
         return config_path
     else:
@@ -334,7 +334,7 @@ def interactive_config_setup() -> Optional[str]:
         if create_now:
             example_path = Path("EXAMPLE_CONFIGS/run_config.yaml")
             if example_path.exists():
-                console.print(f"\n[green]Example config location:[/green] {example_path.absolute()}")
+                console.print("\n[green]Example config location:[/green] {example_path.absolute()}")
                 return str(example_path)
             else:
                 print_error("Example config not found in EXAMPLE_CONFIGS/run_config.yaml")
@@ -375,7 +375,7 @@ def setup_logging(config: RunConfig) -> None:
     root_logger.addHandler(console_handler)
     root_logger.addHandler(file_handler)
 
-    logging.info(f"Logging initialized. Log file: {log_file}")
+    logging.info("Logging initialized. Log file: {log_file}")
 
 
 def cmd_backtest(args: argparse.Namespace) -> int:
@@ -392,27 +392,27 @@ def cmd_backtest(args: argparse.Namespace) -> int:
         config_path = Path(args.config)
 
         # Print banner
-        print_banner("Running Backtest", f"Period: {period.upper()} | Config: {config_path.name}")
+        print_banner("Running Backtest", "Period: {period.upper()} | Config: {config_path.name}")
 
         # Validate config file exists
         if not config_path.exists():
-            print_error(f"Config file not found: {config_path}")
+            print_error("Config file not found: {config_path}")
             if console:
                 console.print("\n[yellow]💡 Tips:[/yellow]")
                 console.print(f"  • Check the path: {config_path.absolute()}")
-                console.print(f"  • Generate a template: [cyan]python -m trading_system config template[/cyan]")
-                console.print(f"  • Use interactive wizard: [cyan]python -m trading_system config wizard[/cyan]")
+                console.print("  • Generate a template: [cyan]python -m trading_system config template[/cyan]")
+                console.print("  • Use interactive wizard: [cyan]python -m trading_system config wizard[/cyan]")
             return 1
 
         # Load config
         print_section("Loading Configuration")
         config = RunConfig.from_yaml(str(config_path))
         setup_enhanced_logging(config)
-        print_success(f"Configuration loaded: {config_path.name}")
+        print_success("Configuration loaded: {config_path.name}")
 
         # Run with progress indication
         print_section("Running Backtest")
-        with progress_context(f"Processing {period} period", total=None):
+        with progress_context("Processing {period} period", total=None):
             results = run_backtest(str(config_path), period=period)
 
         # Display key results if available
@@ -425,94 +425,94 @@ def cmd_backtest(args: argparse.Namespace) -> int:
                 "Total Trades": results.get("total_trades", 0),
                 "Win Rate": results.get("win_rate", 0) * 100 if results.get("win_rate") is not None else 0,
             }
-            display_results_table(key_metrics, title=f"Backtest Results - {period.upper()}")
+            display_results_table(key_metrics, title="Backtest Results - {period.upper()}")
 
             # Get run_id if available for helpful next steps
             run_id = results.get("run_id")
             if run_id and console:
                 console.print("\n[dim]Next steps:[/dim]")
-                console.print(f"  • View dashboard: [cyan]python -m trading_system dashboard --run-id {run_id}[/cyan]")
-                console.print(f"  • Generate report: [cyan]python -m trading_system report --run-id {run_id}[/cyan]")
+                console.print("  • View dashboard: [cyan]python -m trading_system dashboard --run-id {run_id}[/cyan]")
+                console.print("  • Generate report: [cyan]python -m trading_system report --run-id {run_id}[/cyan]")
 
         print_success("Backtest completed successfully")
         return 0
 
     except FileNotFoundError as e:
-        print_error(f"Config file not found: {e}")
+        print_error("Config file not found: {e}")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
-            console.print(f"  • Verify the config path exists")
-            console.print(f"  • Generate a template: [cyan]python -m trading_system config template[/cyan]")
+            console.print("  • Verify the config path exists")
+            console.print("  • Generate a template: [cyan]python -m trading_system config template[/cyan]")
             console.print_exception(show_locals=False)
         return 1
     except ConfigurationError as e:
-        print_error(f"Configuration error: {e}")
+        print_error("Configuration error: {e}")
         if console:
             if hasattr(e, "config_path") and e.config_path:
-                console.print(f"\n[cyan]Configuration file:[/cyan] {e.config_path}")
+                console.print("\n[cyan]Configuration file:[/cyan] {e.config_path}")
             if hasattr(e, "format_errors"):
                 console.print(e.format_errors())
             else:
-                console.print(f"\n[yellow]💡 Troubleshooting:[/yellow]")
+                console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
                 console.print(
-                    f"  • Validate config: [cyan]python -m trading_system config validate --path {e.config_path or args.config}[/cyan]"
+                    "  • Validate config: [cyan]python -m trading_system config validate --path {e.config_path or args.config}[/cyan]"
                 )
-                console.print(f"  • Generate template: [cyan]python -m trading_system config template[/cyan]")
-                console.print(f"  • Review example configs in [cyan]EXAMPLE_CONFIGS/[/cyan]")
+                console.print("  • Generate template: [cyan]python -m trading_system config template[/cyan]")
+                console.print("  • Review example configs in [cyan]EXAMPLE_CONFIGS/[/cyan]")
         return 1
     except (DataError, DataNotFoundError) as e:
-        print_error(f"Data error: {e}")
+        print_error("Data error: {e}")
         if console:
-            console.print(f"\n[yellow]💡 Troubleshooting:[/yellow]")
+            console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
             if hasattr(e, "file_path") and e.file_path:
-                console.print(f"  • File path: [cyan]{e.file_path}[/cyan]")
+                console.print("  • File path: [cyan]{e.file_path}[/cyan]")
             if hasattr(e, "data_path") and e.data_path:
-                console.print(f"  • Data path: [cyan]{e.data_path}[/cyan]")
+                console.print("  • Data path: [cyan]{e.data_path}[/cyan]")
             if hasattr(e, "symbol") and e.symbol:
-                console.print(f"  • Symbol: [cyan]{e.symbol}[/cyan]")
-            console.print(f"  • Check data file paths in config")
-            console.print(f"  • Verify data files exist and are valid")
-            console.print(f"  • Verify file format (CSV with: date, open, high, low, close, volume)")
+                console.print("  • Symbol: [cyan]{e.symbol}[/cyan]")
+            console.print("  • Check data file paths in config")
+            console.print("  • Verify data files exist and are valid")
+            console.print("  • Verify file format (CSV with: date, open, high, low, close, volume)")
             if hasattr(e, "file_path") and e.file_path:
-                console.print(f"  • Check file: [cyan]ls -la {e.file_path}[/cyan]")
+                console.print("  • Check file: [cyan]ls -la {e.file_path}[/cyan]")
         return 1
     except StrategyError as e:
-        print_error(f"Strategy error: {e}")
+        print_error("Strategy error: {e}")
         if console:
-            console.print(f"\n[yellow]💡 Troubleshooting:[/yellow]")
+            console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
             if hasattr(e, "strategy_name") and e.strategy_name:
-                console.print(f"  • Strategy: [cyan]{e.strategy_name}[/cyan]")
+                console.print("  • Strategy: [cyan]{e.strategy_name}[/cyan]")
             if hasattr(e, "symbol") and e.symbol:
-                console.print(f"  • Symbol: [cyan]{e.symbol}[/cyan]")
-            console.print(f"  • Check strategy configuration in config file")
-            console.print(f"  • Verify strategy type and asset class match (equity vs crypto)")
-            console.print(f"  • Verify strategy parameters are within valid ranges")
-            console.print(f"  • Review example configs in [cyan]EXAMPLE_CONFIGS/[/cyan]")
+                console.print("  • Symbol: [cyan]{e.symbol}[/cyan]")
+            console.print("  • Check strategy configuration in config file")
+            console.print("  • Verify strategy type and asset class match (equity vs crypto)")
+            console.print("  • Verify strategy parameters are within valid ranges")
+            console.print("  • Review example configs in [cyan]EXAMPLE_CONFIGS/[/cyan]")
         return 1
     except BacktestError as e:
-        print_error(f"Backtest error: {e}")
+        print_error("Backtest error: {e}")
         if console:
-            console.print(f"\n[yellow]💡 Troubleshooting:[/yellow]")
-            console.print(f"  • Check logs for detailed error information")
+            console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
+            console.print("  • Check logs for detailed error information")
             if hasattr(e, "date"):
-                console.print(f"  • Error occurred at date: {e.date}")
+                console.print("  • Error occurred at date: {e.date}")
             if hasattr(e, "step"):
-                console.print(f"  • Error occurred in step: {e.step}")
+                console.print("  • Error occurred in step: {e.step}")
         return 1
     except KeyboardInterrupt:
         print_warning("\nBacktest cancelled by user")
         return 130
     except TradingSystemError as e:
-        print_error(f"Trading system error: {e}")
+        print_error("Trading system error: {e}")
         if console:
             console.print_exception(show_locals=False)
         return 1
     except Exception as e:
-        print_error(f"Unexpected error: {e}")
+        print_error("Unexpected error: {e}")
         if console:
             console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
-            console.print(f"  • Check logs in the output directory")
-            console.print(f"  • Validate config: [cyan]python -m trading_system config validate --path {args.config}[/cyan]")
+            console.print("  • Check logs in the output directory")
+            console.print("  • Validate config: [cyan]python -m trading_system config validate --path {args.config}[/cyan]")
             console.print_exception(show_locals=False)
         else:
             logging.exception("Backtest failed")
@@ -532,16 +532,16 @@ def cmd_validate(args: argparse.Namespace) -> int:
         config_path = Path(args.config)
 
         # Print banner
-        print_banner("Running Validation Suite", f"Config: {config_path.name} | Comprehensive statistical and stress testing")
+        print_banner("Running Validation Suite", "Config: {config_path.name} | Comprehensive statistical and stress testing")
 
         # Validate config file exists
         if not config_path.exists():
-            print_error(f"Config file not found: {config_path}")
+            print_error("Config file not found: {config_path}")
             if console:
                 console.print("\n[yellow]💡 Tips:[/yellow]")
                 console.print(f"  • Check the path: {config_path.absolute()}")
                 console.print(
-                    f"  • Validate config first: [cyan]python -m trading_system config validate --path {args.config}[/cyan]"
+                    "  • Validate config first: [cyan]python -m trading_system config validate --path {args.config}[/cyan]"
                 )
             return 1
 
@@ -549,7 +549,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
         print_section("Loading Configuration")
         config = RunConfig.from_yaml(str(config_path))
         setup_enhanced_logging(config)
-        print_success(f"Configuration loaded: {config_path.name}")
+        print_success("Configuration loaded: {config_path.name}")
 
         # Run with progress indication
         print_section("Running Validation Tests")
@@ -570,28 +570,28 @@ def cmd_validate(args: argparse.Namespace) -> int:
             print_error("Validation suite failed - Strategy did not meet all criteria")
             if console:
                 console.print("\n[yellow]💡 Next Steps:[/yellow]")
-                console.print(f"  • Review rejection reasons above")
-                console.print(f"  • Adjust strategy parameters and retry")
-                console.print(f"  • Run backtest: [cyan]python -m trading_system backtest --config {args.config}[/cyan]")
+                console.print("  • Review rejection reasons above")
+                console.print("  • Adjust strategy parameters and retry")
+                console.print("  • Run backtest: [cyan]python -m trading_system backtest --config {args.config}[/cyan]")
             return 1
 
     except FileNotFoundError as e:
-        print_error(f"Config file not found: {e}")
+        print_error("Config file not found: {e}")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
-            console.print(f"  • Verify the config path exists")
-            console.print(f"  • Generate a template: [cyan]python -m trading_system config template[/cyan]")
+            console.print("  • Verify the config path exists")
+            console.print("  • Generate a template: [cyan]python -m trading_system config template[/cyan]")
             console.print_exception(show_locals=False)
         return 1
     except KeyboardInterrupt:
         print_warning("\nValidation cancelled by user")
         return 130
     except Exception as e:
-        print_error(f"Validation failed: {e}")
+        print_error("Validation failed: {e}")
         if console:
             console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
-            console.print(f"  • Check logs in the output directory")
-            console.print(f"  • Validate config: [cyan]python -m trading_system config validate --path {args.config}[/cyan]")
+            console.print("  • Check logs in the output directory")
+            console.print("  • Validate config: [cyan]python -m trading_system config validate --path {args.config}[/cyan]")
             console.print_exception(show_locals=False)
         else:
             logging.exception("Validation failed")
@@ -611,22 +611,22 @@ def cmd_holdout(args: argparse.Namespace) -> int:
         config_path = Path(args.config)
 
         # Print banner
-        print_banner("Holdout Evaluation", f"Out-of-sample testing on unseen data | Config: {config_path.name}")
+        print_banner("Holdout Evaluation", "Out-of-sample testing on unseen data | Config: {config_path.name}")
 
         # Validate config file exists
         if not config_path.exists():
-            print_error(f"Config file not found: {config_path}")
+            print_error("Config file not found: {config_path}")
             if console:
                 console.print("\n[yellow]💡 Tips:[/yellow]")
                 console.print(f"  • Check the path: {config_path.absolute()}")
-                console.print(f"  • Ensure holdout period is configured in your config")
+                console.print("  • Ensure holdout period is configured in your config")
             return 1
 
         # Load config
         print_section("Loading Configuration")
         config = RunConfig.from_yaml(str(config_path))
         setup_enhanced_logging(config)
-        print_success(f"Configuration loaded: {config_path.name}")
+        print_success("Configuration loaded: {config_path.name}")
 
         # Run with progress indication
         print_section("Running Holdout Evaluation")
@@ -650,28 +650,28 @@ def cmd_holdout(args: argparse.Namespace) -> int:
             if run_id and console:
                 console.print("\n[dim]Next steps:[/dim]")
                 console.print(
-                    f"  • Compare with train/validation: [cyan]python -m trading_system report --run-id {run_id}[/cyan]"
+                    "  • Compare with train/validation: [cyan]python -m trading_system report --run-id {run_id}[/cyan]"
                 )
 
         print_success("Holdout evaluation completed successfully")
         return 0
 
     except FileNotFoundError as e:
-        print_error(f"Config file not found: {e}")
+        print_error("Config file not found: {e}")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
-            console.print(f"  • Verify the config path exists")
+            console.print("  • Verify the config path exists")
             console.print_exception(show_locals=False)
         return 1
     except KeyboardInterrupt:
         print_warning("\nHoldout evaluation cancelled by user")
         return 130
     except Exception as e:
-        print_error(f"Holdout evaluation failed: {e}")
+        print_error("Holdout evaluation failed: {e}")
         if console:
             console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
-            console.print(f"  • Ensure holdout period is properly configured")
-            console.print(f"  • Check logs in the output directory")
+            console.print("  • Ensure holdout period is properly configured")
+            console.print("  • Check logs in the output directory")
             console.print_exception(show_locals=False)
         else:
             logging.exception("Holdout evaluation failed")
@@ -694,14 +694,14 @@ def cmd_sensitivity(args: argparse.Namespace) -> int:
         config_path = Path(args.config)
 
         # Print banner
-        subtitle_parts = [f"Period: {period}", f"Metric: {metric}"]
+        subtitle_parts = ["Period: {period}", "Metric: {metric}"]
         if asset_class:
-            subtitle_parts.append(f"Asset: {asset_class}")
-        print_banner("Parameter Sensitivity Analysis", " | ".join(subtitle_parts) + f" | Config: {config_path.name}")
+            subtitle_parts.append("Asset: {asset_class}")
+        print_banner("Parameter Sensitivity Analysis", " | ".join(subtitle_parts) + " | Config: {config_path.name}")
 
         # Validate config file exists
         if not config_path.exists():
-            print_error(f"Config file not found: {config_path}")
+            print_error("Config file not found: {config_path}")
             if console:
                 console.print("\n[yellow]💡 Tips:[/yellow]")
                 console.print(f"  • Check the path: {config_path.absolute()}")
@@ -711,10 +711,10 @@ def cmd_sensitivity(args: argparse.Namespace) -> int:
         print_section("Loading Configuration")
         config = RunConfig.from_yaml(str(config_path))
         setup_enhanced_logging(config)
-        print_success(f"Configuration loaded: {config_path.name}")
+        print_success("Configuration loaded: {config_path.name}")
 
         if console:
-            console.print(f"[dim]This may take several minutes depending on parameter grid size...[/dim]")
+            console.print("[dim]This may take several minutes depending on parameter grid size...[/dim]")
 
         # Run with progress indication
         print_section("Running Sensitivity Analysis")
@@ -728,33 +728,33 @@ def cmd_sensitivity(args: argparse.Namespace) -> int:
         print_success("Sensitivity analysis completed successfully")
         if console:
             console.print("\n[dim]Next steps:[/dim]")
-            console.print(f"  • Update your config with optimal parameters")
-            console.print(f"  • Run backtest with new parameters")
+            console.print("  • Update your config with optimal parameters")
+            console.print("  • Run backtest with new parameters")
         return 0
 
     except FileNotFoundError as e:
-        print_error(f"Config file not found: {e}")
+        print_error("Config file not found: {e}")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
-            console.print(f"  • Verify the config path exists")
+            console.print("  • Verify the config path exists")
             console.print_exception(show_locals=False)
         return 1
     except ValueError as e:
-        print_error(f"Configuration error: {e}")
+        print_error("Configuration error: {e}")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
-            console.print(f"  • Validate config: [cyan]python -m trading_system config validate --path {args.config}[/cyan]")
+            console.print("  • Validate config: [cyan]python -m trading_system config validate --path {args.config}[/cyan]")
             console.print_exception(show_locals=False)
         return 1
     except KeyboardInterrupt:
         print_warning("\nSensitivity analysis cancelled by user")
         return 130
     except Exception as e:
-        print_error(f"Sensitivity analysis failed: {e}")
+        print_error("Sensitivity analysis failed: {e}")
         if console:
             console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
-            console.print(f"  • Ensure parameter grids are configured in strategy config")
-            console.print(f"  • Check logs in the output directory")
+            console.print("  • Ensure parameter grids are configured in strategy config")
+            console.print("  • Check logs in the output directory")
             console.print_exception(show_locals=False)
         else:
             logging.exception("Sensitivity analysis failed")
@@ -788,15 +788,15 @@ def cmd_config_template(args: argparse.Namespace) -> int:
             if not output_path:
                 print(content)
         else:
-            logging.error(f"Unknown config type: {config_type}")
+            logging.error("Unknown config type: {config_type}")
             return 1
 
         if output_path:
-            logging.info(f"Template saved to: {output_path}")
+            logging.info("Template saved to: {output_path}")
 
         return 0
     except Exception as e:
-        logging.error(f"Template generation failed: {e}", exc_info=True)
+        logging.error("Template generation failed: {e}", exc_info=True)
         return 1
 
 
@@ -816,15 +816,15 @@ def cmd_config_validate(args: argparse.Namespace) -> int:
         config_type = getattr(args, "type", "auto")
 
         # Print banner
-        print_banner("Configuration Validation", f"Validating: {config_path.name}")
+        print_banner("Configuration Validation", "Validating: {config_path.name}")
 
         # Check if file exists
         if not config_path.exists():
-            print_error(f"Configuration file not found: {config_path}")
+            print_error("Configuration file not found: {config_path}")
             if console:
                 console.print("\n[yellow]💡 Tips:[/yellow]")
                 console.print(f"  • Check the path: {config_path.absolute()}")
-                console.print(f"  • Generate a template: [cyan]python -m trading_system config template --type run[/cyan]")
+                console.print("  • Generate a template: [cyan]python -m trading_system config template --type run[/cyan]")
             return 1
 
         # Use the improved validation function
@@ -832,7 +832,7 @@ def cmd_config_validate(args: argparse.Namespace) -> int:
         is_valid, error_message, config = validate_config_file(str(config_path), config_type)
 
         if is_valid:
-            print_success(f"Configuration is valid: {config_path.name}")
+            print_success("Configuration is valid: {config_path.name}")
 
             # Additional validation: check referenced strategy configs for run configs
             if config_type == "run" or (config_type == "auto" and hasattr(config, "strategies")):
@@ -843,36 +843,36 @@ def cmd_config_validate(args: argparse.Namespace) -> int:
                         print_section("Validating Equity Strategy Config")
                         equity_path = Path(config.strategies.equity.config_path)
                         if not equity_path.exists():
-                            print_error(f"Equity strategy config file not found: {equity_path}")
+                            print_error("Equity strategy config file not found: {equity_path}")
                             if console:
                                 console.print(f"  • Referenced from: {config_path}")
-                                console.print(f"  • Resolve path: {equity_path.absolute()}")
+                                console.print("  • Resolve path: {equity_path.absolute()}")
                             return 1
                         equity_valid, equity_error, _ = validate_config_file(str(equity_path), "strategy")
                         if equity_valid:
-                            print_success(f"Equity strategy config is valid: {equity_path.name}")
+                            print_success("Equity strategy config is valid: {equity_path.name}")
                         else:
-                            print_error(f"Equity strategy config invalid: {equity_error}")
+                            print_error("Equity strategy config invalid: {equity_error}")
                             if console:
-                                console.print(f"  • File: {equity_path}")
+                                console.print("  • File: {equity_path}")
                             return 1
 
                     if config.strategies.crypto and config.strategies.crypto.enabled:
                         print_section("Validating Crypto Strategy Config")
                         crypto_path = Path(config.strategies.crypto.config_path)
                         if not crypto_path.exists():
-                            print_error(f"Crypto strategy config file not found: {crypto_path}")
+                            print_error("Crypto strategy config file not found: {crypto_path}")
                             if console:
                                 console.print(f"  • Referenced from: {config_path}")
-                                console.print(f"  • Resolve path: {crypto_path.absolute()}")
+                                console.print("  • Resolve path: {crypto_path.absolute()}")
                             return 1
                         crypto_valid, crypto_error, _ = validate_config_file(str(crypto_path), "strategy")
                         if crypto_valid:
-                            print_success(f"Crypto strategy config is valid: {crypto_path.name}")
+                            print_success("Crypto strategy config is valid: {crypto_path.name}")
                         else:
-                            print_error(f"Crypto strategy config invalid: {crypto_error}")
+                            print_error("Crypto strategy config invalid: {crypto_error}")
                             if console:
-                                console.print(f"  • File: {crypto_path}")
+                                console.print("  • File: {crypto_path}")
                             return 1
 
             print_success("All configurations are valid ✓")
@@ -880,25 +880,25 @@ def cmd_config_validate(args: argparse.Namespace) -> int:
         else:
             print_error("Configuration validation failed")
             if console:
-                console.print(f"\n[red]Validation Errors:[/red]")
+                console.print("\n[red]Validation Errors:[/red]")
                 console.print(Panel(error_message, border_style="red"))
                 console.print("\n[yellow]💡 Tips:[/yellow]")
-                console.print(f"  • Review the error messages above")
-                console.print(f"  • Check configuration schema in docs")
-                console.print(f"  • Generate template: [cyan]python -m trading_system config template --type run[/cyan]")
+                console.print("  • Review the error messages above")
+                console.print("  • Check configuration schema in docs")
+                console.print("  • Generate template: [cyan]python -m trading_system config template --type run[/cyan]")
             else:
-                print(f"\n{error_message}")
+                print("\n{error_message}")
             return 1
 
     except KeyboardInterrupt:
         print_warning("\nValidation cancelled by user")
         return 130
     except Exception as e:
-        print_error(f"Validation failed: {e}")
+        print_error("Validation failed: {e}")
         if console:
             console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
-            console.print(f"  • Check that the file is valid YAML")
-            console.print(f"  • Verify file permissions")
+            console.print("  • Check that the file is valid YAML")
+            console.print("  • Verify file permissions")
             console.print_exception(show_locals=False)
         else:
             logging.exception("Validation failed")
@@ -923,11 +923,11 @@ def cmd_config_docs(args: argparse.Namespace) -> int:
         if not output_path:
             print(content)
         else:
-            print_success(f"Documentation saved to: {output_path}")
+            print_success("Documentation saved to: {output_path}")
 
         return 0
     except Exception as e:
-        print_error(f"Documentation generation failed: {e}")
+        print_error("Documentation generation failed: {e}")
         if console:
             console.print_exception()
         else:
@@ -954,11 +954,11 @@ def cmd_config_migrate(args: argparse.Namespace) -> int:
         dry_run = getattr(args, "dry_run", False)
 
         # Print banner
-        print_banner("Configuration Migration", f"Migrating: {config_path.name}")
+        print_banner("Configuration Migration", "Migrating: {config_path.name}")
 
         # Check if file exists
         if not config_path.exists():
-            print_error(f"Configuration file not found: {config_path}")
+            print_error("Configuration file not found: {config_path}")
             return 1
 
         # Create backup if requested
@@ -966,9 +966,9 @@ def cmd_config_migrate(args: argparse.Namespace) -> int:
             print_section("Creating Backup")
             try:
                 backup_path = backup_config(str(config_path))
-                print_success(f"Backup created: {backup_path}")
+                print_success("Backup created: {backup_path}")
             except Exception as e:
-                print_error(f"Failed to create backup: {e}")
+                print_error("Failed to create backup: {e}")
                 return 1
 
         # Perform migration
@@ -983,7 +983,7 @@ def cmd_config_migrate(args: argparse.Namespace) -> int:
                 console.print("\n[yellow]Note:[/yellow] This was a dry run. Use without --dry-run to apply changes.")
             return 0
         else:
-            print_error(f"Migration failed: {message}")
+            print_error("Migration failed: {message}")
             if console:
                 console.print("\n[yellow]💡 Tips:[/yellow]")
                 console.print("  • Check the error message above")
@@ -995,7 +995,7 @@ def cmd_config_migrate(args: argparse.Namespace) -> int:
         print_warning("\nMigration cancelled by user")
         return 130
     except Exception as e:
-        print_error(f"Migration failed: {e}")
+        print_error("Migration failed: {e}")
         if console:
             console.print_exception()
         else:
@@ -1018,11 +1018,11 @@ def cmd_config_version(args: argparse.Namespace) -> int:
         config_path = Path(args.path)
 
         # Print banner
-        print_banner("Configuration Version Check", f"Checking: {config_path.name}")
+        print_banner("Configuration Version Check", "Checking: {config_path.name}")
 
         # Check if file exists
         if not config_path.exists():
-            print_error(f"Configuration file not found: {config_path}")
+            print_error("Configuration file not found: {config_path}")
             return 1
 
         # Check version
@@ -1041,17 +1041,17 @@ def cmd_config_version(args: argparse.Namespace) -> int:
             if not is_current:
                 console.print("\n[yellow]💡 Tip:[/yellow]")
                 console.print(
-                    f"  • Migrate to current version: [cyan]python -m trading_system config migrate --path {config_path}[/cyan]"
+                    "  • Migrate to current version: [cyan]python -m trading_system config migrate --path {config_path}[/cyan]"
                 )
         else:
-            print(f"Config Version: {version}")
-            print(f"Current Version: {CURRENT_CONFIG_VERSION}")
-            print(f"Status: {'Current' if is_current else 'Outdated'}")
+            print("Config Version: {version}")
+            print("Current Version: {CURRENT_CONFIG_VERSION}")
+            print("Status: {'Current' if is_current else 'Outdated'}")
 
         return 0 if is_current else 1
 
     except Exception as e:
-        print_error(f"Version check failed: {e}")
+        print_error("Version check failed: {e}")
         if console:
             console.print_exception()
         else:
@@ -1083,7 +1083,7 @@ def cmd_config_schema(args: argparse.Namespace) -> int:
             schema = export_json_schema(StrategyConfig, output_path=output_path)
             schema_name = "StrategyConfig"
         else:
-            print_error(f"Unknown config type: {config_type}")
+            print_error("Unknown config type: {config_type}")
             return 1
 
         if not output_path:
@@ -1091,11 +1091,11 @@ def cmd_config_schema(args: argparse.Namespace) -> int:
 
             print(json.dumps(schema, indent=2))
         else:
-            print_success(f"JSON Schema for {schema_name} saved to: {output_path}")
+            print_success("JSON Schema for {schema_name} saved to: {output_path}")
 
         return 0
     except Exception as e:
-        print_error(f"Schema export failed: {e}")
+        print_error("Schema export failed: {e}")
         if console:
             console.print_exception()
         else:
@@ -1121,7 +1121,7 @@ def cmd_config_wizard(args: argparse.Namespace) -> int:
         run_wizard(config_type=config_type, output_path=output_path)
         return 0
     except Exception as e:
-        logging.error(f"Wizard failed: {e}", exc_info=True)
+        logging.error("Wizard failed: {e}", exc_info=True)
         return 1
 
 
@@ -1144,7 +1144,7 @@ def cmd_strategy_template(args: argparse.Namespace) -> int:
         directory = getattr(args, "directory", None)
 
         # Print banner
-        print_banner("Generating Strategy Template", f"Name: {strategy_name} | Type: {strategy_type} | Asset: {asset_class}")
+        print_banner("Generating Strategy Template", "Name: {strategy_name} | Type: {strategy_type} | Asset: {asset_class}")
 
         # Generate template
         print_section("Generating Strategy Class")
@@ -1166,32 +1166,30 @@ def cmd_strategy_template(args: argparse.Namespace) -> int:
                 if strategy_type == "custom":
                     strategy_dir = Path("trading_system/strategies/custom")
                 else:
-                    strategy_dir = Path(f"trading_system/strategies/{strategy_type}")
-            filename = f"{strategy_name}_{asset_class}.py"
+                    strategy_dir = Path("trading_system/strategies/{strategy_type}")
+            filename = "{strategy_name}_{asset_class}.py"
             file_path = strategy_dir / filename
 
-        print_success(f"Strategy template generated: {file_path}")
+        print_success("Strategy template generated: {file_path}")
 
         if console:
             console.print("\n[dim]Next steps:[/dim]")
-            console.print(f"  1. Review and implement the TODO sections in {file_path.name}")
-            console.print(f"  2. Register the strategy in strategy_registry.py")
-            console.print(f"  3. Create a strategy config YAML file")
-            console.print(f"  4. Test the strategy with a backtest")
+            console.print("  1. Review and implement the TODO sections in {file_path.name}")
+            console.print("  2. Register the strategy in strategy_registry.py")
+            console.print("  3. Create a strategy config YAML file")
+            console.print("  4. Test the strategy with a backtest")
 
         return 0
     except ValueError as e:
-        print_error(f"Invalid arguments: {e}")
+        print_error("Invalid arguments: {e}")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
-            console.print(f"  • Strategy name should be lowercase with underscores (e.g., 'my_custom_strategy')")
-            console.print(
-                f"  • Strategy type must be one of: momentum, mean_reversion, factor, multi_timeframe, pairs, custom"
-            )
-            console.print(f"  • Asset class must be 'equity' or 'crypto'")
+            console.print("  • Strategy name should be lowercase with underscores (e.g., 'my_custom_strategy')")
+            console.print("  • Strategy type must be one of: momentum, mean_reversion, factor, multi_timeframe, pairs, custom")
+            console.print("  • Asset class must be 'equity' or 'crypto'")
         return 1
     except Exception as e:
-        print_error(f"Strategy template generation failed: {e}")
+        print_error("Strategy template generation failed: {e}")
         if console:
             console.print_exception()
         else:
@@ -1240,7 +1238,7 @@ def cmd_strategy_create(args: argparse.Namespace) -> int:
             directory = wizard_params["directory"]
 
         # Print banner
-        print_banner("Generating Strategy Template", f"Name: {strategy_name} | Type: {strategy_type} | Asset: {asset_class}")
+        print_banner("Generating Strategy Template", "Name: {strategy_name} | Type: {strategy_type} | Asset: {asset_class}")
 
         # Generate template
         print_section("Generating Strategy Class")
@@ -1262,35 +1260,33 @@ def cmd_strategy_create(args: argparse.Namespace) -> int:
                 if strategy_type == "custom":
                     strategy_dir = Path("trading_system/strategies/custom")
                 else:
-                    strategy_dir = Path(f"trading_system/strategies/{strategy_type}")
-            filename = f"{strategy_name}_{asset_class}.py"
+                    strategy_dir = Path("trading_system/strategies/{strategy_type}")
+            filename = "{strategy_name}_{asset_class}.py"
             file_path = strategy_dir / filename
 
-        print_success(f"Strategy template generated: {file_path}")
+        print_success("Strategy template generated: {file_path}")
 
         if console:
             console.print("\n[dim]Next steps:[/dim]")
-            console.print(f"  1. Review and implement the TODO sections in {file_path.name}")
-            console.print(f"  2. Register the strategy in strategy_registry.py")
-            console.print(f"  3. Create a strategy config YAML file")
-            console.print(f"  4. Test the strategy with a backtest")
+            console.print("  1. Review and implement the TODO sections in {file_path.name}")
+            console.print("  2. Register the strategy in strategy_registry.py")
+            console.print("  3. Create a strategy config YAML file")
+            console.print("  4. Test the strategy with a backtest")
 
         return 0
     except ValueError as e:
-        print_error(f"Invalid arguments: {e}")
+        print_error("Invalid arguments: {e}")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
-            console.print(f"  • Strategy name should be lowercase with underscores (e.g., 'my_custom_strategy')")
-            console.print(
-                f"  • Strategy type must be one of: momentum, mean_reversion, factor, multi_timeframe, pairs, custom"
-            )
-            console.print(f"  • Asset class must be 'equity' or 'crypto'")
+            console.print("  • Strategy name should be lowercase with underscores (e.g., 'my_custom_strategy')")
+            console.print("  • Strategy type must be one of: momentum, mean_reversion, factor, multi_timeframe, pairs, custom")
+            console.print("  • Asset class must be 'equity' or 'crypto'")
         return 1
     except KeyboardInterrupt:
         print_warning("\nStrategy creation cancelled by user")
         return 130
     except Exception as e:
-        print_error(f"Strategy template generation failed: {e}")
+        print_error("Strategy template generation failed: {e}")
         if console:
             console.print_exception()
         else:
@@ -1318,25 +1314,25 @@ def cmd_report(args: argparse.Namespace) -> int:
         run_dir = base_path_obj / run_id
 
         # Print banner
-        print_banner("Generating Reports", f"Run ID: {run_id} | Output: {base_path}")
+        print_banner("Generating Reports", "Run ID: {run_id} | Output: {base_path}")
 
         # Validate run directory exists
         if not run_dir.exists():
-            print_error(f"Run directory not found: {run_dir}")
+            print_error("Run directory not found: {run_dir}")
             if console:
                 console.print("\n[yellow]💡 Tips:[/yellow]")
-                console.print(f"  • Check if run_id is correct: {run_id}")
-                console.print(f"  • Available runs in: {base_path_obj.absolute()}")
+                console.print("  • Check if run_id is correct: {run_id}")
+                console.print("  • Available runs in: {base_path_obj.absolute()}")
                 if base_path_obj.exists():
                     try:
                         runs = [d.name for d in base_path_obj.iterdir() if d.is_dir()]
                         if runs:
-                            console.print(f"  • Available run IDs: {', '.join(runs[:5])}")
+                            console.print("  • Available run IDs: {', '.join(runs[:5])}")
                             if len(runs) > 5:
-                                console.print(f"  • ... and {len(runs) - 5} more")
+                                console.print("  • ... and {len(runs) - 5} more")
                     except Exception:
                         pass
-                console.print(f"  • Run a backtest first: [cyan]python -m trading_system backtest -c <config>[/cyan]")
+                console.print("  • Run a backtest first: [cyan]python -m trading_system backtest -c <config>[/cyan]")
             return 1
 
         # Create report generator
@@ -1354,7 +1350,7 @@ def cmd_report(args: argparse.Namespace) -> int:
             summary_display = Path(summary_path).relative_to(Path.cwd())
         except ValueError:
             summary_display = summary_path
-        print_success(f"Summary report: {summary_display}")
+        print_success("Summary report: {summary_display}")
 
         # Generate comparison report (if multiple periods available)
         try:
@@ -1365,9 +1361,9 @@ def cmd_report(args: argparse.Namespace) -> int:
                 comparison_display = Path(comparison_path).relative_to(Path.cwd())
             except ValueError:
                 comparison_display = comparison_path
-            print_success(f"Comparison report: {comparison_display}")
+            print_success("Comparison report: {comparison_display}")
         except ValueError as e:
-            print_warning(f"Could not generate comparison report: {e}")
+            print_warning("Could not generate comparison report: {e}")
 
         # Print summary to console
         print_section("Report Summary")
@@ -1375,27 +1371,27 @@ def cmd_report(args: argparse.Namespace) -> int:
 
         print_success("Report generation completed successfully")
         if console:
-            console.print(f"\n[dim]View reports:[/dim] {run_dir.absolute()}")
-            console.print(f"Launch dashboard: [cyan]python -m trading_system dashboard --run-id {run_id}[/cyan]")
+            console.print("\n[dim]View reports:[/dim] {run_dir.absolute()}")
+            console.print("Launch dashboard: [cyan]python -m trading_system dashboard --run-id {run_id}[/cyan]")
         return 0
 
     except FileNotFoundError as e:
-        print_error(f"Run directory not found: {e}")
+        print_error("Run directory not found: {e}")
         if console:
             console.print("\n[yellow]💡 Tips:[/yellow]")
-            console.print(f"  • Verify the run_id exists in the base_path")
-            console.print(f"  • Run a backtest first to generate results")
+            console.print("  • Verify the run_id exists in the base_path")
+            console.print("  • Run a backtest first to generate results")
             console.print_exception(show_locals=False)
         return 1
     except KeyboardInterrupt:
         print_warning("\nReport generation cancelled by user")
         return 130
     except Exception as e:
-        print_error(f"Report generation failed: {e}")
+        print_error("Report generation failed: {e}")
         if console:
             console.print("\n[yellow]💡 Troubleshooting:[/yellow]")
-            console.print(f"  • Ensure the run completed successfully")
-            console.print(f"  • Check logs in the run directory")
+            console.print("  • Ensure the run completed successfully")
+            console.print("  • Check logs in the run directory")
             console.print_exception(show_locals=False)
         else:
             logging.exception("Report generation failed")
@@ -1419,13 +1415,13 @@ def cmd_dashboard(args: argparse.Namespace) -> int:
         run_id = args.run_id
 
         if console:
-            console.print(f"\n[bold cyan]Launching Dashboard[/bold cyan]")
-            console.print(f"Run ID: {run_id}")
-            console.print(f"Base Path: {base_path}\n")
+            console.print("\n[bold cyan]Launching Dashboard[/bold cyan]")
+            console.print("Run ID: {run_id}")
+            console.print("Base Path: {base_path}\n")
 
         # Check if streamlit is available
         try:
-            import streamlit
+            import streamlit  # noqa: F401 - checked for availability
         except ImportError:
             print_error("Streamlit is not installed. Install it with: pip install streamlit")
             if console:
@@ -1456,13 +1452,13 @@ def cmd_dashboard(args: argparse.Namespace) -> int:
         print_warning("\nDashboard stopped by user")
         return 130
     except FileNotFoundError as e:
-        print_error(f"Run directory not found: {e}")
+        print_error("Run directory not found: {e}")
         if console:
-            console.print(f"\n[yellow]Tip:[/yellow] Make sure the run_id exists in the base_path directory.")
-            console.print(f"Available runs can be found in: {Path(base_path).absolute()}")
+            console.print("\n[yellow]Tip:[/yellow] Make sure the run_id exists in the base_path directory.")
+            console.print("Available runs can be found in: {Path(base_path).absolute()}")
         return 1
     except Exception as e:
-        print_error(f"Dashboard launch failed: {e}")
+        print_error("Dashboard launch failed: {e}")
         if console:
             console.print_exception()
         else:
@@ -1510,7 +1506,7 @@ def cmd_run_scheduler(args: argparse.Namespace) -> int:
             print_success("Scheduler stopped")
             return 0
     except Exception as e:
-        print_error(f"Failed to start scheduler: {e}")
+        print_error("Failed to start scheduler: {e}")
         if console:
             console.print_exception()
         return 1
@@ -1528,7 +1524,7 @@ def cmd_run_signals_now(args: argparse.Namespace) -> int:
     import asyncio
 
     asset_class = args.asset_class
-    print_banner(f"Generate Signals Now", f"Running signal generation for {asset_class}")
+    print_banner("Generate Signals Now", "Running signal generation for {asset_class}")
 
     try:
         from .scheduler.jobs.daily_signals_job import daily_signals_job
@@ -1536,10 +1532,10 @@ def cmd_run_signals_now(args: argparse.Namespace) -> int:
         # Run the job
         asyncio.run(daily_signals_job(asset_class))
 
-        print_success(f"Signal generation completed for {asset_class}")
+        print_success("Signal generation completed for {asset_class}")
         return 0
     except Exception as e:
-        print_error(f"Signal generation failed: {e}")
+        print_error("Signal generation failed: {e}")
         if console:
             console.print_exception()
         return 1
@@ -1555,7 +1551,6 @@ def cmd_send_test_email(args: argparse.Namespace) -> int:
         Exit code (0 for success, non-zero for error)
     """
     import os
-    from datetime import date
 
     print_banner("Send Test Email", "Testing email configuration")
 
@@ -1609,13 +1604,13 @@ def cmd_send_test_email(args: argparse.Namespace) -> int:
         )
 
         if success:
-            print_success(f"Test email sent successfully to {', '.join(email_config.recipients)}")
+            print_success("Test email sent successfully to {', '.join(email_config.recipients)}")
             return 0
         else:
             print_error("Failed to send test email. Check SMTP configuration.")
             return 1
     except Exception as e:
-        print_error(f"Failed to send test email: {e}")
+        print_error("Failed to send test email: {e}")
         if console:
             console.print_exception()
         return 1
@@ -1638,13 +1633,13 @@ def cmd_trading_dashboard(args: argparse.Namespace) -> int:
         host = getattr(args, "host", "localhost")
 
         if console:
-            console.print(f"\n[bold cyan]Launching Trading Assistant Dashboard[/bold cyan]")
-            console.print(f"Address: http://{host}:{port}")
-            console.print(f"\nPress Ctrl+C to stop the dashboard.\n")
+            console.print("\n[bold cyan]Launching Trading Assistant Dashboard[/bold cyan]")
+            console.print("Address: http://{host}:{port}")
+            console.print("\nPress Ctrl+C to stop the dashboard.\n")
 
         # Check if streamlit is available
         try:
-            import streamlit
+            import streamlit  # noqa: F401 - checked for availability
         except ImportError:
             print_error("Streamlit is not installed. Install it with: pip install streamlit")
             if console:
@@ -1659,7 +1654,7 @@ def cmd_trading_dashboard(args: argparse.Namespace) -> int:
         dashboard_file = Path(__file__).parent / "dashboard" / "app.py"
 
         if not dashboard_file.exists():
-            print_error(f"Dashboard app not found: {dashboard_file}")
+            print_error("Dashboard app not found: {dashboard_file}")
             return 1
 
         # Build command
@@ -1669,8 +1664,8 @@ def cmd_trading_dashboard(args: argparse.Namespace) -> int:
             "streamlit",
             "run",
             str(dashboard_file),
-            f"--server.port={port}",
-            f"--server.address={host}",
+            "--server.port={port}",
+            "--server.address={host}",
         ]
 
         print_info("Starting Streamlit trading dashboard...")
@@ -1685,7 +1680,7 @@ def cmd_trading_dashboard(args: argparse.Namespace) -> int:
         print_warning("\nDashboard stopped by user")
         return 130
     except Exception as e:
-        print_error(f"Dashboard launch failed: {e}")
+        print_error("Dashboard launch failed: {e}")
         if console:
             console.print_exception()
         else:
@@ -1705,7 +1700,7 @@ def cmd_fetch_data(args: argparse.Namespace) -> int:
     import asyncio
     import os
 
-    print_banner("Fetch Data", f"Fetching {args.asset_class} data for {args.symbols}")
+    print_banner("Fetch Data", "Fetching {args.asset_class} data for {args.symbols}")
 
     try:
         from .data_pipeline.config import DataPipelineConfig
@@ -1725,7 +1720,7 @@ def cmd_fetch_data(args: argparse.Namespace) -> int:
         # Create fetcher
         async def fetch_data_async():
             async with LiveDataFetcher(config) as fetcher:
-                print_section(f"Fetching {len(symbols)} {args.asset_class} symbols (lookback: {args.days} days)")
+                print_section("Fetching {len(symbols)} {args.asset_class} symbols (lookback: {args.days} days)")
 
                 # Fetch data
                 data = await fetcher.fetch_daily_data(symbols=symbols, asset_class=args.asset_class, lookback_days=args.days)
@@ -1736,7 +1731,7 @@ def cmd_fetch_data(args: argparse.Namespace) -> int:
 
                 # Display results
                 if console:
-                    table = Table(title=f"Fetched Data Summary ({args.asset_class})")
+                    table = Table(title="Fetched Data Summary ({args.asset_class})")
                     table.add_column("Symbol", style="cyan")
                     table.add_column("Rows", justify="right", style="green")
                     table.add_column("Date Range", style="yellow")
@@ -1744,7 +1739,7 @@ def cmd_fetch_data(args: argparse.Namespace) -> int:
 
                     for symbol, df in data.items():
                         if len(df) > 0:
-                            date_range = f"{df['date'].min()} to {df['date'].max()}"
+                            date_range = "{df['date'].min()} to {df['date'].max()}"
                             table.add_row(symbol, str(len(df)), date_range, "[green]✓[/green]")
                         else:
                             table.add_row(symbol, "0", "N/A", "[red]✗[/red]")
@@ -1754,11 +1749,11 @@ def cmd_fetch_data(args: argparse.Namespace) -> int:
                     print("\nFetched Data Summary:")
                     for symbol, df in data.items():
                         if len(df) > 0:
-                            print(f"  {symbol}: {len(df)} rows ({df['date'].min()} to {df['date'].max()})")
+                            print("  {symbol}: {len(df)} rows ({df['date'].min()} to {df['date'].max()})")
                         else:
-                            print(f"  {symbol}: No data")
+                            print("  {symbol}: No data")
 
-                print_success(f"Successfully fetched data for {len(data)}/{len(symbols)} symbols")
+                print_success("Successfully fetched data for {len(data)}/{len(symbols)} symbols")
                 return 0
 
         # Run async function
@@ -1768,7 +1763,7 @@ def cmd_fetch_data(args: argparse.Namespace) -> int:
         print_warning("\nData fetching cancelled by user")
         return 130
     except Exception as e:
-        print_error(f"Failed to fetch data: {e}")
+        print_error("Failed to fetch data: {e}")
         if console:
             console.print_exception()
         else:
@@ -2218,7 +2213,7 @@ def main() -> int:
         print_warning("\nOperation cancelled by user")
         return 130
     except Exception as e:
-        print_error(f"Unexpected error: {e}")
+        print_error("Unexpected error: {e}")
         if console:
             console.print_exception()
         return 1

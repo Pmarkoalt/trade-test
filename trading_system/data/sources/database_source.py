@@ -66,7 +66,7 @@ class DatabaseDataSource(BaseDataSource):
 
         # Build query with proper parameter placeholders
         placeholders = ",".join([param_style for _ in symbols])
-        query = f"""
+        query = """
             SELECT symbol, date, open, high, low, close, volume
             FROM {self.table_name}
             WHERE symbol IN ({placeholders})
@@ -148,7 +148,7 @@ class DatabaseDataSource(BaseDataSource):
 
         param_style = self._get_param_style()
         try:
-            query = f"""
+            query = """
                 SELECT MIN(date) as min_date, MAX(date) as max_date
                 FROM {self.table_name}
                 WHERE symbol = {param_style}

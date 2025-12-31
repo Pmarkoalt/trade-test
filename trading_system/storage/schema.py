@@ -182,7 +182,10 @@ def get_schema_version(conn: sqlite3.Connection) -> int:
     try:
         cursor.execute("SELECT version FROM schema_version ORDER BY version DESC LIMIT 1")
         result = cursor.fetchone()
-        return result[0] if result else 1
+        if result and result[0] is not None:
+            version_val = result[0]
+            return int(version_val) if isinstance(version_val, (int, str)) else 1
+        return 1
     except sqlite3.OperationalError:
         # Schema version table doesn't exist yet
         return 1

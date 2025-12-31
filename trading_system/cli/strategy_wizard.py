@@ -126,7 +126,7 @@ class StrategyWizard:
                     # Try to match by name
                     if choice in options:
                         return choice
-                    self.print(f"Invalid choice. Please enter a number or option name.", style="red")
+                    self.print("Invalid choice. Please enter a number or option name.", style="red")
         else:
             # Fallback for non-rich
             print(f"\n{question}")
@@ -144,7 +144,7 @@ class StrategyWizard:
                 except ValueError:
                     if choice in options:
                         return choice
-                    print(f"Invalid choice. Please enter a number or option name.")
+                    print("Invalid choice. Please enter a number or option name.")
 
     def run_wizard(self) -> Dict[str, Any]:
         """Run the strategy creation wizard.

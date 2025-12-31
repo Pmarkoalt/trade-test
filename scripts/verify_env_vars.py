@@ -129,9 +129,9 @@ def check_hardcoded_paths() -> Tuple[bool, List[str]]:
 
     # Patterns for hardcoded paths
     patterns = [
-        (r'/Users/[^/\s]+', "Hardcoded macOS user path"),
-        (r'/home/[^/\s]+', "Hardcoded Linux user path"),
-        (r'C:\\Users\\[^\\\s]+', "Hardcoded Windows user path"),
+        (r"/Users/[^/\s]+", "Hardcoded macOS user path"),
+        (r"/home/[^/\s]+", "Hardcoded Linux user path"),
+        (r"C:\\Users\\[^\\\s]+", "Hardcoded Windows user path"),
     ]
 
     code_dirs = ["trading_system"]
@@ -206,7 +206,7 @@ def check_env_var_usage() -> Tuple[bool, Dict[str, List[str]]]:
                 for line_num, line in enumerate(lines, 1):
                     for env_var in env_vars.keys():
                         # Check for os.getenv or os.environ usage
-                        if f'os.getenv("{env_var}"' in line or f'os.getenv(\'{env_var}\'' in line:
+                        if f'os.getenv("{env_var}"' in line or "os.getenv('{env_var}'" in line:
                             env_vars[env_var].append(f"{py_file}:{line_num}")
                         elif f'os.environ.get("{env_var}"' in line or f"os.environ.get('{env_var}'" in line:
                             env_vars[env_var].append(f"{py_file}:{line_num}")
@@ -406,5 +406,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
-

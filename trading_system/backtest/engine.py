@@ -2,7 +2,6 @@
 
 import bisect
 import logging
-import pickle
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -28,7 +27,6 @@ class BacktestTimeoutError(Exception):
     pass
 
 
-from ..data.calendar import get_trading_days
 from ..data.loader import load_all_data
 from ..indicators.feature_computer import compute_features
 from ..ml.feature_engineering import MLFeatureEngineer
@@ -188,7 +186,7 @@ class BacktestEngine:
                         raise BacktestTimeoutError(
                             f"Backtest exceeded maximum duration of {self.max_duration_seconds} seconds. "
                             f"Processed {days_processed}/{len(trading_dates)} days in {elapsed_seconds:.1f}s. "
-                            f"Consider reducing date range or increasing max_duration_seconds."
+                            "Consider reducing date range or increasing max_duration_seconds."
                         )
             except BacktestTimeoutError:
                 raise  # Re-raise timeout errors

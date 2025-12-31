@@ -710,7 +710,7 @@ class ResultsDatabase:
             # Get run metadata
             placeholders = ",".join(["?" for _ in run_ids])
             cursor.execute(
-                f"""
+                """
                 SELECT run_id, config_path, strategy_name, split_name, period, start_date, end_date
                 FROM backtest_runs
                 WHERE run_id IN ({placeholders})

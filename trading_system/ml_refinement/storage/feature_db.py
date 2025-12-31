@@ -199,7 +199,7 @@ class FeatureDatabase:
             conditions.append("signal_type = ?")
             params.append(signal_type)
 
-        sql = f"""
+        sql = """
             SELECT features, target_r_multiple
             FROM feature_vectors
             WHERE {' AND '.join(conditions)}

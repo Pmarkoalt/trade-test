@@ -3,7 +3,6 @@
 import pytest
 from datetime import datetime, timedelta
 from unittest.mock import MagicMock, patch
-from pathlib import Path
 
 
 class TestDashboardConfig:

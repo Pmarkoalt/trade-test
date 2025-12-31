@@ -14,8 +14,8 @@ try:
     JINJA2_AVAILABLE = True
 except ImportError:
     JINJA2_AVAILABLE = False
-    Environment = None  # type: ignore[assignment, misc]
-    FileSystemLoader = None  # type: ignore[assignment, misc]
+    Environment = None
+    FileSystemLoader = None
 
 from ...logging.logger import get_logger
 from ..formatters.recommendation_formatter import RecommendationFormatter
@@ -302,7 +302,7 @@ class EmailService:
         Returns:
             Simple HTML string
         """
-        html = f"""
+        html = """
         <html>
         <head><title>Trading Signals for {date_obj}</title></head>
         <body>

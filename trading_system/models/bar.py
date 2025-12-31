@@ -23,7 +23,7 @@ class Bar:
         """Validate OHLC relationships and compute dollar_volume if needed."""
         # Validate prices are positive
         if self.close <= 0 or self.open <= 0 or self.high <= 0 or self.low <= 0:
-            raise ValueError(f"Invalid prices: {self.symbol} {self.date}, " f"prices must be positive")
+            raise ValueError(f"Invalid prices: {self.symbol} {self.date}, " "prices must be positive")
 
         # Validate OHLC relationships
         if not (self.low <= self.open <= self.high):

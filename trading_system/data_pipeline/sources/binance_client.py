@@ -157,7 +157,7 @@ class BinanceClient(BaseDataSource):
 
                         logger.warning(f"Rate limit exceeded. Waiting {wait_time:.2f} seconds...")
                         await asyncio.sleep(wait_time)
-                        raise APIRateLimitError(f"Rate limit exceeded for Binance API")
+                        raise APIRateLimitError("Rate limit exceeded for Binance API")
 
                     if response.status == 200:
                         data = await response.json()

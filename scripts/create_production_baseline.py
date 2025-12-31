@@ -37,11 +37,11 @@ def run_benchmarks() -> Dict:
     """Run performance benchmarks and return results."""
     print("Running production baseline benchmarks...")
     print("=" * 70)
-    
+
     # Ensure we're in the project root
     project_root = Path(__file__).parent.parent
     os.chdir(project_root)
-    
+
     # Run benchmarks
     result = subprocess.run(  # noqa: S603 - subprocess needed for pytest execution
         [
@@ -58,59 +58,57 @@ def run_benchmarks() -> Dict:
         capture_output=True,
         text=True,
     )
-    
+
     if result.returncode != 0:
         print("Warning: Some benchmarks may have failed")
         print(result.stderr)
-    
+
     # Load results
     baseline_file = project_root / "production_baseline.json"
     if not baseline_file.exists():
         print("Error: Benchmark results file not found")
         return {}
-    
+
     with open(baseline_file, "r") as f:
         results = json.load(f)
-    
+
     return results
 
 
 def analyze_results(results: Dict) -> Tuple[List[str], List[str], List[str]]:
     """Analyze benchmark results against production targets."""
     benchmarks = results.get("benchmarks", [])
-    
+
     passed = []
     warnings = []
     failed = []
-    
+
     for bench in benchmarks:
         name = bench.get("name", "")
         mean_time = bench.get("stats", {}).get("mean", 0)
-        
+
         # Find matching target
         target_time = None
         for target_name, target in PRODUCTION_TARGETS.items():
             if target_name in name:
                 target_time = target
                 break
-        
+
         if target_time is None:
             warnings.append(f"{name}: No target defined (mean: {mean_time:.4f}s)")
             continue
-        
+
         if mean_time <= target_time:
             passed.append(f"{name}: {mean_time:.4f}s (target: {target_time:.2f}s) ✓")
         elif mean_time <= target_time * 1.2:  # Within 20% of target
             warnings.append(
-                f"{name}: {mean_time:.4f}s (target: {target_time:.2f}s) ⚠ "
-                f"({(mean_time/target_time - 1)*100:.1f}% slower)"
+                f"{name}: {mean_time:.4f}s (target: {target_time:.2f}s) ⚠ " f"({(mean_time/target_time - 1)*100:.1f}% slower)"
             )
         else:
             failed.append(
-                f"{name}: {mean_time:.4f}s (target: {target_time:.2f}s) ✗ "
-                f"({(mean_time/target_time - 1)*100:.1f}% slower)"
+                f"{name}: {mean_time:.4f}s (target: {target_time:.2f}s) ✗ " f"({(mean_time/target_time - 1)*100:.1f}% slower)"
             )
-    
+
     return passed, warnings, failed
 
 
@@ -121,29 +119,29 @@ def print_report(passed: List[str], warnings: List[str], failed: List[str]):
     print("=" * 70)
     print(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print()
-    
+
     if passed:
         print(f"✓ PASSED ({len(passed)} benchmarks):")
         for item in passed:
             print(f"  {item}")
         print()
-    
+
     if warnings:
         print(f"⚠ WARNINGS ({len(warnings)} benchmarks):")
         for item in warnings:
             print(f"  {item}")
         print()
-    
+
     if failed:
         print(f"✗ FAILED ({len(failed)} benchmarks):")
         for item in failed:
             print(f"  {item}")
         print()
-    
+
     print("=" * 70)
     print(f"Summary: {len(passed)} passed, {len(warnings)} warnings, {len(failed)} failed")
     print("=" * 70)
-    
+
     if failed:
         print("\n⚠️  Some benchmarks exceeded production targets!")
         print("   Review the failed benchmarks and consider optimization.")
@@ -174,7 +172,7 @@ def save_baseline():
         capture_output=True,
         text=True,
     )
-    
+
     if result.returncode == 0:
         print("✓ Baseline saved successfully")
     else:
@@ -193,34 +191,33 @@ def main():
     print("  3. Generate a baseline report")
     print("  4. Optionally save the baseline")
     print()
-    
+
     # Run benchmarks
     results = run_benchmarks()
-    
+
     if not results:
         print("Error: Could not run benchmarks")
         sys.exit(1)
-    
+
     # Analyze results
     passed, warnings, failed = analyze_results(results)
-    
+
     # Print report
     success = print_report(passed, warnings, failed)
-    
+
     # Ask about saving baseline
     if success:
         response = input("\nSave this as the production baseline? (y/n): ").strip().lower()
         if response == "y":
             save_baseline()
-    
+
     # Cleanup
     baseline_file = Path("production_baseline.json")
     if baseline_file.exists():
         baseline_file.unlink()
-    
+
     sys.exit(0 if success else 1)
 
 
 if __name__ == "__main__":
     main()
-

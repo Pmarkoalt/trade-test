@@ -153,7 +153,7 @@ class VolatilityScalingConfig(BaseModel):
     """Volatility scaling configuration."""
 
     enabled: bool = True
-    mode: Literal["continuous", "regime", "off"] = "continuous"
+    mode: Literal["continuous", "regime", "of"] = "continuous"
     lookback: int = Field(default=20, ge=1, le=252)
     baseline_lookback: int = Field(default=252, ge=1)
     min_multiplier: float = Field(default=0.33, ge=0.0, le=1.0)

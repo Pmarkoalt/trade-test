@@ -41,7 +41,7 @@ try:
     HAS_MATPLOTLIB = True
 except ImportError:
     HAS_MATPLOTLIB = False
-    plt = None  # type: ignore[assignment]
+    plt = None
 
 # Plotly for interactive visualization (optional)
 try:
@@ -220,12 +220,12 @@ class ParameterSensitivityGrid:
             return self._run_sequential(all_combinations, param_names, progress_callback)
 
         # Filter out None results (invalid combinations)
-        results = [r for r in results if r is not None]
+        filtered_results: List[Dict[str, Any]] = [r for r in results if r is not None]
 
         if progress_callback:
-            progress_callback(len(results), len(all_combinations))
+            progress_callback(len(filtered_results), len(all_combinations))
 
-        return results
+        return filtered_results
 
     def _find_best_params(self) -> Dict[str, Any]:
         """Find parameters with best metric value."""

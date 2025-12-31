@@ -130,7 +130,7 @@ class MLRetrainJob:
         results["elapsed_seconds"] = elapsed
 
         logger.info(
-            f"Retrain job complete: "
+            "Retrain job complete: "
             f"{len(results['models_retrained'])} retrained, "
             f"{len(results['models_skipped'])} skipped, "
             f"{len(results['errors'])} errors"
@@ -186,7 +186,7 @@ class MLRetrainJob:
 
             # Only activate if better (with small tolerance)
             if new_auc < current_auc - 0.02:
-                logger.info(f"New model ({new_auc:.3f}) not better than current ({current_auc:.3f}), " f"keeping current")
+                logger.info(f"New model ({new_auc:.3f}) not better than current ({current_auc:.3f}), " "keeping current")
                 should_activate = False
 
         if should_activate:

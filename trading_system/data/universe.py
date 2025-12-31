@@ -127,13 +127,16 @@ class CryptoUniverseManager:
                 df = pd.read_csv(file_path)
 
                 if "symbol" in df.columns:
-                    symbols = df["symbol"].tolist()
+                    symbols_raw = df["symbol"].tolist()
                 else:
                     # Assume first column is symbols
-                    symbols = df.iloc[:, 0].tolist()
+                    symbols_raw = df.iloc[:, 0].tolist()
 
                 # Clean and normalize
-                symbols = [str(s).upper().strip() for s in symbols if pd.notna(s)]
+                if symbols_raw is None or not isinstance(symbols_raw, list):
+                    symbols = []
+                else:
+                    symbols = [str(s).upper().strip() for s in symbols_raw if pd.notna(s)]
 
             except Exception as e:
                 raise ValueError(f"Error loading universe from {self.config.universe_file_path}: {e}")

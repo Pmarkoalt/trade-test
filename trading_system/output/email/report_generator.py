@@ -68,7 +68,7 @@ class ReportGenerator:
         # Generate content sections
         buy_signals_html = ""
         if buy_signals:
-            buy_signals_html = f"""
+            buy_signals_html = """
             <div class="section buy-signals">
                 <h2>🎯 BUY SIGNALS</h2>
                 {self._format_signals_section(buy_signals)}
@@ -77,7 +77,7 @@ class ReportGenerator:
 
         sell_signals_html = ""
         if sell_signals:
-            sell_signals_html = f"""
+            sell_signals_html = """
             <div class="section sell-signals">
                 <h2>📉 SELL SIGNALS</h2>
                 {self._format_signals_section(sell_signals)}
@@ -86,7 +86,7 @@ class ReportGenerator:
 
         portfolio_html = ""
         if portfolio_summary:
-            portfolio_html = f"""
+            portfolio_html = """
             <div class="section portfolio">
                 <h2>📈 CURRENT POSITIONS</h2>
                 {self._format_portfolio_section(portfolio_summary)}
@@ -95,7 +95,7 @@ class ReportGenerator:
 
         news_html = ""
         if news_digest:
-            news_html = f"""
+            news_html = """
             <div class="section news">
                 <h2>📰 NEWS DIGEST</h2>
                 {self._format_news_section(news_digest)}
@@ -104,7 +104,7 @@ class ReportGenerator:
 
         performance_html = ""
         if portfolio_summary:
-            performance_html = f"""
+            performance_html = """
             <div class="section performance">
                 <h2>📊 PERFORMANCE (MTD)</h2>
                 {self._format_performance_section(portfolio_summary)}
@@ -229,7 +229,7 @@ class ReportGenerator:
 
             pnl_class = "positive" if pnl_pct >= 0 else "negative"
             rows.append(
-                f"""
+                """
                 <tr>
                     <td>{symbol}</td>
                     <td>${entry:,.2f}</td>
@@ -241,7 +241,7 @@ class ReportGenerator:
                 """
             )
 
-        return f"""
+        return """
         <table class="portfolio-table">
             <thead>
                 <tr>
@@ -316,7 +316,7 @@ class ReportGenerator:
         if not metrics:
             return ""
 
-        return f"""
+        return """
         <div class="performance-section">
             <p><strong>Strategy Return:</strong> {metrics.get('strategy_return', 0):+.2f}%</p>
             <p><strong>Benchmark (SPY):</strong> {metrics.get('benchmark_return', 0):+.2f}%</p>
@@ -343,7 +343,7 @@ class ReportGenerator:
         Returns:
             Simple HTML string
         """
-        html = f"""
+        html = """
         <html>
         <head><title>Trading Signals for {date.today()}</title></head>
         <body>

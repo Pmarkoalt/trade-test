@@ -73,9 +73,9 @@ class MemoryProfiler:
         s2 = self.snapshots[label2]
 
         return {
-            "rss_mb_diff": s2["rss_mb"] - s1["rss_mb"],
-            "vms_mb_diff": s2["vms_mb"] - s1["vms_mb"],
-            "percent_diff": s2["percent"] - s1["percent"],
+            "rss_mb_dif": s2["rss_mb"] - s1["rss_mb"],
+            "vms_mb_dif": s2["vms_mb"] - s1["vms_mb"],
+            "percent_dif": s2["percent"] - s1["percent"],
         }
 
     def log_snapshot(self, label: str, logger_instance: Optional[logging.Logger] = None) -> None:
@@ -129,11 +129,11 @@ class MemoryProfiler:
         usage = {
             "before_rss_mb": before["rss_mb"],
             "after_rss_mb": after["rss_mb"],
-            "rss_mb_diff": after["rss_mb"] - before["rss_mb"],
+            "rss_mb_dif": after["rss_mb"] - before["rss_mb"],
             "before_vms_mb": before["vms_mb"],
             "after_vms_mb": after["vms_mb"],
-            "vms_mb_diff": after["vms_mb"] - before["vms_mb"],
-            "percent_diff": after["percent"] - before["percent"],
+            "vms_mb_dif": after["vms_mb"] - before["vms_mb"],
+            "percent_dif": after["percent"] - before["percent"],
         }
 
         return result, usage

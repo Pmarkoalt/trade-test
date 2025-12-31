@@ -179,7 +179,7 @@ class SQLiteTrackingStore(BaseTrackingStore):
             timestamp_field = "exit_filled_at"
 
         if timestamp_field:
-            sql = f"""
+            sql = """
                 UPDATE tracked_signals
                 SET status = ?, {timestamp_field} = ?
                 WHERE id = ?
@@ -242,7 +242,7 @@ class SQLiteTrackingStore(BaseTrackingStore):
             conditions.append("asset_class = ?")
             params.append(asset_class)
 
-        sql = f"""
+        sql = """
             SELECT * FROM tracked_signals
             WHERE {' AND '.join(conditions)}
             ORDER BY created_at DESC
@@ -471,7 +471,7 @@ class SQLiteTrackingStore(BaseTrackingStore):
 
         where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
-        sql = f"""
+        sql = """
             SELECT
                 COUNT(*) as total_signals,
                 SUM(CASE WHEN status = 'closed' THEN 1 ELSE 0 END) as closed_signals,

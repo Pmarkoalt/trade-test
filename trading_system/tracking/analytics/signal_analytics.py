@@ -418,7 +418,7 @@ class SignalAnalyzer:
             high_acc = analytics.conviction_accuracy.get("HIGH", 0)
             low_acc = analytics.conviction_accuracy.get("LOW", 0)
             if high_acc > low_acc + 0.1:
-                insights.append(f"HIGH conviction signals outperform: " f"{high_acc:.0%} vs {low_acc:.0%} win rate")
+                insights.append("HIGH conviction signals outperform: " f"{high_acc:.0%} vs {low_acc:.0%} win rate")
             elif low_acc > high_acc:
                 insights.append("WARNING: LOW conviction signals outperforming HIGH - " "review scoring methodology")
 

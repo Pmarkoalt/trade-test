@@ -99,14 +99,14 @@ class Signal:
             if self.stop_price >= self.entry_price:
                 raise ValueError(
                     f"Invalid stop_price: {self.stop_price} >= entry_price {self.entry_price} "
-                    f"(stop must be below entry for long positions)"
+                    "(stop must be below entry for long positions)"
                 )
         elif self.signal_type == SignalType.ENTRY_SHORT:
             # Short: stop must be above entry
             if self.stop_price <= self.entry_price:
                 raise ValueError(
                     f"Invalid stop_price: {self.stop_price} <= entry_price {self.entry_price} "
-                    f"(stop must be above entry for short positions)"
+                    "(stop must be above entry for short positions)"
                 )
         elif self.signal_type == SignalType.EXIT:
             # Exit signals: stop validation depends on position side (not validated here)

@@ -107,13 +107,13 @@ def assert_valid_signal(signal: Signal) -> None:
 
     # Check scoring components are in valid range
     assert 0 <= signal.breakout_strength <= 1, (
-        f"Signal {signal.symbol}: breakout_strength {signal.breakout_strength} " f"must be between 0 and 1"
+        f"Signal {signal.symbol}: breakout_strength {signal.breakout_strength} " "must be between 0 and 1"
     )
     assert 0 <= signal.momentum_strength <= 1, (
-        f"Signal {signal.symbol}: momentum_strength {signal.momentum_strength} " f"must be between 0 and 1"
+        f"Signal {signal.symbol}: momentum_strength {signal.momentum_strength} " "must be between 0 and 1"
     )
     assert 0 <= signal.diversification_bonus <= 1, (
-        f"Signal {signal.symbol}: diversification_bonus {signal.diversification_bonus} " f"must be between 0 and 1"
+        f"Signal {signal.symbol}: diversification_bonus {signal.diversification_bonus} " "must be between 0 and 1"
     )
     assert 0 <= signal.score <= 1, f"Signal {signal.symbol}: score {signal.score} must be between 0 and 1"
 
@@ -206,12 +206,12 @@ def assert_valid_portfolio(portfolio: Portfolio) -> None:
 
     # Check risk multiplier
     assert 0.33 <= portfolio.risk_multiplier <= 1.0, (
-        f"Portfolio {portfolio.date}: risk_multiplier {portfolio.risk_multiplier} " f"must be between 0.33 and 1.0"
+        f"Portfolio {portfolio.date}: risk_multiplier {portfolio.risk_multiplier} " "must be between 0.33 and 1.0"
     )
 
     # Check exposure percentages
     assert 0 <= portfolio.gross_exposure_pct <= 2.0, (
-        f"Portfolio {portfolio.date}: gross_exposure_pct {portfolio.gross_exposure_pct} " f"should be reasonable (0-200%)"
+        f"Portfolio {portfolio.date}: gross_exposure_pct {portfolio.gross_exposure_pct} " "should be reasonable (0-200%)"
     )
 
     # Check position counts

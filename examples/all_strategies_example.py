@@ -21,9 +21,9 @@ import sys
 # Add parent directory to path to import trading_system
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from trading_system.configs.strategy_config import StrategyConfig
-from trading_system.strategies.strategy_loader import load_strategy_from_config
-from trading_system.strategies.strategy_registry import list_available_strategies
+from trading_system.configs.strategy_config import StrategyConfig  # noqa: E402
+from trading_system.strategies.strategy_loader import load_strategy_from_config  # noqa: E402
+from trading_system.strategies.strategy_registry import list_available_strategies  # noqa: E402
 
 
 def demonstrate_all_strategies():
@@ -34,7 +34,7 @@ def demonstrate_all_strategies():
     print()
     print("This example shows how to load and configure all available strategy types.")
     print()
-    
+
     # Show available strategies
     print("=" * 70)
     print("Available Strategy Types")
@@ -44,7 +44,7 @@ def demonstrate_all_strategies():
     for strategy_type, asset_class in available:
         print(f"  - {strategy_type.capitalize()} ({asset_class})")
     print()
-    
+
     # Strategy configurations
     strategy_configs = {
         "Momentum (Equity)": {
@@ -54,8 +54,8 @@ def demonstrate_all_strategies():
             "key_features": [
                 "Entry: 20D or 55D breakouts with clearance",
                 "Exit: MA20 cross or hard stop (2.5x ATR)",
-                "Trend filter: Must be above MA50 with positive slope"
-            ]
+                "Trend filter: Must be above MA50 with positive slope",
+            ],
         },
         "Momentum (Crypto)": {
             "path": "EXAMPLE_CONFIGS/crypto_config.yaml",
@@ -64,8 +64,8 @@ def demonstrate_all_strategies():
             "key_features": [
                 "Entry: 20D or 55D breakouts",
                 "Exit: Staged (MA20 warning → tighten stop → MA50 exit)",
-                "Trend filter: Must be above MA200 (strict)"
-            ]
+                "Trend filter: Must be above MA200 (strict)",
+            ],
         },
         "Mean Reversion": {
             "path": "EXAMPLE_CONFIGS/mean_reversion_config.yaml",
@@ -74,8 +74,8 @@ def demonstrate_all_strategies():
             "key_features": [
                 "Entry: Z-score < -2.0 (oversold)",
                 "Exit: Z-score >= 0.0 (reverted to mean) or time stop (5 days)",
-                "Stop: 2.0x ATR (fixed, no trailing)"
-            ]
+                "Stop: 2.0x ATR (fixed, no trailing)",
+            ],
         },
         "Multi-Timeframe": {
             "path": "EXAMPLE_CONFIGS/multi_timeframe_config.yaml",
@@ -84,8 +84,8 @@ def demonstrate_all_strategies():
             "key_features": [
                 "Entry: Price above MA50 (daily) AND weekly breakout",
                 "Exit: Price breaks below MA50 (trend break)",
-                "Hold period: Up to 60 days (longer for trend following)"
-            ]
+                "Hold period: Up to 60 days (longer for trend following)",
+            ],
         },
         "Factor-Based": {
             "path": "EXAMPLE_CONFIGS/factor_config.yaml",
@@ -94,8 +94,8 @@ def demonstrate_all_strategies():
             "key_features": [
                 "Entry: Top 20% by composite factor score on rebalance day",
                 "Exit: Not in top decile on rebalance or time stop (90 days)",
-                "Rebalance: Monthly or quarterly"
-            ]
+                "Rebalance: Monthly or quarterly",
+            ],
         },
         "Pairs Trading": {
             "path": "EXAMPLE_CONFIGS/pairs_config.yaml",
@@ -104,57 +104,54 @@ def demonstrate_all_strategies():
             "key_features": [
                 "Entry: Spread z-score > 2.0 (divergence)",
                 "Exit: Spread z-score < 0.5 (convergence) or time stop (10 days)",
-                "Pairs: Defined explicitly (e.g., XLE/XLK, GLD/TLT)"
-            ]
-        }
+                "Pairs: Defined explicitly (e.g., XLE/XLK, GLD/TLT)",
+            ],
+        },
     }
-    
+
     print("=" * 70)
     print("Strategy Configurations")
     print("=" * 70)
     print()
-    
+
     for strategy_name, config_info in strategy_configs.items():
         print(f"Strategy: {strategy_name}")
         print(f"  Config: {config_info['path']}")
         print(f"  Description: {config_info['description']}")
         print(f"  Best for: {config_info['best_for']}")
         print("  Key features:")
-        for feature in config_info['key_features']:
+        for feature in config_info["key_features"]:
             print(f"    - {feature}")
         print()
-    
+
     print("=" * 70)
     print("Loading Strategy Configurations")
     print("=" * 70)
     print()
-    
+
     loaded_strategies = {}
-    
+
     for strategy_name, config_info in strategy_configs.items():
-        config_path = config_info['path']
+        config_path = config_info["path"]
         try:
             print(f"Loading {strategy_name}...")
             print(f"  Config file: {config_path}")
-            
+
             # Load strategy config
             strategy_config = StrategyConfig.from_yaml(config_path)
-            
+
             # Create strategy instance
             strategy = load_strategy_from_config(strategy_config)
-            
-            loaded_strategies[strategy_name] = {
-                "config": strategy_config,
-                "strategy": strategy
-            }
-            
+
+            loaded_strategies[strategy_name] = {"config": strategy_config, "strategy": strategy}
+
             print("  ✓ Loaded successfully")
             print(f"    Name: {strategy_config.name}")
             print(f"    Asset class: {strategy_config.asset_class}")
             print(f"    Universe: {strategy_config.universe}")
             print(f"    Benchmark: {strategy_config.benchmark}")
             print()
-            
+
         except FileNotFoundError:
             print(f"  ⚠️  Config file not found: {config_path}")
             print("    (This is OK if you haven't set up example configs)")
@@ -162,20 +159,20 @@ def demonstrate_all_strategies():
         except Exception as e:
             print(f"  ❌ Error loading strategy: {e}")
             print()
-    
+
     print("=" * 70)
     print("Summary")
     print("=" * 70)
     print()
     print(f"Successfully loaded {len(loaded_strategies)} strategy configurations.")
     print()
-    
+
     if loaded_strategies:
         print("Loaded strategies:")
         for name in loaded_strategies.keys():
             print(f"  ✓ {name}")
         print()
-    
+
     print("=" * 70)
     print("How to Use These Strategies")
     print("=" * 70)
@@ -185,7 +182,7 @@ def demonstrate_all_strategies():
     print("   ```yaml")
     print("   strategies:")
     print("     equity:")
-    print("       config_path: \"EXAMPLE_CONFIGS/equity_config.yaml\"")
+    print('       config_path: "EXAMPLE_CONFIGS/equity_config.yaml"')
     print("       enabled: true")
     print("   ```")
     print()
@@ -194,10 +191,10 @@ def demonstrate_all_strategies():
     print("   ```yaml")
     print("   strategies:")
     print("     equity:")
-    print("       config_path: \"EXAMPLE_CONFIGS/equity_config.yaml\"")
+    print('       config_path: "EXAMPLE_CONFIGS/equity_config.yaml"')
     print("       enabled: true")
     print("     mean_reversion:")
-    print("       config_path: \"EXAMPLE_CONFIGS/mean_reversion_config.yaml\"")
+    print('       config_path: "EXAMPLE_CONFIGS/mean_reversion_config.yaml"')
     print("       enabled: true")
     print("   ```")
     print()
@@ -210,7 +207,7 @@ def demonstrate_all_strategies():
     print("   strategy = load_strategy_from_config(config)")
     print("   ```")
     print()
-    
+
     print("=" * 70)
     print("Example Configuration Files")
     print("=" * 70)
@@ -226,7 +223,7 @@ def demonstrate_all_strategies():
     print()
     print("See EXAMPLE_CONFIGS/README.md for detailed documentation.")
     print()
-    
+
     print("=" * 70)
     print("Next Steps")
     print("=" * 70)
@@ -238,7 +235,7 @@ def demonstrate_all_strategies():
     print("5. Use the validation suite to test strategy robustness:")
     print("   python -m trading_system validate --config EXAMPLE_CONFIGS/run_config.yaml")
     print()
-    
+
     return loaded_strategies
 
 
@@ -253,6 +250,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n❌ Unexpected error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
-

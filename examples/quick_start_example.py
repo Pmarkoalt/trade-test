@@ -19,7 +19,7 @@ import sys
 # Add parent directory to path to import trading_system
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from trading_system.integration.runner import run_backtest
+from trading_system.integration.runner import run_backtest  # noqa: E402
 
 
 def quick_start_backtest():
@@ -33,23 +33,23 @@ def quick_start_backtest():
     print("  - Test configuration files")
     print("  - Minimal setup - just run and see results!")
     print()
-    
+
     # Use test configuration with minimal data
     config_path = "tests/fixtures/configs/run_test_config.yaml"
-    
+
     print(f"Loading configuration from: {config_path}")
     print("Running backtest on training period...")
     print()
-    
+
     try:
         # Run the backtest (this is the simplest way)
         results = run_backtest(config_path, period="train")
-        
+
         print("=" * 70)
         print("Backtest Results Summary")
         print("=" * 70)
         print()
-        
+
         # Display key metrics
         print("Performance Metrics:")
         print(f"  Total Return:     {results.get('total_return', 0):>8.2%}")
@@ -57,14 +57,14 @@ def quick_start_backtest():
         print(f"  Max Drawdown:     {results.get('max_drawdown', 0):>8.2%}")
         print(f"  Calmar Ratio:     {results.get('calmar_ratio', 0):>8.2f}")
         print()
-        
+
         print("Trading Statistics:")
         print(f"  Total Trades:     {results.get('total_trades', 0):>8d}")
         print(f"  Win Rate:         {results.get('win_rate', 0):>8.2%}")
         print(f"  Avg R-Multiple:   {results.get('avg_r_multiple', 0):>8.2f}")
         print(f"  Profit Factor:    {results.get('profit_factor', 0):>8.2f}")
         print()
-        
+
         print("=" * 70)
         print("Where to find detailed results:")
         print("=" * 70)
@@ -78,7 +78,7 @@ def quick_start_backtest():
         print("  - monthly_report.json : Detailed metrics and statistics")
         print("  - backtest.log        : Execution log file")
         print()
-        
+
         print("=" * 70)
         print("Next Steps")
         print("=" * 70)
@@ -94,9 +94,9 @@ def quick_start_backtest():
         print("   - docs/user_guide/       : User guides and tutorials")
         print("   - EXAMPLE_CONFIGS/README.md : Configuration examples")
         print()
-        
+
         return results
-        
+
     except Exception as e:
         print(f"\n❌ Error running backtest: {e}")
         print()
@@ -106,6 +106,7 @@ def quick_start_backtest():
         print("  3. Check that dependencies are installed: pip install -r requirements.txt")
         print()
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
 
@@ -121,6 +122,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n❌ Unexpected error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
-

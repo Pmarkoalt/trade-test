@@ -133,7 +133,7 @@ class Fill:
 
         # Allow fill_price=0 for rejected fills, but require positive for actual fills
         if self.fill_price > 0 and self.quantity == 0:
-            raise ValueError(f"Invalid: fill_price > 0 but quantity = 0")
+            raise ValueError("Invalid: fill_price > 0 but quantity = 0")
 
         if self.fill_price > 0 and self.open_price <= 0:
             raise ValueError(f"Invalid open_price: {self.open_price}, must be positive when fill_price > 0")

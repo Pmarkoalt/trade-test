@@ -173,7 +173,7 @@ class Position:
             if self.stop_price >= self.entry_price:
                 raise ValueError(
                     f"Invalid stop_price: {self.stop_price} >= entry_price {self.entry_price} "
-                    f"(stop must be below entry for long positions)"
+                    "(stop must be below entry for long positions)"
                 )
             if self.initial_stop_price >= self.entry_price:
                 raise ValueError(
@@ -185,7 +185,7 @@ class Position:
             if self.stop_price <= self.entry_price:
                 raise ValueError(
                     f"Invalid stop_price: {self.stop_price} <= entry_price {self.entry_price} "
-                    f"(stop must be above entry for short positions)"
+                    "(stop must be above entry for short positions)"
                 )
             if self.initial_stop_price <= self.entry_price:
                 raise ValueError(

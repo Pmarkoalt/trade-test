@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional
 import pandas as pd
 
 from ..models.orders import Fill, Order, OrderStatus, SignalSide
-from ..models.positions import ExitReason, Position, PositionSide
+from ..models.positions import Position, PositionSide
 from ..models.signals import BreakoutType
 from .base_adapter import AccountInfo, AdapterConfig, BaseAdapter
 

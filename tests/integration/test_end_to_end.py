@@ -5,7 +5,6 @@ with the test dataset.
 """
 
 import os
-from typing import Dict, List
 
 import numpy as np
 import pandas as pd
@@ -412,7 +411,7 @@ class TestFullBacktest:
         # (This is verified implicitly by the fact that orders were filled)
 
         # Log summary for debugging
-        print(f"\nBacktest Summary:")
+        print("\nBacktest Summary:")
         print(f"  Total trades: {results['total_trades']}")
         print(f"  Winning trades: {results['winning_trades']}")
         print(f"  Losing trades: {results['losing_trades']}")
@@ -422,7 +421,7 @@ class TestFullBacktest:
         print(f"  Max drawdown: {results['max_drawdown']:.2%}")
 
         if closed_trades:
-            print(f"\nClosed Trades:")
+            print("\nClosed Trades:")
             for trade in closed_trades:
                 print(
                     f"  {trade.symbol}: Entry {trade.entry_date.date()} @ ${trade.entry_price:.2f}, "
@@ -532,7 +531,7 @@ class TestFullBacktest:
             assert 0.0 <= results["max_drawdown"] <= 1.0, f"{period_name} max_drawdown should be between 0 and 1"
             assert 0.0 <= results["win_rate"] <= 1.0, f"{period_name} win_rate should be between 0 and 1"
 
-        print(f"\nWalk-Forward Workflow Summary:")
+        print("\nWalk-Forward Workflow Summary:")
         print(
             f"  Train: {train_results['total_trades']} trades, Sharpe: {train_results['sharpe_ratio']:.2f}, Return: {train_results['total_return']:.2%}"
         )
@@ -600,7 +599,7 @@ class TestFullBacktest:
                     # Stress tests may have various keys depending on what was run
                     assert isinstance(stress, dict), "Stress test results should be a dictionary"
 
-                print(f"\nValidation Suite Results:")
+                print("\nValidation Suite Results:")
                 print(f"  Status: {validation_suite_results.get('status')}")
                 print(f"  Tests run: {list(results.keys())}")
         else:

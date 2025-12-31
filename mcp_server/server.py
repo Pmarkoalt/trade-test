@@ -1,4 +1,5 @@
 """MCP Server for Trading System."""
+
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,7 +13,7 @@ from pathlib import Path
 app = FastAPI(
     title="Trading System MCP Server",
     version="1.0.0",
-    description="MCP Server for Trading System - Enables Claude integration"
+    description="MCP Server for Trading System - Enables Claude integration",
 )
 
 # CORS middleware for cross-origin requests
@@ -74,7 +75,7 @@ async def root():
             "validate": "/validate",
             "configs": "/configs",
             "results": "/results/{run_id}",
-        }
+        },
     }
 
 
@@ -87,48 +88,41 @@ async def health():
 @app.post("/backtest", tags=["Backtest"])
 async def run_backtest(request: BacktestRequest, token: Optional[str] = Depends(verify_token)):
     """Run a backtest.
-    
+
     Args:
         request: Backtest request with config path and period
         token: Authentication token (if required)
-        
+
     Returns:
         Backtest results and output
     """
     config_full_path = BASE_DIR / request.config_path.lstrip("/")
-    
+
     if not config_full_path.exists():
         raise HTTPException(status_code=404, detail=f"Config file not found: {request.config_path}")
-    
+
     if request.period not in ["train", "validation", "holdout"]:
         raise HTTPException(status_code=400, detail=f"Invalid period: {request.period}. Must be train, validation, or holdout")
-    
+
     try:
         result = subprocess.run(  # noqa: S603 - subprocess needed for CLI invocation
-            [
-                "python", "-m", "trading_system", "backtest",
-                "--config", str(config_full_path),
-                "--period", request.period
-            ],
+            ["python", "-m", "trading_system", "backtest", "--config", str(config_full_path), "--period", request.period],
             capture_output=True,
             text=True,
             timeout=3600,  # 1 hour timeout
-            cwd=str(BASE_DIR)
+            cwd=str(BASE_DIR),
         )
-        
+
         if result.returncode != 0:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Backtest failed: {result.stderr}"
-            )
-        
+            raise HTTPException(status_code=500, detail=f"Backtest failed: {result.stderr}")
+
         return {
             "status": "success",
             "period": request.period,
             "config_path": request.config_path,
             "stdout": result.stdout,
             "stderr": result.stderr,
-            "returncode": result.returncode
+            "returncode": result.returncode,
         }
     except subprocess.TimeoutExpired:
         raise HTTPException(status_code=504, detail="Backtest timed out after 1 hour")
@@ -139,43 +133,37 @@ async def run_backtest(request: BacktestRequest, token: Optional[str] = Depends(
 @app.post("/validate", tags=["Validation"])
 async def run_validation(request: ValidateRequest, token: Optional[str] = Depends(verify_token)):
     """Run validation suite.
-    
+
     Args:
         request: Validation request with config path
         token: Authentication token (if required)
-        
+
     Returns:
         Validation results and output
     """
     config_full_path = BASE_DIR / request.config_path.lstrip("/")
-    
+
     if not config_full_path.exists():
         raise HTTPException(status_code=404, detail=f"Config file not found: {request.config_path}")
-    
+
     try:
         result = subprocess.run(  # noqa: S603 - subprocess needed for CLI invocation
-            [
-                "python", "-m", "trading_system", "validate",
-                "--config", str(config_full_path)
-            ],
+            ["python", "-m", "trading_system", "validate", "--config", str(config_full_path)],
             capture_output=True,
             text=True,
             timeout=3600,  # 1 hour timeout
-            cwd=str(BASE_DIR)
+            cwd=str(BASE_DIR),
         )
-        
+
         if result.returncode != 0:
-            raise HTTPException(
-                status_code=500,
-                detail=f"Validation failed: {result.stderr}"
-            )
-        
+            raise HTTPException(status_code=500, detail=f"Validation failed: {result.stderr}")
+
         return {
             "status": "success",
             "config_path": request.config_path,
             "stdout": result.stdout,
             "stderr": result.stderr,
-            "returncode": result.returncode
+            "returncode": result.returncode,
         }
     except subprocess.TimeoutExpired:
         raise HTTPException(status_code=504, detail="Validation timed out after 1 hour")
@@ -186,57 +174,46 @@ async def run_validation(request: ValidateRequest, token: Optional[str] = Depend
 @app.get("/configs", tags=["Config"])
 async def list_configs(token: Optional[str] = Depends(verify_token)):
     """List available configuration files.
-    
+
     Args:
         token: Authentication token (if required)
-        
+
     Returns:
         List of available configuration files
     """
-    config_dirs = [
-        BASE_DIR / "configs",
-        BASE_DIR / "EXAMPLE_CONFIGS",
-        BASE_DIR / "tests" / "fixtures" / "configs"
-    ]
-    
+    config_dirs = [BASE_DIR / "configs", BASE_DIR / "EXAMPLE_CONFIGS", BASE_DIR / "tests" / "fixtures" / "configs"]
+
     configs = []
     for config_dir in config_dirs:
         if config_dir.exists():
             for config_file in config_dir.glob("*.yaml"):
-                configs.append({
-                    "name": config_file.name,
-                    "path": str(config_file.relative_to(BASE_DIR))
-                })
-    
+                configs.append({"name": config_file.name, "path": str(config_file.relative_to(BASE_DIR))})
+
     return {"configs": configs, "count": len(configs)}
 
 
 @app.get("/results/{run_id}", tags=["Results"])
-async def get_results(
-    run_id: str,
-    period: Optional[str] = None,
-    token: Optional[str] = Depends(verify_token)
-):
+async def get_results(run_id: str, period: Optional[str] = None, token: Optional[str] = Depends(verify_token)):
     """Get backtest results.
-    
+
     Args:
         run_id: Backtest run ID
         period: Optional period filter (train, validation, holdout)
         token: Authentication token (if required)
-        
+
     Returns:
         Backtest results for the specified run
     """
     results_dir = BASE_DIR / "results" / run_id
-    
+
     if not results_dir.exists():
         raise HTTPException(status_code=404, detail=f"Results not found for run_id: {run_id}")
-    
+
     if period:
         if period not in ["train", "validation", "holdout"]:
             raise HTTPException(status_code=400, detail=f"Invalid period: {period}")
         results_dir = results_dir / period
-        
+
         if not results_dir.exists():
             raise HTTPException(status_code=404, detail=f"Period not found: {period}")
     else:
@@ -253,7 +230,7 @@ async def get_results(
                     except Exception as e:
                         periods[p][result_file.stem] = {"error": str(e)}
         return {"run_id": run_id, "periods": periods}
-    
+
     results = {}
     for result_file in results_dir.glob("*.json"):
         try:
@@ -261,13 +238,13 @@ async def get_results(
                 results[result_file.stem] = json.load(f)
         except Exception as e:
             results[result_file.stem] = {"error": str(e)}
-    
+
     return {"run_id": run_id, "period": period, "results": results}
 
 
 if __name__ == "__main__":
     import uvicorn
+
     host = os.getenv("MCP_HOST", "0.0.0.0")  # noqa: S104 - binding configurable via env var
     port = int(os.getenv("MCP_PORT", "8000"))
     uvicorn.run(app, host=host, port=port)
-

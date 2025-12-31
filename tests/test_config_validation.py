@@ -104,7 +104,7 @@ class TestExampleConfigsValidation:
                 if equity_path.exists():
                     equity_valid, equity_error, _ = validate_config_file(str(equity_path), config_type="strategy")
                     assert equity_valid, (
-                        f"Equity strategy config referenced by run_config.yaml " f"failed validation: {equity_error}"
+                        "Equity strategy config referenced by run_config.yaml " f"failed validation: {equity_error}"
                     )
 
             # Check crypto strategy config if enabled
@@ -117,5 +117,5 @@ class TestExampleConfigsValidation:
                 if crypto_path.exists():
                     crypto_valid, crypto_error, _ = validate_config_file(str(crypto_path), config_type="strategy")
                     assert crypto_valid, (
-                        f"Crypto strategy config referenced by run_config.yaml " f"failed validation: {crypto_error}"
+                        "Crypto strategy config referenced by run_config.yaml " f"failed validation: {crypto_error}"
                     )

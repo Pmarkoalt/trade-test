@@ -59,7 +59,8 @@ class FeatureStore:
         for fr in feature_rows[:10]:  # Use first 10 rows for hash
             data_str += f"{fr.symbol}_{fr.date}_{fr.close}"
 
-        return hashlib.md5(data_str.encode(), usedforsecurity=False).hexdigest()  # noqa: S324 - MD5 used for cache key, not security
+        # noqa: S324 - MD5 used for cache key, not security
+        return hashlib.md5(data_str.encode(), usedforsecurity=False).hexdigest()
 
     def store(
         self,

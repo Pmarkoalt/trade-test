@@ -357,7 +357,7 @@ class TestRealMarketData:
             assert np.isfinite(results["sharpe_ratio"]), "Sharpe ratio should be finite"
             assert 0.0 <= results["max_drawdown"] <= 1.0, "Max drawdown should be between 0 and 1"
 
-            print(f"\nReal Data Backtest Results:")
+            print("\nReal Data Backtest Results:")
             print(f"  Total trades: {results['total_trades']}")
             print(f"  Total return: {results['total_return']:.2%}")
             print(f"  Sharpe ratio: {results['sharpe_ratio']:.2f}")

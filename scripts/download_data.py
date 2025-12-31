@@ -38,6 +38,7 @@ import requests
 # Try to load dotenv if available (for local development)
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
 except ImportError:
     pass  # Running in Docker with env_file, dotenv not needed
@@ -54,8 +55,26 @@ PRESETS = {
     "small": ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA"],
     "medium": ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA", "AMD", "NFLX", "COST"],
     "large": [
-        "AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA", "AMD", "NFLX", "COST",
-        "ADBE", "CRM", "INTC", "QCOM", "AVGO", "TXN", "SBUX", "PYPL", "GILD", "MRNA"
+        "AAPL",
+        "MSFT",
+        "GOOGL",
+        "AMZN",
+        "NVDA",
+        "META",
+        "TSLA",
+        "AMD",
+        "NFLX",
+        "COST",
+        "ADBE",
+        "CRM",
+        "INTC",
+        "QCOM",
+        "AVGO",
+        "TXN",
+        "SBUX",
+        "PYPL",
+        "GILD",
+        "MRNA",
     ],
     "crypto": ["BTC", "ETH", "SOL"],
 }
@@ -65,11 +84,8 @@ PRESETS = {
 # Alpha Vantage Functions
 # =============================================================================
 
-def fetch_alphavantage_equity(
-    symbol: str,
-    api_key: str,
-    outputsize: str = "compact"
-) -> Optional[pd.DataFrame]:
+
+def fetch_alphavantage_equity(symbol: str, api_key: str, outputsize: str = "compact") -> Optional[pd.DataFrame]:
     """Fetch daily equity data from Alpha Vantage."""
     base_url = "https://www.alphavantage.co/query"
     params = {
@@ -92,7 +108,7 @@ def fetch_alphavantage_equity(
 
         df = pd.read_csv(StringIO(text))
         if df.empty or "timestamp" not in df.columns:
-            print(f"Invalid response")
+            print("Invalid response")
             return None
 
         df = df.rename(columns={"timestamp": "date"})
@@ -131,16 +147,18 @@ def fetch_alphavantage_crypto(symbol: str, api_key: str) -> Optional[pd.DataFram
 
         df = pd.read_csv(StringIO(text))
         if df.empty or "timestamp" not in df.columns:
-            print(f"Invalid response")
+            print("Invalid response")
             return None
 
-        df = df.rename(columns={
-            "timestamp": "date",
-            "open (USD)": "open",
-            "high (USD)": "high",
-            "low (USD)": "low",
-            "close (USD)": "close",
-        })
+        df = df.rename(
+            columns={
+                "timestamp": "date",
+                "open (USD)": "open",
+                "high (USD)": "high",
+                "low (USD)": "low",
+                "close (USD)": "close",
+            }
+        )
         df["date"] = pd.to_datetime(df["date"])
         df = df.sort_values("date").reset_index(drop=True)
         df = df[["date", "open", "high", "low", "close", "volume"]]
@@ -157,12 +175,8 @@ def fetch_alphavantage_crypto(symbol: str, api_key: str) -> Optional[pd.DataFram
 # Massive (formerly Polygon.io) Functions
 # =============================================================================
 
-def fetch_massive_equity(
-    symbol: str,
-    api_key: str,
-    start_date: str,
-    end_date: str
-) -> Optional[pd.DataFrame]:
+
+def fetch_massive_equity(symbol: str, api_key: str, start_date: str, end_date: str) -> Optional[pd.DataFrame]:
     """Fetch daily equity data from Massive (Polygon.io) API.
 
     Args:
@@ -200,7 +214,7 @@ def fetch_massive_equity(
 
         results = data.get("results", [])
         if not results:
-            print(f"No data returned")
+            print("No data returned")
             return None
 
         # Convert to DataFrame
@@ -208,14 +222,16 @@ def fetch_massive_equity(
         for bar in results:
             # Convert timestamp to date only (strip time component)
             ts = pd.Timestamp(bar["t"], unit="ms")
-            records.append({
-                "date": ts.normalize(),  # Normalize to midnight
-                "open": bar["o"],
-                "high": bar["h"],
-                "low": bar["l"],
-                "close": bar["c"],
-                "volume": bar["v"],
-            })
+            records.append(
+                {
+                    "date": ts.normalize(),  # Normalize to midnight
+                    "open": bar["o"],
+                    "high": bar["h"],
+                    "low": bar["l"],
+                    "close": bar["c"],
+                    "volume": bar["v"],
+                }
+            )
 
         df = pd.DataFrame(records)
         # Convert to date strings without time
@@ -233,12 +249,7 @@ def fetch_massive_equity(
         return None
 
 
-def fetch_massive_crypto(
-    symbol: str,
-    api_key: str,
-    start_date: str,
-    end_date: str
-) -> Optional[pd.DataFrame]:
+def fetch_massive_crypto(symbol: str, api_key: str, start_date: str, end_date: str) -> Optional[pd.DataFrame]:
     """Fetch daily crypto data from Massive (Polygon.io) API.
 
     Args:
@@ -277,7 +288,7 @@ def fetch_massive_crypto(
 
         results = data.get("results", [])
         if not results:
-            print(f"No data returned")
+            print("No data returned")
             return None
 
         # Convert to DataFrame
@@ -285,14 +296,16 @@ def fetch_massive_crypto(
         for bar in results:
             # Convert timestamp to date only (strip time component)
             ts = pd.Timestamp(bar["t"], unit="ms")
-            records.append({
-                "date": ts.normalize(),  # Normalize to midnight
-                "open": bar["o"],
-                "high": bar["h"],
-                "low": bar["l"],
-                "close": bar["c"],
-                "volume": bar["v"],
-            })
+            records.append(
+                {
+                    "date": ts.normalize(),  # Normalize to midnight
+                    "open": bar["o"],
+                    "high": bar["h"],
+                    "low": bar["l"],
+                    "close": bar["c"],
+                    "volume": bar["v"],
+                }
+            )
 
         df = pd.DataFrame(records)
         # Convert to date strings without time
@@ -313,6 +326,7 @@ def fetch_massive_crypto(
 # =============================================================================
 # Common Functions
 # =============================================================================
+
 
 def save_data(df: pd.DataFrame, filepath: Path) -> bool:
     """Save DataFrame to CSV."""
@@ -380,33 +394,15 @@ def download_symbols(
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Download market data from Alpha Vantage or Massive APIs"
-    )
+    parser = argparse.ArgumentParser(description="Download market data from Alpha Vantage or Massive APIs")
     parser.add_argument(
-        "--source",
-        choices=["alphavantage", "massive"],
-        default="massive",
-        help="Data source (default: massive)"
+        "--source", choices=["alphavantage", "massive"], default="massive", help="Data source (default: massive)"
     )
     parser.add_argument("--symbols", nargs="+", help="Specific symbols to download")
-    parser.add_argument(
-        "--preset",
-        choices=["small", "medium", "large", "crypto"],
-        help="Use preset symbol list"
-    )
+    parser.add_argument("--preset", choices=["small", "medium", "large", "crypto"], help="Use preset symbol list")
     parser.add_argument("--benchmark", action="store_true", help="Download SPY/BTC benchmarks only")
-    parser.add_argument(
-        "--compact",
-        action="store_true",
-        help="Download compact data (Alpha Vantage: 100 days)"
-    )
-    parser.add_argument(
-        "--years",
-        type=int,
-        default=2,
-        help="Years of historical data to download (Massive only, default: 2)"
-    )
+    parser.add_argument("--compact", action="store_true", help="Download compact data (Alpha Vantage: 100 days)")
+    parser.add_argument("--years", type=int, default=2, help="Years of historical data to download (Massive only, default: 2)")
     parser.add_argument("--universe-name", default="custom", help="Name for universe file")
 
     args = parser.parse_args()

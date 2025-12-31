@@ -140,7 +140,7 @@ class MLTrainer:
                     raise MLTrainingTimeoutError(
                         f"ML training exceeded maximum duration of {self.max_training_time}s "
                         f"(elapsed: {elapsed:.1f}s, step: {step}). "
-                        f"Consider reducing training data or increasing max_training_time."
+                        "Consider reducing training data or increasing max_training_time."
                     )
 
         logger.info(f"Starting ML training (max_time: {self.max_training_time}s)")

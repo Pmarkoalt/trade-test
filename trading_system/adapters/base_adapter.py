@@ -4,8 +4,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-import pandas as pd
-
 from ..models.orders import Fill, Order, OrderStatus
 from ..models.positions import Position
 

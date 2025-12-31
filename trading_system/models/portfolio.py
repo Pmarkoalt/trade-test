@@ -132,7 +132,11 @@ class Portfolio:
             self.median_vol_252d = vol_20d
 
         # Compute risk multiplier
-        vol_ratio = vol_20d / self.median_vol_252d if self.median_vol_252d > 0 else 1.0
+        median_vol: Optional[float] = self.median_vol_252d
+        if median_vol is not None and isinstance(median_vol, (int, float)) and median_vol > 0.0:
+            vol_ratio = vol_20d / median_vol
+        else:
+            vol_ratio = 1.0
         self.risk_multiplier = max(0.33, min(1.0, 1.0 / max(vol_ratio, 1.0)))
 
     def update_correlation_metrics(self, returns_data: Dict[str, List[float]], lookback: int = 20) -> None:

@@ -280,7 +280,7 @@ def check_permutation_results(results: Dict) -> Tuple[bool, List[str]]:
         return (
             False,
             [
-                f"REJECT: Permutation test failed "
+                "REJECT: Permutation test failed "
                 f"(actual Sharpe {results['actual_sharpe']:.2f} < "
                 f"95th percentile random {results['random_sharpe_95th']:.2f})"
             ],
@@ -288,8 +288,6 @@ def check_permutation_results(results: Dict) -> Tuple[bool, List[str]]:
 
     # Warning if percentile rank is close to threshold
     if results["percentile_rank"] < 97:
-        warnings.append(
-            f"WARNING: Permutation percentile rank {results['percentile_rank']:.1f} " f"is close to threshold (95)"
-        )
+        warnings.append(f"WARNING: Permutation percentile rank {results['percentile_rank']:.1f} " "is close to threshold (95)")
 
     return (True, warnings)

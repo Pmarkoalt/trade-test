@@ -18,10 +18,9 @@ import sys
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from trading_system.integration.runner import BacktestRunner, run_backtest
-from trading_system.configs.run_config import RunConfig
-from trading_system.ml.training import MLTrainer
-from trading_system.ml.models import ModelType
+from trading_system.integration.runner import BacktestRunner  # noqa: E402
+from trading_system.configs.run_config import RunConfig  # noqa: E402
+from trading_system.ml.training import MLTrainer  # noqa: E402
 
 
 def quick_ml_workflow():
@@ -30,39 +29,40 @@ def quick_ml_workflow():
     print("Quick ML Strategy Workflow")
     print("=" * 70)
     print()
-    
+
     # Step 1: Run a backtest to get training data
     print("Step 1: Running backtest to collect training data...")
     config_path = "tests/fixtures/configs/run_test_config.yaml"
-    
+
     config = RunConfig.from_yaml(config_path)
     runner = BacktestRunner(config)
     runner.initialize()
-    
+
     # Run on training period
     results = runner.run_backtest(period="train")
     print(f"  ✓ Completed backtest: {results.get('total_trades', 0)} trades")
-    
+
     # Step 2: Extract features and labels
     print("\nStep 2: Extracting features and labels...")
     from examples.ml_strategy_development import extract_features_and_labels
-    
+
     feature_rows, r_multiples, _, wins = extract_features_and_labels(runner, period="train")
-    
+
     if len(feature_rows) < 50:
         print(f"  ⚠️  Only {len(feature_rows)} samples. Consider running on more data.")
         print("     For this demo, we'll proceed anyway.")
-    
+
     # Step 3: Train a simple model
     print("\nStep 3: Training ML model...")
     print("  (This uses the full workflow from ml_strategy_development.py)")
     print("  Run: python examples/ml_strategy_development.py")
     print("  for complete training and evaluation")
-    
+
     print("\n" + "=" * 70)
     print("Quick Reference: Using ML in Your Strategies")
     print("=" * 70)
-    print("""
+    print(
+        """
 1. Train a model (see ml_strategy_development.py for full example):
    
    from trading_system.ml.training import MLTrainer
@@ -98,12 +98,14 @@ def quick_ml_workflow():
    - Sharpe ratio
    - Win rate
    - Average R-multiple
-   """)
-    
+   """
+    )
+
     print("\n" + "=" * 70)
     print("Next Steps")
     print("=" * 70)
-    print("""
+    print(
+        """
 1. Run the full ML workflow:
    python examples/ml_strategy_development.py
 
@@ -123,7 +125,8 @@ def quick_ml_workflow():
 5. Tune hyperparameters for better performance
 
 6. Validate on out-of-sample data (holdout period)
-    """)
+    """
+    )
 
 
 if __name__ == "__main__":
@@ -134,6 +137,6 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n❌ Error: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)
-

@@ -199,9 +199,9 @@ class StrategyInterface(ABC):
         # Create signal with generic fields
         trigger_reason = f"momentum_{breakout_type.value.lower()}_breakout"
         if breakout_type == BreakoutType.FAST_20D:
-            trigger_reason = f"momentum_breakout_20d"
+            trigger_reason = "momentum_breakout_20d"
         elif breakout_type == BreakoutType.SLOW_55D:
-            trigger_reason = f"momentum_breakout_55d"
+            trigger_reason = "momentum_breakout_55d"
 
         signal = Signal(
             symbol=symbol,

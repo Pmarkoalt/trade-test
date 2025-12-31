@@ -677,18 +677,21 @@ class BacktestRunner:
                     returns.append(returns[-1] if returns else 0.0)
                 else:
                     returns.append(0.0)
-                continue
-
-            close = benchmark_df.loc[date, "close"]
-
-            if prev_close is not None and prev_close > 0:
-                daily_return = (close / prev_close) - 1.0
-                returns.append(daily_return)
             else:
-                # First day has no return
-                returns.append(0.0)
+                close = benchmark_df.loc[date, "close"]
 
-            prev_close = close
+                if prev_close is not None:
+                    if prev_close > 0:
+                        daily_return = (close / prev_close) - 1.0
+                        returns.append(daily_return)
+                    else:
+                        # First day has no return or invalid prev_close
+                        returns.append(0.0)
+                else:
+                    # First day has no return
+                    returns.append(0.0)
+
+                prev_close = close
 
         # Remove first return (which is 0.0) to match daily_returns length
         # daily_returns has one less element than equity_curve
@@ -719,7 +722,6 @@ class BacktestRunner:
         # Get portfolio data
         if self.engine is None:
             raise ValueError("engine is not initialized")
-        portfolio = self.engine.portfolio
         daily_events = self.engine.daily_events
         closed_trades = self.engine.closed_trades
 

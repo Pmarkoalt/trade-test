@@ -17,8 +17,6 @@ import pytest
 
 from trading_system.data import load_ohlcv_data
 from trading_system.data.validator import detect_missing_data, validate_ohlcv
-from trading_system.integration.runner import BacktestRunner
-from trading_system.configs.run_config import RunConfig
 
 
 def create_sample_ohlcv_data(symbol: str, dates: pd.DatetimeIndex, base_price: float = 100.0) -> pd.DataFrame:

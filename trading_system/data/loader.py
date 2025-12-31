@@ -169,13 +169,14 @@ def load_universe(
         df = pd.read_csv(universe_path)
 
         if "symbol" in df.columns:
-            symbols = df["symbol"].tolist()
+            symbols_raw = df["symbol"].tolist()
         else:
             # Assume first column is symbols
-            symbols = df.iloc[:, 0].tolist()
+            symbols_raw = df.iloc[:, 0].tolist()
 
         # Clean and normalize symbols
-        symbols = [str(s).upper().strip() for s in symbols if pd.notna(s)]
+        symbols_raw_list: list = symbols_raw if isinstance(symbols_raw, list) else list(symbols_raw)
+        symbols: list[str] = [str(s).upper().strip() for s in symbols_raw_list if pd.notna(s)]
 
         return symbols
 

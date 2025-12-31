@@ -187,7 +187,7 @@ async def send_error_alert(error: Exception) -> None:
 
         email_service = EmailService(email_config)
         error_subject = f"Trading System Error - {date.today()}"
-        error_body = f"""
+        error_body = """
         <html>
         <body>
             <h2>Trading System Error Alert</h2>
@@ -351,7 +351,7 @@ async def daily_signals_job(asset_class: str) -> None:
                 rolling_metrics = calculator.calculate_rolling_metrics(window_days=30)
 
                 logger.info(
-                    f"Rolling 30-day performance: "
+                    "Rolling 30-day performance: "
                     f"Win Rate={rolling_metrics.get('win_rate', 0):.0%}, "
                     f"Expectancy={rolling_metrics.get('expectancy_r', 0):.2f}R"
                 )
@@ -361,7 +361,7 @@ async def daily_signals_job(asset_class: str) -> None:
         if success:
             articles_count = news_analysis.total_articles if news_analysis else 0
             logger.info(
-                f"Daily signals job completed: "
+                "Daily signals job completed: "
                 f"{len(recommendations)} recommendations, "
                 f"{articles_count} articles analyzed"
             )

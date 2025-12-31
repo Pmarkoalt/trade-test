@@ -74,7 +74,7 @@ def render_signal_card(signal: dict):
     bg_color, text_color = conv_colors.get(conviction, ("#f3f4f6", "#374151"))
 
     st.markdown(
-        f"""
+        """
         <div style="
             border: 1px solid #e5e7eb;
             border-left: 4px solid {border_color};
@@ -123,12 +123,12 @@ def render_insight_box(
         "success": ("#f0fdf4", "#22c55e"),
         "warning": ("#fffbeb", "#f59e0b"),
         "danger": ("#fef2f2", "#ef4444"),
-        "info": ("#eff6ff", "#3b82f6"),
+        "info": ("#eff6f", "#3b82f6"),
     }
     bg_color, border_color = colors.get(type, colors["info"])
 
     st.markdown(
-        f"""
+        """
         <div style="
             padding: 1rem;
             border-radius: 8px;
@@ -162,7 +162,7 @@ def render_status_badge(status: str) -> str:
 
     bg_color, text_color = status_colors.get(status.lower(), ("#f3f4f6", "#374151"))
 
-    return f"""
+    return """
         <span style="
             display: inline-block;
             padding: 0.25rem 0.5rem;
@@ -199,7 +199,7 @@ def render_streak_indicator(
         text = f"{streak_count}-trade losing streak"
 
     st.markdown(
-        f"""
+        """
         <div style="
             padding: 0.75rem 1rem;
             border-radius: 8px;

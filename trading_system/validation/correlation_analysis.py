@@ -174,7 +174,12 @@ class CorrelationStressAnalysis:
                 if not np.isnan(corr_val):
                     off_diagonal.append(corr_val)
 
-        return np.mean(off_diagonal) if off_diagonal else 0.0
+        if not off_diagonal:
+            return 0.0
+        mean_val = np.mean(off_diagonal)
+        if np.isnan(mean_val):
+            return 0.0
+        return float(mean_val)
 
 
 def run_correlation_stress_analysis(
@@ -208,7 +213,7 @@ def check_correlation_warnings(results: Dict) -> Tuple[bool, List[str]]:
     if results.get("warning", False):
         drawdown_corr = results.get("drawdown_avg_corr", 0.0)
         warnings.append(
-            f"WARNING: Correlation during drawdowns {drawdown_corr:.2f} > 0.70 " f"(diversification fails during stress)"
+            f"WARNING: Correlation during drawdowns {drawdown_corr:.2f} > 0.70 " "(diversification fails during stress)"
         )
 
     if results.get("correlation_increase") is not None:
@@ -216,7 +221,7 @@ def check_correlation_warnings(results: Dict) -> Tuple[bool, List[str]]:
         if corr_increase > 0.20:  # Correlation increases by more than 0.20
             warnings.append(
                 f"WARNING: Correlation increases by {corr_increase:.2f} during drawdowns "
-                f"(significant correlation breakdown)"
+                "(significant correlation breakdown)"
             )
 
     return (True, warnings)

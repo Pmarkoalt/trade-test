@@ -168,7 +168,7 @@ class SignalQualityModel(BaseModel):
             "n_estimators": kwargs.get("n_estimators", 100),
             "max_depth": kwargs.get("max_depth", 5),
             "learning_rate": kwargs.get("learning_rate", 0.1),
-            "min_samples_leaf": kwargs.get("min_samples_leaf", 20),
+            "min_samples_lea": kwargs.get("min_samples_leaf", 20),
             "subsample": kwargs.get("subsample", 0.8),
             "random_state": kwargs.get("random_state", 42),
         }
