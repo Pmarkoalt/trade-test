@@ -1470,6 +1470,240 @@ def cmd_dashboard(args: argparse.Namespace) -> int:
         return 1
 
 
+def cmd_run_scheduler(args: argparse.Namespace) -> int:
+    """Run the scheduler daemon.
+
+    Args:
+        args: Command line arguments
+
+    Returns:
+        Exit code (0 for success, non-zero for error)
+    """
+    import asyncio
+
+    print_banner("Trading System Scheduler", "Starting scheduled signal generation daemon")
+
+    try:
+        from .scheduler.config import SchedulerConfig
+        from .scheduler.cron_runner import CronRunner
+
+        # Load scheduler config (can be extended to load from file)
+        config = SchedulerConfig()
+
+        # Create and start runner
+        runner = CronRunner(config)
+        runner.register_jobs()
+        runner.start()
+
+        print_success("Scheduler started successfully")
+        print_info("Registered jobs:")
+        print_info("  - Daily equity signals: 4:30 PM ET")
+        print_info("  - Daily crypto signals: midnight UTC")
+        print_info("\nPress Ctrl+C to stop the scheduler")
+
+        # Keep running
+        try:
+            asyncio.get_event_loop().run_forever()
+        except KeyboardInterrupt:
+            print_warning("\nStopping scheduler...")
+            runner.stop()
+            print_success("Scheduler stopped")
+            return 0
+    except Exception as e:
+        print_error(f"Failed to start scheduler: {e}")
+        if console:
+            console.print_exception()
+        return 1
+
+
+def cmd_run_signals_now(args: argparse.Namespace) -> int:
+    """Run signal generation immediately (for testing).
+
+    Args:
+        args: Command line arguments
+
+    Returns:
+        Exit code (0 for success, non-zero for error)
+    """
+    import asyncio
+
+    asset_class = args.asset_class
+    print_banner(f"Generate Signals Now", f"Running signal generation for {asset_class}")
+
+    try:
+        from .scheduler.jobs.daily_signals_job import daily_signals_job
+
+        # Run the job
+        asyncio.run(daily_signals_job(asset_class))
+
+        print_success(f"Signal generation completed for {asset_class}")
+        return 0
+    except Exception as e:
+        print_error(f"Signal generation failed: {e}")
+        if console:
+            console.print_exception()
+        return 1
+
+
+def cmd_send_test_email(args: argparse.Namespace) -> int:
+    """Send a test email to verify configuration.
+
+    Args:
+        args: Command line arguments
+
+    Returns:
+        Exit code (0 for success, non-zero for error)
+    """
+    import os
+    from datetime import date
+
+    print_banner("Send Test Email", "Testing email configuration")
+
+    try:
+        from .output.email.config import EmailConfig
+        from .output.email.email_service import EmailService
+
+        # Load email config from environment
+        email_config = EmailConfig(
+            smtp_host=os.getenv("SMTP_HOST", "smtp.sendgrid.net"),
+            smtp_port=int(os.getenv("SMTP_PORT", "587")),
+            smtp_user=os.getenv("SMTP_USER", "apikey"),
+            smtp_password=os.getenv("SMTP_PASSWORD", os.getenv("SENDGRID_API_KEY", "")),
+            from_email=os.getenv("FROM_EMAIL", "signals@yourdomain.com"),
+            from_name=os.getenv("FROM_NAME", "Trading Assistant"),
+            recipients=os.getenv("EMAIL_RECIPIENTS", "").split(",") if os.getenv("EMAIL_RECIPIENTS") else [],
+        )
+
+        if not email_config.recipients:
+            print_error("No email recipients configured. Set EMAIL_RECIPIENTS environment variable.")
+            return 1
+
+        # Create email service
+        email_service = EmailService(email_config)
+
+        # Create test recommendation
+        from .signals.recommendation import Recommendation
+
+        test_recommendation = Recommendation(
+            id="test_001",
+            symbol="TEST",
+            asset_class="equity",
+            direction="BUY",
+            conviction="HIGH",
+            current_price=100.0,
+            entry_price=100.0,
+            target_price=110.0,
+            stop_price=95.0,
+            position_size_pct=2.0,
+            risk_pct=1.0,
+            technical_score=0.85,
+            signal_type="test_signal",
+            reasoning="This is a test email to verify email configuration.",
+        )
+
+        # Send test email
+        success = email_service.send_daily_report(
+            recommendations=[test_recommendation],
+            portfolio_summary=None,
+            news_digest=None,
+        )
+
+        if success:
+            print_success(f"Test email sent successfully to {', '.join(email_config.recipients)}")
+            return 0
+        else:
+            print_error("Failed to send test email. Check SMTP configuration.")
+            return 1
+    except Exception as e:
+        print_error(f"Failed to send test email: {e}")
+        if console:
+            console.print_exception()
+        return 1
+
+
+def cmd_fetch_data(args: argparse.Namespace) -> int:
+    """Fetch OHLCV data for symbols.
+
+    Args:
+        args: Command line arguments
+
+    Returns:
+        Exit code (0 for success, non-zero for error)
+    """
+    import asyncio
+    import os
+
+    print_banner("Fetch Data", f"Fetching {args.asset_class} data for {args.symbols}")
+
+    try:
+        from .data_pipeline.config import DataPipelineConfig
+        from .data_pipeline.live_data_fetcher import LiveDataFetcher
+
+        # Parse symbols
+        symbols = [s.strip() for s in args.symbols.split(",")]
+
+        # Create config
+        polygon_api_key = os.getenv("POLYGON_API_KEY")
+        config = DataPipelineConfig(
+            polygon_api_key=polygon_api_key,
+            cache_path=Path("data/cache"),
+            cache_ttl_hours=24,
+        )
+
+        # Create fetcher
+        async def fetch_data_async():
+            async with LiveDataFetcher(config) as fetcher:
+                print_section(f"Fetching {len(symbols)} {args.asset_class} symbols (lookback: {args.days} days)")
+
+                # Fetch data
+                data = await fetcher.fetch_daily_data(symbols=symbols, asset_class=args.asset_class, lookback_days=args.days)
+
+                if not data:
+                    print_warning("No data fetched for any symbols")
+                    return 1
+
+                # Display results
+                if console:
+                    table = Table(title=f"Fetched Data Summary ({args.asset_class})")
+                    table.add_column("Symbol", style="cyan")
+                    table.add_column("Rows", justify="right", style="green")
+                    table.add_column("Date Range", style="yellow")
+                    table.add_column("Status", style="bold")
+
+                    for symbol, df in data.items():
+                        if len(df) > 0:
+                            date_range = f"{df['date'].min()} to {df['date'].max()}"
+                            table.add_row(symbol, str(len(df)), date_range, "[green]✓[/green]")
+                        else:
+                            table.add_row(symbol, "0", "N/A", "[red]✗[/red]")
+
+                    console.print(table)
+                else:
+                    print("\nFetched Data Summary:")
+                    for symbol, df in data.items():
+                        if len(df) > 0:
+                            print(f"  {symbol}: {len(df)} rows ({df['date'].min()} to {df['date'].max()})")
+                        else:
+                            print(f"  {symbol}: No data")
+
+                print_success(f"Successfully fetched data for {len(data)}/{len(symbols)} symbols")
+                return 0
+
+        # Run async function
+        return asyncio.run(fetch_data_async())
+
+    except KeyboardInterrupt:
+        print_warning("\nData fetching cancelled by user")
+        return 130
+    except Exception as e:
+        print_error(f"Failed to fetch data: {e}")
+        if console:
+            console.print_exception()
+        else:
+            logging.exception("Failed to fetch data")
+        return 1
+
+
 def main() -> int:
     """Main CLI entry point.
 
@@ -1514,6 +1748,17 @@ def main() -> int:
   python -m trading_system strategy create --name my_custom_strategy --type momentum --asset-class equity
   python -m trading_system strategy create  # Interactive wizard
   python -m trading_system strategy-template --name my_strategy -t custom -a crypto  # Legacy alias
+
+  # Scheduler commands (alias: sched, signals, test-email)
+  python -m trading_system run-scheduler  # Start scheduler daemon
+  python -m trading_system sched  # Alias for run-scheduler
+  python -m trading_system run-signals-now --asset-class equity  # Generate signals immediately
+  python -m trading_system signals -a crypto  # Alias for run-signals-now
+  python -m trading_system send-test-email  # Test email configuration
+
+  # Fetch data command (alias: fetch)
+  python -m trading_system fetch-data --symbols AAPL,MSFT --asset-class equity --days 30
+  python -m trading_system fetch -s BTC,ETH -a crypto -d 60  # Alias for fetch-data
 
 💡 Tips:
   • Use aliases for faster commands (bt, val, ho, sens, rep, dash, cfg)
@@ -1768,6 +2013,72 @@ def main() -> int:
         "--directory", "-d", type=str, default=None, help="Directory to create strategy in (default: strategies/{type})"
     )
     strategy_template_parser.set_defaults(func=cmd_strategy_template)
+
+    # Scheduler command (with alias 'sched')
+    scheduler_parser = subparsers.add_parser(
+        "run-scheduler",
+        aliases=["sched"],
+        help="Run the scheduler daemon",
+        description="Start the scheduler daemon for automated daily signal generation",
+    )
+    scheduler_parser.set_defaults(func=cmd_run_scheduler)
+
+    # Run signals now command
+    signals_now_parser = subparsers.add_parser(
+        "run-signals-now",
+        aliases=["signals"],
+        help="Run signal generation immediately (for testing)",
+        description="Generate and send signals immediately without waiting for scheduled time",
+    )
+    signals_now_parser.add_argument(
+        "--asset-class",
+        "-a",
+        type=str,
+        choices=["equity", "crypto"],
+        required=True,
+        help="Asset class to generate signals for",
+    )
+    signals_now_parser.set_defaults(func=cmd_run_signals_now)
+
+    # Send test email command
+    test_email_parser = subparsers.add_parser(
+        "send-test-email",
+        aliases=["test-email"],
+        help="Send a test email to verify configuration",
+        description="Send a test email to verify SMTP and email configuration",
+    )
+    test_email_parser.set_defaults(func=cmd_send_test_email)
+
+    # Fetch data command
+    fetch_data_parser = subparsers.add_parser(
+        "fetch-data",
+        aliases=["fetch"],
+        help="Fetch OHLCV data for symbols",
+        description="Fetch daily OHLCV data from APIs (Polygon for equities, Binance for crypto) with caching",
+    )
+    fetch_data_parser.add_argument(
+        "--symbols",
+        "-s",
+        type=str,
+        required=True,
+        help="Comma-separated list of symbols (e.g., 'AAPL,MSFT' or 'BTC,ETH')",
+    )
+    fetch_data_parser.add_argument(
+        "--asset-class",
+        "-a",
+        type=str,
+        choices=["equity", "crypto"],
+        required=True,
+        help="Asset class: 'equity' or 'crypto'",
+    )
+    fetch_data_parser.add_argument(
+        "--days",
+        "-d",
+        type=int,
+        default=30,
+        help="Number of days to look back (default: 30)",
+    )
+    fetch_data_parser.set_defaults(func=cmd_fetch_data)
 
     # Parse arguments
     args = parser.parse_args()

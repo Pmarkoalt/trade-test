@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.trading-system.scheduler</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <string>/opt/trading-system/venv/bin/python</string>
+        <string>-m</string>
+        <string>trading_system</string>
+        <string>run-scheduler</string>
+    </array>
+    
+    <key>WorkingDirectory</key>
+    <string>/opt/trading-system</string>
+    
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/trading-system/venv/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>PYTHONPATH</key>
+        <string>/opt/trading-system</string>
+        <!-- API Keys -->
+        <key>POLYGON_API_KEY</key>
+        <string>your_polygon_key_here</string>
+        <key>ALPHA_VANTAGE_API_KEY</key>
+        <string>your_alpha_vantage_key_here</string>
+        <!-- Email Configuration -->
+        <key>SMTP_HOST</key>
+        <string>smtp.sendgrid.net</string>
+        <key>SMTP_PORT</key>
+        <string>587</string>
+        <key>SMTP_USER</key>
+        <string>apikey</string>
+        <key>SMTP_PASSWORD</key>
+        <string>your_sendgrid_api_key</string>
+        <key>FROM_EMAIL</key>
+        <string>signals@yourdomain.com</string>
+        <key>FROM_NAME</key>
+        <string>Trading Assistant</string>
+        <key>EMAIL_RECIPIENTS</key>
+        <string>your@email.com</string>
+        <!-- Logging -->
+        <key>LOG_LEVEL</key>
+        <string>INFO</string>
+    </dict>
+    
+    <key>RunAtLoad</key>
+    <true/>
+    
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+    
+    <key>StandardOutPath</key>
+    <string>/opt/trading-system/logs/scheduler.out.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>/opt/trading-system/logs/scheduler.err.log</string>
+    
+    <key>ProcessType</key>
+    <string>Background</string>
+    
+    <key>Nice</key>
+    <integer>1</integer>
+</dict>
+</plist>
+

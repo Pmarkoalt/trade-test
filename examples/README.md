@@ -87,7 +87,7 @@ python examples/basic_backtest.py
 
 ### 3. ML Workflow (`ml_workflow.py`)
 
-Demonstrates how to train and use ML models for signal enhancement.
+Demonstrates how to train and use ML models for signal enhancement (simplified example).
 
 **What it shows:**
 - Training an ML model on historical backtest data
@@ -110,11 +110,70 @@ python examples/ml_workflow.py
 - `MLModelVersioning` - Track model versions
 - Strategy config ML settings
 
-**Note:** This is a simplified example. In production, you would:
-1. Extract features from actual backtest results
-2. Create labels from trade outcomes (R-multiples, win/loss)
-3. Train on train period, validate on validation period
-4. Test on holdout period
+**Note:** This is a simplified example. For a complete production-ready workflow, see `ml_strategy_development.py` below.
+
+---
+
+### 3a. ML Strategy Development (`ml_strategy_development.py`) ⭐ **FOR ML**
+
+**Comprehensive end-to-end workflow for developing ML-driven strategies.**
+
+**What it shows:**
+- Running backtests to collect training data (features + trade outcomes)
+- Extracting features and labels from backtest results
+- Training ML models to predict trade quality (R-multiples, win probability)
+- Evaluating models on validation data
+- Comparing baseline vs ML-enhanced strategies
+
+**Run it (Docker Recommended):**
+```bash
+# Using Docker (recommended)
+docker-compose run --rm trading-system python examples/ml_strategy_development.py
+
+# Or using native installation
+python examples/ml_strategy_development.py
+```
+
+**Key concepts:**
+- `extract_features_and_labels()` - Extract training data from backtests
+- `MLTrainer` - Train regression/classification models
+- Feature engineering - Rich feature sets from technical indicators
+- Model evaluation - Validation metrics and performance
+- Strategy integration - Using ML in backtesting
+
+**This example:**
+1. Runs a backtest to generate trades
+2. Extracts features (technical indicators) at entry dates
+3. Creates labels from trade outcomes (R-multiples, wins)
+4. Trains ML models (RandomForest) to predict trade quality
+5. Evaluates models on validation period
+6. Shows how to integrate ML into strategies
+
+**Best for:** Users who want to use ML to enhance their trading strategies.
+
+**See also:** `ML_STRATEGY_GUIDE.md` for detailed documentation.
+
+---
+
+### 3b. Quick ML Strategy (`quick_ml_strategy.py`)
+
+Quick reference guide for ML strategy development.
+
+**What it shows:**
+- Essential steps for ML workflow
+- Quick reference for configuration
+- ML integration patterns
+
+**Run it (Docker Recommended):**
+```bash
+# Using Docker (recommended)
+docker-compose run --rm trading-system python examples/quick_ml_strategy.py
+
+# Or using native installation
+python examples/quick_ml_strategy.py
+```
+
+**Best for:** Quick reference when developing ML strategies.
 
 ---
 

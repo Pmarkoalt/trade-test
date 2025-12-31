@@ -1,0 +1,43 @@
+[Unit]
+Description=Trading System Scheduler - Automated Daily Signal Generation
+After=network.target
+
+[Service]
+Type=simple
+User=trading
+Group=trading
+WorkingDirectory=/opt/trading-system
+Environment="PATH=/opt/trading-system/venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="PYTHONPATH=/opt/trading-system"
+# Environment variables for configuration
+Environment="POLYGON_API_KEY=your_polygon_key_here"
+Environment="ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key_here"
+Environment="SMTP_HOST=smtp.sendgrid.net"
+Environment="SMTP_PORT=587"
+Environment="SMTP_USER=apikey"
+Environment="SMTP_PASSWORD=your_sendgrid_api_key"
+Environment="FROM_EMAIL=signals@yourdomain.com"
+Environment="FROM_NAME=Trading Assistant"
+Environment="EMAIL_RECIPIENTS=your@email.com"
+Environment="LOG_LEVEL=INFO"
+# Optional: Load from .env file
+# EnvironmentFile=/opt/trading-system/.env
+
+ExecStart=/opt/trading-system/venv/bin/python -m trading_system run-scheduler
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=trading-system-scheduler
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/trading-system/data/cache
+ReadWritePaths=/opt/trading-system/results
+
+[Install]
+WantedBy=multi-user.target
+

@@ -74,6 +74,7 @@ database = [
 # API data sources (Alpha Vantage, Polygon, etc.)
 api = [
     "requests>=2.28.0,<3.0.0",
+    "aiohttp>=3.8.0,<4.0.0",  # Async HTTP for Polygon.io and other async APIs
 ]
 
 # Alternative file format support
@@ -99,6 +100,14 @@ visualization = [
 # Performance optimizations
 performance = [
     "polars>=0.18.0,<1.0.0",
+]
+
+# Live trading dependencies (async HTTP, scheduling, email, env vars)
+live = [
+    "aiohttp>=3.8.0,<4.0.0",      # Async HTTP
+    "apscheduler>=3.10.0,<4.0.0", # Scheduling
+    "jinja2>=3.1.0,<4.0.0",       # Email templates
+    "python-dotenv>=1.0.0,<2.0.0", # Environment variables
 ]
 
 # All optional dependencies (convenience group)

@@ -1,0 +1,297 @@
+/* Email Stylesheet for Trading Signals */
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 20px;
+}
+
+.email-wrapper {
+    width: 100%;
+}
+
+.header {
+    text-align: center;
+    border-bottom: 3px solid #4a90e2;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 28px;
+}
+
+.subtitle {
+    color: #7f8c8d;
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+.section {
+    margin: 30px 0;
+    padding: 20px;
+    background-color: #fafafa;
+    border-left: 4px solid #4a90e2;
+}
+
+.section h2 {
+    color: #2c3e50;
+    margin-top: 0;
+    font-size: 22px;
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 10px;
+}
+
+.market-overview {
+    background-color: #e8f4f8;
+}
+
+.market-summary {
+    font-size: 16px;
+    color: #34495e;
+}
+
+.recommendation-card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-header {
+    border-bottom: 2px solid #ecf0f1;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.recommendation-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.conviction-badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-left: 10px;
+}
+
+.conviction-badge.high {
+    background-color: #27ae60;
+    color: white;
+}
+
+.conviction-badge.medium {
+    background-color: #f39c12;
+    color: white;
+}
+
+.conviction-badge.low {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.recommendation-body {
+    color: #34495e;
+}
+
+.recommendation-body p {
+    margin: 8px 0;
+}
+
+.prices {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    margin: 15px 0;
+}
+
+.prices p {
+    margin: 5px 0;
+    font-family: 'Courier New', monospace;
+}
+
+.scores {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 4px;
+}
+
+.scores p {
+    margin: 5px 0;
+}
+
+.news-headlines {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #fff9e6;
+    border-left: 3px solid #f39c12;
+    border-radius: 4px;
+}
+
+.news-headlines ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.news-headlines li {
+    margin: 5px 0;
+    color: #555;
+}
+
+.reasoning {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #e8f4f8;
+    border-radius: 4px;
+    font-style: italic;
+}
+
+.portfolio-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: #ffffff;
+}
+
+.portfolio-table th {
+    background-color: #4a90e2;
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.portfolio-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.portfolio-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+.positive {
+    color: #27ae60;
+    font-weight: bold;
+}
+
+.negative {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.news-section {
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.news-section.positive {
+    background-color: #d4edda;
+    border-left: 4px solid #27ae60;
+}
+
+.news-section.negative {
+    background-color: #f8d7da;
+    border-left: 4px solid #e74c3c;
+}
+
+.news-section.watch {
+    background-color: #fff3cd;
+    border-left: 4px solid #f39c12;
+}
+
+.news-section h4 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.news-section ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.news-section li {
+    margin: 5px 0;
+    color: #34495e;
+}
+
+.performance-section {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+.performance-section p {
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid #ecf0f1;
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.footer a {
+    color: #4a90e2;
+    text-decoration: none;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive design for mobile */
+@media only screen and (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+
+    .recommendation-header h3 {
+        font-size: 18px;
+    }
+
+    .conviction-badge {
+        display: block;
+        margin: 10px 0 0 0;
+    }
+
+    .portfolio-table {
+        font-size: 14px;
+    }
+
+    .portfolio-table th,
+    .portfolio-table td {
+        padding: 8px;
+    }
+}
+
