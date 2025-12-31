@@ -1,0 +1,60 @@
+# Test Crypto Momentum Strategy Configuration
+# Simplified for testing with 3-symbol universe
+
+name: "crypto_momentum"
+asset_class: "crypto"
+universe: ["BTC", "ETH", "SOL"]  # Test universe with 3 symbols
+benchmark: "BTC"
+
+# Indicator calculation parameters
+indicators:
+  ma_periods: [20, 50, 200]
+  atr_period: 14
+  roc_period: 60
+  breakout_fast: 20
+  breakout_slow: 55
+  adv_lookback: 20
+  corr_lookback: 20
+
+# Eligibility filter (trend qualification)
+eligibility:
+  trend_ma: 200  # Not used for crypto
+  ma_slope_lookback: 20  # Not used for crypto
+  ma_slope_min: 0.005  # Not used for crypto
+  require_close_above_trend_ma: false  # Not used for crypto
+  require_close_above_ma200: true  # STRICT: Must be above MA200
+  relative_strength_enabled: false  # MVP: off
+  relative_strength_min: 0.0
+
+# Entry trigger configuration
+entry:
+  fast_clearance: 0.005  # 0.5% above prior 20D high
+  slow_clearance: 0.010  # 1.0% above prior 55D high
+
+# Exit configuration
+exit:
+  mode: "staged"  # "staged" for crypto
+  exit_ma: 50  # Used in staged mode: MA50 triggers exit
+  hard_stop_atr_mult: 3.0  # Initial stop = entry - 3.0 * ATR14
+  tightened_stop_atr_mult: 2.0  # After MA20 break: tighten to 2.0 * ATR14
+
+# Risk management
+risk:
+  risk_per_trade: 0.0075  # 0.75% of equity per trade
+  max_positions: 8  # Maximum positions per strategy
+  max_exposure: 0.80  # 80% maximum gross exposure
+  max_position_notional: 0.15  # 15% maximum per position
+
+# Capacity constraints (stricter than equity)
+capacity:
+  max_order_pct_adv: 0.0025  # 0.25% of 20D average dollar volume
+
+# Execution costs
+costs:
+  fee_bps: 8  # 8 basis points per side (higher than equity)
+  slippage_base_bps: 10  # Base slippage (10 bps for crypto)
+  slippage_std_mult: 0.75  # Standard deviation multiplier
+  weekend_penalty: 1.5  # 1.5x slippage on weekends (Sat/Sun UTC)
+  stress_threshold: -0.05  # BTC weekly return < -5% triggers stress
+  stress_slippage_mult: 2.0  # Double slippage during stress
+

@@ -1,0 +1,60 @@
+# Test Equity Momentum Strategy Configuration
+# Simplified for testing with 3-symbol universe
+
+name: "equity_momentum"
+asset_class: "equity"
+universe: ["AAPL", "MSFT", "GOOGL"]  # Test universe with 3 symbols
+benchmark: "SPY"
+
+# Indicator calculation parameters
+indicators:
+  ma_periods: [20, 50, 200]
+  atr_period: 14
+  roc_period: 60
+  breakout_fast: 20
+  breakout_slow: 55
+  adv_lookback: 20
+  corr_lookback: 20
+
+# Eligibility filter (trend qualification)
+eligibility:
+  trend_ma: 50  # Must be above MA50
+  ma_slope_lookback: 20  # Days to compute MA slope
+  ma_slope_min: 0.005  # Minimum 0.5% rise over 20 days
+  require_close_above_trend_ma: true
+  require_close_above_ma200: false  # Not used for equity
+  relative_strength_enabled: false  # MVP: off
+  relative_strength_min: 0.0
+
+# Entry trigger configuration
+entry:
+  fast_clearance: 0.005  # 0.5% above prior 20D high
+  slow_clearance: 0.010  # 1.0% above prior 55D high
+
+# Exit configuration
+exit:
+  mode: "ma_cross"  # "ma_cross" for equity
+  exit_ma: 20  # 20 or 50
+  hard_stop_atr_mult: 2.5  # Stop = entry - 2.5 * ATR14
+  tightened_stop_atr_mult: null  # Not used for equity
+
+# Risk management
+risk:
+  risk_per_trade: 0.0075  # 0.75% of equity per trade
+  max_positions: 8  # Maximum positions per strategy
+  max_exposure: 0.80  # 80% maximum gross exposure
+  max_position_notional: 0.15  # 15% maximum per position
+
+# Capacity constraints
+capacity:
+  max_order_pct_adv: 0.005  # 0.5% of 20D average dollar volume
+
+# Execution costs
+costs:
+  fee_bps: 1  # 1 basis point per side
+  slippage_base_bps: 8  # Base slippage (8 bps for equity)
+  slippage_std_mult: 0.75  # Standard deviation multiplier
+  weekend_penalty: 1.0  # Not used for equity
+  stress_threshold: -0.03  # SPY weekly return < -3% triggers stress
+  stress_slippage_mult: 2.0  # Double slippage during stress
+

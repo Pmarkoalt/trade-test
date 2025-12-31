@@ -1,0 +1,147 @@
+# Backtest Run Configuration
+# Used by CLI commands: backtest, validate, holdout
+
+# Dataset configuration
+dataset:
+  equity_path: "data/equity/ohlcv/"  # Path to equity OHLCV files
+  crypto_path: "data/crypto/ohlcv/"  # Path to crypto OHLCV files
+  benchmark_path: "data/benchmarks/"  # Path to SPY and BTC data
+  
+  # File format: CSV with columns: date, symbol, open, high, low, close, volume
+  # Or specify format: "parquet", "csv", "database"
+  format: "csv"
+  
+  # Date range for entire dataset
+  start_date: "2023-01-01"
+  end_date: "2024-12-31"
+  
+  # Minimum lookback required (for indicators)
+  min_lookback_days: 250
+
+# Data splits (pre-registered, LOCKED)
+splits:
+  # 24-month dataset (preferred)
+  train_start: "2023-01-01"
+  train_end: "2024-03-31"  # Months 1-15 (15 months)
+  
+  validation_start: "2024-04-01"
+  validation_end: "2024-06-30"  # Months 16-18 (3 months)
+  
+  holdout_start: "2024-07-01"
+  holdout_end: "2024-12-31"  # Months 19-24 (6 months) - LOCKED
+  
+  # Alternative: 18-month minimum
+  # train_end: "2023-12-31"  # Months 1-12
+  # validation_start: "2024-01-01"
+  # validation_end: "2024-03-31"  # Months 13-15
+  # holdout_start: "2024-04-01"
+  # holdout_end: "2024-06-30"  # Months 16-18
+
+# Strategy configurations to load
+strategies:
+  equity:
+    config_path: "configs/equity_config.yaml"
+    enabled: true
+  
+  crypto:
+    config_path: "configs/crypto_config.yaml"
+    enabled: true
+
+# Portfolio configuration
+portfolio:
+  starting_equity: 100000  # USD
+  # Risk parameters are in strategy configs (frozen)
+
+# Volatility scaling (portfolio-level)
+volatility_scaling:
+  enabled: true
+  mode: "continuous"  # "continuous", "regime", or "off"
+  lookback: 20  # Days for rolling volatility
+  baseline_lookback: 252  # Days for median baseline
+  min_multiplier: 0.33  # Minimum risk multiplier
+  max_multiplier: 1.0  # Maximum risk multiplier
+
+# Correlation guard
+correlation_guard:
+  enabled: true
+  min_positions: 4  # Apply only if >= 4 positions
+  avg_pairwise_threshold: 0.70  # Reject if avg correlation > 0.70
+  candidate_threshold: 0.75  # Reject candidate if corr > 0.75 to portfolio
+
+# Scoring function (position queue)
+scoring:
+  weights:
+    breakout: 0.50  # Breakout strength weight
+    momentum: 0.30  # Relative momentum weight
+    diversification: 0.20  # Diversification bonus weight
+
+# Execution configuration
+execution:
+  signal_timing: "close"  # Signals generated at day close
+  execution_timing: "next_open"  # Orders filled at next day open
+  slippage_model: "full"  # "full", "simple", or "none" (for testing)
+
+# Output configuration
+output:
+  base_path: "results/"  # Base directory for outputs
+  run_id: null  # Auto-generated if null: "run_YYYYMMDD_HHMMSS"
+  
+  # Output files
+  equity_curve: "equity_curve.csv"
+  trade_log: "trade_log.csv"
+  weekly_summary: "weekly_summary.csv"
+  monthly_report: "monthly_report.json"
+  scenario_comparison: "scenario_comparison.json"
+  
+  # Logging
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_file: "backtest.log"
+
+# Reproducibility
+random_seed: 42  # Seed for RNG (slippage, bootstrap, permutation tests)
+
+# Validation configuration (for validate command)
+validation:
+  # Parameter sensitivity grid
+  sensitivity:
+    enabled: true
+    equity_atr_mult: [2.0, 2.5, 3.0, 3.5]
+    equity_breakout_clearance: [0.000, 0.005, 0.010, 0.015]
+    equity_exit_ma: [20, 50]
+    crypto_atr_mult: [2.5, 3.0, 3.5, 4.0]
+    crypto_breakout_clearance: [0.000, 0.005, 0.010, 0.015]
+    crypto_exit_mode: ["MA20", "MA50", "staged"]
+    vol_scaling_mode: ["continuous", "regime", "off"]
+  
+  # Stress tests
+  stress_tests:
+    slippage_multipliers: [1.0, 2.0, 3.0]  # Baseline, 2x, 3x
+    bear_market_test: true
+    range_market_test: true
+    flash_crash_test: true
+  
+  # Statistical tests
+  statistical:
+    bootstrap_iterations: 1000
+    permutation_iterations: 1000
+    bootstrap_5th_percentile_threshold: 0.4  # Reject if < 0.4
+
+# Metrics targets (for holdout evaluation)
+metrics:
+  primary:
+    sharpe_ratio_min: 1.0
+    max_drawdown_max: 0.15  # 15%
+    calmar_ratio_min: 1.5
+    min_trades: 50  # Combined equities + crypto
+  
+  secondary:
+    expectancy_R_min: 0.3
+    profit_factor_min: 1.4
+    correlation_to_benchmark_max: 0.80
+    percentile_99_daily_loss_max: 0.05  # 5%
+  
+  rejection:
+    max_drawdown_max: 0.20  # >20% = reject
+    sharpe_ratio_min: 0.75  # <0.75 = reject
+    calmar_ratio_min: 1.0  # <1.0 = reject
+

@@ -1,0 +1,133 @@
+# Test Backtest Run Configuration
+# Used for integration testing
+
+# Dataset configuration
+dataset:
+  equity_path: "tests/fixtures"  # Path to equity OHLCV files
+  crypto_path: "tests/fixtures"  # Path to crypto OHLCV files
+  benchmark_path: "tests/fixtures/benchmarks"  # Path to SPY and BTC data
+  format: "csv"
+  
+  # Date range for test dataset (3 months: Oct-Dec 2023)
+  start_date: "2023-10-01"
+  end_date: "2023-12-31"
+  
+  # Minimum lookback required (for indicators)
+  min_lookback_days: 250
+
+# Data splits (for testing, using all data)
+splits:
+  train_start: "2023-10-01"
+  train_end: "2023-12-31"
+  validation_start: "2023-10-01"
+  validation_end: "2023-12-31"
+  holdout_start: "2023-10-01"
+  holdout_end: "2023-12-31"
+
+# Strategy configurations to load
+strategies:
+  equity:
+    config_path: "tests/fixtures/configs/equity_test_config.yaml"
+    enabled: true
+  
+  crypto:
+    config_path: "tests/fixtures/configs/crypto_test_config.yaml"
+    enabled: true
+
+# Portfolio configuration
+portfolio:
+  starting_equity: 100000  # USD
+
+# Volatility scaling (portfolio-level)
+volatility_scaling:
+  enabled: true
+  mode: "continuous"  # "continuous", "regime", or "off"
+  lookback: 20  # Days for rolling volatility
+  baseline_lookback: 252  # Days for median baseline
+  min_multiplier: 0.33  # Minimum risk multiplier
+  max_multiplier: 1.0  # Maximum risk multiplier
+
+# Correlation guard
+correlation_guard:
+  enabled: true
+  min_positions: 4  # Apply only if >= 4 positions
+  avg_pairwise_threshold: 0.70  # Reject if avg correlation > 0.70
+  candidate_threshold: 0.75  # Reject candidate if corr > 0.75 to portfolio
+
+# Scoring function (position queue)
+scoring:
+  weights:
+    breakout: 0.50  # Breakout strength weight
+    momentum: 0.30  # Relative momentum weight
+    diversification: 0.20  # Diversification bonus weight
+
+# Execution configuration
+execution:
+  signal_timing: "close"  # Signals generated at day close
+  execution_timing: "next_open"  # Orders filled at next day open
+  slippage_model: "full"  # "full", "simple", or "none" (for testing)
+
+# Output configuration
+output:
+  base_path: "tests/results/"  # Base directory for test outputs
+  run_id: null  # Auto-generated if null
+  
+  # Output files
+  equity_curve: "equity_curve.csv"
+  trade_log: "trade_log.csv"
+  weekly_summary: "weekly_summary.csv"
+  monthly_report: "monthly_report.json"
+  scenario_comparison: "scenario_comparison.json"
+  
+  # Logging
+  log_level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_file: "backtest.log"
+
+# Reproducibility
+random_seed: 42  # Seed for RNG
+
+# Validation configuration (for validate command)
+validation:
+  # Parameter sensitivity grid
+  sensitivity:
+    enabled: false  # Disabled for basic testing
+    equity_atr_mult: [2.5]
+    equity_breakout_clearance: [0.005]
+    equity_exit_ma: [20]
+    crypto_atr_mult: [3.0]
+    crypto_breakout_clearance: [0.005]
+    crypto_exit_mode: ["staged"]
+    vol_scaling_mode: ["continuous"]
+  
+  # Stress tests
+  stress_tests:
+    slippage_multipliers: [1.0]
+    bear_market_test: false
+    range_market_test: false
+    flash_crash_test: false
+  
+  # Statistical tests
+  statistical:
+    bootstrap_iterations: 100
+    permutation_iterations: 100
+    bootstrap_5th_percentile_threshold: 0.4
+
+# Metrics targets (for holdout evaluation)
+metrics:
+  primary:
+    sharpe_ratio_min: 0.5
+    max_drawdown_max: 0.20
+    calmar_ratio_min: 1.0
+    min_trades: 5
+  
+  secondary:
+    expectancy_R_min: 0.2
+    profit_factor_min: 1.2
+    correlation_to_benchmark_max: 0.90
+    percentile_99_daily_loss_max: 0.08
+  
+  rejection:
+    max_drawdown_max: 0.30
+    sharpe_ratio_min: 0.5
+    calmar_ratio_min: 0.8
+
