@@ -10,6 +10,7 @@ import pandas as pd
 import pytest
 
 from trading_system.models.positions import ExitReason, Position, PositionSide
+from trading_system.models.signals import BreakoutType
 from trading_system.reporting.csv_writer import CSVWriter
 from trading_system.reporting.json_writer import JSONWriter
 
@@ -91,18 +92,20 @@ class TestCSVWriter:
                 entry_fill_id=f"fill_{i}",
                 initial_stop_price=95.0,
                 stop_price=95.0,
+                hard_stop_atr_mult=2.5,
+                entry_slippage_bps=5.0,
+                entry_fee_bps=1.0,
+                entry_total_cost=6.0,
+                triggered_on=BreakoutType.FAST_20D,
+                adv20_at_entry=1000000.0,
                 exit_price=105.0 + i * 10,
                 exit_date=pd.Timestamp("2023-01-01") + timedelta(days=i + 5),
                 exit_fill_id=f"exit_{i}",
                 exit_reason=ExitReason.TRAILING_MA_CROSS,
                 realized_pnl=500.0 + i * 100,
-                entry_slippage_bps=5.0,
-                entry_fee_bps=1.0,
-                entry_total_cost=6.0,
                 exit_slippage_bps=5.0,
                 exit_fee_bps=1.0,
                 exit_total_cost=6.0,
-                adv20_at_entry=1000000.0,
             )
             positions.append(pos)
 
@@ -138,18 +141,20 @@ class TestCSVWriter:
                 entry_fill_id=f"fill_{i}",
                 initial_stop_price=95.0,
                 stop_price=95.0,
+                hard_stop_atr_mult=2.5,
+                entry_slippage_bps=5.0,
+                entry_fee_bps=1.0,
+                entry_total_cost=6.0,
+                triggered_on=BreakoutType.FAST_20D,
+                adv20_at_entry=1000000.0,
                 exit_price=105.0,
                 exit_date=pd.Timestamp("2023-01-01") + timedelta(days=i * 3 + 5),
                 exit_fill_id=f"exit_{i}",
                 exit_reason=ExitReason.TRAILING_MA_CROSS,
                 realized_pnl=500.0,
-                entry_slippage_bps=5.0,
-                entry_fee_bps=1.0,
-                entry_total_cost=6.0,
                 exit_slippage_bps=5.0,
                 exit_fee_bps=1.0,
                 exit_total_cost=6.0,
-                adv20_at_entry=1000000.0,
             )
             positions.append(pos)
 
@@ -212,18 +217,20 @@ class TestJSONWriter:
                 entry_fill_id=f"fill_{i}",
                 initial_stop_price=95.0,
                 stop_price=95.0,
+                hard_stop_atr_mult=2.5,
+                entry_slippage_bps=5.0,
+                entry_fee_bps=1.0,
+                entry_total_cost=6.0,
+                triggered_on=BreakoutType.FAST_20D,
+                adv20_at_entry=1000000.0,
                 exit_price=105.0 if i % 2 == 0 else 95.0,  # Mix of wins and losses
                 exit_date=pd.Timestamp("2023-01-01") + timedelta(days=i * 10 + 5),
                 exit_fill_id=f"exit_{i}",
                 exit_reason=ExitReason.TRAILING_MA_CROSS,
                 realized_pnl=500.0 if i % 2 == 0 else -500.0,
-                entry_slippage_bps=5.0,
-                entry_fee_bps=1.0,
-                entry_total_cost=6.0,
                 exit_slippage_bps=5.0,
                 exit_fee_bps=1.0,
                 exit_total_cost=6.0,
-                adv20_at_entry=1000000.0,
             )
             positions.append(pos)
 

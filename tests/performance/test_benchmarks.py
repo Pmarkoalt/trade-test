@@ -304,6 +304,7 @@ class TestBacktestEnginePerformance:
         result = benchmark(process_single_day)
         assert "date" in result
 
+    @pytest.mark.skip(reason="Takes ~5 minutes on CI/CD; run manually for performance regression testing")
     def test_backtest_engine_full_run_performance(self, benchmark, large_market_data, strategy_config):
         """Benchmark: Full backtest run for 6 months."""
         from trading_system.backtest import BacktestEngine, WalkForwardSplit
@@ -494,6 +495,10 @@ class TestSignalScoringPerformance:
                 slippage_bps=10.0,
                 fee_bps=5.0,
                 total_cost=price * quantity * 1.0015,
+                vol_mult=1.0,
+                size_penalty=1.0,
+                weekend_penalty=1.0,
+                stress_mult=1.0,
                 notional=price * quantity,
             )
 

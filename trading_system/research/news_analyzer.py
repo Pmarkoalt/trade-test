@@ -5,13 +5,7 @@ from dataclasses import dataclass
 from datetime import date, datetime
 from typing import Dict, List, Optional, Tuple
 
-from trading_system.data_pipeline.sources.news import (
-    AlphaVantageNewsClient,
-    NewsAggregator,
-    NewsAPIClient,
-    NewsArticle,
-    SentimentLabel,
-)
+from trading_system.data_pipeline.sources.news import NewsAggregator, NewsArticle, SentimentLabel
 
 from .config import ResearchConfig
 from .entity_extraction.ticker_extractor import TickerExtractor
@@ -74,19 +68,9 @@ class NewsAnalyzer:
         newsapi_key = newsapi_key or config.newsapi_key
         alpha_vantage_key = alpha_vantage_key or config.alpha_vantage_key
 
-        # Build news sources list
-        sources = []
-        if newsapi_key:
-            sources.append(NewsAPIClient(api_key=newsapi_key))
-        if alpha_vantage_key:
-            sources.append(AlphaVantageNewsClient(api_key=alpha_vantage_key))
-
         # Initialize components
-        if sources:
-            self.news_aggregator = NewsAggregator(sources=sources)
-        else:
-            # Create empty aggregator if no keys provided
-            self.news_aggregator = NewsAggregator(sources=[])
+        # NewsAggregator takes keys directly, not source objects
+        self.news_aggregator = NewsAggregator(newsapi_key=newsapi_key, alpha_vantage_key=alpha_vantage_key)
 
         # Initialize sentiment analyzer (optional dependency)
         if not VADER_AVAILABLE or VADERSentimentAnalyzer is None:

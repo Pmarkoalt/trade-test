@@ -178,11 +178,12 @@ class SQLiteTrackingStore(BaseTrackingStore):
             timestamp_field = "exit_filled_at"
 
         if timestamp_field:
-            sql = """
-                UPDATE tracked_signals
-                SET status = ?, {timestamp_field} = ?
-                WHERE id = ?
-            """
+            # Use string concatenation to safely insert column name
+            # Validate timestamp_field to ensure it's a safe column name
+            if timestamp_field not in ("entry_filled_at", "exit_filled_at"):
+                raise ValueError(f"Invalid timestamp_field: {timestamp_field}")
+            # Build SQL with validated column name using concatenation to avoid f-string issues
+            sql = "UPDATE tracked_signals SET status = ?, " + timestamp_field + " = ? WHERE id = ?"
             update_params: tuple[str, str, str] = (status.value, timestamp.isoformat(), signal_id)
         else:
             sql = "UPDATE tracked_signals SET status = ? WHERE id = ?"
@@ -241,9 +242,10 @@ class SQLiteTrackingStore(BaseTrackingStore):
             conditions.append("asset_class = ?")
             params.append(asset_class)
 
-        sql = """
+        where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+        sql = f"""
             SELECT * FROM tracked_signals
-            WHERE {' AND '.join(conditions)}
+            {where_clause}
             ORDER BY created_at DESC
         """
 
@@ -468,9 +470,9 @@ class SQLiteTrackingStore(BaseTrackingStore):
             conditions.append("created_date <= ?")
             params.append(end_date.isoformat())
 
-        f"WHERE {' AND '.join(conditions)}" if conditions else ""
+        where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
-        sql = """
+        sql = f"""
             SELECT
                 COUNT(*) as total_signals,
                 SUM(CASE WHEN status = 'closed' THEN 1 ELSE 0 END) as closed_signals,

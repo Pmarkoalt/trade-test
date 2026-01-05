@@ -67,7 +67,7 @@ class ReportGenerator:
         # Load equity curve
         equity_file = period_dir / "equity_curve.csv"
         if equity_file.exists():
-            data["equity_curve_d"] = pd.read_csv(equity_file, parse_dates=["date"])
+            data["equity_curve_df"] = pd.read_csv(equity_file, parse_dates=["date"])
         else:
             logger.warning(f"Equity curve file not found: {equity_file}")
             return None
@@ -80,7 +80,7 @@ class ReportGenerator:
                 if trade_log_file.stat().st_size == 0:
                     data["trade_log_df"] = pd.DataFrame()
                 else:
-                    data["trade_log_d"] = pd.read_csv(trade_log_file, parse_dates=["entry_date", "exit_date"])
+                    data["trade_log_df"] = pd.read_csv(trade_log_file, parse_dates=["entry_date", "exit_date"])
             except (pd.errors.EmptyDataError, ValueError):
                 # Handle empty CSV files gracefully
                 data["trade_log_df"] = pd.DataFrame()
@@ -95,7 +95,7 @@ class ReportGenerator:
                 if weekly_file.stat().st_size == 0:
                     data["weekly_summary_df"] = pd.DataFrame()
                 else:
-                    data["weekly_summary_d"] = pd.read_csv(weekly_file, parse_dates=["week_start", "week_end"])
+                    data["weekly_summary_df"] = pd.read_csv(weekly_file, parse_dates=["week_start", "week_end"])
             except (pd.errors.EmptyDataError, ValueError):
                 # Handle empty CSV files gracefully
                 data["weekly_summary_df"] = pd.DataFrame()

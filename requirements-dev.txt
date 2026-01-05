@@ -32,3 +32,6 @@ tomli>=2.0.0,<3.0.0; python_version < '3.11'
 sphinx>=7.0.0,<8.0.0
 sphinx-rtd-theme>=1.3.0,<2.0.0
 myst-parser>=2.0.0,<3.0.0  # Markdown support for Sphinx
+
+# API dependencies (required for tests)
+aiohttp>=3.8.0,<4.0.0  # Required for tests that use AlphaVantageNewsClient and BinanceClient

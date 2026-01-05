@@ -13,6 +13,12 @@ from .base_adapter import AccountInfo, AdapterConfig, BaseAdapter
 
 logger = logging.getLogger(__name__)
 
+# Import at module level for testability (can be mocked)
+try:
+    import alpaca_trade_api as tradeapi
+except ImportError:
+    tradeapi = None  # type: ignore
+
 
 class AlpacaAdapter(BaseAdapter):
     """Alpaca broker adapter.
@@ -51,9 +57,7 @@ class AlpacaAdapter(BaseAdapter):
             ConnectionError: If connection fails
             ImportError: If alpaca-trade-api is not installed
         """
-        try:
-            import alpaca_trade_api as tradeapi
-        except ImportError:
+        if tradeapi is None:
             raise ImportError("alpaca-trade-api is required for AlpacaAdapter. " "Install with: pip install alpaca-trade-api")
 
         if not self.config.api_key or not self.config.api_secret:

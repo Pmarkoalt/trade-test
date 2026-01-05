@@ -128,7 +128,7 @@ class TestPositionSizing:
         equity = 100000.0
         risk_pct = 0.0075
         entry_price = 100.0
-        stop_price = 105.0  # Stop above entry (invalid)
+        stop_price = 100.0  # Stop equals entry (invalid for both long and short)
         max_position_notional = 0.15
         max_exposure = 0.80
         available_cash = 50000.0
@@ -371,8 +371,8 @@ class TestPortfolio:
         expected_equity = 100000.0 + 16000.0
         assert abs(portfolio.equity - expected_equity) < 1.0
         assert portfolio.gross_exposure == 16000.0
-        # exposure_pct is calculated before equity update (based on starting equity)
-        assert abs(portfolio.gross_exposure_pct - 16000.0 / 100000.0) < 0.01
+        # exposure_pct is calculated using new equity (after update)
+        assert abs(portfolio.gross_exposure_pct - 16000.0 / 116000.0) < 0.01
 
     def test_process_fill(self, portfolio):
         """Test processing a fill to create a position."""
@@ -624,7 +624,7 @@ class TestPortfolio:
             side=SignalSide.SELL,  # Short
             fill_price=250.0,
             open_price=250.25,  # Open price before slippage
-            quantity=100,
+            quantity=60,  # Reduced to stay within 15% limit (60 * 250 = 15000 = 15% of 100000)
             slippage_bps=10.0,
             fee_bps=1.0,
             total_cost=275.0,
@@ -632,7 +632,7 @@ class TestPortfolio:
             size_penalty=1.0,
             weekend_penalty=1.0,
             stress_mult=1.0,
-            notional=25000.0,
+            notional=15000.0,  # Updated to match quantity
         )
 
         # Stop above entry for short
@@ -644,7 +644,7 @@ class TestPortfolio:
         assert position.side == PositionSide.SHORT
         assert position.entry_price == 250.0
         assert position.stop_price == 260.0
-        assert position.quantity == 100
+        assert position.quantity == 60  # Updated to match reduced quantity
 
         # Short: cash should increase (receive proceeds)
         assert portfolio.cash > 100000.0  # Initial cash was 100000
@@ -660,7 +660,7 @@ class TestPortfolio:
             side=SignalSide.SELL,
             fill_price=250.0,
             open_price=250.25,  # Open price before slippage
-            quantity=100,
+            quantity=60,  # Reduced to stay within 15% limit
             slippage_bps=10.0,
             fee_bps=1.0,
             total_cost=275.0,
@@ -668,7 +668,7 @@ class TestPortfolio:
             size_penalty=1.0,
             weekend_penalty=1.0,
             stress_mult=1.0,
-            notional=25000.0,
+            notional=15000.0,  # Updated to match quantity
         )
 
         position = portfolio.process_fill(
@@ -680,7 +680,7 @@ class TestPortfolio:
         portfolio.update_equity(current_prices)
 
         # Short P&L: (entry_price - current_price) * quantity
-        # (250 - 240) * 100 = 1000 profit
+        # (250 - 240) * 60 = 600 profit
         assert position.unrealized_pnl > 0  # Should be positive when price drops
 
     def test_short_position_exit(self, portfolio):
@@ -694,7 +694,7 @@ class TestPortfolio:
             side=SignalSide.SELL,
             fill_price=250.0,
             open_price=250.25,  # Open price before slippage
-            quantity=100,
+            quantity=60,  # Reduced to stay within 15% limit
             slippage_bps=10.0,
             fee_bps=1.0,
             total_cost=275.0,
@@ -702,7 +702,7 @@ class TestPortfolio:
             size_penalty=1.0,
             weekend_penalty=1.0,
             stress_mult=1.0,
-            notional=25000.0,
+            notional=15000.0,  # Updated to match quantity
         )
 
         position = portfolio.process_fill(
@@ -747,7 +747,7 @@ class TestPortfolio:
             side=SignalSide.SELL,
             fill_price=250.0,
             open_price=250.25,  # Open price before slippage
-            quantity=100,
+            quantity=60,  # Reduced to stay within 15% limit
             slippage_bps=10.0,
             fee_bps=1.0,
             total_cost=275.0,
@@ -755,7 +755,7 @@ class TestPortfolio:
             size_penalty=1.0,
             weekend_penalty=1.0,
             stress_mult=1.0,
-            notional=25000.0,
+            notional=15000.0,  # Updated to match quantity
         )
 
         position = portfolio.process_fill(
@@ -798,6 +798,18 @@ class TestPortfolio:
                 self.config = StrategyConfig(
                     name="test", asset_class="equity", universe=["TSLA"], benchmark="SPY", risk=risk_config
                 )
+
+            def check_eligibility(self, features):
+                return True
+
+            def check_entry_triggers(self, features):
+                return None, 0.0
+
+            def check_exit_signals(self, position, features):
+                return None
+
+            def update_stop_price(self, position, features):
+                return None
 
         strategy = MockStrategy()
         portfolio.strategies["test"] = strategy

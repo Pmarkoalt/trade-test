@@ -133,47 +133,51 @@ class TestCSVDataSource:
         assert "MSFT" in data, "Should load MSFT"
 
 
+@pytest.fixture
+def sqlite_db(tmp_path):
+    """Create temporary SQLite database with sample data."""
+    try:
+        import sqlite3
+    except ImportError:
+        pytest.skip("sqlite3 module not available")
+
+    db_file = tmp_path / "test.db"
+    conn = sqlite3.connect(str(db_file))
+
+    # Create table
+    conn.execute(
+        """
+        CREATE TABLE ohlcv_data (
+            symbol TEXT,
+            date DATE,
+            open REAL,
+            high REAL,
+            low REAL,
+            close REAL,
+            volume REAL,
+            PRIMARY KEY (symbol, date)
+        )
+    """
+    )
+
+    # Insert sample data
+    for symbol in ["AAPL", "MSFT", "GOOGL"]:
+        df = create_sample_ohlcv_data(symbol, days=30)
+        df = df.reset_index()
+        df["symbol"] = symbol
+        # Drop dollar_volume if present (not in table schema)
+        if "dollar_volume" in df.columns:
+            df = df.drop(columns=["dollar_volume"])
+        df.to_sql("ohlcv_data", conn, if_exists="append", index=False)
+
+    conn.commit()
+    conn.close()
+
+    return str(db_file)
+
+
 class TestSQLiteDataSource:
     """Tests for SQLite database data source."""
-
-    @pytest.fixture
-    def sqlite_db(self, tmp_path):
-        """Create temporary SQLite database with sample data."""
-        try:
-            import sqlite3
-        except ImportError:
-            pytest.skip("sqlite3 module not available")
-
-        db_file = tmp_path / "test.db"
-        conn = sqlite3.connect(str(db_file))
-
-        # Create table
-        conn.execute(
-            """
-            CREATE TABLE ohlcv_data (
-                symbol TEXT,
-                date DATE,
-                open REAL,
-                high REAL,
-                low REAL,
-                close REAL,
-                volume REAL,
-                PRIMARY KEY (symbol, date)
-            )
-        """
-        )
-
-        # Insert sample data
-        for symbol in ["AAPL", "MSFT", "GOOGL"]:
-            df = create_sample_ohlcv_data(symbol, days=30)
-            df = df.reset_index()
-            df["symbol"] = symbol
-            df.to_sql("ohlcv_data", conn, if_exists="append", index=False)
-
-        conn.commit()
-        conn.close()
-
-        return str(db_file)
 
     def test_sqlite_source_loads_data(self, sqlite_db):
         """Test that SQLite source loads data correctly."""

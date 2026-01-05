@@ -156,16 +156,46 @@ class PortfolioOptimizer:
                 except Exception:
                     # If differential evolution also fails, use equal weights
                     weights = {s: 1.0 / n_assets for s in symbols}
-                    return OptimizationResult(weights=weights, method="markowitz_fallback")
+                    weights_array = np.array([weights[s] for s in symbols])
+                    port_return = np.dot(weights_array, expected_returns)
+                    port_vol = np.sqrt(np.dot(weights_array, np.dot(cov_matrix, weights_array)))
+                    sharpe = (port_return - self.risk_free_rate) / port_vol if port_vol > 0 else 0.0
+                    return OptimizationResult(
+                        weights=weights,
+                        expected_return=port_return,
+                        volatility=port_vol,
+                        sharpe_ratio=sharpe,
+                        method="markowitz_fallback",
+                    )
         except Exception:
             # Fallback to equal weights if optimization fails
             weights = {s: 1.0 / n_assets for s in symbols}
-            return OptimizationResult(weights=weights, method="markowitz_fallback")
+            weights_array = np.array([weights[s] for s in symbols])
+            port_return = np.dot(weights_array, expected_returns)
+            port_vol = np.sqrt(np.dot(weights_array, np.dot(cov_matrix, weights_array)))
+            sharpe = (port_return - self.risk_free_rate) / port_vol if port_vol > 0 else 0.0
+            return OptimizationResult(
+                weights=weights,
+                expected_return=port_return,
+                volatility=port_vol,
+                sharpe_ratio=sharpe,
+                method="markowitz_fallback",
+            )
 
         # Extract weights - ensure result.x exists
         if not hasattr(result, "x") or result.x is None:
             weights = {s: 1.0 / n_assets for s in symbols}
-            return OptimizationResult(weights=weights, method="markowitz_fallback")
+            weights_array = np.array([weights[s] for s in symbols])
+            port_return = np.dot(weights_array, expected_returns)
+            port_vol = np.sqrt(np.dot(weights_array, np.dot(cov_matrix, weights_array)))
+            sharpe = (port_return - self.risk_free_rate) / port_vol if port_vol > 0 else 0.0
+            return OptimizationResult(
+                weights=weights,
+                expected_return=port_return,
+                volatility=port_vol,
+                sharpe_ratio=sharpe,
+                method="markowitz_fallback",
+            )
 
         optimal_weights = result.x
         weights_dict = {symbols[i]: max(0.0, optimal_weights[i]) for i in range(n_assets)}

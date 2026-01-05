@@ -65,6 +65,8 @@ dev = [
     "sphinx>=7.0.0,<8.0.0",
     "sphinx-rtd-theme>=1.3.0,<2.0.0",
     "pre-commit>=3.0.0,<4.0.0",
+    "aiohttp>=3.8.0,<4.0.0",  # Required for tests that use AlphaVantageNewsClient and BinanceClient
+    "vaderSentiment>=3.3.0,<4.0.0",  # Required for sentiment analyzer tests
 ]
 
 # Database support (PostgreSQL, SQLite)

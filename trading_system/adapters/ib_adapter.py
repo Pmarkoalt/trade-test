@@ -14,6 +14,12 @@ from .base_adapter import AccountInfo, AdapterConfig, BaseAdapter
 
 logger = logging.getLogger(__name__)
 
+# Import at module level for testability (can be mocked)
+try:
+    from ib_insync import IB
+except ImportError:
+    IB = None  # type: ignore
+
 
 class IBAdapter(BaseAdapter):
     """Interactive Brokers adapter using IB API (ib_insync).
@@ -60,9 +66,7 @@ class IBAdapter(BaseAdapter):
             ConnectionError: If connection fails
             ImportError: If ib_insync is not installed
         """
-        try:
-            from ib_insync import IB
-        except ImportError:
+        if IB is None:
             raise ImportError("ib_insync is required for IBAdapter. " "Install with: pip install ib-insync")
 
         try:

@@ -11,7 +11,10 @@ from trading_system.data_pipeline.sources.news.newsapi_client import NewsAPIClie
 @pytest.fixture
 def newsapi_client():
     """Create a NewsAPIClient instance for testing."""
-    return NewsAPIClient(api_key="test_api_key", rate_limit_per_minute=5)
+    try:
+        return NewsAPIClient(api_key="test_api_key", rate_limit_per_minute=5)
+    except ImportError as e:
+        pytest.skip(f"Required dependency not available: {e}")
 
 
 @pytest.fixture

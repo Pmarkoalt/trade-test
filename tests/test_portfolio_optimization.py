@@ -210,7 +210,7 @@ class TestPortfolioOptimizer:
         dates = pd.date_range("2023-01-01", periods=100, freq="D")
         empty_data = pd.DataFrame(index=dates)
 
-        with pytest.raises(ValueError, match="No assets in returns_data"):
+        with pytest.raises(ValueError, match="returns_data cannot be empty"):
             self.optimizer.optimize_markowitz(empty_data)
 
     def test_optimize_risk_parity(self):

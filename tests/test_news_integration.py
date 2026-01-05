@@ -340,9 +340,57 @@ class TestNewsIntegration:
 class TestSentimentAnalysis:
     """Tests for sentiment analysis."""
 
+    @pytest.fixture
+    def research_config(self):
+        """Create research config for testing."""
+        return ResearchConfig(enabled=True, lookback_hours=48, max_articles_per_symbol=10)
+
+    @pytest.fixture
+    def mock_news_analyzer(self, research_config):
+        """Create mock news analyzer."""
+        return MockNewsAnalyzer(research_config)
+
+    @pytest.fixture
+    def sample_ohlcv_data(self):
+        """Create sample OHLCV data."""
+        dates = pd.date_range(start="2024-01-01", periods=100, freq="D")
+        return {
+            "AAPL": pd.DataFrame(
+                {
+                    "date": dates,
+                    "open": [150.0] * 100,
+                    "high": [155.0] * 100,
+                    "low": [148.0] * 100,
+                    "close": [152.0] * 100,
+                    "volume": [1000000] * 100,
+                }
+            ),
+            "MSFT": pd.DataFrame(
+                {
+                    "date": dates,
+                    "open": [350.0] * 100,
+                    "high": [355.0] * 100,
+                    "low": [348.0] * 100,
+                    "close": [352.0] * 100,
+                    "volume": [500000] * 100,
+                }
+            ),
+        }
+
+    @pytest.fixture
+    def mock_strategy(self):
+        """Create mock strategy."""
+        strategy = MagicMock()
+        strategy.name = "test_strategy"
+        strategy.asset_class = "equity"
+        return strategy
+
     def test_vader_positive_financial_terms(self):
         """Test VADER recognizes positive financial terms."""
-        analyzer = VADERSentimentAnalyzer()
+        try:
+            analyzer = VADERSentimentAnalyzer()
+        except ImportError as e:
+            pytest.skip(f"Required dependency not available: {e}")
 
         # Test positive terms
         score, label, _ = analyzer.analyze("Apple stock surges on record earnings beat")
@@ -351,7 +399,10 @@ class TestSentimentAnalysis:
 
     def test_vader_negative_financial_terms(self):
         """Test VADER recognizes negative financial terms."""
-        analyzer = VADERSentimentAnalyzer()
+        try:
+            analyzer = VADERSentimentAnalyzer()
+        except ImportError as e:
+            pytest.skip(f"Required dependency not available: {e}")
 
         # Test negative terms
         score, label, _ = analyzer.analyze("Stock plunges amid bankruptcy fears")
@@ -360,7 +411,10 @@ class TestSentimentAnalysis:
 
     def test_vader_neutral_terms(self):
         """Test VADER handles neutral text."""
-        analyzer = VADERSentimentAnalyzer()
+        try:
+            analyzer = VADERSentimentAnalyzer()
+        except ImportError as e:
+            pytest.skip(f"Required dependency not available: {e}")
 
         score, label, _ = analyzer.analyze("The stock price remained unchanged today")
         assert abs(score) < 0.1
@@ -403,7 +457,10 @@ class TestSentimentAnalysis:
 
     def test_sentiment_analyzer_batch(self):
         """Test batch sentiment analysis."""
-        analyzer = VADERSentimentAnalyzer()
+        try:
+            analyzer = VADERSentimentAnalyzer()
+        except ImportError as e:
+            pytest.skip(f"Required dependency not available: {e}")
 
         texts = ["Stock surges on earnings beat", "Company faces bankruptcy", "Price remains stable"]
 
@@ -427,7 +484,10 @@ class TestSentimentAnalysis:
 
     def test_sentiment_confidence_scores(self):
         """Test that sentiment confidence is calculated."""
-        analyzer = VADERSentimentAnalyzer()
+        try:
+            analyzer = VADERSentimentAnalyzer()
+        except ImportError as e:
+            pytest.skip(f"Required dependency not available: {e}")
 
         # Strong positive should have high confidence
         score, label, confidence = analyzer.analyze("Stock skyrockets to record high on massive earnings beat")
