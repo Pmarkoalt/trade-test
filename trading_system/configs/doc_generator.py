@@ -25,12 +25,29 @@ def get_field_info(model_class: type[BaseModel]) -> Dict[str, Any]:
 
         # Get default from default_factory if present
         if default is None and hasattr(field_info, "default_factory"):
-            default_factory = field_info.default_factory
-            if default_factory is not None and default_factory is not ... and callable(default_factory):
-                try:
-                    default = default_factory()
-                except Exception:
-                    default = "<default_factory>"
+            default_factory = getattr(field_info, "default_factory", None)
+            # Check if default_factory is a callable (not None, not Ellipsis)
+            # Pydantic's default_factory can be Callable or Ellipsis
+            # Use runtime type check to avoid mypy comparison-overlap error
+            if default_factory is not None:
+                # Check if it's Ellipsis by comparing type name (runtime check)
+                # This avoids mypy's comparison-overlap error
+                is_ellipsis = type(default_factory).__name__ == "ellipsis"
+                if not is_ellipsis and callable(default_factory):
+                    try:
+                        # Try calling with no arguments first (most common case)
+                        # Pydantic default_factory is typically Callable[[], Any]
+                        result = default_factory()
+                        default = result
+                    except TypeError:
+                        # If it needs arguments, try with empty dict (for Pydantic's info parameter)
+                        try:
+                            result = default_factory({})
+                            default = result
+                        except Exception:
+                            default = "<default_factory>"
+                    except Exception:
+                        default = "<default_factory>"
 
         fields_info[field_name] = {
             "type": field_type,

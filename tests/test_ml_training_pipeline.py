@@ -87,7 +87,7 @@ def temp_db(tmp_path):
     for i in range(300):  # Enough for walk-forward validation
         fv = FeatureVector(
             signal_id=f"signal-{i}",
-            timestamp=f"2023-01-{i%30+1:02d}T10:00:00",
+            timestamp=f"2023-01-{i % 30 + 1:02d}T10:00:00",
             features={
                 "rsi": 50.0 + np.random.randn() * 10,
                 "atr_ratio": 1.0 + np.random.randn() * 0.2,
