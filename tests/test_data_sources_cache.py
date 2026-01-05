@@ -187,6 +187,7 @@ class TestCachedDataSource:
             },
             index=pd.date_range("2024-01-01", periods=2),
         )
+        df.index.name = "date"  # CSVDataSource expects a 'date' column
 
         csv_path = self.csv_dir / "AAPL.csv"
         df.to_csv(csv_path)
@@ -234,6 +235,7 @@ class TestCachedDataSource:
             },
             index=pd.date_range("2024-01-01", periods=2),
         )
+        df.index.name = "date"  # CSVDataSource expects a 'date' column
 
         csv_path = self.csv_dir / "MSFT.csv"
         df.to_csv(csv_path)

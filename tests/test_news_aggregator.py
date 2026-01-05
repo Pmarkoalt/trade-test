@@ -5,8 +5,11 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from trading_system.data_pipeline.sources.news.models import NewsArticle
-from trading_system.data_pipeline.sources.news.news_aggregator import NewsAggregator
+from trading_system.data_pipeline.sources.news.models import NewsArticle  # noqa: E402
+from trading_system.data_pipeline.sources.news.news_aggregator import NewsAggregator  # noqa: E402
+
+# Skip all tests in this module if aiohttp is not installed
+aiohttp = pytest.importorskip("aiohttp", reason="aiohttp required for news aggregator tests")
 
 
 @pytest.fixture
@@ -423,7 +426,7 @@ class TestNewsAggregator:
         assert cached is None
         assert "test_key" not in aggregator._cache  # Should be deleted
 
-    def test_get_cached_disabled(self):
+    def test_get_cached_disabled(self, sample_articles):
         """Test that caching is disabled when enable_caching is False."""
         aggregator = NewsAggregator(newsapi_key="test", enable_caching=False)
         articles = [sample_articles[0]]

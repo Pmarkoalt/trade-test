@@ -5,6 +5,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+# Skip all tests in this module if required dashboard dependencies are not installed
+streamlit = pytest.importorskip("streamlit", reason="streamlit required for dashboard tests")
+plotly = pytest.importorskip("plotly", reason="plotly required for dashboard tests")
+
 
 class TestDashboardConfig:
     """Tests for DashboardConfig."""

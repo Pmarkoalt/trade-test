@@ -3,9 +3,12 @@
 import numpy as np
 import pytest
 
-from trading_system.ml_refinement import ModelType
-from trading_system.ml_refinement.models import BaseModel, ModelRegistry, SignalQualityModel
-from trading_system.ml_refinement.storage import FeatureDatabase
+from trading_system.ml_refinement import ModelType  # noqa: E402
+from trading_system.ml_refinement.models import BaseModel, ModelRegistry, SignalQualityModel  # noqa: E402
+from trading_system.ml_refinement.storage import FeatureDatabase  # noqa: E402
+
+# Skip all tests in this module if sklearn is not installed
+pytest.importorskip("sklearn", reason="sklearn required for ML refinement model tests")
 
 
 def test_signal_quality_model_fit():

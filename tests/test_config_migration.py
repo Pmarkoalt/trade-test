@@ -171,7 +171,27 @@ class TestMigrateConfig:
     def test_migrate_config_dry_run(self):
         """Test migration in dry-run mode (doesn't write file)."""
         config_path = self.temp_dir / "test_config.yaml"
-        config_data = {"version": "1.0", "data": "test"}
+        # Use a valid run config structure that will pass validation
+        config_data = {
+            "version": "1.0",
+            "dataset": {
+                "equity_path": "data/equity/",
+                "crypto_path": "data/crypto/",
+                "benchmark_path": "data/benchmarks/",
+                "format": "csv",
+                "start_date": "2023-01-01",
+                "end_date": "2023-12-31",
+            },
+            "splits": {
+                "train_start": "2023-01-01",
+                "train_end": "2023-06-30",
+                "validation_start": "2023-07-01",
+                "validation_end": "2023-09-30",
+                "holdout_start": "2023-10-01",
+                "holdout_end": "2023-12-31",
+            },
+            "strategies": {"equity": {"config_path": "test_strategy.yaml", "enabled": True}},
+        }
 
         with open(config_path, "w") as f:
             yaml.dump(config_data, f)
@@ -187,7 +207,27 @@ class TestMigrateConfig:
     def test_migrate_config_write_file(self):
         """Test migration that writes migrated config."""
         config_path = self.temp_dir / "test_config.yaml"
-        config_data = {"version": "1.0", "data": "test"}
+        # Use a valid run config structure that will pass validation
+        config_data = {
+            "version": "1.0",
+            "dataset": {
+                "equity_path": "data/equity/",
+                "crypto_path": "data/crypto/",
+                "benchmark_path": "data/benchmarks/",
+                "format": "csv",
+                "start_date": "2023-01-01",
+                "end_date": "2023-12-31",
+            },
+            "splits": {
+                "train_start": "2023-01-01",
+                "train_end": "2023-06-30",
+                "validation_start": "2023-07-01",
+                "validation_end": "2023-09-30",
+                "holdout_start": "2023-10-01",
+                "holdout_end": "2023-12-31",
+            },
+            "strategies": {"equity": {"config_path": "test_strategy.yaml", "enabled": True}},
+        }
 
         with open(config_path, "w") as f:
             yaml.dump(config_data, f)
@@ -204,7 +244,27 @@ class TestMigrateConfig:
         """Test migration with custom output path."""
         config_path = self.temp_dir / "test_config.yaml"
         output_path = self.temp_dir / "migrated_config.yaml"
-        config_data = {"version": "1.0", "data": "test"}
+        # Use a valid run config structure that will pass validation
+        config_data = {
+            "version": "1.0",
+            "dataset": {
+                "equity_path": "data/equity/",
+                "crypto_path": "data/crypto/",
+                "benchmark_path": "data/benchmarks/",
+                "format": "csv",
+                "start_date": "2023-01-01",
+                "end_date": "2023-12-31",
+            },
+            "splits": {
+                "train_start": "2023-01-01",
+                "train_end": "2023-06-30",
+                "validation_start": "2023-07-01",
+                "validation_end": "2023-09-30",
+                "holdout_start": "2023-10-01",
+                "holdout_end": "2023-12-31",
+            },
+            "strategies": {"equity": {"config_path": "test_strategy.yaml", "enabled": True}},
+        }
 
         with open(config_path, "w") as f:
             yaml.dump(config_data, f)
@@ -265,7 +325,9 @@ class TestBackupConfig:
         backup_path = backup_config(str(config_path), backup_dir=str(backup_dir))
 
         assert backup_dir.exists()
-        assert Path(backup_path).parent == backup_dir
+        # backup_config creates a timestamped subdirectory inside backup_dir
+        # so we check that the backup_path is within backup_dir
+        assert str(backup_dir) in str(Path(backup_path).parent)
         assert Path(backup_path).exists()
 
     def test_backup_config_creates_dir(self):

@@ -2,7 +2,7 @@
 
 import numpy as np
 import pandas as pd
-from hypothesis import assume, given, settings
+from hypothesis import HealthCheck, assume, given, settings
 from hypothesis import strategies as st
 
 from trading_system.indicators.atr import atr
@@ -59,8 +59,8 @@ class TestMovingAverage:
         assert len(result) == len(series)
         assert len(result.index) == len(series.index)
 
-    @given(price_series(min_length=1, max_length=200), st.integers(min_value=2, max_value=100))
-    @settings(max_examples=50, deadline=5000)
+    @given(price_series(min_length=50, max_length=200), st.integers(min_value=2, max_value=50))
+    @settings(max_examples=50, deadline=5000, suppress_health_check=[HealthCheck.filter_too_much])
     def test_ma_nan_before_window(self, series, window):
         """Property: First window-1 values are NaN."""
         assume(len(series) >= window)

@@ -8,7 +8,22 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from trading_system.data_pipeline.cache.data_cache import DataCache
+# Data cache uses parquet which requires pyarrow or fastparquet
+try:
+    import pyarrow  # noqa: F401
+
+    HAS_PARQUET = True
+except ImportError:
+    try:
+        import fastparquet  # noqa: F401
+
+        HAS_PARQUET = True
+    except ImportError:
+        HAS_PARQUET = False
+
+from trading_system.data_pipeline.cache.data_cache import DataCache  # noqa: E402
+
+pytestmark = pytest.mark.skipif(not HAS_PARQUET, reason="pyarrow or fastparquet required for parquet tests")
 
 
 @pytest.fixture
