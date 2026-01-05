@@ -840,12 +840,16 @@ def cmd_config_validate(args: argparse.Namespace) -> int:
                 if isinstance(config, RunConfig):
                     if config.strategies.equity and config.strategies.equity.enabled:
                         print_section("Validating Equity Strategy Config")
-                        equity_path = Path(config.strategies.equity.config_path)
+                        equity_path_str = config.strategies.equity.config_path
+                        equity_path = Path(equity_path_str)
+                        # Resolve relative paths relative to the config file's directory
+                        if not equity_path.is_absolute():
+                            equity_path = (config_path.parent / equity_path_str).resolve()
                         if not equity_path.exists():
                             print_error(f"Equity strategy config file not found: {equity_path}")
                             if console:
                                 console.print(f"  • Referenced from: {config_path}")
-                                console.print(f"  • Resolve path: {equity_path.absolute()}")
+                                console.print(f"  • Resolve path: {equity_path}")
                             return 1
                         equity_valid, equity_error, _ = validate_config_file(str(equity_path), "strategy")
                         if equity_valid:
@@ -858,12 +862,16 @@ def cmd_config_validate(args: argparse.Namespace) -> int:
 
                     if config.strategies.crypto and config.strategies.crypto.enabled:
                         print_section("Validating Crypto Strategy Config")
-                        crypto_path = Path(config.strategies.crypto.config_path)
+                        crypto_path_str = config.strategies.crypto.config_path
+                        crypto_path = Path(crypto_path_str)
+                        # Resolve relative paths relative to the config file's directory
+                        if not crypto_path.is_absolute():
+                            crypto_path = (config_path.parent / crypto_path_str).resolve()
                         if not crypto_path.exists():
                             print_error(f"Crypto strategy config file not found: {crypto_path}")
                             if console:
                                 console.print(f"  • Referenced from: {config_path}")
-                                console.print(f"  • Resolve path: {crypto_path.absolute()}")
+                                console.print(f"  • Resolve path: {crypto_path}")
                             return 1
                         crypto_valid, crypto_error, _ = validate_config_file(str(crypto_path), "strategy")
                         if crypto_valid:
