@@ -1,0 +1,136 @@
+{
+  "generated_at": "2026-01-05T02:12:42.948086",
+  "period": {
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-12-30T00:00:00",
+    "total_days": 91,
+    "trading_days": 91
+  },
+  "overall_metrics": {
+    "sharpe_ratio": -2.2037182322102753,
+    "max_drawdown": 0.0917563619266287,
+    "calmar_ratio": -1.955039897095111,
+    "total_trades": 8.0,
+    "expectancy": -0.3353506096885704,
+    "profit_factor": 0.18035025872711613,
+    "correlation_to_benchmark": -0.025378024152861604,
+    "percentile_99_daily_loss": 0.02203995115465239,
+    "recovery_factor": -0.7429834991453096,
+    "drawdown_duration": 83.0,
+    "turnover": 1.8666666666666667,
+    "average_holding_period": 14.5,
+    "max_consecutive_losses": 5.0,
+    "win_rate": 0.125
+  },
+  "monthly_summary": [
+    {
+      "month": "2025-10",
+      "month_start": "2025-10-01T00:00:00",
+      "month_end": "2025-10-31T00:00:00",
+      "start_equity": 99858.56197304626,
+      "end_equity": 97411.94322359154,
+      "monthly_return": -0.024500841000645535,
+      "monthly_return_pct": -2.4500841000645535,
+      "trades_count": 1,
+      "winning_trades": 0,
+      "losing_trades": 1,
+      "win_rate": 0.0,
+      "realized_pnl": -781.6003645678252,
+      "volatility_annualized": 0.06795346671539852,
+      "sharpe_ratio": -2.932137438213638,
+      "max_drawdown": 0.03397521394852756,
+      "max_drawdown_pct": 3.397521394852756,
+      "trades": [
+        {
+          "symbol": "NVDA",
+          "entry_date": "2025-10-02T00:00:00",
+          "exit_date": "2025-10-15T00:00:00",
+          "realized_pnl": -781.6003645678252,
+          "r_multiple": -0.3161882509518395
+        }
+      ]
+    },
+    {
+      "month": "2025-11",
+      "month_start": "2025-11-01T00:00:00",
+      "month_end": "2025-11-30T00:00:00",
+      "start_equity": 97411.94322359154,
+      "end_equity": 94578.06040742976,
+      "monthly_return": -0.02909173888110539,
+      "monthly_return_pct": -2.909173888110539,
+      "trades_count": 4,
+      "winning_trades": 0,
+      "losing_trades": 4,
+      "win_rate": 0.0,
+      "realized_pnl": -7448.576943792716,
+      "volatility_annualized": 0.12857871605963134,
+      "sharpe_ratio": -1.8632420765889994,
+      "max_drawdown": 0.06383232048604255,
+      "max_drawdown_pct": 6.383232048604255,
+      "trades": [
+        {
+          "symbol": "MSFT",
+          "entry_date": "2025-10-28T00:00:00",
+          "exit_date": "2025-11-03T00:00:00",
+          "realized_pnl": -1451.3863891315964,
+          "r_multiple": -0.8111985563122887
+        },
+        {
+          "symbol": "NVDA",
+          "entry_date": "2025-10-29T00:00:00",
+          "exit_date": "2025-11-07T00:00:00",
+          "realized_pnl": -3149.141373548212,
+          "r_multiple": -1.069303559048367
+        },
+        {
+          "symbol": "AMZN",
+          "entry_date": "2025-11-03T00:00:00",
+          "exit_date": "2025-11-17T00:00:00",
+          "realized_pnl": -2554.242200399878,
+          "r_multiple": -0.7880096870639919
+        },
+        {
+          "symbol": "AAPL",
+          "entry_date": "2025-11-12T00:00:00",
+          "exit_date": "2025-11-18T00:00:00",
+          "realized_pnl": -293.8069807130288,
+          "r_multiple": -0.4541295931009112
+        }
+      ]
+    },
+    {
+      "month": "2025-12",
+      "month_start": "2025-12-01T00:00:00",
+      "month_end": "2025-12-30T00:00:00",
+      "start_equity": 94834.88880708796,
+      "end_equity": 93050.8580078138,
+      "monthly_return": -0.018811967006184926,
+      "monthly_return_pct": -1.8811967006184926,
+      "trades_count": 2,
+      "winning_trades": 1,
+      "losing_trades": 1,
+      "win_rate": 0.5,
+      "realized_pnl": 1352.6125397120397,
+      "volatility_annualized": 0.043215492450899756,
+      "sharpe_ratio": -3.1417613888625233,
+      "max_drawdown": 0.020764143263934644,
+      "max_drawdown_pct": 2.0764143263934645,
+      "trades": [
+        {
+          "symbol": "GOOGL",
+          "entry_date": "2025-11-06T00:00:00",
+          "exit_date": "2025-12-16T00:00:00",
+          "realized_pnl": 1529.04282538533,
+          "r_multiple": 0.9791939879838103
+        },
+        {
+          "symbol": "AAPL",
+          "entry_date": "2025-11-25T00:00:00",
+          "exit_date": "2025-12-16T00:00:00",
+          "realized_pnl": -176.43028567329026,
+          "r_multiple": -0.18855884973548195
+        }
+      ]
+    }
+  ]
+}
