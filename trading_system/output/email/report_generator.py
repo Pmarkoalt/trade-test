@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from ..formatters.recommendation_formatter import RecommendationFormatter
 
@@ -11,8 +11,6 @@ try:
     from ...data_pipeline.sources.news.models import SentimentLabel
 except ImportError:
     # Fallback if news models not available
-    from typing import Any
-
     SentimentLabel = Any  # type: ignore[assignment, misc]
 
 
