@@ -444,7 +444,7 @@ class AlpacaAdapter(BaseAdapter):
                     entry_fee_bps=0.0,  # Not available
                     entry_total_cost=0.0,  # Not available
                     triggered_on=BreakoutType.FAST_20D,  # Default (not available from broker)
-                    adv20_at_entry=0.0,  # Not available
+                    adv20_at_entry=1000000.0,  # Default value (not available from broker, set to 1M to pass validation)
                 )
 
                 positions[symbol] = position

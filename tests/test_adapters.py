@@ -768,7 +768,8 @@ class TestIBAdapter:
             adapter.get_account_info()
 
     @patch("trading_system.adapters.ib_adapter.IB")
-    def test_submit_order_success(self, mock_ib_class):
+    @patch("builtins.__import__")
+    def test_submit_order_success(self, mock_import, mock_ib_class):
         """Test submitting order successfully to IB."""
         config = AdapterConfig(host="127.0.0.1", port=7497, client_id=1, paper_trading=True)
 
@@ -803,6 +804,23 @@ class TestIBAdapter:
         mock_ib.managedAccounts.return_value = ["DU123456"]
         mock_ib_class.return_value = mock_ib
 
+        # Mock the ib_insync imports
+        mock_stock = Mock()
+        mock_stock.return_value = mock_contract
+        mock_market_order = Mock()
+        mock_crypto = Mock()
+
+        def import_mock(name, *args, **kwargs):
+            if name == "ib_insync":
+                mock_module = Mock()
+                mock_module.Stock = mock_stock
+                mock_module.MarketOrder = mock_market_order
+                mock_module.Crypto = mock_crypto
+                return mock_module
+            return __import__(name, *args, **kwargs)
+
+        mock_import.side_effect = import_mock
+
         adapter = IBAdapter(config)
         adapter.connect()
 
@@ -826,7 +844,8 @@ class TestIBAdapter:
         assert fill.fill_price == 150.0
 
     @patch("trading_system.adapters.ib_adapter.IB")
-    def test_submit_order_timeout(self, mock_ib_class):
+    @patch("builtins.__import__")
+    def test_submit_order_timeout(self, mock_import, mock_ib_class):
         """Test order submission timeout."""
         config = AdapterConfig(host="127.0.0.1", port=7497, client_id=1, paper_trading=True)
 
@@ -845,6 +864,21 @@ class TestIBAdapter:
         mock_ib.accountValues.return_value = []
         mock_ib.managedAccounts.return_value = ["DU123456"]
         mock_ib_class.return_value = mock_ib
+
+        # Mock the ib_insync imports
+        mock_stock = Mock()
+        mock_stock.return_value = mock_contract
+
+        def import_mock(name, *args, **kwargs):
+            if name == "ib_insync":
+                mock_module = Mock()
+                mock_module.Stock = mock_stock
+                mock_module.MarketOrder = Mock()
+                mock_module.Crypto = Mock()
+                return mock_module
+            return __import__(name, *args, **kwargs)
+
+        mock_import.side_effect = import_mock
 
         adapter = IBAdapter(config)
         adapter.connect()
@@ -866,7 +900,8 @@ class TestIBAdapter:
             adapter.submit_order(order)
 
     @patch("trading_system.adapters.ib_adapter.IB")
-    def test_submit_order_insufficient_funds(self, mock_ib_class):
+    @patch("builtins.__import__")
+    def test_submit_order_insufficient_funds(self, mock_import, mock_ib_class):
         """Test order submission with insufficient funds."""
         config = AdapterConfig(host="127.0.0.1", port=7497, client_id=1, paper_trading=True)
 
@@ -888,6 +923,21 @@ class TestIBAdapter:
         mock_ib.managedAccounts.return_value = ["DU123456"]
         mock_ib_class.return_value = mock_ib
 
+        # Mock the ib_insync imports
+        mock_stock = Mock()
+        mock_stock.return_value = mock_contract
+
+        def import_mock(name, *args, **kwargs):
+            if name == "ib_insync":
+                mock_module = Mock()
+                mock_module.Stock = mock_stock
+                mock_module.MarketOrder = Mock()
+                mock_module.Crypto = Mock()
+                return mock_module
+            return __import__(name, *args, **kwargs)
+
+        mock_import.side_effect = import_mock
+
         adapter = IBAdapter(config)
         adapter.connect()
 
@@ -908,7 +958,8 @@ class TestIBAdapter:
             adapter.submit_order(order)
 
     @patch("trading_system.adapters.ib_adapter.IB")
-    def test_submit_order_position_limit(self, mock_ib_class):
+    @patch("builtins.__import__")
+    def test_submit_order_position_limit(self, mock_import, mock_ib_class):
         """Test order submission with position limit exceeded."""
         config = AdapterConfig(host="127.0.0.1", port=7497, client_id=1, paper_trading=True)
 
@@ -929,6 +980,21 @@ class TestIBAdapter:
         mock_ib.accountValues.return_value = []
         mock_ib.managedAccounts.return_value = ["DU123456"]
         mock_ib_class.return_value = mock_ib
+
+        # Mock the ib_insync imports
+        mock_stock = Mock()
+        mock_stock.return_value = mock_contract
+
+        def import_mock(name, *args, **kwargs):
+            if name == "ib_insync":
+                mock_module = Mock()
+                mock_module.Stock = mock_stock
+                mock_module.MarketOrder = Mock()
+                mock_module.Crypto = Mock()
+                return mock_module
+            return __import__(name, *args, **kwargs)
+
+        mock_import.side_effect = import_mock
 
         adapter = IBAdapter(config)
         adapter.connect()

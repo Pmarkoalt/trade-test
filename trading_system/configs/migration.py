@@ -50,9 +50,8 @@ def migrate_config_v1_0_to_v1_1(config_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     migrated = config_data.copy()
 
-    # Add version field if not present
-    if "version" not in migrated:
-        migrated["version"] = "1.1"
+    # Update version field to 1.1
+    migrated["version"] = "1.1"
 
     # Future migrations would go here
     # Example:

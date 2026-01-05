@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 
 from ..models.bar import Bar
-from ..models.orders import Fill, Order, SignalSide
+from ..models.orders import Fill, Order, OrderStatus, SignalSide
 from .fees import compute_fee_bps, compute_fee_cost
 from .slippage import compute_slippage_components
 from .weekly_return import compute_weekly_return
@@ -155,6 +155,10 @@ def reject_order_missing_data(order: Order, reason: str) -> Fill:
     Returns:
         Fill object with rejection details (all costs set to 0)
     """
+    # Set order status to REJECTED
+    order.status = OrderStatus.REJECTED
+    order.rejection_reason = reason
+
     fill = Fill(
         fill_id=str(uuid.uuid4()),
         order_id=order.order_id,

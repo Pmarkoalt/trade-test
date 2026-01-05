@@ -18,7 +18,7 @@ import pytest
 from trading_system.data.sources.api_source import APIDataSource
 from trading_system.data.sources.csv_source import CSVDataSource
 from trading_system.data.validator import validate_ohlcv
-from trading_system.exceptions import DataSourceError, ExecutionError
+from trading_system.exceptions import DataSourceError
 from trading_system.execution.fill_simulator import reject_order_missing_data, simulate_fill
 from trading_system.models.market_data import Bar
 from trading_system.models.orders import Order, OrderStatus
@@ -482,18 +482,34 @@ class TestExecutionFailures:
         )
 
         # Create bar with invalid price (zero or negative)
+        # Bar validation will raise ValueError during creation
+        with pytest.raises(ValueError, match="Invalid prices.*must be positive"):
+            bar = Bar(
+                date=pd.Timestamp("2024-01-01"),
+                symbol="TEST",
+                open=0.0,  # Invalid price
+                high=0.0,
+                low=0.0,
+                close=0.0,
+                volume=0.0,
+            )
+
+        # If we create a valid bar but with invalid open price, simulate_fill should handle it
+        # Create a bar that passes validation but has invalid open for fill simulation
         bar = Bar(
             date=pd.Timestamp("2024-01-01"),
             symbol="TEST",
-            open=0.0,  # Invalid price
-            high=0.0,
-            low=0.0,
-            close=0.0,
-            volume=0.0,
+            open=1.0,  # Valid for Bar creation
+            high=1.0,
+            low=1.0,
+            close=1.0,
+            volume=1000.0,
         )
+        # Manually set open to 0 to test fill simulation handling
+        bar.open = 0.0
 
-        # Fill simulation should handle invalid prices gracefully
-        try:
+        # Fill simulation should raise ValueError for invalid open_price
+        with pytest.raises(ValueError, match="Invalid open_price"):
             fill = simulate_fill(
                 order=order,
                 open_bar=bar,
@@ -504,12 +520,6 @@ class TestExecutionFailures:
                 base_slippage_bps=8.0,
                 rng=None,
             )
-            # If it doesn't raise, the fill should be rejected or quantity should be 0
-            if fill.quantity == 0:
-                assert True  # Handled gracefully
-        except (ValueError, ExecutionError):
-            # Acceptable - invalid prices should raise errors
-            assert True
 
     def test_fill_simulation_with_insufficient_liquidity(self):
         """Test that fill simulation handles insufficient liquidity."""
