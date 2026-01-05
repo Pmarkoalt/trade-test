@@ -145,4 +145,3 @@ CREATE TABLE IF NOT EXISTS ml_schema_migrations (
 
 INSERT OR IGNORE INTO ml_schema_migrations (version, applied_at)
 VALUES (1, datetime('now'));
-

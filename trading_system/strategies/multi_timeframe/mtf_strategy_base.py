@@ -1,12 +1,11 @@
 """Base class for multi-timeframe strategies with shared logic."""
 
-from typing import List, Optional
+from typing import Optional
 
 import numpy as np
 
 from ...configs.strategy_config import StrategyConfig
 from ...models.features import FeatureRow
-from ...models.positions import ExitReason, Position
 from ...models.signals import BreakoutType
 from ..base.strategy_interface import StrategyInterface
 

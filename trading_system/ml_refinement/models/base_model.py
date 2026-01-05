@@ -69,7 +69,6 @@ class BaseModel(ABC):
         Returns:
             Dictionary of training metrics.
         """
-        pass
 
     @abstractmethod
     def predict(self, X: np.ndarray) -> np.ndarray:
@@ -82,7 +81,6 @@ class BaseModel(ABC):
         Returns:
             Predictions (n_samples,).
         """
-        pass
 
     @abstractmethod
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
@@ -95,7 +93,6 @@ class BaseModel(ABC):
         Returns:
             Probabilities (n_samples, n_classes) or (n_samples,) for binary.
         """
-        pass
 
     @abstractmethod
     def save(self, path: str) -> bool:
@@ -108,7 +105,6 @@ class BaseModel(ABC):
         Returns:
             True if successful.
         """
-        pass
 
     @abstractmethod
     def load(self, path: str) -> bool:
@@ -121,7 +117,6 @@ class BaseModel(ABC):
         Returns:
             True if successful.
         """
-        pass
 
     def get_metadata(self) -> ModelMetadata:
         """Get model metadata."""

@@ -71,7 +71,7 @@ class AlpacaAdapter(BaseAdapter):
             )
 
             # Test connection by getting account info
-            account = self._api.get_account()
+            self._api.get_account()
             self._connected = True
             logger.info(f"Connected to Alpaca {'paper' if self.config.paper_trading else 'live'} account")
 

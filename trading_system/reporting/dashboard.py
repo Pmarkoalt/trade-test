@@ -9,7 +9,6 @@ Or use the CLI command:
 
 import logging
 import sys
-from pathlib import Path
 from typing import Any, Dict, Optional
 
 import numpy as np

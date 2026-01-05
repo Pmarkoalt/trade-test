@@ -161,4 +161,3 @@ CREATE TABLE IF NOT EXISTS schema_migrations (
 
 INSERT OR IGNORE INTO schema_migrations (version, applied_at)
 VALUES (1, datetime('now'));
-

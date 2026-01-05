@@ -8,16 +8,15 @@ This module provides:
 """
 
 import json
-import pickle
 from collections import deque
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Deque, Dict, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
 
-from trading_system.ml.models import MLModel, ModelMetadata
+from trading_system.ml.models import MLModel
 
 
 class ConceptDriftDetector:

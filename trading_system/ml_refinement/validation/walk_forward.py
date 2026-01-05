@@ -1,7 +1,6 @@
 """Walk-forward validation for time-series ML."""
 
 from dataclasses import dataclass, field
-from datetime import date, timedelta
 from typing import Dict, Generator, List, Optional, Tuple
 
 import numpy as np
@@ -131,7 +130,6 @@ class WalkForwardValidator:
             actual_val_size = val_end - val_start
 
             if actual_train_size >= self.min_train_samples and actual_val_size >= self.min_val_samples:
-
                 split = WalkForwardSplit(
                     train_start=train_start,
                     train_end=train_end,

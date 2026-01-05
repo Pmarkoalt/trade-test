@@ -88,4 +88,3 @@ Signal Queue
    :members:
    :undoc-members:
    :show-inheritance:
-

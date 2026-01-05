@@ -98,4 +98,3 @@ python -m trading_system config validate --config configs/production_crypto_conf
 - Configuration guide: `agent-files/02_CONFIGS_AND_PARAMETERS.md`
 - Migration guide: `MIGRATION_GUIDE.md`
 - FAQ: `FAQ.md` (configuration section)
-

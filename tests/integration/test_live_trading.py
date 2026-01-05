@@ -18,7 +18,7 @@ from tests.utils.test_helpers import create_sample_order
 from trading_system.adapters.alpaca_adapter import AlpacaAdapter
 from trading_system.adapters.base_adapter import AccountInfo, AdapterConfig
 from trading_system.adapters.ib_adapter import IBAdapter
-from trading_system.models.orders import Order, OrderStatus, SignalSide
+from trading_system.models.orders import OrderStatus, SignalSide
 
 # Skip all tests if credentials are not available
 ALPACA_API_KEY = os.getenv("ALPACA_API_KEY")
@@ -150,8 +150,8 @@ class TestAlpacaIntegration:
             # Wait a bit for order to settle
             time.sleep(2)
 
-            # Check positions
-            positions = alpaca_adapter.get_positions()
+            # Check positions (verify method works)
+            _ = alpaca_adapter.get_positions()
             # May or may not have position depending on fill
 
         except Exception as e:
@@ -457,7 +457,7 @@ class TestOrderLifecycle:
             # Position may or may not exist depending on fill timing
 
             # Step 3: Check account balance changed
-            account_after_buy = alpaca_adapter.get_account_info()
+            _ = alpaca_adapter.get_account_info()  # Account balance updated (not verified in this test)
             # Cash should decrease (may not be exact due to fees)
 
             # Step 4: Submit sell order (if we have a position)
@@ -484,7 +484,7 @@ class TestOrderLifecycle:
                 time.sleep(2)
 
                 # Step 5: Check account balance updated
-                account_after_sell = alpaca_adapter.get_account_info()
+                _ = alpaca_adapter.get_account_info()  # Account balance updated (not verified in this test)
                 # Cash should increase after sell
 
         except Exception as e:
@@ -512,7 +512,7 @@ class TestOrderLifecycle:
             )
 
             # Submit order
-            fill = alpaca_adapter.submit_order(order)
+            _ = alpaca_adapter.submit_order(order)  # Order submitted (result not used)
 
             # Check status immediately after submission
             status = alpaca_adapter.get_order_status(order.order_id)
@@ -559,7 +559,7 @@ class TestPositionTracking:
         try:
             # Get initial positions
             initial_positions = alpaca_adapter.get_positions()
-            initial_count = len(initial_positions)
+            _ = len(initial_positions)  # Initial count not used
 
             # Submit buy order
             order = create_sample_order(
@@ -615,7 +615,7 @@ class TestPositionTracking:
                 side=SignalSide.BUY,
             )
 
-            buy_fill = alpaca_adapter.submit_order(buy_order)
+            _ = alpaca_adapter.submit_order(buy_order)  # Buy order submitted (result not used)
             time.sleep(3)  # Wait for position to settle
 
             # Check if position exists
@@ -636,11 +636,11 @@ class TestPositionTracking:
                     side=SignalSide.SELL,
                 )
 
-                sell_fill = alpaca_adapter.submit_order(sell_order)
+                _ = alpaca_adapter.submit_order(sell_order)  # Sell order submitted (result not used)
                 time.sleep(3)  # Wait for position to update
 
                 # Check positions after sell
-                positions_after = alpaca_adapter.get_positions()
+                _ = alpaca_adapter.get_positions()  # Positions updated (not verified in this test)
                 # Position should be reduced or removed
 
         except Exception as e:
@@ -664,7 +664,7 @@ class TestPositionTracking:
 
 
 @pytest.mark.integration
-class TestAccountBalanceUpdates:
+class TestAccountBalanceUpdatesAfterOrders:
     """Tests for account balance updates after orders."""
 
     @pytest.fixture
@@ -689,7 +689,7 @@ class TestAccountBalanceUpdates:
         """Test that account balance decreases after buy order."""
         initial_account = alpaca_adapter.get_account_info()
         initial_cash = initial_account.cash
-        initial_equity = initial_account.equity
+        initial_account.equity
 
         if initial_cash < 1000:
             pytest.skip("Insufficient cash for test order")
@@ -708,7 +708,7 @@ class TestAccountBalanceUpdates:
                 side=SignalSide.BUY,
             )
 
-            fill = alpaca_adapter.submit_order(order)
+            _ = alpaca_adapter.submit_order(order)  # Order submitted (result not used)
 
             # Wait for balance to update
             time.sleep(2)
@@ -809,7 +809,7 @@ class TestErrorHandlingComprehensive:
 
     def test_insufficient_funds(self, alpaca_adapter):
         """Test error handling for insufficient funds."""
-        account = alpaca_adapter.get_account_info()
+        _ = alpaca_adapter.get_account_info()  # Account info not used in this test
 
         # Create order that costs more than available cash
         order = create_sample_order(
@@ -980,7 +980,7 @@ class TestRateLimitingComprehensive:
         adapter = AlpacaAdapter(alpaca_config)
 
         with adapter:
-            rate_limit_hit = False
+            pass
 
             # Make rapid requests
             for i in range(20):
@@ -990,7 +990,7 @@ class TestRateLimitingComprehensive:
                     time.sleep(0.05)  # Small delay
                 except RuntimeError as e:
                     if "rate limit" in str(e).lower() or "429" in str(e):
-                        rate_limit_hit = True
+                        _ = True  # Rate limit hit (not verified in this test)
                         break
                     raise
 
@@ -1003,16 +1003,15 @@ class TestRateLimitingComprehensive:
 
         with adapter:
             symbols = ["AAPL", "GOOGL", "MSFT", "AMZN", "TSLA"]
-            rate_limit_hit = False
 
             for symbol in symbols * 3:  # Query each symbol 3 times
                 try:
-                    price = adapter.get_current_price(symbol)
+                    _ = adapter.get_current_price(symbol)  # Price retrieved (not verified in this test)
                     # Price may be None if symbol is invalid
                     time.sleep(0.1)  # Small delay
                 except RuntimeError as e:
                     if "rate limit" in str(e).lower() or "429" in str(e):
-                        rate_limit_hit = True
+                        _ = True  # Rate limit hit (not verified in this test)
                         break
                     raise
 

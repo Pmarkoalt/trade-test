@@ -1,14 +1,12 @@
 """Base class for factor-based strategies with shared logic."""
 
 from datetime import datetime
-from typing import Dict, List, Optional, Set
+from typing import Dict, Optional, Set
 
 import numpy as np
-import pandas as pd
 
 from ...configs.strategy_config import StrategyConfig
 from ...models.features import FeatureRow
-from ...models.positions import ExitReason, Position
 from ...models.signals import BreakoutType
 from ..base.strategy_interface import StrategyInterface
 

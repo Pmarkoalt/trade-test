@@ -34,7 +34,6 @@ class BaseDataSource(ABC):
             APIRateLimitError: If API rate limit is exceeded
             DataValidationError: If fetched data fails validation
         """
-        pass
 
     @abstractmethod
     async def fetch_latest_bar(self, symbol: str) -> Optional[Bar]:
@@ -51,4 +50,3 @@ class BaseDataSource(ABC):
             APIRateLimitError: If API rate limit is exceeded
             DataValidationError: If fetched data fails validation
         """
-        pass

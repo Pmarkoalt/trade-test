@@ -7,15 +7,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from trading_system.cli import (
-    cmd_backtest,
-    cmd_holdout,
-    cmd_report,
-    cmd_strategy_create,
-    cmd_strategy_template,
-    cmd_validate,
-    setup_logging,
-)
+from trading_system.cli import cmd_report, cmd_strategy_create, cmd_strategy_template, setup_logging
 from trading_system.configs.run_config import RunConfig
 from trading_system.strategies.strategy_template_generator import generate_strategy_template
 
@@ -97,7 +89,7 @@ def test_cmd_backtest_validation(sample_config_file):
             self.config = str(sample_config_file)
             self.period = "train"
 
-    args = Args()
+    Args()
     # Note: This will fail without actual data, but tests argument parsing
     # In a real test suite, you'd mock the runner or use fixture data
     pass  # Test skipped - requires actual data
@@ -110,9 +102,8 @@ def test_cmd_validate_validation(sample_config_file):
         def __init__(self):
             self.config = str(sample_config_file)
 
-    args = Args()
+    Args()
     # Test skipped - requires validation module implementation
-    pass
 
 
 def test_cmd_holdout_validation(sample_config_file):
@@ -122,9 +113,8 @@ def test_cmd_holdout_validation(sample_config_file):
         def __init__(self):
             self.config = str(sample_config_file)
 
-    args = Args()
+    Args()
     # Test skipped - requires actual data
-    pass
 
 
 def test_cmd_report_validation(temp_dir):

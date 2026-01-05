@@ -1,6 +1,5 @@
 """Weekly return calculation for stress multiplier detection."""
 
-from typing import Optional
 
 import pandas as pd
 

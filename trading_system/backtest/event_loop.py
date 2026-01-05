@@ -1,22 +1,20 @@
 """Daily event loop for backtesting with no lookahead."""
 
-import logging
 import uuid
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 
 import numpy as np
 import pandas as pd
 
-from ..data.validator import detect_missing_data, validate_ohlcv
-from ..exceptions import BacktestError, DataError, DataNotFoundError, ExecutionError, PortfolioError, StrategyError
-from ..execution.fill_simulator import reject_order_missing_data, simulate_fill
+from ..data.validator import detect_missing_data
+from ..exceptions import BacktestError
+from ..execution.fill_simulator import simulate_fill
 from ..logging import TradeEventType, get_logger, log_portfolio_snapshot, log_signal_generation, log_trade_event
 from ..ml.predictor import MLPredictor
-from ..models.bar import Bar
 from ..models.features import FeatureRow
 from ..models.market_data import MarketData
 from ..models.orders import Fill, Order, OrderStatus
-from ..models.positions import ExitReason, Position
+from ..models.positions import ExitReason
 from ..models.signals import Signal, SignalSide
 from ..portfolio.portfolio import Portfolio
 from ..portfolio.position_sizing import calculate_position_size

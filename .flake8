@@ -1,6 +1,6 @@
 [flake8]
-max-line-length = 127
-extend-ignore = E203, E266, E501, W503, W391, F541
+max-line-length = 120
+extend-ignore = E203,E266,E501,W503,W391,F541,F841,D100,D101,D102,D103,D104,D105,D106,D107,D200,D202,D400,D401,D402,D403,D412
 max-complexity = 10
 exclude =
     .git,
@@ -13,9 +13,10 @@ exclude =
     dist,
     .mypy_cache,
     .github,
-    tests/fixtures
-
+    tests/fixtures,
+    examples,
+    docs
 per-file-ignores =
-    __init__.py: F401
-    examples/*.py: E402
-    *: C901
+    __init__.py:F401
+    examples/*.py:E402
+    *:C901

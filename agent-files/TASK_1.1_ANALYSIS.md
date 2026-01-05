@@ -1,8 +1,8 @@
 # Task 1.1: Fix Failing Property-Based Tests - Analysis
 
-**Date**: 2024-12-30  
-**Task**: AGENT_IMPROVEMENTS_ROADMAP.md - Task 1.1  
-**Status**: 🔴 **6 tests failing**  
+**Date**: 2024-12-30
+**Task**: AGENT_IMPROVEMENTS_ROADMAP.md - Task 1.1
+**Status**: 🔴 **6 tests failing**
 **Priority**: CRITICAL
 
 ---
@@ -17,7 +17,7 @@ This document provides a comprehensive analysis of the 6 failing property-based 
 
 ### 1. `test_ma_nan_before_window` ❌
 
-**Location**: `tests/property/test_indicators.py::TestMovingAverage::test_ma_nan_before_window`  
+**Location**: `tests/property/test_indicators.py::TestMovingAverage::test_ma_nan_before_window`
 **Implementation**: `trading_system/indicators/ma.py::ma()`
 
 **Test Expectation**:
@@ -32,7 +32,7 @@ The `ma()` function (lines 9-73) already has logic to handle NaN assignment:
 
 **Potential Issues**:
 
-1. **Edge case when window=1**: 
+1. **Edge case when window=1**:
    - When `window=1`, `window-1=0`, so `iloc[:0]` is an empty slice
    - This should be fine, but might cause issues if test doesn't filter this case
    - **Fix**: Test already uses `assume(len(series) >= window)` and `window >= 2` from the strategy, so this shouldn't be an issue
@@ -65,7 +65,7 @@ if len(ma_series) >= window and window > 1:
 
 ### 2. `test_portfolio_equity_always_positive` ❌
 
-**Location**: `tests/property/test_portfolio.py::TestPortfolioProperties::test_portfolio_equity_always_positive`  
+**Location**: `tests/property/test_portfolio.py::TestPortfolioProperties::test_portfolio_equity_always_positive`
 **Implementation**: `trading_system/portfolio/portfolio.py::process_fill()` and `update_equity()`
 
 **Test Expectation**:
@@ -85,7 +85,7 @@ if len(ma_series) >= window and window > 1:
    - **Fix**: Ensure `process_fill()` checks sufficient cash before processing
 
 2. **Equity calculation**:
-   - `equity = cash + total_exposure` 
+   - `equity = cash + total_exposure`
    - For shorts: `total_exposure` can be negative, but cash should account for margin
    - **Fix**: Ensure equity calculation properly handles shorts
 
@@ -100,21 +100,21 @@ Add defensive checks in `process_fill()`:
 ```python
 def process_fill(self, fill, ...):
     # ... existing code ...
-    
+
     # Check if we have sufficient cash/equity after fees
     required_cash = fill.total_cost if fill.side == SignalSide.BUY else 0
     if self.cash < required_cash:
         # Should not happen if validation works, but add safeguard
         raise ValueError(f"Insufficient cash: need {required_cash}, have {self.cash}")
-    
+
     # ... process fill ...
-    
+
     # After processing, verify equity is positive
     self.update_equity(current_prices)
     if self.equity < 0:
         # This should never happen, but add safeguard
         raise ValueError(f"Equity became negative: {self.equity}")
-    
+
     assert self.equity >= 0  # Property must hold
 ```
 
@@ -122,7 +122,7 @@ def process_fill(self, fill, ...):
 
 ### 3. `test_portfolio_exposure_limits` ❌
 
-**Location**: `tests/property/test_portfolio.py::TestPortfolioProperties::test_portfolio_exposure_limits`  
+**Location**: `tests/property/test_portfolio.py::TestPortfolioProperties::test_portfolio_exposure_limits`
 **Implementation**: `trading_system/portfolio/portfolio.py::update_equity()` and exposure calculation
 
 **Test Expectation**:
@@ -151,20 +151,20 @@ Add limit checks in `process_fill()`:
 ```python
 def process_fill(self, fill, ...):
     # ... existing code ...
-    
+
     # Calculate what exposure would be after this fill
     new_notional = fill.notional
     current_exposure = sum(p.notional_value for p in self.positions.values())
     projected_exposure = current_exposure + new_notional
-    
+
     # Check gross exposure limit (80%)
     if projected_exposure / self.equity > 0.80:
         raise ValueError(f"Would exceed gross exposure limit: {projected_exposure / self.equity:.2%}")
-    
+
     # Check per-position limit (15%)
     if new_notional / self.equity > 0.15:
         raise ValueError(f"Would exceed per-position limit: {new_notional / self.equity:.2%}")
-    
+
     # ... proceed with fill ...
 ```
 
@@ -172,7 +172,7 @@ def process_fill(self, fill, ...):
 
 ### 4. `test_portfolio_equity_updates_with_prices` ❌
 
-**Location**: `tests/property/test_portfolio.py::TestPortfolioProperties::test_portfolio_equity_updates_with_prices`  
+**Location**: `tests/property/test_portfolio.py::TestPortfolioProperties::test_portfolio_equity_updates_with_prices`
 **Implementation**: `trading_system/portfolio/portfolio.py::update_equity()`
 
 **Test Expectation**:
@@ -207,7 +207,7 @@ Review `update_equity()` method to ensure it:
 
 ### 5. `test_sharpe_constant_returns_zero` ❌
 
-**Location**: `tests/property/test_validation.py::TestBootstrapProperties::test_sharpe_constant_returns_zero`  
+**Location**: `tests/property/test_validation.py::TestBootstrapProperties::test_sharpe_constant_returns_zero`
 **Implementation**: `trading_system/validation/bootstrap.py::compute_sharpe_from_r_multiples()`
 
 **Test Expectation**:
@@ -248,7 +248,7 @@ assert sharpe == pytest.approx(0.0)
 
 ### 6. `test_permutation_test_structure` ❌
 
-**Location**: `tests/property/test_validation.py::TestPermutationProperties::test_permutation_test_structure`  
+**Location**: `tests/property/test_validation.py::TestPermutationProperties::test_permutation_test_structure`
 **Implementation**: `trading_system/validation/permutation.py::PermutationTest.run()`
 
 **Test Expectation**:
@@ -282,7 +282,7 @@ Review `PermutationTest.run()` and ensure:
 ```python
 def run(self) -> Dict:
     # ... existing code ...
-    
+
     # Ensure all required keys are present
     result = {
         'actual_sharpe': actual_sharpe,
@@ -291,7 +291,7 @@ def run(self) -> Dict:
         'percentile_rank': percentile_rank,
         'passed': passed
     }
-    
+
     # Ensure all values are finite
     for key, value in result.items():
         if not np.isfinite(value):
@@ -302,10 +302,10 @@ def run(self) -> Dict:
                 result[key] = False  # Default to False if invalid
             else:
                 result[key] = 0.0  # Default numeric values to 0
-    
+
     # Clamp percentile_rank to [0.0, 100.0]
     result['percentile_rank'] = max(0.0, min(100.0, result['percentile_rank']))
-    
+
     return result
 ```
 
@@ -377,6 +377,5 @@ pytest tests/ -v
 
 ---
 
-**Estimated Time**: 4-6 hours  
+**Estimated Time**: 4-6 hours
 **Priority**: CRITICAL (blocking property-based test validation)
-

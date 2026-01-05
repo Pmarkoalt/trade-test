@@ -2,13 +2,10 @@
 
 import shutil
 import tempfile
-from datetime import datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
-import pytest
 
-from trading_system.data.sources.base_source import BaseDataSource
 from trading_system.data.sources.cache import CachedDataSource, DataCache
 from trading_system.data.sources.csv_source import CSVDataSource
 

@@ -1,9 +1,8 @@
 """Evaluation metrics for ML models."""
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import numpy as np
-from loguru import logger
 
 
 def calculate_classification_metrics(

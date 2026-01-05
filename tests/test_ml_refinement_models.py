@@ -32,7 +32,7 @@ def test_signal_quality_model_fit_with_validation():
     X_val = np.random.randn(20, 10)
     y_val = np.random.randn(20)
 
-    metrics = model.fit(X_train, y_train, X_val, y_val)
+    model.fit(X_train, y_train, X_val, y_val)
 
     assert model.is_fitted
     assert model._validation_samples == 20

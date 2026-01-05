@@ -16,11 +16,11 @@ class RecommendationFormatter:
         """
         # Calculate percentages
         if recommendation.direction == "BUY":
-            target_pct = ((recommendation.target_price - recommendation.entry_price) / recommendation.entry_price) * 100
-            stop_pct = ((recommendation.stop_price - recommendation.entry_price) / recommendation.entry_price) * 100
+            ((recommendation.target_price - recommendation.entry_price) / recommendation.entry_price) * 100
+            ((recommendation.stop_price - recommendation.entry_price) / recommendation.entry_price) * 100
         else:
-            target_pct = ((recommendation.entry_price - recommendation.target_price) / recommendation.entry_price) * 100
-            stop_pct = ((recommendation.entry_price - recommendation.stop_price) / recommendation.entry_price) * 100
+            ((recommendation.entry_price - recommendation.target_price) / recommendation.entry_price) * 100
+            ((recommendation.entry_price - recommendation.stop_price) / recommendation.entry_price) * 100
 
         # Format conviction badge
         conviction_class = recommendation.conviction.lower().replace(" ", "-")
@@ -39,12 +39,11 @@ class RecommendationFormatter:
             news_headlines_html += "</ul></div>"
 
         # Format scores with news integration
-        news_score_class = ""
         if recommendation.news_score is not None:
             if recommendation.news_score >= 7.0:
-                news_score_class = "positive"
+                pass
             elif recommendation.news_score <= 3.0:
-                news_score_class = "negative"
+                pass
 
         scores_html = """
         <div class="scores">
@@ -70,7 +69,7 @@ class RecommendationFormatter:
         scores_html += "</div>"
 
         # Get symbol name (simplified - in production, use a symbol-to-name mapping)
-        symbol_name = recommendation.symbol
+        recommendation.symbol
 
         html = """
         <div class="recommendation-card">
@@ -109,11 +108,11 @@ class RecommendationFormatter:
         """
         # Calculate percentages
         if recommendation.direction == "BUY":
-            target_pct = ((recommendation.target_price - recommendation.entry_price) / recommendation.entry_price) * 100
-            stop_pct = ((recommendation.stop_price - recommendation.entry_price) / recommendation.entry_price) * 100
+            ((recommendation.target_price - recommendation.entry_price) / recommendation.entry_price) * 100
+            ((recommendation.stop_price - recommendation.entry_price) / recommendation.entry_price) * 100
         else:
-            target_pct = ((recommendation.entry_price - recommendation.target_price) / recommendation.entry_price) * 100
-            stop_pct = ((recommendation.entry_price - recommendation.stop_price) / recommendation.entry_price) * 100
+            ((recommendation.entry_price - recommendation.target_price) / recommendation.entry_price) * 100
+            ((recommendation.entry_price - recommendation.stop_price) / recommendation.entry_price) * 100
 
         text = """
 {index}. {recommendation.symbol} - {recommendation.direction} [{recommendation.conviction} CONVICTION]

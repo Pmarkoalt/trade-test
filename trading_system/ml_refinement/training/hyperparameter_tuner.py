@@ -35,8 +35,6 @@ except ImportError:
     class _SignalQualityModelStub(_BaseModelStub):
         """Signal quality model."""
 
-        pass
-
     BaseModelType = _BaseModelStub
     SignalQualityModelType = _SignalQualityModelStub
 

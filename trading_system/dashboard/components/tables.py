@@ -1,6 +1,6 @@
 """Table components for dashboard."""
 
-from typing import List, Optional
+from typing import List
 
 import pandas as pd
 import streamlit as st
@@ -163,7 +163,7 @@ def render_recent_trades_table(trades: List[dict], max_rows: int = 10):
     data = []
     for trade in trades[:max_rows]:
         r_mult = trade.get("r_multiple", 0)
-        result_color = "green" if r_mult > 0 else "red"
+        "green" if r_mult > 0 else "red"
 
         data.append(
             {

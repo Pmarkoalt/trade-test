@@ -40,4 +40,3 @@ Weekly Returns
    :members:
    :undoc-members:
    :show-inheritance:
-

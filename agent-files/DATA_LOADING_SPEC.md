@@ -120,13 +120,13 @@ def load_ohlcv_data(
 ) -> Dict[str, pd.DataFrame]:
     """
     Load OHLCV data for multiple symbols.
-    
+
     Args:
         data_path: Path to directory containing CSV files
         symbols: List of symbols to load
         start_date: Optional start date filter
         end_date: Optional end date filter
-    
+
     Returns:
         Dictionary mapping symbol -> DataFrame with columns:
         - date (index)
@@ -134,14 +134,14 @@ def load_ohlcv_data(
         - dollar_volume (computed if not present)
     """
     data = {}
-    
+
     for symbol in symbols:
         file_path = os.path.join(data_path, f"{symbol}.csv")
-        
+
         if not os.path.exists(file_path):
             log.warning(f"File not found: {file_path}")
             continue
-        
+
         # Load CSV
         df = pd.read_csv(
             file_path,
@@ -155,27 +155,27 @@ def load_ohlcv_data(
                 'volume': float
             }
         )
-        
+
         # Sort by date
         df = df.sort_index()
-        
+
         # Compute dollar_volume if not present
         if 'dollar_volume' not in df.columns:
             df['dollar_volume'] = df['close'] * df['volume']
-        
+
         # Filter by date range
         if start_date:
             df = df[df.index >= start_date]
         if end_date:
             df = df[df.index <= end_date]
-        
+
         # Validate
         if not validate_ohlcv(df, symbol):
             log.error(f"Validation failed for {symbol}")
             continue
-        
+
         data[symbol] = df
-    
+
     return data
 ```
 
@@ -190,18 +190,18 @@ def load_universe(
 ) -> List[str]:
     """
     Load universe list.
-    
+
     Args:
         universe_type: "NASDAQ-100", "SP500", or "crypto"
         universe_path: Optional path to universe file
-    
+
     Returns:
         List of symbols
     """
     if universe_type == "crypto":
         # Fixed list
         return ["BTC", "ETH", "BNB", "XRP", "ADA", "SOL", "DOT", "MATIC", "LTC", "LINK"]
-    
+
     # Equity universe
     if universe_path is None:
         if universe_type == "NASDAQ-100":
@@ -210,16 +210,16 @@ def load_universe(
             universe_path = "data/equity/universe/SP500.csv"
         else:
             raise ValueError(f"Unknown universe type: {universe_type}")
-    
+
     # Load from file
     df = pd.read_csv(universe_path)
-    
+
     if 'symbol' in df.columns:
         symbols = df['symbol'].tolist()
     else:
         # Assume first column is symbols
         symbols = df.iloc[:, 0].tolist()
-    
+
     return [str(s).upper().strip() for s in symbols]
 ```
 
@@ -236,36 +236,36 @@ def load_benchmark(
 ) -> pd.DataFrame:
     """
     Load benchmark data (SPY for equity, BTC for crypto).
-    
+
     Args:
         benchmark_symbol: "SPY" or "BTC"
         benchmark_path: Path to benchmark directory
         start_date: Optional start date
         end_date: Optional end date
-    
+
     Returns:
         DataFrame with OHLCV data
-    
+
     Raises:
         ValueError: If benchmark file not found or insufficient data
     """
     file_path = os.path.join(benchmark_path, f"{benchmark_symbol}.csv")
-    
+
     if not os.path.exists(file_path):
         raise ValueError(f"Benchmark file not found: {file_path}")
-    
+
     # Load (same as OHLCV)
     df = load_ohlcv_data(benchmark_path, [benchmark_symbol], start_date, end_date)
-    
+
     if benchmark_symbol not in df:
         raise ValueError(f"Benchmark {benchmark_symbol} not in data")
-    
+
     benchmark_df = df[benchmark_symbol]
-    
+
     # Validate minimum history
     if len(benchmark_df) < 250:
         raise ValueError(f"Benchmark {benchmark_symbol} has insufficient data: {len(benchmark_df)} days")
-    
+
     return benchmark_df
 ```
 
@@ -279,7 +279,7 @@ def load_benchmark(
 def validate_ohlcv(df: pd.DataFrame, symbol: str) -> bool:
     """
     Validate OHLCV data.
-    
+
     Checks:
     1. Required columns present
     2. OHLC relationships valid
@@ -287,7 +287,7 @@ def validate_ohlcv(df: pd.DataFrame, symbol: str) -> bool:
     4. No extreme moves (>50% in one day)
     5. Dates in chronological order
     6. No duplicate dates
-    
+
     Returns:
         True if valid, False otherwise
     """
@@ -297,28 +297,28 @@ def validate_ohlcv(df: pd.DataFrame, symbol: str) -> bool:
     if missing_cols:
         log.error(f"{symbol}: Missing columns: {missing_cols}")
         return False
-    
+
     # Check OHLC relationships
     invalid_ohlc = (
         (df['low'] > df['high']) |
         (df['open'] < df['low']) | (df['open'] > df['high']) |
         (df['close'] < df['low']) | (df['close'] > df['high'])
     )
-    
+
     if invalid_ohlc.any():
         invalid_dates = df.index[invalid_ohlc].tolist()
         log.error(f"{symbol}: Invalid OHLC at dates: {invalid_dates[:10]}")
         return False
-    
+
     # Check for negative values
     if (df[['open', 'high', 'low', 'close']] <= 0).any().any():
         log.error(f"{symbol}: Non-positive prices found")
         return False
-    
+
     if (df['volume'] < 0).any():
         log.error(f"{symbol}: Negative volume found")
         return False
-    
+
     # Check for extreme moves
     if len(df) > 1:
         returns = df['close'].pct_change()
@@ -327,18 +327,18 @@ def validate_ohlcv(df: pd.DataFrame, symbol: str) -> bool:
             extreme_dates = df.index[extreme_moves].tolist()
             log.warning(f"{symbol}: Extreme moves (>50%) at dates: {extreme_dates[:10]}")
             # Mark as data errors (but don't fail validation)
-    
+
     # Check date order
     if not df.index.is_monotonic_increasing:
         log.error(f"{symbol}: Dates not in chronological order")
         return False
-    
+
     # Check for duplicate dates
     if df.index.duplicated().any():
         duplicates = df.index[df.index.duplicated()].tolist()
         log.error(f"{symbol}: Duplicate dates: {duplicates[:10]}")
         return False
-    
+
     return True
 ```
 
@@ -356,15 +356,15 @@ def get_trading_days(
 ) -> List[pd.Timestamp]:
     """
     Get last N trading days (excluding weekends/holidays).
-    
+
     For equity stress multiplier calculation.
     """
     # Filter to trading days (exclude weekends)
     trading_days = all_dates[all_dates.weekday < 5]  # Mon-Fri
-    
+
     # Filter to <= end_date
     trading_days = trading_days[trading_days <= end_date]
-    
+
     # Get last N
     return trading_days[-lookback:].tolist()
 ```
@@ -391,7 +391,7 @@ def get_crypto_days(
 ) -> List[pd.Timestamp]:
     """
     Get last N calendar days (continuous, no weekends).
-    
+
     For crypto stress multiplier calculation.
     """
     start_date = end_date - pd.Timedelta(days=lookback)
@@ -413,7 +413,7 @@ def detect_missing_data(
 ) -> Dict[str, Any]:
     """
     Detect missing data periods.
-    
+
     Returns:
         Dictionary with:
         - missing_dates: List of missing dates
@@ -433,25 +433,25 @@ def detect_missing_data(
             start_date=df.index.min(),
             end_date=df.index.max()
         ).index
-    
+
     # Find missing dates
     missing_dates = expected_dates.difference(df.index)
-    
+
     # Find consecutive gaps
     consecutive_gaps = []
     if len(missing_dates) > 0:
         sorted_missing = sorted(missing_dates)
         gap_start = sorted_missing[0]
-        
+
         for i in range(1, len(sorted_missing)):
             if (sorted_missing[i] - sorted_missing[i-1]).days > 1:
                 # Gap ended
                 consecutive_gaps.append((gap_start, sorted_missing[i-1]))
                 gap_start = sorted_missing[i]
-        
+
         # Last gap
         consecutive_gaps.append((gap_start, sorted_missing[-1]))
-    
+
     return {
         'missing_dates': missing_dates.tolist(),
         'consecutive_gaps': consecutive_gaps,
@@ -469,17 +469,17 @@ def detect_missing_data(
 def load_all_data(config: RunConfig) -> Tuple[MarketData, Dict[str, pd.DataFrame]]:
     """
     Load all data for backtest.
-    
+
     Args:
         config: Run configuration
-    
+
     Returns:
         (market_data, benchmarks)
     """
     # Load universes
     equity_universe = load_universe(config.strategies.equity.universe)
     crypto_universe = load_universe("crypto")
-    
+
     # Load equity data
     equity_data = load_ohlcv_data(
         config.dataset.equity_path,
@@ -487,7 +487,7 @@ def load_all_data(config: RunConfig) -> Tuple[MarketData, Dict[str, pd.DataFrame
         start_date=pd.Timestamp(config.dataset.start_date),
         end_date=pd.Timestamp(config.dataset.end_date)
     )
-    
+
     # Load crypto data
     crypto_data = load_ohlcv_data(
         config.dataset.crypto_path,
@@ -495,7 +495,7 @@ def load_all_data(config: RunConfig) -> Tuple[MarketData, Dict[str, pd.DataFrame
         start_date=pd.Timestamp(config.dataset.start_date),
         end_date=pd.Timestamp(config.dataset.end_date)
     )
-    
+
     # Load benchmarks
     spy_benchmark = load_benchmark(
         "SPY",
@@ -503,14 +503,14 @@ def load_all_data(config: RunConfig) -> Tuple[MarketData, Dict[str, pd.DataFrame
         start_date=pd.Timestamp(config.dataset.start_date),
         end_date=pd.Timestamp(config.dataset.end_date)
     )
-    
+
     btc_benchmark = load_benchmark(
         "BTC",
         config.dataset.benchmark_path,
         start_date=pd.Timestamp(config.dataset.start_date),
         end_date=pd.Timestamp(config.dataset.end_date)
     )
-    
+
     # Combine into MarketData
     market_data = MarketData()
     market_data.bars = {**equity_data, **crypto_data}
@@ -518,10 +518,10 @@ def load_all_data(config: RunConfig) -> Tuple[MarketData, Dict[str, pd.DataFrame
         "SPY": spy_benchmark,
         "BTC": btc_benchmark
     }
-    
+
     # Validate data quality
     validate_all_data(market_data, config)
-    
+
     return market_data, {"SPY": spy_benchmark, "BTC": btc_benchmark}
 ```
 
@@ -538,4 +538,3 @@ Data loading specification includes:
 - Complete loading pipeline
 
 All data loading can be implemented using these specifications.
-

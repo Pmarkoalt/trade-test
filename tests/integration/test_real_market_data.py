@@ -8,9 +8,7 @@ These tests require real market data to be downloaded first:
     python scripts/download_real_market_data.py --output data/real_market_data/
 """
 
-import os
 from pathlib import Path
-from typing import Dict, Optional
 
 import numpy as np
 import pandas as pd

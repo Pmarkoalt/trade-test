@@ -40,4 +40,3 @@ ReadWritePaths=/opt/trading-system/results
 
 [Install]
 WantedBy=multi-user.target
-

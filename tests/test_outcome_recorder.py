@@ -2,8 +2,6 @@
 
 from datetime import date, timedelta
 
-import pytest
-
 from trading_system.tracking.models import ConvictionLevel, ExitReason, SignalDirection, SignalStatus
 from trading_system.tracking.outcome_recorder import AutoOutcomeRecorder, OutcomeRecorder
 from trading_system.tracking.storage.sqlite_store import SQLiteTrackingStore

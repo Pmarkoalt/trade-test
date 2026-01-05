@@ -1,8 +1,5 @@
 """Position sizing calculations with risk-based sizing and constraints."""
 
-import math
-from typing import Optional
-
 
 def calculate_position_size(
     equity: float,

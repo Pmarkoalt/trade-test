@@ -367,7 +367,7 @@ class RunConfig(BaseModel):
         try:
             validate_file_exists(path, "run config")
             data = validate_yaml_format(path)
-        except (FileNotFoundError, ValueError) as e:
+        except (FileNotFoundError, ValueError):
             raise
 
         try:

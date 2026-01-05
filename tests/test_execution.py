@@ -1,6 +1,5 @@
 """Unit tests for execution simulation (slippage, fees, fills)."""
 
-from datetime import datetime
 
 import numpy as np
 import pandas as pd
@@ -21,7 +20,7 @@ from trading_system.execution import (
 )
 from trading_system.execution.fill_simulator import reject_order_missing_data, simulate_fill
 from trading_system.models.bar import Bar
-from trading_system.models.orders import Order, OrderStatus
+from trading_system.models.orders import Order
 from trading_system.models.signals import SignalSide
 
 

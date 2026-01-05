@@ -2,9 +2,7 @@
 
 from typing import Any, Dict, List, Optional
 
-import numpy as np
 import pandas as pd
-import pytest
 
 from trading_system.models.bar import Bar
 from trading_system.models.orders import Fill, Order

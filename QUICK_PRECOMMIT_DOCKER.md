@@ -54,4 +54,3 @@ Some hooks (like Black) will **auto-format** your code. If files are modified:
 ## Full Documentation
 
 See [DOCKER_PRECOMMIT.md](DOCKER_PRECOMMIT.md) for detailed documentation.
-

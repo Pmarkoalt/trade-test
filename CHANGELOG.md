@@ -193,4 +193,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - This changelog follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format
 - Version numbers follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 - Dates are in YYYY-MM-DD format
-

@@ -100,8 +100,6 @@ class StructuredFormatter(logging.Formatter):
 class RotatingFileHandler(logging.handlers.RotatingFileHandler):
     """File handler with rotation support."""
 
-    pass
-
 
 class PerformanceContext:
     """Context manager for performance timing."""

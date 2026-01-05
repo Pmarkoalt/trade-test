@@ -8,7 +8,7 @@ Note: This strategy requires the portfolio manager to support short positions.
 For MVP, signals are generated but execution may need portfolio manager updates.
 """
 
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional
 
 import numpy as np
 import pandas as pd
@@ -276,8 +276,6 @@ class PairsTradingStrategy(StrategyInterface):
         # For equal dollar amounts: notional1 = notional2 = order_notional
         # For hedge ratio: notional1 = order_notional * hedge_ratio, notional2 = order_notional
         # For simplicity, we use equal dollar amounts (can be enhanced later)
-        notional1 = order_notional
-        notional2 = order_notional
 
         # Entry trigger: spread diverged significantly
         if spread_zscore > self.entry_zscore:

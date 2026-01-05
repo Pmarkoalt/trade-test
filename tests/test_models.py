@@ -1,27 +1,17 @@
 """Unit tests for all data models."""
 
-from datetime import datetime
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from trading_system.configs.strategy_config import (
-    CapacityConfig,
-    CostsConfig,
-    EligibilityConfig,
-    EntryConfig,
-    ExitConfig,
-    IndicatorsConfig,
-    RiskConfig,
-    StrategyConfig,
-)
+from trading_system.configs.strategy_config import EligibilityConfig, IndicatorsConfig, StrategyConfig
 from trading_system.models.bar import Bar
 from trading_system.models.features import FeatureRow
 from trading_system.models.market_data import MarketData
 from trading_system.models.orders import Fill, Order, OrderStatus
 from trading_system.models.portfolio import Portfolio
-from trading_system.models.positions import ExitReason, Position, PositionSide
+from trading_system.models.positions import Position, PositionSide
 from trading_system.models.signals import BreakoutType, Signal, SignalSide, SignalType
 
 

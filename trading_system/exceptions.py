@@ -10,8 +10,6 @@ from typing import Any, Dict, List, Optional
 class TradingSystemError(Exception):
     """Base exception for all trading system errors."""
 
-    pass
-
 
 class DataError(TradingSystemError):
     """Base exception for data-related errors."""
@@ -34,13 +32,9 @@ class DataError(TradingSystemError):
 class DataValidationError(DataError):
     """Raised when data validation fails."""
 
-    pass
-
 
 class DataNotFoundError(DataError):
     """Raised when requested data is not found."""
-
-    pass
 
 
 class DataSourceError(DataError):
@@ -87,8 +81,6 @@ class StrategyError(TradingSystemError):
 class StrategyNotFoundError(StrategyError):
     """Raised when a strategy class cannot be found."""
 
-    pass
-
 
 class PortfolioError(TradingSystemError):
     """Base exception for portfolio-related errors."""
@@ -102,13 +94,9 @@ class PortfolioError(TradingSystemError):
 class InsufficientCapitalError(PortfolioError):
     """Raised when there's insufficient capital for a trade."""
 
-    pass
-
 
 class PositionNotFoundError(PortfolioError):
     """Raised when a position is not found."""
-
-    pass
 
 
 class ExecutionError(TradingSystemError):
@@ -123,13 +111,9 @@ class ExecutionError(TradingSystemError):
 class OrderRejectedError(ExecutionError):
     """Raised when an order is rejected."""
 
-    pass
-
 
 class FillError(ExecutionError):
     """Raised when order fill simulation fails."""
-
-    pass
 
 
 class IndicatorError(TradingSystemError):

@@ -2,7 +2,6 @@
 
 import numpy as np
 import pandas as pd
-import pytest
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 

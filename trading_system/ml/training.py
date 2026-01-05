@@ -18,8 +18,6 @@ logger = logging.getLogger(__name__)
 class MLTrainingTimeoutError(Exception):
     """Raised when ML training exceeds maximum allowed duration."""
 
-    pass
-
 
 class MLTrainer:
     """Training pipeline for ML models.

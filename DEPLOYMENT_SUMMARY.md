@@ -80,4 +80,3 @@ The MCP server enables Claude to interact with the trading system via HTTP API c
 4. **Monitoring**: Set up logging and monitoring for production use
 
 For detailed instructions, see [Deployment.md](Deployment.md).
-

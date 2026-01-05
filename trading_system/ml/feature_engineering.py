@@ -74,9 +74,9 @@ class MLFeatureEngineer:
         self.bb_std = bb_std
         self._feature_scalers: Optional[Dict[str, tuple[float, float]]] = None
         self._feature_names: Optional[List[str]] = None
-        self._price_history: Dict[str, List[Tuple[pd.Timestamp, float, float, float, float, float]]] = (
-            {}
-        )  # symbol -> [(date, open, high, low, close, volume)]
+        self._price_history: Dict[
+            str, List[Tuple[pd.Timestamp, float, float, float, float, float]]
+        ] = {}  # symbol -> [(date, open, high, low, close, volume)]
 
     def fit(self, feature_rows: List[FeatureRow]) -> None:
         """Fit feature scalers on training data.

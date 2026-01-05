@@ -3,7 +3,6 @@
 import os
 import shutil
 import tempfile
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -17,7 +16,7 @@ from trading_system.indicators.momentum import roc
 from trading_system.indicators.volume import adv
 from trading_system.models.market_data import MarketData
 from trading_system.models.orders import Fill
-from trading_system.models.positions import ExitReason, PositionSide
+from trading_system.models.positions import ExitReason
 from trading_system.models.signals import BreakoutType, SignalSide
 from trading_system.portfolio.portfolio import Portfolio
 
@@ -140,7 +139,7 @@ class TestPortfolioPerformance:
         # Create current prices for all positions
         current_prices = {symbol: 105.0 for symbol in large_portfolio.positions.keys()}
 
-        result = benchmark(large_portfolio.update_equity, current_prices)
+        benchmark(large_portfolio.update_equity, current_prices)
         assert large_portfolio.equity > 0
 
     def test_portfolio_exposure_calculation_performance(self, benchmark, large_portfolio):
@@ -543,7 +542,7 @@ class TestSignalScoringPerformance:
                 large_signal_list, get_features, portfolio_with_positions, candidate_returns, portfolio_returns, lookback=20
             )
 
-        result = benchmark(score_all_signals)
+        benchmark(score_all_signals)
         # Verify signals were scored
         assert any(s.score > 0.0 for s in large_signal_list)
 
@@ -704,7 +703,6 @@ class TestReportingPerformance:
         """Benchmark: Generating backtest report."""
         from trading_system.models.positions import Position, PositionSide
         from trading_system.reporting.metrics import MetricsCalculator
-        from trading_system.reporting.report_generator import ReportGenerator
 
         # Convert trades dict to Position objects and compute daily returns
         equity_curve = sample_backtest_results["equity_curve"]

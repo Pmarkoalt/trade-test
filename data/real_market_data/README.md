@@ -106,5 +106,3 @@ python -m trading_system backtest --config your_config.yaml
 - Files are saved in CSV format compatible with the trading system
 - Data is automatically validated during download
 - Missing data or errors are logged but don't stop the download process
-
-

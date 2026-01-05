@@ -4,7 +4,6 @@ import shutil
 import tempfile
 from pathlib import Path
 
-import pytest
 import yaml
 
 from trading_system.configs.migration import (

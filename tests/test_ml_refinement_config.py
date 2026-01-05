@@ -1,6 +1,5 @@
 """Tests for ML refinement configuration module."""
 
-import pytest
 
 from trading_system.ml_refinement import (
     FeatureConfig,

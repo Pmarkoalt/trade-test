@@ -1,13 +1,9 @@
 """Configuration documentation generator."""
 
-import inspect
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
-
-from .run_config import RunConfig
-from .strategy_config import StrategyConfig
+from pydantic import BaseModel
 
 
 def get_field_info(model_class: type[BaseModel]) -> Dict[str, Any]:
@@ -30,9 +26,9 @@ def get_field_info(model_class: type[BaseModel]) -> Dict[str, Any]:
         # Get default from default_factory if present
         if default is None and hasattr(field_info, "default_factory"):
             default_factory = field_info.default_factory
-            if default_factory is not None and default_factory is not ... and callable(default_factory):  # type: ignore[comparison-overlap]
+            if default_factory is not None and default_factory is not ... and callable(default_factory):
                 try:
-                    default = default_factory()  # type: ignore[call-arg]
+                    default = default_factory()
                 except Exception:
                     default = "<default_factory>"
 

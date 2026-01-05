@@ -20,14 +20,6 @@ def generate_run_config_template(output_path: Optional[str] = None, include_comm
         Template YAML content as string
     """
     # Create a default RunConfig using model constructors
-    from .run_config import (
-        CorrelationGuardConfig,
-        ExecutionConfig,
-        OutputConfig,
-        PortfolioConfig,
-        ScoringConfig,
-        VolatilityScalingConfig,
-    )
 
     config = RunConfig(
         dataset=DatasetConfig(
@@ -115,15 +107,7 @@ def generate_strategy_config_template(
         raise ValueError(f"asset_class must be 'equity' or 'crypto', got '{asset_class}'")
 
     # Create default config based on asset class using model constructors
-    from .strategy_config import (
-        CapacityConfig,
-        CostsConfig,
-        EligibilityConfig,
-        EntryConfig,
-        ExitConfig,
-        IndicatorsConfig,
-        RiskConfig,
-    )
+    from .strategy_config import CostsConfig, EligibilityConfig, ExitConfig
 
     if asset_class == "equity":
         config = StrategyConfig(
@@ -135,8 +119,6 @@ def generate_strategy_config_template(
             costs=CostsConfig(fee_bps=1, slippage_base_bps=8),
         )
     else:  # crypto
-        from .strategy_config import EligibilityConfig
-
         config = StrategyConfig(
             name="crypto_momentum",
             asset_class="crypto",

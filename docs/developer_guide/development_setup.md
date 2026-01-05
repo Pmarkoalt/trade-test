@@ -143,9 +143,10 @@ pre-commit run --all-files
 ```
 
 **What the hooks do**:
+- Remove unused imports and variables with autoflake
 - Remove trailing whitespace and fix end-of-file issues
 - Check YAML, JSON, and TOML files for syntax errors
-- Format code with Black
+- Format code with Black and isort
 - Run flake8 linting
 - Run mypy type checking
 - Check for merge conflicts and debug statements
@@ -217,9 +218,10 @@ pre-commit run mypy --all-files
 ```
 
 **Troubleshooting**:
-- If hooks fail, they will show you what needs to be fixed
-- Some hooks (like Black) will auto-fix issues - just stage the changes and commit again
-- To skip hooks for a commit (not recommended): `git commit --no-verify`
+- **If auto-fixing hooks (autoflake, isort, black) "fail"**: This is normal! They modify files and exit with code 1. Just `git add .` and commit again.
+- **If other hooks fail**: Check error messages and fix issues manually
+- **F811 (redefinition) errors**: These cannot be auto-fixed - they require manual code changes
+- **To skip hooks for a commit** (not recommended): `git commit --no-verify`
 
 ## Running Tests
 

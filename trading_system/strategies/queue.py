@@ -1,7 +1,7 @@
 """Position queue selection logic when signals exceed available slots."""
 
 import logging
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List
 
 from trading_system.models.signals import Signal
 from trading_system.portfolio.correlation import compute_correlation_to_portfolio

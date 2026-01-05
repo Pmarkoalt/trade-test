@@ -1,5 +1,5 @@
 # Makefile for running tests independently
-# 
+#
 # RECOMMENDED: Docker-based commands (consistent environment across all systems):
 #   make docker-build            - Build Docker image
 #   make docker-test-unit        - Run unit tests in Docker
@@ -340,4 +340,3 @@ docker-precommit-install:
 	@echo "$(YELLOW)Installing pre-commit hooks in Docker...$(NC)"
 	docker-compose run --rm --entrypoint bash trading-system -c "pip install pre-commit && pre-commit install"
 	@echo "$(GREEN)✓ Pre-commit hooks installed$(NC)"
-

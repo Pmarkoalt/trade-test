@@ -138,4 +138,3 @@ Configuration is in `.pre-commit-config.yaml`. Key sections:
    ```
 
 This ensures all code quality checks pass before committing!
-

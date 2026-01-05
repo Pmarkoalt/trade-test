@@ -65,4 +65,3 @@ ml:
   prediction_mode: "score_enhancement"  # Options: "score_enhancement", "filter", "replace"
   ml_weight: 0.3  # Weight for ML prediction in score_enhancement mode (0.0-1.0)
   confidence_threshold: 0.5  # Minimum confidence for filtering mode (0.0-1.0)
-

@@ -57,4 +57,3 @@ costs:
   weekend_penalty: 1.5  # 1.5x slippage on weekends (Sat/Sun UTC)
   stress_threshold: -0.05  # BTC weekly return < -5% triggers stress
   stress_slippage_mult: 2.0  # Double slippage during stress
-

@@ -499,4 +499,3 @@ Before deploying a strategy, verify:
 - Review technical documentation in `agent-files/`
 
 **Remember**: Systematic trading is about process, not perfection. Follow the workflow, document your decisions, and let the validation suite guide you.
-

@@ -46,4 +46,3 @@ Order: executable action for next open
 Fill: realized execution result
 
 Position: entry info, qty, stop_price, unrealized pnl, etc.
-

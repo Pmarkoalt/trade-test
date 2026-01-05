@@ -6,7 +6,6 @@ from collections import deque
 from dataclasses import dataclass
 from typing import Callable, Dict, List, Optional, Set
 
-import numpy as np
 import pandas as pd
 
 from ..adapters.base_adapter import BaseAdapter
@@ -14,7 +13,7 @@ from ..indicators.feature_computer import compute_features
 from ..logging.logger import get_logger
 from ..models.bar import Bar
 from ..models.features import FeatureRow
-from ..models.signals import Signal, SignalSide
+from ..models.signals import Signal
 from ..portfolio.portfolio import Portfolio
 from ..strategies.base.strategy_interface import StrategyInterface
 from ..strategies.scoring import score_signals

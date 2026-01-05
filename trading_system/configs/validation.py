@@ -3,10 +3,10 @@
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
 import yaml
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ValidationError
 
 
 class ConfigValidationError(Exception):
@@ -38,7 +38,7 @@ class ConfigValidationError(Exception):
         for i, error in enumerate(self.errors, 1):
             loc = " -> ".join(str(x) for x in error.get("loc", []))
             msg = error.get("msg", "Unknown error")
-            error_type = error.get("type", "value_error")
+            error.get("type", "value_error")
             input_value = error.get("input", None)
 
             lines.append(f"\n[{i}] Field: {loc}")
@@ -305,9 +305,9 @@ def wrap_validation_error(
     if isinstance(e, ValidationError):
         errors = e.errors()
         # Convert Pydantic error format (list of dicts) to the expected format
-        # e.errors() already returns List[Dict[str, Any]], so we can use it directly
+        # e.errors() returns list[ErrorDetails] (TypedDict), cast to List[Dict[str, Any]]
         message = f"{config_type} validation failed. Please fix the following errors:"
-        return ConfigValidationError(message, errors, config_path=config_path)
+        return ConfigValidationError(message, cast(List[Dict[str, Any]], errors), config_path=config_path)
     else:
         # Not a ValidationError, just wrap the message
         message = f"{config_type} validation failed: {str(e)}"

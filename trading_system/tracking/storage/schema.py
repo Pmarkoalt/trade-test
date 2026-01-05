@@ -91,7 +91,6 @@ def get_migration_files() -> List[Tuple[int, str]]:
     Returns:
         List of tuples (version_number, file_path) sorted by version
     """
-    import os
     from pathlib import Path
 
     migrations_dir = Path(__file__).parent / "migrations"

@@ -9,7 +9,6 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from trading_system.reporting.metrics import MetricsCalculator
 from trading_system.reporting.report_generator import ReportGenerator
 
 
@@ -320,7 +319,6 @@ def test_print_summary(sample_run_directory, capsys):
 
 def test_cmd_report_integration(sample_run_directory):
     """Test cmd_report CLI function."""
-    import argparse
 
     from trading_system.cli import cmd_report
 
@@ -338,7 +336,6 @@ def test_cmd_report_integration(sample_run_directory):
 
 def test_cmd_report_missing_run_id():
     """Test cmd_report with missing run_id."""
-    import argparse
 
     from trading_system.cli import cmd_report
 

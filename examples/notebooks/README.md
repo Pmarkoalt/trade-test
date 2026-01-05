@@ -158,4 +158,3 @@ To add new example notebooks:
 3. Add setup cells at the beginning
 4. Test notebooks with sample data
 5. Update this README with notebook description
-

@@ -1,13 +1,10 @@
 """Property-based tests for portfolio using hypothesis."""
 
-import numpy as np
 import pandas as pd
-import pytest
 from hypothesis import assume, given, settings
 from hypothesis import strategies as st
 
 from trading_system.models.orders import Fill
-from trading_system.models.positions import ExitReason, Position
 from trading_system.models.signals import BreakoutType, SignalSide
 from trading_system.portfolio.portfolio import Portfolio
 
@@ -79,7 +76,7 @@ class TestPortfolioProperties:
         )
 
         # Process fill
-        position = portfolio.process_fill(
+        portfolio.process_fill(
             fill=fill, stop_price=price * 0.95, atr_mult=2.5, triggered_on=BreakoutType.FAST_20D, adv20_at_entry=notional
         )
 

@@ -1,7 +1,7 @@
 """Portfolio optimization using Markowitz mean-variance and risk parity methods."""
 
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd
@@ -157,7 +157,7 @@ class PortfolioOptimizer:
                     # If differential evolution also fails, use equal weights
                     weights = {s: 1.0 / n_assets for s in symbols}
                     return OptimizationResult(weights=weights, method="markowitz_fallback")
-        except Exception as e:
+        except Exception:
             # Fallback to equal weights if optimization fails
             weights = {s: 1.0 / n_assets for s in symbols}
             return OptimizationResult(weights=weights, method="markowitz_fallback")
@@ -268,7 +268,7 @@ class PortfolioOptimizer:
                     # If differential evolution also fails, use equal weights
                     weights = {s: 1.0 / n_assets for s in symbols}
                     return OptimizationResult(weights=weights, method="risk_parity_fallback")
-        except Exception as e:
+        except Exception:
             # Fallback to equal weights
             weights = {s: 1.0 / n_assets for s in symbols}
             return OptimizationResult(weights=weights, method="risk_parity_fallback")
@@ -341,7 +341,7 @@ def compute_rebalance_targets(
     targets = []
 
     # Calculate total current notional (including positions not in target_weights)
-    total_current_notional = sum(current_positions.values())
+    sum(current_positions.values())
 
     # For each target symbol
     for symbol, target_weight in target_weights.items():

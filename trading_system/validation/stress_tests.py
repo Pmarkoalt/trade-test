@@ -3,7 +3,6 @@
 from typing import Callable, Dict, List, Optional, Tuple
 
 import numpy as np
-import pandas as pd
 
 
 class StressTestSuite:

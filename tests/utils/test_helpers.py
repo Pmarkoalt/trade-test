@@ -10,7 +10,7 @@ from trading_system.models.features import FeatureRow
 from trading_system.models.market_data import MarketData
 from trading_system.models.orders import Fill, Order, OrderStatus
 from trading_system.models.portfolio import Portfolio
-from trading_system.models.positions import ExitReason, Position
+from trading_system.models.positions import Position
 from trading_system.models.signals import BreakoutType, Signal, SignalSide, SignalType
 
 

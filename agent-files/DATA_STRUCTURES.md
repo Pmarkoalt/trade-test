@@ -24,7 +24,7 @@ class Bar:
     close: float  # Closing price
     volume: float  # Volume (shares or units)
     dollar_volume: float  # Computed: close * volume
-    
+
     def __post_init__(self):
         """Validate OHLC relationships."""
         assert self.low <= self.open <= self.high, f"Invalid OHLC: {self.symbol} {self.date}"
@@ -54,38 +54,38 @@ class FeatureRow:
     date: pd.Timestamp
     symbol: str
     asset_class: str  # "equity" | "crypto"
-    
+
     # Price data
     close: float
     open: float
     high: float
     low: float
-    
+
     # Moving averages
     ma20: Optional[float] = None  # NaN until 20 bars available
     ma50: Optional[float] = None  # NaN until 50 bars available
     ma200: Optional[float] = None  # NaN until 200 bars available
-    
+
     # Volatility
     atr14: Optional[float] = None  # NaN until 14 bars available
-    
+
     # Momentum
     roc60: Optional[float] = None  # NaN if close[t-60] missing
-    
+
     # Breakout levels
     highest_close_20d: Optional[float] = None  # Highest close over last 20 days (exclusive of today)
     highest_close_55d: Optional[float] = None  # Highest close over last 55 days (exclusive of today)
-    
+
     # Volume
     adv20: Optional[float] = None  # 20-day average dollar volume
-    
+
     # Returns
     returns_1d: Optional[float] = None  # (close[t] / close[t-1]) - 1
-    
+
     # Benchmark data (for relative strength)
     benchmark_roc60: Optional[float] = None  # SPY or BTC ROC60
     benchmark_returns_1d: Optional[float] = None  # SPY or BTC daily return
-    
+
     def is_valid_for_entry(self) -> bool:
         """Check if sufficient data exists for signal generation."""
         return (
@@ -127,31 +127,31 @@ class Signal:
     asset_class: str  # "equity" | "crypto"
     date: pd.Timestamp  # Date when signal was generated (at close)
     side: SignalSide  # Always BUY for this system
-    
+
     # Entry details
     entry_price: float  # Close price at signal time (will execute at next open)
     stop_price: float  # Calculated stop: entry_price - (ATR_mult * ATR14)
     atr_mult: float  # ATR multiplier used (2.5 for equity, 3.0 for crypto)
-    
+
     # Trigger information
     triggered_on: BreakoutType  # Which breakout triggered: "20D" or "55D"
     breakout_clearance: float  # Actual clearance above prior high (for logging)
-    
+
     # Scoring components (for queue ranking)
     breakout_strength: float  # (close - MA) / ATR14, normalized
     momentum_strength: float  # Relative strength vs benchmark
     diversification_bonus: float  # 1 - avg_corr_to_portfolio
     score: float  # Final weighted score (0-1 after rank normalization)
-    
+
     # Eligibility status
     passed_eligibility: bool  # True if all filters passed
     eligibility_failures: list[str]  # Reasons if failed (e.g., ["below_MA50", "insufficient_slope"])
-    
+
     # Capacity check
     order_notional: float  # Estimated order size (for capacity check)
     adv20: float  # ADV20 at signal time
     capacity_passed: bool  # True if order_notional <= max_pct * ADV20
-    
+
     def is_valid(self) -> bool:
         """Check if signal is valid for execution."""
         return (
@@ -189,20 +189,20 @@ class Order:
     asset_class: str
     date: pd.Timestamp  # Date when order was created (signal date)
     execution_date: pd.Timestamp  # Date when order should execute (next open)
-    
+
     side: SignalSide  # BUY or SELL
     quantity: int  # Number of shares/units (calculated from risk sizing)
     limit_price: Optional[float] = None  # Not used (market orders only)
-    
+
     # Derived from signal
     signal_date: pd.Timestamp  # Original signal date
     expected_fill_price: float  # Next open price (estimated)
     stop_price: float  # Stop price for position
-    
+
     # Status
     status: OrderStatus = OrderStatus.PENDING
     rejection_reason: Optional[str] = None  # If REJECTED
-    
+
     # Constraints checked
     capacity_checked: bool = False
     correlation_checked: bool = False
@@ -231,26 +231,26 @@ class Fill:
     symbol: str
     asset_class: str
     date: pd.Timestamp  # Execution date (open of day t+1)
-    
+
     side: SignalSide
     quantity: int  # Actual filled quantity (may differ from order if partial)
     fill_price: float  # Actual execution price (open + slippage)
     open_price: float  # Market open price (before slippage)
-    
+
     # Costs
     slippage_bps: float  # Actual slippage in basis points
     fee_bps: float  # Fee in basis points (1 for equity, 8 for crypto)
     total_cost: float  # (slippage + fee) * notional
-    
+
     # Slippage model components (for diagnostics)
     vol_mult: float  # Volatility multiplier
     size_penalty: float  # Size penalty
     weekend_penalty: float  # Weekend penalty (crypto only)
     stress_mult: float  # Stress multiplier
-    
+
     # Notional
     notional: float  # fill_price * quantity
-    
+
     def compute_total_cost(self) -> float:
         """Compute total execution cost."""
         notional = self.fill_price * self.quantity
@@ -286,26 +286,26 @@ class Position:
     """Open position in portfolio."""
     symbol: str
     asset_class: str
-    
+
     # Entry details
     entry_date: pd.Timestamp  # Date when position was opened
     entry_price: float  # Fill price at entry
     entry_fill_id: str  # Reference to entry fill
     quantity: int  # Number of shares/units
-    
+
     # Stop management
     stop_price: float  # Current stop price
     initial_stop_price: float  # Original stop (for R-multiple calculation)
     hard_stop_atr_mult: float  # ATR multiplier (2.5 equity, 3.0 crypto)
     tightened_stop: bool = False  # True if stop was tightened (crypto staged exit)
     tightened_stop_atr_mult: Optional[float] = None  # 2.0 for crypto after MA20 break
-    
+
     # Exit tracking
     exit_date: Optional[pd.Timestamp] = None
     exit_price: Optional[float] = None
     exit_fill_id: Optional[str] = None
     exit_reason: Optional[ExitReason] = None
-    
+
     # Cost tracking
     entry_slippage_bps: float
     entry_fee_bps: float
@@ -313,28 +313,28 @@ class Position:
     exit_slippage_bps: Optional[float] = None
     exit_fee_bps: Optional[float] = None
     exit_total_cost: Optional[float] = None
-    
+
     # P&L
     realized_pnl: float = 0.0  # Only set when position is closed
     unrealized_pnl: float = 0.0  # Updated daily: (current_price - entry_price) * quantity - costs
-    
+
     # Metadata
     triggered_on: BreakoutType  # Which breakout triggered entry
     adv20_at_entry: float  # ADV20 at entry (for diagnostics)
-    
+
     def is_open(self) -> bool:
         """Check if position is still open."""
         return self.exit_date is None
-    
+
     def update_unrealized_pnl(self, current_price: float) -> None:
         """Update unrealized P&L based on current price."""
         if not self.is_open():
             return
-        
+
         # Unrealized P&L = (current_price - entry_price) * quantity - entry_costs
         price_pnl = (current_price - self.entry_price) * self.quantity
         self.unrealized_pnl = price_pnl - self.entry_total_cost
-    
+
     def compute_r_multiple(self, exit_price: float) -> float:
         """Compute R-multiple for closed position."""
         if self.exit_price is None:
@@ -342,13 +342,13 @@ class Position:
             price_change = exit_price - self.entry_price
         else:
             price_change = self.exit_price - self.entry_price
-        
+
         risk = self.entry_price - self.initial_stop_price
         if risk <= 0:
             return 0.0
-        
+
         return price_change / risk
-    
+
     def update_stop(self, new_stop_price: float, reason: str = "") -> None:
         """Update stop price (for trailing stops or tightening)."""
         # Stop can only move up (for long positions) or stay same
@@ -379,122 +379,122 @@ from datetime import datetime
 class Portfolio:
     """Portfolio state at a specific date."""
     date: pd.Timestamp
-    
+
     # Cash and equity
     cash: float  # Available cash
     starting_equity: float  # Initial equity (100,000)
     equity: float  # Current equity = cash + sum(position_values)
-    
+
     # Positions
     positions: Dict[str, Position] = field(default_factory=dict)  # symbol -> Position
-    
+
     # Equity curve
     equity_curve: List[float] = field(default_factory=list)  # Historical equity values
     daily_returns: List[float] = field(default_factory=list)  # Daily portfolio returns
-    
+
     # Exposure
     gross_exposure: float = 0.0  # Sum of all position notional values
     gross_exposure_pct: float = 0.0  # gross_exposure / equity
     per_position_exposure: Dict[str, float] = field(default_factory=dict)  # symbol -> pct
-    
+
     # P&L
     realized_pnl: float = 0.0  # Cumulative realized P&L
     unrealized_pnl: float = 0.0  # Sum of all position unrealized P&L
-    
+
     # Risk metrics
     portfolio_vol_20d: Optional[float] = None  # 20-day rolling portfolio volatility (annualized)
     median_vol_252d: Optional[float] = None  # Median vol over last 252 days
     risk_multiplier: float = 1.0  # Volatility scaling multiplier (0.33 to 1.0)
-    
+
     # Correlation metrics
     avg_pairwise_corr: Optional[float] = None  # Average pairwise correlation (if >= 4 positions)
     correlation_matrix: Optional[np.ndarray] = None  # Full correlation matrix
-    
+
     # Trade statistics
     total_trades: int = 0  # Total trades closed
     open_trades: int = 0  # Current open positions
-    
+
     def update_equity(self, current_prices: Dict[str, float]) -> None:
         """Update equity based on current market prices."""
         # Update unrealized P&L for all positions
         total_unrealized = 0.0
         total_exposure = 0.0
-        
+
         for symbol, position in self.positions.items():
             if symbol in current_prices:
                 position.update_unrealized_pnl(current_prices[symbol])
                 total_unrealized += position.unrealized_pnl
                 total_exposure += current_prices[symbol] * position.quantity
-        
+
         self.unrealized_pnl = total_unrealized
         self.gross_exposure = total_exposure
         self.gross_exposure_pct = total_exposure / self.equity if self.equity > 0 else 0.0
         self.equity = self.cash + total_exposure
         self.open_trades = len(self.positions)
-    
+
     def compute_portfolio_returns(self, lookback: int = 20) -> List[float]:
         """Compute portfolio returns for volatility calculation."""
         if len(self.equity_curve) < 2:
             return []
-        
+
         returns = []
         for i in range(1, len(self.equity_curve)):
             ret = (self.equity_curve[i] / self.equity_curve[i-1]) - 1
             returns.append(ret)
-        
+
         return returns[-lookback:] if len(returns) >= lookback else returns
-    
+
     def update_volatility_scaling(self) -> None:
         """Update risk multiplier based on portfolio volatility."""
         returns = self.compute_portfolio_returns(lookback=20)
-        
+
         if len(returns) < 20:
             # Insufficient history: use default multiplier
             self.risk_multiplier = 1.0
             return
-        
+
         # Compute 20D volatility (annualized)
         vol_20d = np.std(returns) * np.sqrt(252)
         self.portfolio_vol_20d = vol_20d
-        
+
         # Compute median over last 252 days
         all_returns = self.compute_portfolio_returns(lookback=252)
         if len(all_returns) >= 252:
             # Compute rolling median (simplified: use all available)
-            median_vol = np.median([np.std(all_returns[i:i+20]) * np.sqrt(252) 
+            median_vol = np.median([np.std(all_returns[i:i+20]) * np.sqrt(252)
                                     for i in range(len(all_returns) - 19)])
             self.median_vol_252d = median_vol
         else:
             # Use current vol as baseline if insufficient history
             self.median_vol_252d = vol_20d
-        
+
         # Compute risk multiplier
         vol_ratio = vol_20d / self.median_vol_252d if self.median_vol_252d > 0 else 1.0
         self.risk_multiplier = max(0.33, min(1.0, 1.0 / max(vol_ratio, 1.0)))
-    
+
     def update_correlation_metrics(self, returns_data: Dict[str, List[float]], lookback: int = 20) -> None:
         """Update correlation metrics for existing positions."""
         if len(self.positions) < 4:
             self.avg_pairwise_corr = None
             self.correlation_matrix = None
             return
-        
+
         # Get returns for all positions
         position_symbols = list(self.positions.keys())
         position_returns = {}
-        
+
         for symbol in position_symbols:
             if symbol in returns_data and len(returns_data[symbol]) >= lookback:
                 position_returns[symbol] = returns_data[symbol][-lookback:]
-        
+
         if len(position_returns) < 2:
             self.avg_pairwise_corr = None
             return
-        
+
         # Compute correlation matrix
         returns_df = pd.DataFrame(position_returns)
         corr_matrix = returns_df.corr().values
-        
+
         # Compute average pairwise correlation (exclude diagonal)
         n = len(corr_matrix)
         off_diagonal = []
@@ -502,7 +502,7 @@ class Portfolio:
             for j in range(i+1, n):
                 if not np.isnan(corr_matrix[i, j]):
                     off_diagonal.append(corr_matrix[i, j])
-        
+
         self.avg_pairwise_corr = np.mean(off_diagonal) if off_diagonal else None
         self.correlation_matrix = corr_matrix
 ```
@@ -525,12 +525,12 @@ import pandas as pd
 
 class MarketData:
     """Container for all market data (bars, features, benchmarks)."""
-    
+
     def __init__(self):
         self.bars: Dict[str, pd.DataFrame] = {}  # symbol -> DataFrame of bars
         self.features: Dict[str, pd.DataFrame] = {}  # symbol -> DataFrame of features
         self.benchmarks: Dict[str, pd.DataFrame] = {}  # "SPY" or "BTC" -> DataFrame
-        
+
     def get_bar(self, symbol: str, date: pd.Timestamp) -> Optional[Bar]:
         """Get bar for symbol at date."""
         if symbol not in self.bars:
@@ -549,7 +549,7 @@ class MarketData:
             volume=row['volume'],
             dollar_volume=row.get('dollar_volume', row['close'] * row['volume'])
         )
-    
+
     def get_features(self, symbol: str, date: pd.Timestamp) -> Optional[FeatureRow]:
         """Get features for symbol at date."""
         if symbol not in self.features:
@@ -629,7 +629,7 @@ class StrategyConfig(BaseModel):
     asset_class: Literal["equity", "crypto"]
     universe: str  # "NASDAQ-100", "SP500", or explicit list
     benchmark: str  # "SPY" for equity, "BTC" for crypto
-    
+
     indicators: IndicatorsConfig = Field(default_factory=IndicatorsConfig)
     eligibility: EligibilityConfig = Field(default_factory=EligibilityConfig)
     entry: EntryConfig = Field(default_factory=EntryConfig)
@@ -637,7 +637,7 @@ class StrategyConfig(BaseModel):
     risk: RiskConfig = Field(default_factory=RiskConfig)
     capacity: CapacityConfig = Field(default_factory=CapacityConfig)
     costs: CostsConfig = Field(default_factory=CostsConfig)
-    
+
     @classmethod
     def from_yaml(cls, path: str) -> "StrategyConfig":
         """Load from YAML file."""
@@ -659,4 +659,3 @@ All data structures are now explicitly defined with:
 - Usage examples
 
 These can be directly implemented as Python classes using `dataclasses` or `pydantic` models.
-

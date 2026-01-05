@@ -15,4 +15,3 @@ Backtest Engine
    :members:
    :undoc-members:
    :show-inheritance:
-

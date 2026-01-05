@@ -1,22 +1,11 @@
 """Unit tests for equity momentum strategy."""
 
-from datetime import datetime
 
-import numpy as np
 import pandas as pd
 import pytest
 
-from trading_system.configs.strategy_config import (
-    CapacityConfig,
-    CostsConfig,
-    EligibilityConfig,
-    EntryConfig,
-    ExitConfig,
-    IndicatorsConfig,
-    RiskConfig,
-    StrategyConfig,
-)
-from trading_system.models import BreakoutType, ExitReason, FeatureRow, Position, Signal, SignalSide
+from trading_system.configs.strategy_config import CapacityConfig, EligibilityConfig, EntryConfig, ExitConfig, StrategyConfig
+from trading_system.models import BreakoutType, ExitReason, FeatureRow, Position, SignalSide
 from trading_system.models.positions import PositionSide
 from trading_system.strategies import EquityStrategy
 

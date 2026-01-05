@@ -127,4 +127,3 @@ python -m trading_system holdout --config EXAMPLE_CONFIGS/run_config.yaml
 - **Tunable parameters** can be adjusted during train/validation phase only
 - **Holdout dates** must be LOCKED before any backtesting begins
 - All paths are relative to project root (or use absolute paths)
-

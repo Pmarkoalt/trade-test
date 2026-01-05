@@ -41,4 +41,3 @@ Welcome to the Trading System Developer Guide. This section contains information
 ---
 
 For user-facing documentation, see the [User Guide](../user_guide/).
-

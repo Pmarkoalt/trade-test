@@ -1,24 +1,13 @@
 """Unit tests for mean reversion strategy."""
 
-from datetime import datetime
 
-import numpy as np
 import pandas as pd
 import pytest
 
-from trading_system.configs.strategy_config import (
-    CapacityConfig,
-    CostsConfig,
-    EligibilityConfig,
-    EntryConfig,
-    ExitConfig,
-    IndicatorsConfig,
-    RiskConfig,
-    StrategyConfig,
-)
+from trading_system.configs.strategy_config import StrategyConfig
 from trading_system.models.features import FeatureRow
 from trading_system.models.positions import ExitReason, Position, PositionSide
-from trading_system.models.signals import BreakoutType, Signal, SignalSide, SignalType
+from trading_system.models.signals import BreakoutType, SignalType
 from trading_system.strategies.mean_reversion.equity_mean_reversion import EquityMeanReversionStrategy
 
 

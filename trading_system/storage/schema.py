@@ -1,7 +1,6 @@
 """Database schema definitions for results storage."""
 
 import sqlite3
-from typing import List, Optional
 
 
 def create_schema(conn: sqlite3.Connection) -> None:
@@ -201,4 +200,3 @@ def migrate_schema(conn: sqlite3.Connection, from_version: int, to_version: int)
     """
     # For now, we only have version 1, so no migrations needed
     # This is a placeholder for future schema migrations
-    pass

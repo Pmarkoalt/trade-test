@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from datetime import date, datetime
 from typing import Dict, List, Optional
 
-from trading_system.tracking.models import PerformanceMetrics, SignalOutcome, SignalStatus, TrackedSignal
+from trading_system.tracking.models import SignalOutcome, SignalStatus, TrackedSignal
 
 
 class BaseTrackingStore(ABC):
@@ -13,23 +13,19 @@ class BaseTrackingStore(ABC):
     @abstractmethod
     def initialize(self) -> None:
         """Initialize the database (run migrations)."""
-        pass
 
     @abstractmethod
     def close(self) -> None:
         """Close database connection."""
-        pass
 
     # Signal operations
     @abstractmethod
     def insert_signal(self, signal: TrackedSignal) -> str:
         """Insert a new tracked signal. Returns signal ID."""
-        pass
 
     @abstractmethod
     def update_signal(self, signal: TrackedSignal) -> bool:
         """Update an existing signal. Returns success."""
-        pass
 
     @abstractmethod
     def update_signal_status(
@@ -39,12 +35,10 @@ class BaseTrackingStore(ABC):
         timestamp: Optional[datetime] = None,
     ) -> bool:
         """Update signal status. Returns success."""
-        pass
 
     @abstractmethod
     def get_signal(self, signal_id: str) -> Optional[TrackedSignal]:
         """Get a signal by ID."""
-        pass
 
     @abstractmethod
     def get_signals_by_status(
@@ -53,7 +47,6 @@ class BaseTrackingStore(ABC):
         limit: int = 100,
     ) -> List[TrackedSignal]:
         """Get signals by status."""
-        pass
 
     @abstractmethod
     def get_signals_by_date_range(
@@ -64,7 +57,6 @@ class BaseTrackingStore(ABC):
         asset_class: Optional[str] = None,
     ) -> List[TrackedSignal]:
         """Get signals within a date range."""
-        pass
 
     @abstractmethod
     def get_recent_signals(
@@ -73,23 +65,19 @@ class BaseTrackingStore(ABC):
         symbol: Optional[str] = None,
     ) -> List[TrackedSignal]:
         """Get signals from the last N days."""
-        pass
 
     # Outcome operations
     @abstractmethod
     def insert_outcome(self, outcome: SignalOutcome) -> bool:
         """Insert a signal outcome. Returns success."""
-        pass
 
     @abstractmethod
     def update_outcome(self, outcome: SignalOutcome) -> bool:
         """Update an existing outcome. Returns success."""
-        pass
 
     @abstractmethod
     def get_outcome(self, signal_id: str) -> Optional[SignalOutcome]:
         """Get outcome for a signal."""
-        pass
 
     @abstractmethod
     def get_outcomes_by_date_range(
@@ -98,7 +86,6 @@ class BaseTrackingStore(ABC):
         end_date: date,
     ) -> List[SignalOutcome]:
         """Get outcomes within a date range."""
-        pass
 
     # Performance operations
     @abstractmethod
@@ -108,7 +95,6 @@ class BaseTrackingStore(ABC):
         metrics: Dict,
     ) -> bool:
         """Save daily performance snapshot."""
-        pass
 
     @abstractmethod
     def get_daily_snapshots(
@@ -117,13 +103,11 @@ class BaseTrackingStore(ABC):
         end_date: date,
     ) -> List[Dict]:
         """Get daily snapshots for date range."""
-        pass
 
     # Aggregation queries
     @abstractmethod
     def count_signals_by_status(self) -> Dict[str, int]:
         """Count signals grouped by status."""
-        pass
 
     @abstractmethod
     def get_signal_stats(
@@ -132,4 +116,3 @@ class BaseTrackingStore(ABC):
         end_date: Optional[date] = None,
     ) -> Dict:
         """Get aggregate signal statistics."""
-        pass

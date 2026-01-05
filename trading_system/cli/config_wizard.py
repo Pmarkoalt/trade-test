@@ -2,18 +2,16 @@
 
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import yaml
 
 if TYPE_CHECKING:
-    from rich.console import Console
+    pass
 
 try:
     from rich.console import Console
-    from rich.panel import Panel
     from rich.prompt import Confirm, Prompt
-    from rich.text import Text
 
     RICH_AVAILABLE = True
 except ImportError:

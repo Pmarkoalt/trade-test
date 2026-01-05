@@ -76,4 +76,3 @@ black --check trading_system/ && isort --check-only trading_system/
 2. Format code: `make format`
 3. Run checks: `make check-code`
 4. Set up pre-commit hooks (optional): See `DEVELOPMENT_TOOLS_SETUP.md`
-

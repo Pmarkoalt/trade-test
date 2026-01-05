@@ -6,7 +6,7 @@ monthly returns heatmaps, and parameter sensitivity analysis.
 
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, List, Optional
 
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt

@@ -1,10 +1,6 @@
 """Tests for scheduler jobs."""
 
-import os
-import tempfile
-from datetime import date, datetime, timedelta
-from pathlib import Path
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pandas as pd
 import pytest
@@ -198,7 +194,6 @@ class TestDailySignalsJob:
             patch("trading_system.scheduler.jobs.daily_signals_job.load_strategies_from_run_config") as mock_load_strategies,
             patch("trading_system.scheduler.jobs.daily_signals_job.load_universe") as mock_load_universe,
         ):
-
             mock_strategy = MagicMock()
             mock_load_strategies.return_value = [mock_strategy]
             mock_load_universe.return_value = []
@@ -217,7 +212,6 @@ class TestDailySignalsJob:
             patch("trading_system.scheduler.jobs.daily_signals_job.LiveSignalGenerator") as mock_signal_gen_class,
             patch("trading_system.scheduler.jobs.daily_signals_job.EmailService") as mock_email_class,
         ):
-
             # Setup mocks
             mock_config = {
                 "data_pipeline": MagicMock(),
@@ -260,7 +254,6 @@ class TestDailySignalsJob:
             patch("trading_system.scheduler.jobs.daily_signals_job.load_config") as mock_load_config,
             patch("trading_system.scheduler.jobs.daily_signals_job.send_error_alert") as mock_send_alert,
         ):
-
             mock_load_config.side_effect = ValueError("Config error")
             mock_send_alert.return_value = None
 
@@ -381,7 +374,7 @@ class TestMLRetrainJob:
     @pytest.fixture
     def ml_config(self):
         """Create ML config for testing."""
-        from trading_system.ml_refinement.config import MLConfig, ModelType, TrainingConfig
+        from trading_system.ml_refinement.config import MLConfig, TrainingConfig
 
         return MLConfig(
             min_new_samples_for_retrain=100,

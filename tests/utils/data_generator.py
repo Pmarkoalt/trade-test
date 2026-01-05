@@ -8,7 +8,7 @@ This module provides utilities to generate synthetic OHLCV data with:
 """
 
 from enum import Enum
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional
 
 import numpy as np
 import pandas as pd

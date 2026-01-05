@@ -241,4 +241,3 @@ The test suite run identified multiple critical issues preventing tests from exe
 3. `trading_system/data_pipeline/sources/binance_client.py` - aiohttp import issue
 4. `trading_system/cli/__init__.py` - Missing exports
 5. `trading_system/signals/models.py` - Missing Signal attributes
-

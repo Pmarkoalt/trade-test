@@ -173,4 +173,3 @@ disable_profiling()
 # Or disable caching per call
 features = compute_features(df_ohlc, 'AAPL', 'equity', use_cache=False)
 ```
-

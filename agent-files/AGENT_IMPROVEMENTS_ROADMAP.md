@@ -16,10 +16,10 @@ This document provides a structured roadmap for improving the Trading System bas
 
 ### ✅ Task 1.1: Fix Failing Property-Based Tests
 
-**Status**: ✅ **COMPLETED**  
-**Priority**: CRITICAL  
-**Estimated Effort**: 4-6 hours  
-**Actual Effort**: ~4 hours  
+**Status**: ✅ **COMPLETED**
+**Priority**: CRITICAL
+**Estimated Effort**: 4-6 hours
+**Actual Effort**: ~4 hours
 **Completed**: All 6 failing property-based tests fixed
 
 #### Progress Summary
@@ -43,7 +43,7 @@ This document provides a structured roadmap for improving the Trading System bas
 
 2. **✅ `tests/property/test_portfolio.py::test_portfolio_equity_always_positive`**
    - **Issue**: Portfolio equity can become non-positive after operations
-   - **Fix Applied**: 
+   - **Fix Applied**:
      - Updated `update_equity()` to ensure equity is always > 0 using `max(1e-10, new_equity)`
      - Added defensive checks in `process_fill()` to ensure cash doesn't go negative
      - Added validation to ensure equity remains positive after processing fills
@@ -69,7 +69,7 @@ This document provides a structured roadmap for improving the Trading System bas
 
 6. **✅ `tests/property/test_validation.py::test_permutation_test_structure`**
    - **Issue**: Permutation test structure validation
-   - **Fix Applied**: 
+   - **Fix Applied**:
      - Added try-except around `percentileofscore()` calculation to handle edge cases
      - Code already ensures all values are finite and percentile_rank is in [0.0, 100.0]
    - **File**: `trading_system/validation/permutation.py`
@@ -119,9 +119,9 @@ This document provides a structured roadmap for improving the Trading System bas
 
 ### ✅ Task 1.2: Commit Modified Files
 
-**Status**: ✅ **Completed**  
-**Priority**: HIGH  
-**Estimated Effort**: 15 minutes  
+**Status**: ✅ **Completed**
+**Priority**: HIGH
+**Estimated Effort**: 15 minutes
 **Completed**: Committed changes to `trading_system/indicators/ma.py` and added `AGENT_IMPROVEMENTS_ROADMAP.md`
 
 #### Action Items
@@ -152,9 +152,9 @@ This document provides a structured roadmap for improving the Trading System bas
 
 ### 🟡 Task 2.1: Add Short Selling Support
 
-**Status**: ✅ **Completed**  
-**Priority**: HIGH  
-**Estimated Effort**: 16-24 hours  
+**Status**: ✅ **Completed**
+**Priority**: HIGH
+**Estimated Effort**: 16-24 hours
 **Actual Effort**: ~8 hours
 
 #### Current State
@@ -222,7 +222,7 @@ This document provides a structured roadmap for improving the Trading System bas
 - **Entry**: Short when signal indicates overvaluation
 - **Stop Loss**: Place stop above entry price (opposite of long)
 - **Exit**: Exit when mean reversion occurs or stop hit
-- **Exposure Limits**: 
+- **Exposure Limits**:
   - Gross exposure limit still applies (80%)
   - Net exposure limit (e.g., ±40%)
   - Separate limits for longs vs shorts
@@ -243,8 +243,8 @@ This document provides a structured roadmap for improving the Trading System bas
 
 ### 🟡 Task 2.2: Improve ML Integration
 
-**Status**: ✅ **Completed**  
-**Priority**: MEDIUM  
+**Status**: ✅ **Completed**
+**Priority**: MEDIUM
 **Estimated Effort**: 20-30 hours
 
 #### Current State
@@ -314,9 +314,9 @@ This document provides a structured roadmap for improving the Trading System bas
 
 ### ✅ Task 2.3: Add Live Trading Adapter Tests
 
-**Status**: ✅ **COMPLETE**  
-**Priority**: MEDIUM  
-**Estimated Effort**: 12-16 hours  
+**Status**: ✅ **COMPLETE**
+**Priority**: MEDIUM
+**Estimated Effort**: 12-16 hours
 **Actual Effort**: Completed
 
 #### Current State
@@ -415,9 +415,9 @@ This document provides a structured roadmap for improving the Trading System bas
 
 ### ✅ Task 3.1: Performance Optimization
 
-**Status**: ✅ **Completed**  
-**Priority**: MEDIUM  
-**Estimated Effort**: 16-24 hours  
+**Status**: ✅ **Completed**
+**Priority**: MEDIUM
+**Estimated Effort**: 16-24 hours
 **Completed**: All optimization opportunities implemented
 
 #### Optimization Opportunities
@@ -467,8 +467,8 @@ This document provides a structured roadmap for improving the Trading System bas
 
 ### 🟢 Task 3.2: Documentation Improvements
 
-**Status**: ⚠️ **Good but can improve**  
-**Priority**: LOW  
+**Status**: ⚠️ **Good but can improve**
+**Priority**: LOW
 **Estimated Effort**: 8-12 hours
 
 #### Documentation Tasks
@@ -509,10 +509,10 @@ This document provides a structured roadmap for improving the Trading System bas
 
 ### 📊 Task 4.1: Increase Test Coverage to >90%
 
-**Status**: ✅ **IN PROGRESS - Comprehensive Test Suites Created**  
-**Current**: ~37.71%, **Target**: >90%  
-**Priority**: HIGH  
-**Estimated Effort**: 40-60 hours  
+**Status**: ✅ **IN PROGRESS - Comprehensive Test Suites Created**
+**Current**: ~37.71%, **Target**: >90%
+**Priority**: HIGH
+**Estimated Effort**: 40-60 hours
 **Progress**: ✅ **13 test files created** covering all low-coverage areas + additional modules
 
 #### Low Coverage Areas - TEST SUITES CREATED ✅
@@ -643,8 +643,8 @@ This document provides a structured roadmap for improving the Trading System bas
 
 ### 🧹 Task 5.1: Code Cleanup
 
-**Status**: 🟢 **Mostly Complete** (Critical issues fixed, formatting done)  
-**Priority**: LOW  
+**Status**: 🟢 **Mostly Complete** (Critical issues fixed, formatting done)
+**Priority**: LOW
 **Estimated Effort**: 4-8 hours (1-2 hours remaining for minor cleanup)
 
 #### Progress Summary
@@ -799,6 +799,5 @@ If you encounter issues or need clarification:
 
 ---
 
-**Last Updated**: [Date]  
+**Last Updated**: [Date]
 **Version**: 1.0
-

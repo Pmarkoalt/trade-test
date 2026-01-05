@@ -28,4 +28,3 @@ docker-compose run --rm \
 
 echo ""
 echo "✓ Pre-commit complete!"
-

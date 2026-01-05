@@ -106,4 +106,3 @@ echo ""
 echo "  5. View API documentation:"
 echo "     open http://localhost:8000/docs"
 echo ""
-

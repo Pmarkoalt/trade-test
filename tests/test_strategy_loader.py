@@ -6,7 +6,6 @@ from pathlib import Path
 import pytest
 import yaml
 
-from trading_system.configs.strategy_config import StrategyConfig
 from trading_system.strategies.strategy_loader import (
     load_strategies_from_configs,
     load_strategies_from_run_config,

@@ -32,7 +32,7 @@ Advance to Day t+2
 def update_data_through_date(date: pd.Timestamp, market_data: MarketData):
     """
     Update all market data up to and including day t close.
-    
+
     Actions:
     1. Load/update bars for all symbols up to date
     2. Compute indicators using data <= date (no lookahead)
@@ -45,12 +45,12 @@ def update_data_through_date(date: pd.Timestamp, market_data: MarketData):
         if bar:
             validate_bar(bar)  # Check OHLC relationships
             market_data.bars[symbol].loc[date] = bar
-    
+
     # Compute indicators (using data <= date only)
     for symbol in universe:
         features = compute_features(market_data.bars[symbol], end_date=date)
         market_data.features[symbol].loc[date] = features
-    
+
     # Update benchmarks
     update_benchmark("SPY", date)
     update_benchmark("BTC", date)
@@ -68,7 +68,7 @@ def update_data_through_date(date: pd.Timestamp, market_data: MarketData):
 def generate_signals(date: pd.Timestamp, portfolio: Portfolio, strategies: List[Strategy]) -> List[Signal]:
     """
     Generate entry signals for all strategies at day t close.
-    
+
     Actions:
     1. For each strategy (equity, crypto):
        a. Get features for all symbols in universe
@@ -81,32 +81,32 @@ def generate_signals(date: pd.Timestamp, portfolio: Portfolio, strategies: List[
     3. Return list of valid signals
     """
     all_signals = []
-    
+
     for strategy in strategies:
         for symbol in strategy.universe:
             # Get features
             features = market_data.features[symbol].loc[date]
-            
+
             # Skip if insufficient data
             if not features.is_valid_for_entry():
                 continue
-            
+
             # Check eligibility
             if not strategy.check_eligibility(features):
                 continue
-            
+
             # Check entry triggers
             breakout_type = strategy.check_entry_triggers(features)
             if breakout_type is None:
                 continue
-            
+
             # Calculate stop price
             stop_price = features.close - (strategy.config.exit.hard_stop_atr_mult * features.atr14)
-            
+
             # Validate stop
             if not validate_stop_price(features.close, stop_price):
                 continue
-            
+
             # Estimate position size (for capacity check)
             estimated_qty = estimate_position_size(
                 equity=portfolio.equity,
@@ -116,11 +116,11 @@ def generate_signals(date: pd.Timestamp, portfolio: Portfolio, strategies: List[
                 max_notional=portfolio.equity * strategy.config.risk.max_position_notional
             )
             order_notional = features.close * estimated_qty
-            
+
             # Check capacity
             if order_notional > strategy.config.capacity.max_order_pct_adv * features.adv20:
                 continue  # Reject due to capacity
-            
+
             # Create signal
             signal = Signal(
                 symbol=symbol,
@@ -137,12 +137,12 @@ def generate_signals(date: pd.Timestamp, portfolio: Portfolio, strategies: List[
                 order_notional=order_notional,
                 adv20=features.adv20
             )
-            
+
             all_signals.append(signal)
-    
+
     # Score signals (for queue ranking)
     score_signals(all_signals, portfolio)
-    
+
     return all_signals
 ```
 
@@ -162,7 +162,7 @@ def generate_signals(date: pd.Timestamp, portfolio: Portfolio, strategies: List[
 def create_orders(signals: List[Signal], portfolio: Portfolio, strategies: List[Strategy]) -> List[Order]:
     """
     Create orders from signals for execution at day t+1 open.
-    
+
     Actions:
     1. Filter signals by constraints (max positions, max exposure, correlation guard)
     2. Select top N signals from queue
@@ -172,15 +172,15 @@ def create_orders(signals: List[Signal], portfolio: Portfolio, strategies: List[
     """
     # Filter by constraints
     valid_signals = filter_signals_by_constraints(signals, portfolio, strategies)
-    
+
     # Select from queue (if more signals than slots)
     selected_signals = select_from_queue(valid_signals, portfolio, strategies)
-    
+
     orders = []
-    
+
     for signal in selected_signals:
         strategy = get_strategy_for_signal(signal, strategies)
-        
+
         # Calculate exact position size
         qty = calculate_position_size(
             equity=portfolio.equity,
@@ -190,10 +190,10 @@ def create_orders(signals: List[Signal], portfolio: Portfolio, strategies: List[
             max_notional=portfolio.equity * strategy.config.risk.max_position_notional,
             available_cash=portfolio.cash
         )
-        
+
         if qty < 1:
             continue  # Cannot afford position
-        
+
         # Create order
         order = Order(
             order_id=generate_order_id(),
@@ -208,13 +208,13 @@ def create_orders(signals: List[Signal], portfolio: Portfolio, strategies: List[
             stop_price=signal.stop_price,
             status=OrderStatus.PENDING
         )
-        
+
         orders.append(order)
-        
+
         # Reserve cash (estimate)
         estimated_cost = signal.entry_price * qty * 1.01  # Add 1% buffer for slippage/fees
         portfolio.cash -= estimated_cost  # Will be adjusted at execution
-    
+
     return orders
 ```
 
@@ -234,7 +234,7 @@ def create_orders(signals: List[Signal], portfolio: Portfolio, strategies: List[
 def execute_orders(orders: List[Order], market_data: MarketData, date: pd.Timestamp) -> List[Fill]:
     """
     Execute orders at day t+1 open with slippage and fees.
-    
+
     Actions:
     1. Get open price for each symbol
     2. Calculate slippage (vol/size/stress scaled)
@@ -243,11 +243,11 @@ def execute_orders(orders: List[Order], market_data: MarketData, date: pd.Timest
     5. Update order status
     """
     fills = []
-    
+
     for order in orders:
         if order.status != OrderStatus.PENDING:
             continue
-        
+
         # Get open price
         bar = market_data.get_bar(order.symbol, date)
         if bar is None:
@@ -255,25 +255,25 @@ def execute_orders(orders: List[Order], market_data: MarketData, date: pd.Timest
             order.status = OrderStatus.REJECTED
             order.rejection_reason = "MISSING_DATA"
             continue
-        
+
         open_price = bar.open
-        
+
         # Calculate slippage
         market_state = get_market_state(order.symbol, date, market_data)
         stress_state = get_stress_state(date, market_data)
         slippage_bps = compute_slippage_bps(order, market_state, stress_state)
-        
+
         # Apply slippage to fill price
         if order.side == SignalSide.BUY:
             fill_price = open_price * (1 + slippage_bps / 10000)
         else:  # SELL
             fill_price = open_price * (1 - slippage_bps / 10000)
-        
+
         # Calculate fees
         notional = fill_price * order.quantity
         fee_bps = get_fee_bps(order.asset_class)  # 1 for equity, 8 for crypto
         fee_cost = notional * (fee_bps / 10000)
-        
+
         # Create fill
         fill = Fill(
             fill_id=generate_fill_id(),
@@ -294,12 +294,12 @@ def execute_orders(orders: List[Order], market_data: MarketData, date: pd.Timest
             stress_mult=stress_state.stress_mult,
             notional=notional
         )
-        
+
         fills.append(fill)
-        
+
         # Update order
         order.status = OrderStatus.FILLED
-    
+
     return fills
 ```
 
@@ -319,7 +319,7 @@ def execute_orders(orders: List[Order], market_data: MarketData, date: pd.Timest
 def update_portfolio_with_fills(portfolio: Portfolio, fills: List[Fill], date: pd.Timestamp):
     """
     Update portfolio state with executed fills.
-    
+
     Actions:
     1. For each fill:
        a. Deduct cash (fill_price * quantity + fees)
@@ -332,7 +332,7 @@ def update_portfolio_with_fills(portfolio: Portfolio, fills: List[Fill], date: p
         # Deduct cash
         total_cost = fill.fill_price * fill.quantity + fill.total_cost
         portfolio.cash -= total_cost
-        
+
         # Create position
         position = Position(
             symbol=fill.symbol,
@@ -350,10 +350,10 @@ def update_portfolio_with_fills(portfolio: Portfolio, fills: List[Fill], date: p
             triggered_on=get_triggered_on_from_order(fill.order_id),
             adv20_at_entry=get_adv20_at_entry(fill.symbol, fill.date)
         )
-        
+
         # Add to portfolio
         portfolio.positions[fill.symbol] = position
-    
+
     # Update equity
     portfolio.update_equity(get_current_prices(date, portfolio.positions.keys(), market_data))
 ```
@@ -373,7 +373,7 @@ def update_portfolio_with_fills(portfolio: Portfolio, fills: List[Fill], date: p
 def update_stops(portfolio: Portfolio, market_data: MarketData, date: pd.Timestamp) -> List[Order]:
     """
     Update trailing stops and check exit signals at day t+1 close.
-    
+
     Actions:
     1. For each open position:
        a. Get current close price
@@ -383,27 +383,27 @@ def update_stops(portfolio: Portfolio, market_data: MarketData, date: pd.Timesta
     2. Return list of exit orders
     """
     exit_orders = []
-    
+
     for symbol, position in portfolio.positions.items():
         if not position.is_open():
             continue
-        
+
         # Get current bar
         bar = market_data.get_bar(symbol, date)
         if bar is None:
             # Missing data: handle separately
             handle_missing_data(symbol, date, portfolio)
             continue
-        
+
         current_price = bar.close
-        
+
         # Get features
         features = market_data.features[symbol].loc[date]
-        
+
         # Update trailing stop (if applicable)
         # Note: For long positions, stop can only move up
         strategy = get_strategy_for_symbol(symbol, strategies)
-        
+
         if strategy.config.exit.mode == "staged" and position.asset_class == "crypto":
             # Crypto staged exit logic
             if not position.tightened_stop and current_price < features.ma20:
@@ -413,25 +413,25 @@ def update_stops(portfolio: Portfolio, market_data: MarketData, date: pd.Timesta
                     position.stop_price = tightened_stop
                     position.tightened_stop = True
                     position.tightened_stop_atr_mult = 2.0
-        
+
         # Check exit signals (priority: hard stop > trailing MA)
         exit_reason = None
-        
+
         # Priority 1: Hard stop
         if current_price <= position.stop_price:
             exit_reason = ExitReason.HARD_STOP
-        
+
         # Priority 2: Trailing MA cross
         elif strategy.config.exit.mode == "ma_cross":
             ma_level = features.ma20 if strategy.config.exit.exit_ma == 20 else features.ma50
             if current_price < ma_level:
                 exit_reason = ExitReason.TRAILING_MA_CROSS
-        
+
         elif strategy.config.exit.mode == "staged" and position.asset_class == "crypto":
             # Stage 2: MA50 cross OR tightened stop hit
             if current_price < features.ma50 or (position.tightened_stop and current_price <= position.stop_price):
                 exit_reason = ExitReason.TRAILING_MA_CROSS
-        
+
         # Create exit order if triggered
         if exit_reason:
             exit_order = Order(
@@ -448,7 +448,7 @@ def update_stops(portfolio: Portfolio, market_data: MarketData, date: pd.Timesta
             )
             exit_order.exit_reason = exit_reason
             exit_orders.append(exit_order)
-    
+
     return exit_orders
 ```
 
@@ -468,7 +468,7 @@ def update_stops(portfolio: Portfolio, market_data: MarketData, date: pd.Timesta
 def execute_exit_orders(exit_orders: List[Order], portfolio: Portfolio, market_data: MarketData, date: pd.Timestamp):
     """
     Execute exit orders and close positions.
-    
+
     Actions:
     1. Execute exit fills (same as entry execution)
     2. Close positions
@@ -479,18 +479,18 @@ def execute_exit_orders(exit_orders: List[Order], portfolio: Portfolio, market_d
     for order in exit_orders:
         # Execute fill (same logic as entry)
         fill = execute_order(order, market_data, date)
-        
+
         if fill is None:
             continue  # Execution failed
-        
+
         # Get position
         position = portfolio.positions[order.symbol]
-        
+
         # Calculate realized P&L
         price_pnl = (fill.fill_price - position.entry_price) * position.quantity
         total_costs = position.entry_total_cost + fill.total_cost
         realized_pnl = price_pnl - total_costs
-        
+
         # Update position
         position.exit_date = fill.date
         position.exit_price = fill.fill_price
@@ -500,16 +500,16 @@ def execute_exit_orders(exit_orders: List[Order], portfolio: Portfolio, market_d
         position.exit_fee_bps = fill.fee_bps
         position.exit_total_cost = fill.total_cost
         position.realized_pnl = realized_pnl
-        
+
         # Update cash
         portfolio.cash += fill.fill_price * fill.quantity - fill.total_cost
-        
+
         # Update portfolio realized P&L
         portfolio.realized_pnl += realized_pnl
-        
+
         # Remove from positions
         del portfolio.positions[order.symbol]
-        
+
         # Log trade
         log_trade(position)
 ```
@@ -529,7 +529,7 @@ def execute_exit_orders(exit_orders: List[Order], portfolio: Portfolio, market_d
 def update_portfolio_metrics(portfolio: Portfolio, market_data: MarketData, date: pd.Timestamp):
     """
     Update all portfolio-level metrics at day t+1 close.
-    
+
     Actions:
     1. Update equity (cash + position values at current prices)
     2. Update unrealized P&L for all positions
@@ -545,25 +545,25 @@ def update_portfolio_metrics(portfolio: Portfolio, market_data: MarketData, date
         bar = market_data.get_bar(symbol, date)
         if bar:
             current_prices[symbol] = bar.close
-    
+
     # Update equity
     portfolio.update_equity(current_prices)
-    
+
     # Update volatility scaling
     portfolio.update_volatility_scaling()
-    
+
     # Update correlation metrics
     returns_data = get_returns_data(portfolio.positions.keys(), market_data)
     portfolio.update_correlation_metrics(returns_data)
-    
+
     # Append to equity curve
     portfolio.equity_curve.append(portfolio.equity)
-    
+
     # Compute daily return
     if len(portfolio.equity_curve) > 1:
         daily_return = (portfolio.equity_curve[-1] / portfolio.equity_curve[-2]) - 1
         portfolio.daily_returns.append(daily_return)
-    
+
     # Log daily metrics
     log_daily_metrics(portfolio, date)
 ```
@@ -621,4 +621,3 @@ The portfolio state machine follows a strict daily sequence:
 5. Metric updates and logging
 
 All state transitions are deterministic and traceable through the event log.
-

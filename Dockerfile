@@ -50,4 +50,3 @@ ENTRYPOINT ["python", "-m", "trading_system"]
 
 # Default to showing help if no command is provided
 CMD ["--help"]
-

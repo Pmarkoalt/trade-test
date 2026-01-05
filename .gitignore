@@ -61,4 +61,3 @@ Thumbs.db
 .env.*.local
 *.env
 !.env.example  # Allow .env.example as it's a template file
-

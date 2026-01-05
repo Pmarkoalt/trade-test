@@ -60,7 +60,7 @@ def render_signal_card(signal: dict):
     """
     direction = signal.get("direction", "BUY")
     conviction = signal.get("conviction", "MEDIUM")
-    symbol = signal.get("symbol", "???")
+    signal.get("symbol", "???")
 
     # Card styling based on direction
     border_color = "#22c55e" if direction == "BUY" else "#ef4444"
@@ -190,13 +190,11 @@ def render_streak_indicator(
         return
 
     if streak_type == "win":
-        emoji = "🔥"
         color = "#22c55e"
-        text = f"{streak_count}-trade winning streak!"
+        f"{streak_count}-trade winning streak!"
     else:
-        emoji = "⚠️"
         color = "#ef4444"
-        text = f"{streak_count}-trade losing streak"
+        f"{streak_count}-trade losing streak"
 
     st.markdown(
         """

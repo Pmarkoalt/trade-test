@@ -141,4 +141,3 @@ The data loader automatically computes `dollar_volume = close * volume`.
 - The 3-month dataset provides sufficient data for basic indicator calculations (MA20, MA50)
 - MA200 calculations may be limited with only 3 months of data
 - See EXPECTED_TRADES.md for expected trade patterns
-

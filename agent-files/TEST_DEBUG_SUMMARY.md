@@ -1,6 +1,6 @@
 # Test Suite Debugging Summary
 
-**Date**: Current  
+**Date**: Current
 **Status**: Blocked by Environment Issue
 
 ## Current Status
@@ -25,7 +25,7 @@ This occurs when numpy performs its macOS compatibility check during import, bef
 
 **Root Cause**: Known issue with certain NumPy versions in conda environments on macOS, related to BLAS/LAPACK library configuration.
 
-**Impact**: 
+**Impact**:
 - All pytest runs fail during test collection
 - Cannot execute any tests until resolved
 - This is an **environment/installation issue**, not a code issue
@@ -36,7 +36,7 @@ Based on `test_output.txt`, a previous run successfully collected 484 tests. Man
 
 #### Passing Tests
 - ✅ Data loading tests
-- ✅ Strategy signal generation  
+- ✅ Strategy signal generation
 - ✅ No lookahead bias detection
 - ✅ Data validation
 - ✅ Integration workflow basics
@@ -181,4 +181,3 @@ Based on previous failures, focus on:
 - Most failures appear to be in integration/end-to-end scenarios
 - Unit tests generally pass, suggesting core functionality works
 - Environment issue must be resolved before debugging code issues
-

@@ -3,7 +3,6 @@
 import hashlib
 import os
 from pathlib import Path
-from typing import Optional
 
 import streamlit as st
 import yaml
@@ -144,7 +143,7 @@ def render_api_settings():
 
     for env_var, name, description in api_keys:
         is_set = bool(os.environ.get(env_var))
-        status = "" if is_set else ""
+        "" if is_set else ""
         color = "#22c55e" if is_set else "#ef4444"
 
         st.markdown(

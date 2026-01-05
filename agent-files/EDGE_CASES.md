@@ -15,7 +15,7 @@ Complete documentation of all edge cases, error conditions, and special handling
 def handle_missing_data_single_day(symbol: str, date: pd.Timestamp):
     """
     Handle single day missing data.
-    
+
     Actions:
     1. Skip signal generation for that symbol on that date
     2. Do NOT update stops for positions in that symbol
@@ -44,7 +44,7 @@ def handle_missing_data_single_day(symbol: str, date: pd.Timestamp):
 def handle_missing_data_consecutive(symbol: str, missing_dates: List[pd.Timestamp], portfolio: Portfolio):
     """
     Handle 2+ consecutive missing days.
-    
+
     Actions:
     1. Mark symbol as "unhealthy"
     2. If position exists:
@@ -68,7 +68,7 @@ def handle_missing_data_consecutive(symbol: str, missing_dates: List[pd.Timestam
             # Force exit at last known close
             last_close = get_last_known_close(symbol, missing_dates[0])
             close_position(position, last_close, ExitReason.DATA_MISSING)
-    
+
     mark_symbol_unhealthy(symbol)
     log.alert(f"DATA_UNHEALTHY: {symbol}, missing {len(missing_dates)} days")
     send_alert(f"Symbol {symbol} marked unhealthy due to missing data")
@@ -92,37 +92,37 @@ def handle_missing_data_consecutive(symbol: str, missing_dates: List[pd.Timestam
 def validate_bar(bar: Bar) -> bool:
     """
     Validate OHLC relationships.
-    
+
     Checks:
     1. low <= open <= high
     2. low <= close <= high
     3. volume >= 0
     4. prices > 0
-    
+
     Returns: True if valid, False otherwise
     """
     if not (bar.low <= bar.open <= bar.high):
         log.error(f"INVALID_OHLC: {bar.symbol} {bar.date}, open out of range")
         return False
-    
+
     if not (bar.low <= bar.close <= bar.high):
         log.error(f"INVALID_OHLC: {bar.symbol} {bar.date}, close out of range")
         return False
-    
+
     if bar.volume < 0:
         log.error(f"INVALID_VOLUME: {bar.symbol} {bar.date}, negative volume")
         return False
-    
+
     if bar.close <= 0 or bar.open <= 0:
         log.error(f"INVALID_PRICE: {bar.symbol} {bar.date}, non-positive price")
         return False
-    
+
     return True
 
 def handle_invalid_bar(bar: Bar):
     """
     Handle invalid bar data.
-    
+
     Actions:
     1. Mark as data error
     2. Skip this bar (do not use for indicators)
@@ -145,19 +145,19 @@ def handle_invalid_bar(bar: Bar):
 def detect_extreme_move(symbol: str, current_bar: Bar, previous_bar: Bar) -> bool:
     """
     Detect extreme price moves (>50%).
-    
+
     Returns: True if move is extreme (likely data error)
     """
     if previous_bar is None:
         return False
-    
+
     move_pct = abs(current_bar.close / previous_bar.close - 1)
     return move_pct > 0.50
 
 def handle_extreme_move(symbol: str, bar: Bar):
     """
     Handle extreme price move.
-    
+
     Actions:
     1. Mark as data error
     2. Skip this bar
@@ -184,7 +184,7 @@ def handle_extreme_move(symbol: str, bar: Bar):
 def compute_ma(series: pd.Series, window: int) -> pd.Series:
     """
     Compute moving average with NaN handling.
-    
+
     Rules:
     - Return NaN for all dates before window is filled
     - Do NOT forward-fill NaN values
@@ -198,7 +198,7 @@ def compute_ma(series: pd.Series, window: int) -> pd.Series:
 def compute_atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
     """
     Compute ATR using Wilder's smoothing.
-    
+
     Rules:
     - Return NaN for first (period-1) bars
     - Use Wilder's exponential smoothing (not simple average)
@@ -208,7 +208,7 @@ def compute_atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
     tr2 = abs(df['high'] - df['close'].shift(1))
     tr3 = abs(df['low'] - df['close'].shift(1))
     tr = pd.concat([tr1, tr2, tr3], axis=1).max(axis=1)
-    
+
     # Wilder's smoothing
     atr = tr.ewm(alpha=1/period, adjust=False).mean()
     atr.iloc[:period-1] = np.nan
@@ -217,7 +217,7 @@ def compute_atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
 def compute_roc(close: pd.Series, window: int = 60) -> pd.Series:
     """
     Compute rate of change.
-    
+
     Rules:
     - Return NaN if close[t-window] is missing
     - Formula: (close[t] / close[t-window]) - 1
@@ -228,7 +228,7 @@ def compute_roc(close: pd.Series, window: int = 60) -> pd.Series:
 def compute_highest_close(close: pd.Series, window: int) -> pd.Series:
     """
     Compute highest close over window (EXCLUDING today).
-    
+
     Rules:
     - Use prior N days only (exclude today to avoid lookahead)
     - Return NaN until window is filled
@@ -255,20 +255,20 @@ def compute_highest_close(close: pd.Series, window: int) -> pd.Series:
 def is_valid_for_signal(features: FeatureRow) -> bool:
     """
     Check if features are valid for signal generation.
-    
+
     Required indicators:
     - ma20, ma50 (for eligibility)
     - atr14 (for stop calculation)
     - highest_close_20d, highest_close_55d (for entry triggers)
     - adv20 (for capacity check)
-    
+
     Returns: True if all required indicators are valid
     """
     required = [
         features.ma20, features.ma50, features.atr14,
         features.highest_close_20d, features.highest_close_55d, features.adv20
     ]
-    
+
     return all(x is not None and not np.isnan(x) for x in required)
 
 def generate_signals(features: FeatureRow) -> Optional[Signal]:
@@ -277,7 +277,7 @@ def generate_signals(features: FeatureRow) -> Optional[Signal]:
     """
     if not is_valid_for_signal(features):
         return None  # Skip signal generation
-    
+
     # Proceed with signal generation
     ...
 ```
@@ -302,7 +302,7 @@ def calculate_position_size(
 ) -> int:
     """
     Calculate position size with cash constraint.
-    
+
     Steps:
     1. Calculate desired quantity from risk
     2. Check max position notional constraint
@@ -314,22 +314,22 @@ def calculate_position_size(
     stop_distance = entry_price - stop_price
     if stop_distance <= 0:
         return 0  # Invalid stop
-    
+
     qty_risk = int(risk_dollars / stop_distance)
-    
+
     # Max position notional constraint
     max_qty_notional = int((equity * max_position_notional) / entry_price)
-    
+
     # Cash constraint
     max_qty_cash = int(available_cash / entry_price)
-    
+
     # Take minimum
     qty = min(qty_risk, max_qty_notional, max_qty_cash)
-    
+
     # Minimum position size check (optional: reject if too small)
     if qty < 1:
         return 0  # Cannot afford even 1 share
-    
+
     return qty
 ```
 
@@ -349,7 +349,7 @@ def calculate_position_size(
 def validate_stop_price(entry_price: float, stop_price: float) -> bool:
     """
     Validate stop price for long position.
-    
+
     Rules:
     - Stop must be below entry price
     - Stop must be positive
@@ -357,17 +357,17 @@ def validate_stop_price(entry_price: float, stop_price: float) -> bool:
     if stop_price >= entry_price:
         log.error(f"INVALID_STOP: stop {stop_price} >= entry {entry_price}")
         return False
-    
+
     if stop_price <= 0:
         log.error(f"INVALID_STOP: stop {stop_price} <= 0")
         return False
-    
+
     return True
 
 def handle_invalid_stop(signal: Signal) -> Optional[Signal]:
     """
     Handle invalid stop price.
-    
+
     Actions:
     1. Reject signal
     2. Log error
@@ -399,25 +399,25 @@ def update_trailing_stop(
 ) -> Optional[float]:
     """
     Update trailing stop for long position.
-    
+
     Rules:
     1. Stop can only move UP (never down)
     2. If MA cross triggers exit, use MA level as stop
     3. Hard stop (ATR-based) can only tighten (crypto staged exit)
     4. Never widen hard stop
-    
+
     Returns: New stop price if updated, None if unchanged
     """
     # Calculate potential new stop from ATR
     atr_stop = current_price - (atr_mult * atr14)
-    
+
     # For trailing: use higher of current stop or ATR stop
     # But never go below current stop
     new_stop = max(position.stop_price, atr_stop)
-    
+
     # If MA cross triggers exit, stop is set to MA level
     # (This is for exit logic, not stop update)
-    
+
     # For crypto staged exit: if MA20 broken, tighten to 2.0x ATR
     if position.asset_class == "crypto" and not position.tightened_stop:
         if current_price < ma_level:  # MA20
@@ -426,12 +426,12 @@ def update_trailing_stop(
             new_stop = max(position.stop_price, tightened_stop)
             position.tightened_stop = True
             position.tightened_stop_atr_mult = 2.0
-    
+
     # Only update if new stop is higher than current
     if new_stop > position.stop_price:
         position.stop_price = new_stop
         return new_stop
-    
+
     return None
 ```
 
@@ -456,22 +456,22 @@ def check_exit_signals(
 ) -> Optional[ExitReason]:
     """
     Check exit signals with priority.
-    
+
     Priority order:
     1. Hard stop (highest priority)
     2. Trailing MA cross
     3. Data missing (handled separately)
-    
+
     Returns: ExitReason if exit triggered, None otherwise
     """
     # Priority 1: Hard stop
     if current_price <= position.stop_price:
         return ExitReason.HARD_STOP
-    
+
     # Priority 2: Trailing MA cross
     if current_price < ma_level:
         return ExitReason.TRAILING_MA_CROSS
-    
+
     return None
 ```
 
@@ -493,7 +493,7 @@ def check_exit_signals(
 def update_volatility_scaling(portfolio: Portfolio) -> float:
     """
     Update risk multiplier based on portfolio volatility.
-    
+
     Rules:
     - If < 20 days history: use risk_multiplier = 1.0
     - If < 252 days history: use current vol as baseline
@@ -501,17 +501,17 @@ def update_volatility_scaling(portfolio: Portfolio) -> float:
     - Compare to median over 252D
     """
     returns = portfolio.compute_portfolio_returns(lookback=20)
-    
+
     if len(returns) < 20:
         # Insufficient history: use default
         portfolio.risk_multiplier = 1.0
         portfolio.portfolio_vol_20d = None
         return 1.0
-    
+
     # Compute 20D volatility (annualized)
     vol_20d = np.std(returns) * np.sqrt(252)
     portfolio.portfolio_vol_20d = vol_20d
-    
+
     # Compute median over 252D (if available)
     all_returns = portfolio.compute_portfolio_returns(lookback=252)
     if len(all_returns) >= 252:
@@ -525,14 +525,14 @@ def update_volatility_scaling(portfolio: Portfolio) -> float:
     else:
         # Use current vol as baseline if insufficient history
         median_vol = vol_20d
-    
+
     portfolio.median_vol_252d = median_vol
-    
+
     # Compute risk multiplier
     vol_ratio = vol_20d / median_vol if median_vol > 0 else 1.0
     risk_multiplier = max(0.33, min(1.0, 1.0 / max(vol_ratio, 1.0)))
     portfolio.risk_multiplier = risk_multiplier
-    
+
     return risk_multiplier
 ```
 
@@ -553,7 +553,7 @@ def compute_correlation_to_portfolio(
 ) -> Optional[float]:
     """
     Compute correlation of candidate to existing portfolio.
-    
+
     Rules:
     - Require minimum 10 days of returns for correlation
     - If insufficient: return None (skip correlation guard)
@@ -561,29 +561,29 @@ def compute_correlation_to_portfolio(
     """
     if len(candidate_returns) < 10:
         return None  # Insufficient history
-    
+
     # Get returns for existing positions
     portfolio_returns = []
     for symbol, position in portfolio_positions.items():
         if symbol in returns_data and len(returns_data[symbol]) >= lookback:
             portfolio_returns.append(returns_data[symbol][-lookback:])
-    
+
     if len(portfolio_returns) == 0:
         return None  # No portfolio returns available
-    
+
     # Compute average correlation
     correlations = []
     candidate_returns_window = candidate_returns[-lookback:]
-    
+
     for pos_returns in portfolio_returns:
         if len(pos_returns) == len(candidate_returns_window):
             corr = np.corrcoef(candidate_returns_window, pos_returns)[0, 1]
             if not np.isnan(corr):
                 correlations.append(corr)
-    
+
     if len(correlations) == 0:
         return None
-    
+
     return np.mean(correlations)
 ```
 
@@ -608,7 +608,7 @@ def select_positions_from_queue(
 ) -> List[Signal]:
     """
     Select positions from signal queue.
-    
+
     Rules:
     1. Sort by score (descending)
     2. Apply constraints in order:
@@ -621,38 +621,38 @@ def select_positions_from_queue(
     """
     # Sort by score
     sorted_signals = sorted(signals, key=lambda s: s.score, reverse=True)
-    
+
     selected = []
     rejected_count = 0
-    
+
     for signal in sorted_signals:
         # Check max positions
         if len(portfolio.positions) + len(selected) >= max_positions:
             rejected_count += 1
             continue
-        
+
         # Check max exposure
         estimated_notional = signal.entry_price * estimate_quantity(signal, portfolio)
         if portfolio.gross_exposure + estimated_notional > portfolio.equity * max_exposure:
             rejected_count += 1
             continue
-        
+
         # Check capacity
         if not signal.capacity_passed:
             rejected_count += 1
             continue
-        
+
         # Check correlation guard
         if violates_correlation_guard(signal, portfolio):
             rejected_count += 1
             continue
-        
+
         # All checks passed
         selected.append(signal)
-    
+
     if rejected_count > 0:
         log.warning(f"REJECTED_SIGNALS: {rejected_count} signals rejected due to constraints")
-    
+
     return selected
 ```
 
@@ -678,7 +678,7 @@ def compute_slippage_bps(
 ) -> float:
     """
     Compute slippage with bounds checking.
-    
+
     Rules:
     1. Slippage must be >= 0 (no negative slippage for market orders)
     2. Cap maximum slippage at 500 bps (5%) to prevent outliers
@@ -686,18 +686,18 @@ def compute_slippage_bps(
     """
     # Compute mean slippage
     slippage_mean = compute_slippage_mean(order, market_state, stress_state)
-    
+
     # Add variance
     slippage_std = slippage_mean * 0.75
     if stress_state.stress_mult == 2.0:
         slippage_std *= 1.5  # Fatter tails during stress
-    
+
     # Sample from normal distribution
     slippage_draw = np.random.normal(slippage_mean, slippage_std)
-    
+
     # Clip to valid range
     slippage_bps = max(0.0, min(500.0, slippage_draw))
-    
+
     return slippage_bps
 ```
 
@@ -721,12 +721,12 @@ def compute_weekly_return(
 ) -> float:
     """
     Compute weekly return for stress multiplier.
-    
+
     Rules:
     - Equities: Last 5 trading days (Mon-Fri, skip weekends/holidays)
     - Crypto: Last 7 calendar days (UTC, continuous)
     - Formula: (close[t] / close[t-N]) - 1
-    
+
     Returns: Weekly return as decimal (e.g., -0.03 for -3%)
     """
     if asset_class == "equity":
@@ -734,22 +734,22 @@ def compute_weekly_return(
         trading_days = get_trading_days(bars.index, current_date, lookback=5)
         if len(trading_days) < 5:
             return 0.0  # Insufficient data
-        
+
         start_date = trading_days[0]
         end_date = trading_days[-1]
-        
+
     else:  # crypto
         # Get last 7 calendar days
         end_date = current_date
         start_date = end_date - pd.Timedelta(days=7)
-    
+
     # Get closes
     start_close = bars.loc[start_date, 'close']
     end_close = bars.loc[end_date, 'close']
-    
+
     if start_close <= 0:
         return 0.0
-    
+
     weekly_return = (end_close / start_close) - 1
     return weekly_return
 ```
@@ -775,7 +775,7 @@ def load_data(
 ) -> Dict[str, pd.DataFrame]:
     """
     Load data and filter by universe.
-    
+
     Rules:
     1. Load all available data
     2. Filter to universe symbols only
@@ -783,24 +783,24 @@ def load_data(
     4. Log error for symbols in universe but missing from data
     """
     all_data = load_from_file(data_path)
-    
+
     # Filter to universe
     universe_data = {}
     missing_symbols = []
     extra_symbols = []
-    
+
     for symbol in universe:
         if symbol in all_data:
             universe_data[symbol] = all_data[symbol]
         else:
             missing_symbols.append(symbol)
             log.error(f"MISSING_UNIVERSE_SYMBOL: {symbol} not in data")
-    
+
     for symbol in all_data:
         if symbol not in universe:
             extra_symbols.append(symbol)
             log.warning(f"EXTRA_SYMBOL: {symbol} in data but not in universe")
-    
+
     return universe_data
 ```
 
@@ -818,20 +818,20 @@ def load_benchmark(
 ) -> pd.DataFrame:
     """
     Load benchmark data with validation.
-    
+
     Rules:
     1. Benchmark is REQUIRED (system cannot run without it)
     2. If missing: raise error and stop execution
     3. Validate benchmark has sufficient history
     """
     benchmark_data = load_from_file(data_path, symbols=[benchmark_symbol])
-    
+
     if benchmark_symbol not in benchmark_data:
         raise ValueError(f"BENCHMARK_MISSING: {benchmark_symbol} not found in data")
-    
+
     if len(benchmark_data[benchmark_symbol]) < 250:
         raise ValueError(f"BENCHMARK_INSUFFICIENT: {benchmark_symbol} has < 250 days of data")
-    
+
     return benchmark_data[benchmark_symbol]
 ```
 
@@ -852,4 +852,3 @@ All edge cases are now documented with:
 - Logging requirements
 
 These edge cases should be handled explicitly in the implementation to ensure robust operation.
-

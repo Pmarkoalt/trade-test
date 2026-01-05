@@ -1,15 +1,14 @@
 """Equity factor-based strategy implementation."""
 
 from datetime import datetime
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional
 
 import numpy as np
-import pandas as pd
 
 from ...configs.strategy_config import StrategyConfig
 from ...models.features import FeatureRow
 from ...models.positions import ExitReason, Position
-from ...models.signals import BreakoutType, Signal, SignalSide, SignalType
+from ...models.signals import Signal, SignalSide, SignalType
 from .factor_base import FactorBaseStrategy
 
 

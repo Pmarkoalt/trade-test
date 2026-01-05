@@ -1,10 +1,9 @@
 """Chart components for dashboard."""
 
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 import numpy as np
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
@@ -363,9 +362,9 @@ def create_conviction_breakdown(
         return go.Figure()
 
     levels = ["HIGH", "MEDIUM", "LOW"]
-    win_rates = [by_conv.get(l, {}).get("win_rate", 0) * 100 for l in levels]
-    avg_r = [by_conv.get(l, {}).get("avg_r", 0) for l in levels]
-    totals = [by_conv.get(l, {}).get("total", 0) for l in levels]
+    win_rates = [by_conv.get(level, {}).get("win_rate", 0) * 100 for level in levels]
+    avg_r = [by_conv.get(level, {}).get("avg_r", 0) for level in levels]
+    [by_conv.get(level, {}).get("total", 0) for level in levels]
 
     fig = go.Figure()
 
@@ -425,7 +424,7 @@ def create_monthly_performance_heatmap(
     # Organize by year and month
     # Create matrix (years x months)
     years = sorted(set(d.get("year", 2024) for d in performance_data))
-    months = list(range(1, 13))
+    list(range(1, 13))
 
     z = np.zeros((len(years), 12))
     z[:] = np.nan

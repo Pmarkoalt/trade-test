@@ -222,7 +222,7 @@ class StrategyConfig(BaseModel):
         try:
             validate_file_exists(path, "strategy config")
             data = validate_yaml_format(path)
-        except (FileNotFoundError, ValueError) as e:
+        except (FileNotFoundError, ValueError):
             raise
 
         try:

@@ -9,7 +9,6 @@ from unittest.mock import AsyncMock, patch
 import pandas as pd
 import pytest
 
-from trading_system.data_pipeline.cache.data_cache import DataCache
 from trading_system.data_pipeline.config import DataPipelineConfig
 from trading_system.data_pipeline.live_data_fetcher import LiveDataFetcher
 

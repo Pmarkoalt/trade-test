@@ -211,7 +211,7 @@ This document outlines improvements and enhancements for the Trading System V0.1
 - `trading_system/adapters/alpaca_adapter.py`
 - `trading_system/adapters/ib_adapter.py`
 
-**Note**: 
+**Note**:
 - Adapters require optional dependencies: `alpaca-trade-api` for Alpaca, `ib-insync` for Interactive Brokers
 - Full real-time data feed integration requires websocket setup (placeholders provided)
 - Position tracking from brokers is limited - some fields (triggered_on, adv20_at_entry) not available from broker APIs
@@ -322,7 +322,7 @@ data = source.load_ohlcv(["AAPL", "MSFT"])
 - `trading_system/backtest/engine.py` - Integrated in backtest engine
 - `trading_system/integration/runner.py` - Integrated in runner
 
-**Notes**: 
+**Notes**:
 - Dynamic universe selection supports three modes: "fixed", "custom", "dynamic"
 - Dynamic mode filters by market cap, volume, and liquidity score
 - Universe validation is called after selection
@@ -890,6 +890,5 @@ db.archive_runs([run_id1, run_id2])
 
 ---
 
-**Last Updated**: 2024-12-19  
+**Last Updated**: 2024-12-19
 **Version**: 0.0.2
-

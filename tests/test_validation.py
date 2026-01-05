@@ -1,10 +1,8 @@
 """Unit tests for validation suite."""
 
-from typing import Dict, List
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from trading_system.validation.bootstrap import (
     BootstrapTest,
@@ -13,13 +11,9 @@ from trading_system.validation.bootstrap import (
     compute_sharpe_from_r_multiples,
     run_bootstrap_test,
 )
-from trading_system.validation.correlation_analysis import (
-    CorrelationStressAnalysis,
-    check_correlation_warnings,
-    run_correlation_stress_analysis,
-)
-from trading_system.validation.permutation import PermutationTest, check_permutation_results, run_permutation_test
-from trading_system.validation.sensitivity import ParameterSensitivityGrid, run_parameter_sensitivity
+from trading_system.validation.correlation_analysis import CorrelationStressAnalysis, check_correlation_warnings
+from trading_system.validation.permutation import PermutationTest, check_permutation_results
+from trading_system.validation.sensitivity import ParameterSensitivityGrid
 from trading_system.validation.stress_tests import StressTestSuite, check_stress_results
 
 

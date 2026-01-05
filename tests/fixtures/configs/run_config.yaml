@@ -66,4 +66,3 @@ output:
   log_file: "test_backtest.log"
 
 random_seed: 42
-

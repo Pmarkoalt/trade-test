@@ -1,7 +1,6 @@
 """Tests for walk-forward validation."""
 
 import numpy as np
-import pytest
 
 from trading_system.ml_refinement.config import TrainingConfig
 from trading_system.ml_refinement.validation.metrics import (

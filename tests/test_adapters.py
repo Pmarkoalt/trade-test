@@ -1,16 +1,16 @@
 """Unit tests for broker adapters."""
 
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pandas as pd
 import pytest
 
 from tests.fixtures.mock_adapter import MockAdapter
-from tests.utils.test_helpers import create_sample_fill, create_sample_order
+from tests.utils.test_helpers import create_sample_order
 from trading_system.adapters.alpaca_adapter import AlpacaAdapter
-from trading_system.adapters.base_adapter import AccountInfo, AdapterConfig, BaseAdapter
+from trading_system.adapters.base_adapter import AccountInfo, AdapterConfig
 from trading_system.adapters.ib_adapter import IBAdapter
-from trading_system.models.orders import Order, OrderStatus, SignalSide
+from trading_system.models.orders import OrderStatus, SignalSide
 from trading_system.models.positions import Position, PositionSide
 from trading_system.models.signals import BreakoutType
 

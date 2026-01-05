@@ -64,4 +64,3 @@ Risk Scaling
    :members:
    :undoc-members:
    :show-inheritance:
-

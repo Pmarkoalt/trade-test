@@ -67,7 +67,6 @@ class TestEndToEnd:
     def test_strategy_signal_generation(self):
         """Test that strategies can generate signals from test data."""
         from trading_system.configs.strategy_config import CapacityConfig, EntryConfig, ExitConfig, StrategyConfig
-        from trading_system.models.features import FeatureRow
         from trading_system.strategies.momentum.equity_momentum import EquityMomentumStrategy as EquityStrategy
 
         # Create test strategy config
@@ -108,9 +107,6 @@ class TestEndToEnd:
 
     def test_portfolio_operations(self):
         """Test portfolio operations with sample data."""
-        from trading_system.models.positions import Position
-        from trading_system.models.signals import BreakoutType
-        from trading_system.portfolio import Portfolio
 
         # Create portfolio
         portfolio = create_sample_portfolio(
@@ -147,8 +143,6 @@ class TestEndToEnd:
 
     def test_no_lookahead_bias(self):
         """Test that signals don't use future data."""
-        from trading_system.models.bar import Bar
-        from trading_system.models.signals import BreakoutType, Signal, SignalSide
 
         # Create bars for multiple dates
         dates = pd.bdate_range("2023-11-01", "2023-11-10")
@@ -208,9 +202,6 @@ class TestEndToEnd:
         """
         # This test will be expanded once the backtest engine is implemented
         # For now, it's a placeholder that verifies basic component integration
-
-        from trading_system.models.features import FeatureRow
-        from trading_system.models.signals import Signal
 
         # Create feature row
         features = create_sample_feature_row(
@@ -439,8 +430,6 @@ class TestFullBacktest:
         4. All output files are generated correctly
         5. Results are saved to disk
         """
-        from pathlib import Path
-
         from trading_system.configs.run_config import RunConfig
         from trading_system.integration.runner import BacktestRunner
 
@@ -736,7 +725,6 @@ class TestEdgeCaseIntegration:
         """Test extreme price move when position exists (should treat as missing data)."""
         from trading_system.models.market_data import MarketData
         from trading_system.models.orders import Fill
-        from trading_system.models.positions import ExitReason, Position
         from trading_system.models.signals import BreakoutType, SignalSide
         from trading_system.portfolio import Portfolio
 
@@ -780,7 +768,7 @@ class TestEdgeCaseIntegration:
             notional=10100.0,
         )
 
-        position = portfolio.process_fill(
+        portfolio.process_fill(
             fill=entry_fill, stop_price=98.0, atr_mult=2.5, triggered_on=BreakoutType.FAST_20D, adv20_at_entry=1000000.0
         )
 
@@ -813,9 +801,7 @@ class TestEdgeCaseIntegration:
         import numpy as np
 
         from trading_system.execution.slippage import compute_slippage_bps
-        from trading_system.models.market_data import MarketData
         from trading_system.models.orders import Fill
-        from trading_system.models.positions import Position
         from trading_system.models.signals import BreakoutType, SignalSide
         from trading_system.portfolio import Portfolio
 

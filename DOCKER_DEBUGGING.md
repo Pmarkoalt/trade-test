@@ -241,4 +241,3 @@ After identifying the issue:
 2. Rebuild Docker image: `make docker-build`
 3. Re-run the test: `make docker-debug-test TEST=test_name`
 4. Once fixed, run all tests: `make docker-test-integration`
-

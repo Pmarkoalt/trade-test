@@ -71,12 +71,10 @@ class BaseAdapter(ABC):
         Raises:
             ConnectionError: If connection fails
         """
-        pass
 
     @abstractmethod
     def disconnect(self) -> None:
         """Disconnect from broker API."""
-        pass
 
     @abstractmethod
     def is_connected(self) -> bool:
@@ -85,7 +83,6 @@ class BaseAdapter(ABC):
         Returns:
             True if connected, False otherwise
         """
-        pass
 
     @abstractmethod
     def get_account_info(self) -> AccountInfo:
@@ -98,7 +95,6 @@ class BaseAdapter(ABC):
             ConnectionError: If not connected
             RuntimeError: If account info cannot be retrieved
         """
-        pass
 
     @abstractmethod
     def submit_order(self, order: Order) -> Fill:
@@ -118,7 +114,6 @@ class BaseAdapter(ABC):
             ValueError: If order is invalid
             RuntimeError: If order submission fails
         """
-        pass
 
     @abstractmethod
     def cancel_order(self, order_id: str) -> bool:
@@ -133,7 +128,6 @@ class BaseAdapter(ABC):
         Raises:
             ConnectionError: If not connected
         """
-        pass
 
     @abstractmethod
     def get_order_status(self, order_id: str) -> OrderStatus:
@@ -148,7 +142,6 @@ class BaseAdapter(ABC):
         Raises:
             ConnectionError: If not connected
         """
-        pass
 
     @abstractmethod
     def get_positions(self) -> Dict[str, Position]:
@@ -160,7 +153,6 @@ class BaseAdapter(ABC):
         Raises:
             ConnectionError: If not connected
         """
-        pass
 
     @abstractmethod
     def get_position(self, symbol: str) -> Optional[Position]:
@@ -175,7 +167,6 @@ class BaseAdapter(ABC):
         Raises:
             ConnectionError: If not connected
         """
-        pass
 
     @abstractmethod
     def get_current_price(self, symbol: str) -> Optional[float]:
@@ -190,7 +181,6 @@ class BaseAdapter(ABC):
         Raises:
             ConnectionError: If not connected
         """
-        pass
 
     @abstractmethod
     def subscribe_market_data(self, symbols: List[str]) -> None:
@@ -202,7 +192,6 @@ class BaseAdapter(ABC):
         Raises:
             ConnectionError: If not connected
         """
-        pass
 
     @abstractmethod
     def unsubscribe_market_data(self, symbols: List[str]) -> None:
@@ -214,7 +203,6 @@ class BaseAdapter(ABC):
         Raises:
             ConnectionError: If not connected
         """
-        pass
 
     def __enter__(self):
         """Context manager entry: connect to broker."""

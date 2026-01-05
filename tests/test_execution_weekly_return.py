@@ -1,8 +1,6 @@
 """Unit tests for execution/weekly_return.py."""
 
-import numpy as np
 import pandas as pd
-import pytest
 
 from trading_system.execution.weekly_return import compute_weekly_return
 

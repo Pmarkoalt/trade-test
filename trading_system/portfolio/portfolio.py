@@ -10,7 +10,7 @@ from ..models.orders import Fill, Order, OrderStatus
 from ..models.positions import ExitReason, Position, PositionSide
 from ..models.signals import BreakoutType, Signal, SignalSide, SignalType
 from ..strategies.base.strategy_interface import StrategyInterface
-from .correlation import compute_average_pairwise_correlation, compute_correlation_to_portfolio
+from .correlation import compute_average_pairwise_correlation
 from .position_sizing import calculate_position_size
 from .risk_scaling import compute_volatility_scaling
 

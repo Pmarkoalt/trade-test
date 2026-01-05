@@ -1,12 +1,11 @@
 """Unit tests for portfolio management system."""
 
-from typing import Dict, List
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from trading_system.models.orders import Fill, OrderStatus
+from trading_system.models.orders import Fill
 from trading_system.models.positions import ExitReason, Position, PositionSide
 from trading_system.models.signals import BreakoutType, SignalSide
 from trading_system.portfolio import (
@@ -793,7 +792,8 @@ class TestPortfolio:
         # Create a simple mock strategy
         class MockStrategy(StrategyInterface):
             def __init__(self):
-                from trading_system.configs.strategy_config import StrategyConfig
+                # StrategyConfig already imported at module level (line 785)
+                # Using the imported one
 
                 self.config = StrategyConfig(
                     name="test", asset_class="equity", universe=["TSLA"], benchmark="SPY", risk=risk_config

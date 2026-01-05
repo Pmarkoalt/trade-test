@@ -48,4 +48,3 @@ Dashboard
    :members:
    :undoc-members:
    :show-inheritance:
-

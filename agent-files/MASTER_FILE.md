@@ -72,13 +72,13 @@ Asset must meet ALL of:
    ma50_roc_20d = (MA50[t] / MA50[t-20]) - 1
    ma50_uptrend = ma50_roc_20d > 0.005  # >0.5% rise over 20 days
    ```
-   
+
 3. **Relative strength vs SPY (optional for MVP, recommended for v1.1):**
    ```
    spy_roc60 = (SPY_close / SPY_close_60d_ago) - 1
    stock_roc60 = (close / close_60d_ago) - 1
    relative_strength = stock_roc60 - spy_roc60
-   
+
    # Filter: relative_strength > 0 (outperforming market)
    ```
 
@@ -199,7 +199,7 @@ order_notional > 0.25% of ADV20 → reject trade
 If close < MA20:
     → Tighten hard stop to 2.0 × ATR14 (from 3.0×)
 
-# Stage 2: Exit signal  
+# Stage 2: Exit signal
 If close < MA50 OR tightened stop hit:
     → Exit at next UTC daily open
 ```
@@ -227,7 +227,7 @@ stop_price = entry_price - (2.0 × ATR14)
 
 - **Base risk per trade:** 0.75% of equity
 - **Max positions:** 8
-- **Max gross exposure:** 80% of equity  
+- **Max gross exposure:** 80% of equity
 - **Max position notional:** 15% of equity
 
 Same sizing calculation as equities.
@@ -286,7 +286,7 @@ avg_pairwise_corr = mean(off_diagonal(correlation_matrix))
 if avg_pairwise_corr > 0.70:
     # For each new candidate:
     candidate_corr_to_portfolio = mean(correlations(candidate, existing_positions))
-    
+
     if candidate_corr_to_portfolio > 0.75:
         reject_entry  # or deprioritize in scoring
 
@@ -313,10 +313,10 @@ You generate 10 buy signals but only have room for 3 positions.
    ```python
    # For 20D breakout
    breakout_strength_20 = (close - MA20) / ATR14
-   
+
    # For 55D breakout
    breakout_strength_55 = (close - MA50) / ATR14
-   
+
    # Use whichever triggered
    ```
 
@@ -326,8 +326,8 @@ You generate 10 buy signals but only have room for 3 positions.
    spy_roc60 = (SPY_close / SPY_close_60) - 1
    stock_roc60 = (close / close_60) - 1
    relative_strength = stock_roc60 - spy_roc60
-   
-   # Crypto  
+
+   # Crypto
    btc_roc60 = (BTC_close / BTC_close_60) - 1
    crypto_roc60 = (close / close_60) - 1
    relative_strength = crypto_roc60 - btc_roc60
@@ -380,7 +380,7 @@ for candidate in ranked_candidates:
         continue
     if candidate violates capacity constraint:
         continue
-    
+
     selected.append(candidate)
 ```
 
@@ -426,7 +426,7 @@ if gap_pct > 0.10:  # >10% gap
 # Reject if OHLC relationships violated
 if not (low <= open <= high and low <= close <= high):
     mark_data_error(symbol, date)
-    
+
 # Reject if price moved >50% in one day (likely data error, not flash crash)
 if abs(close / close[-1] - 1) > 0.50:
     mark_data_error(symbol, date)
@@ -451,18 +451,18 @@ if abs(close / close[-1] - 1) > 0.50:
   R_multiple per trade = (exit_price - entry_price) / (entry_price - stop_price)
   expectancy = mean(R_multiples)
   ```
-  
+
 - **Profit factor > 1.4**
   ```python
   profit_factor = sum(winning_trades) / abs(sum(losing_trades))
   ```
-  
+
 - **Correlation to benchmark < 0.80**
   ```python
   # Equities: correlation(portfolio_returns, SPY_returns)
   # Crypto: correlation(portfolio_returns, BTC_returns)
   ```
-  
+
 - **99th percentile daily loss < 5%**
   ```python
   worst_daily_loss = percentile(daily_returns, 1)
@@ -474,24 +474,24 @@ if abs(close / close[-1] - 1) > 0.50:
   ```python
   recovery_factor = total_net_profit / max_drawdown
   ```
-  
+
 - **Drawdown duration**
   ```python
   # Average days from peak to new peak
   # Median and max drawdown duration
   ```
-  
+
 - **Turnover (trades per month)**
   - Target: 5-15 trades/month combined (days-to-weeks holding)
   - If >20 trades/month, system has become high-frequency by accident
-  
+
 - **Average holding period**
   - Target: 7-21 days
   - Track median and mean
-  
+
 - **Max consecutive losing trades**
   - Psychological limit: <10 (most traders quit after this)
-  
+
 - **Win rate**
   - Expected: 40-50% for momentum systems
   - Not a target, just diagnostic
@@ -567,7 +567,7 @@ fee_cost = notional × 0.0008
        stress_mult = 2.0
    else:
        stress_mult = 1.0
-       
+
    # Similar for crypto with BTC returns < -5%
    ```
 
@@ -576,17 +576,17 @@ fee_cost = notional × 0.0008
 ```python
 # Equities
 slippage_mean_bps = (
-    base_slippage_bps × 
-    vol_mult × 
-    size_penalty × 
+    base_slippage_bps ×
+    vol_mult ×
+    size_penalty ×
     stress_mult
 )
 
 # Crypto
 slippage_mean_bps = (
-    base_slippage_bps × 
-    vol_mult × 
-    size_penalty × 
+    base_slippage_bps ×
+    vol_mult ×
+    size_penalty ×
     weekend_penalty ×
     stress_mult
 )
@@ -737,7 +737,7 @@ Dataset: [2023-01-01 to 2024-12-31] or specify your period
 
 ## Data Splits
 - Train: [start] to [end]
-- Validation: [start] to [end]  
+- Validation: [start] to [end]
 - Holdout: [start] to [end] **LOCKED**
 
 ## Declared Parameters (Frozen)
@@ -895,12 +895,12 @@ if order_notional > 0.0025 × ADV20:  # 0.25% of 20D avg dollar volume
 def compute_slippage_bps(order, market_state, stress_state):
     """
     Compute slippage in basis points for a given order.
-    
+
     Args:
         order: Order object with symbol, side, notional
         market_state: Current ATR, ADV, day_of_week
         stress_state: Recent market returns, VIX (optional)
-    
+
     Returns:
         slippage_bps: Float, basis points of slippage
     """
@@ -909,43 +909,43 @@ def compute_slippage_bps(order, market_state, stress_state):
         base = 8
     elif order.asset_class == 'crypto':
         base = 10
-    
+
     # 2. Volatility multiplier
     atr_60d_avg = mean(market_state.atr14[-60:])
     vol_mult = market_state.atr14 / atr_60d_avg
     vol_mult = clip(vol_mult, 0.5, 3.0)
-    
+
     # 3. Size penalty
     size_ratio = order.notional / (0.01 × market_state.adv20)
     size_penalty = clip(size_ratio, 0.5, 2.0)
-    
+
     # 4. Session penalty (crypto weekends)
     if order.asset_class == 'crypto' and market_state.day_of_week in [5, 6]:  # Sat, Sun
         session_penalty = 1.5
     else:
         session_penalty = 1.0
-    
+
     # 5. Stress multiplier
     stress_mult = 1.0
-    
+
     if order.asset_class == 'equity':
         if stress_state.spy_weekly_return < -0.03:
             stress_mult = 2.0
         elif stress_state.vix > 30:  # optional, requires VIX data
             stress_mult = 2.0
-            
+
     elif order.asset_class == 'crypto':
         if stress_state.btc_weekly_return < -0.05:
             stress_mult = 2.0
-    
+
     # 6. Compute mean
     slippage_mean = base × vol_mult × size_penalty × session_penalty × stress_mult
-    
+
     # 7. Add variance (normal distribution)
     slippage_std = slippage_mean × 0.75
     slippage_draw = sample_normal(slippage_mean, slippage_std)
     slippage_bps = max(slippage_draw, 0)  # no negative slippage
-    
+
     return slippage_bps
 ```
 
@@ -955,12 +955,12 @@ def compute_slippage_bps(order, market_state, stress_state):
 def compute_fees(fill_price, quantity, asset_class):
     """Compute transaction fees."""
     notional = fill_price × quantity
-    
+
     if asset_class == 'equity':
         fee_bps = 1
     elif asset_class == 'crypto':
         fee_bps = 8
-    
+
     fee_cost = notional × (fee_bps / 10000)
     return fee_cost
 ```
@@ -1065,7 +1065,7 @@ for scenario_name, multiplier in scenarios.items():
         period='train_validate',
         slippage_multiplier=multiplier
     )
-    
+
     print(f"{scenario_name}:")
     print(f"  Sharpe: {results.sharpe:.2f}")
     print(f"  Calmar: {results.calmar:.2f}")
@@ -1086,31 +1086,31 @@ for scenario_name, multiplier in scenarios.items():
 def bootstrap_analysis(trade_returns, n_iterations=1000):
     """
     Bootstrap trade returns to build confidence intervals.
-    
+
     Args:
         trade_returns: List of R-multiples per trade
         n_iterations: Number of bootstrap samples
-    
+
     Returns:
         Dictionary with percentile results
     """
     sharpe_samples = []
     max_dd_samples = []
     calmar_samples = []
-    
+
     for i in range(n_iterations):
         # Resample with replacement
         sample = resample(trade_returns, n=len(trade_returns), replace=True)
-        
+
         # Compute metrics
         sharpe = compute_sharpe(sample)
         max_dd = compute_max_drawdown(sample)
         calmar = compute_calmar(sample)
-        
+
         sharpe_samples.append(sharpe)
         max_dd_samples.append(max_dd)
         calmar_samples.append(calmar)
-    
+
     results = {
         'sharpe_5th': percentile(sharpe_samples, 5),
         'sharpe_50th': percentile(sharpe_samples, 50),
@@ -1118,7 +1118,7 @@ def bootstrap_analysis(trade_returns, n_iterations=1000):
         'max_dd_95th': percentile(max_dd_samples, 95),
         'calmar_5th': percentile(calmar_samples, 5),
     }
-    
+
     return results
 
 # Run on train + validation
@@ -1127,7 +1127,7 @@ bootstrap_results = bootstrap_analysis(all_trade_returns)
 # Check fragility
 if bootstrap_results['sharpe_5th'] < 0.5:
     flag_warning("Strategy is statistically fragile")
-    
+
 if bootstrap_results['max_dd_95th'] > 0.25:
     flag_warning("Tail risk: 95th percentile DD > 25%")
 ```
@@ -1140,32 +1140,32 @@ if bootstrap_results['max_dd_95th'] > 0.25:
 def permutation_test(strategy, data, n_iterations=1000):
     """
     Randomize entry dates while preserving exit logic.
-    
+
     Tests if strategy performance is due to entry skill or luck.
     """
     # Get actual results
     actual_results = run_backtest(strategy, data)
     actual_sharpe = actual_results.sharpe
-    
+
     # Run randomized versions
     random_sharpes = []
-    
+
     for i in range(n_iterations):
         # Randomize entry dates (preserve distribution of holding periods)
         randomized_strategy = randomize_entries(strategy, data)
         random_results = run_backtest(randomized_strategy, data)
         random_sharpes.append(random_results.sharpe)
-    
+
     # Compute percentile rank
     percentile_rank = percentileofscore(random_sharpes, actual_sharpe)
-    
+
     print(f"Actual Sharpe: {actual_sharpe:.2f}")
     print(f"Percentile rank: {percentile_rank:.1f}%")
     print(f"95th percentile random: {percentile(random_sharpes, 95):.2f}")
-    
+
     if percentile_rank < 95:
         flag_warning("Strategy not statistically significant vs random")
-    
+
     return percentile_rank
 
 # Run on train + validation
@@ -1189,22 +1189,22 @@ def correlation_stress_analysis(portfolio_history):
         if len(positions) >= 2:
             corr_matrix = compute_correlation_matrix(positions, lookback=20)
             avg_pairwise_corr = mean(off_diagonal(corr_matrix))
-            
+
             # Track correlation vs drawdown
             dd_from_peak = compute_dd_from_peak(date)
-            
+
             log_correlation(date, avg_pairwise_corr, dd_from_peak)
-    
+
     # Analyze
     during_drawdowns = filter(lambda x: x.dd_from_peak < -0.05, logs)
     avg_corr_during_dd = mean([x.avg_pairwise_corr for x in during_drawdowns])
-    
+
     during_normal = filter(lambda x: x.dd_from_peak >= -0.05, logs)
     avg_corr_normal = mean([x.avg_pairwise_corr for x in during_normal])
-    
+
     print(f"Avg correlation during normal: {avg_corr_normal:.2f}")
     print(f"Avg correlation during DD: {avg_corr_during_dd:.2f}")
-    
+
     if avg_corr_during_dd > 0.70:
         flag_warning("Diversification fails during stress")
 ```
@@ -1254,7 +1254,7 @@ print(f"  Max DD: {range_results.max_dd:.1%}")
 
 for quarter in quarters:
     crash_day = random.choice(quarter.days)
-    
+
     simulate_crash(
         date=crash_day,
         slippage_mult=5.0,
@@ -1366,23 +1366,23 @@ week_start,weekly_return_pct,weekly_vol_pct,sharpe_ytd,calmar_ytd,dd_from_peak,n
 
 1. **Max drawdown > 20%**
    - Risk of ruin too high
-   
+
 2. **Sharpe ratio < 0.75**
    - Insufficient risk-adjusted returns
-   
+
 3. **Calmar ratio < 1.0**
    - Returns don't justify drawdown
-   
+
 4. **Profits depend on <3 trades**
    - Fragile, not systematic
    - Test: Remove top 3 trades, is expectancy still positive?
-   
+
 5. **2x slippage flips expectancy negative**
    - Edge is too thin for real-world execution
-   
+
 6. **Bootstrap 5th percentile Sharpe < 0.4**
    - Statistically fragile
-   
+
 7. **Permutation test fails (actual < 95th percentile random)**
    - Entry timing is not adding value
 
@@ -1722,22 +1722,22 @@ def score_candidate(candidate, existing_positions):
         breakout_strength = (candidate.close - candidate.ma20) / candidate.atr14
     else:  # 55D
         breakout_strength = (candidate.close - candidate.ma50) / candidate.atr14
-    
+
     # 2. Momentum strength (relative)
     if candidate.asset_class == 'equity':
         benchmark_roc60 = SPY_roc60
     else:  # crypto
         benchmark_roc60 = BTC_roc60
-    
+
     momentum_strength = candidate.roc60 - benchmark_roc60
-    
+
     # 3. Diversification bonus
     if len(existing_positions) > 0:
         avg_corr = mean([correlation(candidate, pos) for pos in existing_positions])
         diversification_bonus = 1.0 - avg_corr
     else:
         diversification_bonus = 0.5  # neutral
-    
+
     return {
         'breakout_strength': breakout_strength,
         'momentum_strength': momentum_strength,
@@ -1760,12 +1760,12 @@ sensitivity_grid = {
     'equity_atr_mult': [2.0, 2.5, 3.0, 3.5],
     'equity_breakout_clearance': [0.000, 0.005, 0.010, 0.015],
     'equity_exit_ma': [20, 50],
-    
+
     # Crypto
     'crypto_atr_mult': [2.5, 3.0, 3.5, 4.0],
     'crypto_breakout_clearance': [0.000, 0.005, 0.010, 0.015],
     'crypto_exit_mode': ['MA20', 'MA50', 'staged'],
-    
+
     # Shared
     'vol_scaling_mode': ['continuous', 'regime', 'off'],
     'relative_strength_enabled': [False, True],  # optional for v1.1
@@ -1860,25 +1860,25 @@ EXPECTED_WIN_RATE = (0.40, 0.55)  # momentum systems typically 40-50%
 ```python
 class MomentumStrategy:
     """Base class for both equity and crypto strategies."""
-    
+
     def __init__(self, config: StrategyConfig):
         self.config = config
         self.universe = config.universe
         self.params = config.params
-        
+
     def compute_features(self, data: pd.DataFrame) -> pd.DataFrame:
         """Compute all indicators."""
         pass
-        
+
     def generate_signals(
-        self, 
+        self,
         features: pd.DataFrame,
         portfolio: Portfolio,
         date: datetime
     ) -> List[Signal]:
         """Generate entry signals."""
         pass
-        
+
     def update_stops(
         self,
         portfolio: Portfolio,
@@ -1886,7 +1886,7 @@ class MomentumStrategy:
     ) -> List[Order]:
         """Update trailing stops daily."""
         pass
-        
+
     def score_candidates(
         self,
         signals: List[Signal],

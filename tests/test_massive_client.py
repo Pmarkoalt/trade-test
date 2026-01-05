@@ -1,13 +1,12 @@
 """Unit tests for Massive client."""
 
-import asyncio
-from datetime import date, timedelta
-from unittest.mock import AsyncMock, MagicMock, patch
+from datetime import date
+from unittest.mock import AsyncMock, patch
 
 import pandas as pd
 import pytest
 
-from trading_system.data_pipeline.exceptions import APIRateLimitError, DataFetchError, DataValidationError
+from trading_system.data_pipeline.exceptions import APIRateLimitError, DataFetchError
 from trading_system.data_pipeline.sources.massive_client import MassiveClient
 from trading_system.models.bar import Bar
 

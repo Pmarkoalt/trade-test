@@ -2,12 +2,9 @@
 
 import shutil
 import tempfile
-from datetime import datetime
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
-import pytest
 
 from trading_system.models.positions import ExitReason, Position, PositionSide
 from trading_system.models.signals import BreakoutType

@@ -20,13 +20,11 @@ class BaseFeatureExtractor(ABC):
     @abstractmethod
     def name(self) -> str:
         """Unique name for this extractor."""
-        pass
 
     @property
     @abstractmethod
     def feature_names(self) -> List[str]:
         """List of feature names this extractor provides."""
-        pass
 
     @property
     def category(self) -> str:
@@ -44,7 +42,6 @@ class BaseFeatureExtractor(ABC):
         Returns:
             Dictionary of feature_name -> value
         """
-        pass
 
     def validate_output(self, features: Dict[str, float]) -> bool:
         """Validate extracted features."""
@@ -68,7 +65,6 @@ class OHLCVExtractor(BaseFeatureExtractor):
         Returns:
             Dictionary of feature values
         """
-        pass
 
     def _safe_get(
         self,

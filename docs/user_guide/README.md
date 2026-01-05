@@ -28,4 +28,3 @@ Welcome to the Trading System User Guide. This section contains comprehensive gu
 ---
 
 For technical details, see the [Architecture Documentation](../../agent-files/).
-

@@ -1,7 +1,6 @@
 """Unit tests for data/calendar.py."""
 
 import pandas as pd
-import pytest
 
 from trading_system.data.calendar import get_crypto_days, get_next_trading_day, get_trading_calendar, get_trading_days
 

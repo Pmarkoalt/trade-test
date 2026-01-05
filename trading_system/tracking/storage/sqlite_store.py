@@ -11,7 +11,6 @@ from typing import Dict, List, Optional
 from trading_system.tracking.models import (
     ConvictionLevel,
     ExitReason,
-    PerformanceMetrics,
     SignalDirection,
     SignalOutcome,
     SignalStatus,
@@ -469,7 +468,7 @@ class SQLiteTrackingStore(BaseTrackingStore):
             conditions.append("created_date <= ?")
             params.append(end_date.isoformat())
 
-        where_clause = f"WHERE {' AND '.join(conditions)}" if conditions else ""
+        f"WHERE {' AND '.join(conditions)}" if conditions else ""
 
         sql = """
             SELECT

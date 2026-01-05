@@ -56,4 +56,3 @@ Portfolio State
    :members:
    :undoc-members:
    :show-inheritance:
-

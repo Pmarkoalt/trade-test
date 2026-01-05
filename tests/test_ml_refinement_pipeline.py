@@ -1,7 +1,6 @@
 """Tests for ML refinement feature pipeline."""
 
 import pandas as pd
-import pytest
 
 from trading_system.ml_refinement import FeatureConfig, FeatureSet, FeatureVector
 from trading_system.ml_refinement.features import FeaturePipeline, FeatureRegistry, FeatureScaler

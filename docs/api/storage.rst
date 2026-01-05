@@ -16,4 +16,3 @@ Database Schema
    :members:
    :undoc-members:
    :show-inheritance:
-

@@ -48,4 +48,3 @@ Configuration Migration
    :members:
    :undoc-members:
    :show-inheritance:
-

@@ -8,16 +8,14 @@ are properly tested. Focus areas:
 - Volatility scaling with <20 days history
 """
 
-from typing import Dict, List
-from unittest.mock import Mock
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from trading_system.data.validator import detect_missing_data, validate_ohlcv
+from trading_system.data.validator import validate_ohlcv
 from trading_system.execution.slippage import compute_slippage_bps
-from trading_system.models.positions import ExitReason, Position, PositionSide
+from trading_system.models.positions import Position, PositionSide
 from trading_system.models.signals import BreakoutType, Signal, SignalSide, SignalType
 from trading_system.portfolio import (
     Portfolio,
@@ -787,7 +785,7 @@ class TestInvalidOHLCData:
         )
 
         # Validation should detect invalid OHLC
-        result = validate_ohlcv(df, "TEST")
+        validate_ohlcv(df, "TEST")
         # Depending on implementation, this might return False or log warning
         # For now, we verify the data is invalid
         assert df["low"].iloc[0] > df["high"].iloc[0], "Data should be invalid"

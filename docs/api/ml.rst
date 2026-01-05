@@ -32,4 +32,3 @@ Model Versioning
    :members:
    :undoc-members:
    :show-inheritance:
-

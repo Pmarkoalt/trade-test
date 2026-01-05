@@ -24,4 +24,3 @@ Interactive Brokers Adapter
    :members:
    :undoc-members:
    :show-inheritance:
-

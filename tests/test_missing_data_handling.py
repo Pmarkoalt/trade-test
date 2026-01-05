@@ -8,26 +8,21 @@ Tests verify that missing data scenarios are handled correctly:
 
 import logging
 import os
-from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import pytest
 
-from trading_system.backtest.engine import BacktestEngine
 from trading_system.backtest.event_loop import DailyEventLoop
+from trading_system.configs.strategy_config import CapacityConfig, EntryConfig, ExitConfig, RiskConfig, StrategyConfig
+from trading_system.data.calendar import get_next_trading_day
+from trading_system.data.validator import detect_missing_data
+from trading_system.indicators.feature_computer import compute_features
 from trading_system.models.market_data import MarketData
-from trading_system.models.positions import ExitReason, Position
 from trading_system.portfolio.portfolio import Portfolio
 from trading_system.strategies.momentum.equity_momentum import EquityMomentumStrategy
 
 # Backward compatibility alias
 EquityStrategy = EquityMomentumStrategy
-from trading_system.configs.strategy_config import CapacityConfig, EntryConfig, ExitConfig, RiskConfig, StrategyConfig
-from trading_system.data.calendar import get_next_trading_day
-from trading_system.data.loader import load_ohlcv_data
-from trading_system.data.validator import detect_missing_data
-from trading_system.indicators.feature_computer import compute_features
 
 # Get test fixtures directory
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixtures")
@@ -164,7 +159,7 @@ class TestMissingDataInEventLoop:
             # Process day with missing data (2023-01-02)
             # Note: 2023-01-02 is a Monday, so it's a trading day
             missing_date = pd.Timestamp("2023-01-02")
-            events = event_loop.process_day(missing_date)
+            event_loop.process_day(missing_date)
 
             # Check that warning was logged
             assert "MISSING_DATA_1DAY" in caplog.text
@@ -193,11 +188,11 @@ class TestMissingDataInEventLoop:
 
             # Process first missing day (2023-01-03)
             missing_date1 = pd.Timestamp("2023-01-03")
-            events1 = event_loop.process_day(missing_date1)
+            event_loop.process_day(missing_date1)
 
             # Process second missing day (2023-01-04)
             missing_date2 = pd.Timestamp("2023-01-04")
-            events2 = event_loop.process_day(missing_date2)
+            event_loop.process_day(missing_date2)
 
             # Check that error was logged
             assert "DATA_UNHEALTHY" in caplog.text
@@ -258,11 +253,11 @@ class TestMissingDataInEventLoop:
 
         # Process first missing day (2023-01-03)
         missing_date1 = pd.Timestamp("2023-01-03")
-        events1 = event_loop.process_day(missing_date1)
+        event_loop.process_day(missing_date1)
 
         # Process second missing day (2023-01-04) - should trigger force exit
         missing_date2 = pd.Timestamp("2023-01-04")
-        events2 = event_loop.process_day(missing_date2)
+        event_loop.process_day(missing_date2)
 
         # Check that exit order was created or position was closed
         # The position should be closed due to DATA_MISSING exit reason
@@ -350,7 +345,7 @@ class TestMissingDataInEventLoop:
 
         # Process first missing day (2023-01-03)
         missing_date1 = pd.Timestamp("2023-01-03")
-        events1 = event_loop.process_day(missing_date1)
+        event_loop.process_day(missing_date1)
 
         # Position may be closed if the full gap is detected (2023-01-03, 2023-01-04, 2023-01-05)
         # This is acceptable behavior - the system detects the full gap and closes immediately
@@ -363,7 +358,7 @@ class TestMissingDataInEventLoop:
 
         # Process second missing day (2023-01-04) - should trigger force exit
         missing_date2 = pd.Timestamp("2023-01-04")
-        events2 = event_loop.process_day(missing_date2)
+        event_loop.process_day(missing_date2)
 
         # After 2+ consecutive missing days, position should be closed
         # Check if position was closed or exit order was created

@@ -1,6 +1,6 @@
 """Main feature computation function that computes all indicators for a symbol."""
 
-from typing import Dict, Optional
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -9,8 +9,6 @@ from trading_system.data.memory_profiler import optimize_dataframe_dtypes
 from trading_system.exceptions import IndicatorError
 from trading_system.indicators.atr import atr
 from trading_system.indicators.breakouts import highest_close
-from trading_system.indicators.cache import enable_caching, get_cache
-from trading_system.indicators.correlation import rolling_corr
 from trading_system.indicators.ma import ma
 from trading_system.indicators.momentum import roc
 from trading_system.indicators.volume import adv

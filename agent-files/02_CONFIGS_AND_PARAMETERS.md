@@ -47,7 +47,7 @@ risk:
 
 capacity:
   max_order_pct_adv: 0.005 # equities 0.5%
-  
+
 costs:
   fee_bps: 1
   slippage_base_bps: 8

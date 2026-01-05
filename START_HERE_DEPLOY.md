@@ -113,4 +113,3 @@ Your dashboard is now live! Share the URL with others or use it yourself.
 ---
 
 **Ready?** Go to https://share.streamlit.io and click "New app"! 🚀
-

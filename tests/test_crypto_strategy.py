@@ -1,15 +1,9 @@
 """Unit tests for crypto momentum strategy."""
 
-from datetime import datetime
 
-import numpy as np
 import pandas as pd
 import pytest
 
-from trading_system.strategies.momentum.crypto_momentum import CryptoMomentumStrategy
-
-# Backward compatibility alias
-CryptoStrategy = CryptoMomentumStrategy
 from trading_system.configs.strategy_config import (
     CapacityConfig,
     CostsConfig,
@@ -23,6 +17,10 @@ from trading_system.configs.strategy_config import (
 from trading_system.models.features import FeatureRow
 from trading_system.models.positions import ExitReason, Position, PositionSide
 from trading_system.models.signals import BreakoutType
+from trading_system.strategies.momentum.crypto_momentum import CryptoMomentumStrategy
+
+# Backward compatibility alias
+CryptoStrategy = CryptoMomentumStrategy
 
 
 @pytest.fixture

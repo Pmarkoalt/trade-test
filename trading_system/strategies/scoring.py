@@ -157,7 +157,6 @@ def rank_normalize(values: List[float]) -> List[float]:
         i = 0
         while i < len(sorted_values):
             # Count how many values are tied at this position
-            tie_start = i
             tie_value = sorted_values[i]
 
             # Count ties

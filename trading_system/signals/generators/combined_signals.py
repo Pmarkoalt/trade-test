@@ -1,8 +1,8 @@
 """Combined signal generator that merges technical, news, and sentiment signals."""
 
-from dataclasses import dataclass, field
-from datetime import date, datetime
-from typing import Callable, Dict, List, Optional, Tuple
+from dataclasses import dataclass
+from datetime import date
+from typing import Dict, List, Optional, Tuple
 
 import pandas as pd
 

@@ -252,7 +252,7 @@ class TestCreateStrategy:
             try:
                 strategy = create_strategy(config)
                 assert strategy is not None
-            except (StrategyNotFoundError, ValueError, AttributeError) as e:
+            except (StrategyNotFoundError, ValueError, AttributeError):
                 # Some combinations might not be registered or might have other issues
                 # This is OK for testing inference logic
                 pass

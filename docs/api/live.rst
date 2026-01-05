@@ -16,4 +16,3 @@ Live Monitor
    :members:
    :undoc-members:
    :show-inheritance:
-

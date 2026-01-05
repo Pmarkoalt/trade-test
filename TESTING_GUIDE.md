@@ -597,4 +597,3 @@ ls -la tests/results/*/train/
 - Expected trades: `tests/fixtures/EXPECTED_TRADES.md`
 - Example configs: `EXAMPLE_CONFIGS/README.md`
 - Architecture docs: `agent-files/01_ARCHITECTURE_OVERVIEW.md`
-

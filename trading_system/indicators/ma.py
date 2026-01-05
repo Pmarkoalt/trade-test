@@ -1,6 +1,6 @@
 """Moving average indicator calculations."""
 
-from typing import Optional, Union
+from typing import Optional
 
 import numpy as np
 import pandas as pd

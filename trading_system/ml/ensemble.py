@@ -7,12 +7,12 @@ This module provides ensemble methods including:
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
 
-from trading_system.ml.models import MLModel, ModelMetadata, ModelType
+from trading_system.ml.models import MLModel, ModelType
 
 
 class EnsembleModel(ABC):
@@ -35,7 +35,6 @@ class EnsembleModel(ABC):
         Returns:
             Dictionary of performance metrics
         """
-        pass
 
     @abstractmethod
     def predict(self, X: pd.DataFrame) -> np.ndarray:
@@ -47,7 +46,6 @@ class EnsembleModel(ABC):
         Returns:
             Array of predictions
         """
-        pass
 
     @abstractmethod
     def predict_proba(self, X: pd.DataFrame) -> Optional[np.ndarray]:
@@ -59,7 +57,6 @@ class EnsembleModel(ABC):
         Returns:
             Array of probability predictions, or None if not supported
         """
-        pass
 
 
 class VotingEnsemble(EnsembleModel):

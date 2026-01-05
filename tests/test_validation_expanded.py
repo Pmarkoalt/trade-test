@@ -1,33 +1,15 @@
 """Expanded tests for validation suite components."""
 
-from typing import Dict, List
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from trading_system.validation.bootstrap import (
-    BootstrapTest,
-    check_bootstrap_results,
-    compute_max_drawdown_from_r_multiples,
-    compute_sharpe_from_r_multiples,
-    run_bootstrap_test,
-)
-from trading_system.validation.correlation_analysis import (
-    CorrelationStressAnalysis,
-    check_correlation_warnings,
-    run_correlation_stress_analysis,
-)
-from trading_system.validation.permutation import PermutationTest, check_permutation_results, run_permutation_test
+from trading_system.validation.bootstrap import BootstrapTest, compute_sharpe_from_r_multiples
+from trading_system.validation.correlation_analysis import CorrelationStressAnalysis, check_correlation_warnings
+from trading_system.validation.permutation import PermutationTest
 from trading_system.validation.sensitivity import ParameterSensitivityGrid, run_parameter_sensitivity
-from trading_system.validation.stress_tests import (
-    StressTestSuite,
-    check_stress_results,
-    run_bear_market_test,
-    run_flash_crash_simulation,
-    run_range_market_test,
-    run_slippage_stress,
-)
+from trading_system.validation.stress_tests import StressTestSuite
 
 
 class TestBootstrapExpanded:
@@ -274,7 +256,7 @@ class TestSensitivityExpanded:
             return params["param_x"] * params["param_y"]
 
         grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
-        analysis = grid.run()
+        grid.run()
 
         # Should be able to plot heatmap
         try:
@@ -298,7 +280,7 @@ class TestSensitivityExpanded:
             return params["param_x"] * params["param_y"]
 
         grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
-        analysis = grid.run()
+        grid.run()
 
         # Should raise error when trying to plot with insufficient data
         with pytest.raises(ValueError, match="Insufficient unique values"):
@@ -314,7 +296,7 @@ class TestSensitivityExpanded:
             return params["param_x"] * params["param_y"]
 
         grid = ParameterSensitivityGrid(parameter_ranges, metric_func, random_seed=42, parallel=False)
-        analysis = grid.run()
+        grid.run()
 
         # Should raise error when parameter not in results
         with pytest.raises(ValueError, match="No results found"):
@@ -322,7 +304,8 @@ class TestSensitivityExpanded:
 
     def test_run_parameter_sensitivity_convenience(self):
         """Test convenience function for running sensitivity."""
-        from trading_system.validation.sensitivity import run_parameter_sensitivity
+        # run_parameter_sensitivity already imported at module level (line 22)
+        # Using the imported one
 
         parameter_ranges = {"param1": [1.0, 2.0], "param2": [1.0, 2.0]}
 

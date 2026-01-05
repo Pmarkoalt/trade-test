@@ -2,8 +2,6 @@
 
 from datetime import date, datetime
 
-import pytest
-
 from trading_system.tracking.models import (
     ConvictionLevel,
     ExitReason,

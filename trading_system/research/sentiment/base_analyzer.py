@@ -22,7 +22,6 @@ class BaseSentimentAnalyzer(ABC):
             - label: SentimentLabel enum
             - confidence: 0.0 to 1.0
         """
-        pass
 
     def analyze_article(self, article: NewsArticle) -> NewsArticle:
         """Analyze sentiment of a news article.

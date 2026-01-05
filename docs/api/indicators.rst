@@ -80,4 +80,3 @@ Indicator Profiling
    :members:
    :undoc-members:
    :show-inheritance:
-

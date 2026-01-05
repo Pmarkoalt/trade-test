@@ -67,4 +67,3 @@ costs:
   weekend_penalty: 1.0  # Not used for equity
   stress_threshold: -0.03  # SPY weekly return < -3% triggers stress
   stress_slippage_mult: 2.0  # Double slippage during stress
-

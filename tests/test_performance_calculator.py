@@ -1,10 +1,8 @@
 """Unit tests for PerformanceCalculator."""
 
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 
-import pytest
-
-from trading_system.tracking.models import ConvictionLevel, ExitReason, SignalDirection, SignalStatus
+from trading_system.tracking.models import ConvictionLevel, ExitReason, SignalDirection
 from trading_system.tracking.outcome_recorder import OutcomeRecorder
 from trading_system.tracking.performance_calculator import PerformanceCalculator
 from trading_system.tracking.signal_tracker import SignalTracker

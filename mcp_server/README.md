@@ -203,4 +203,3 @@ docker build -f Dockerfile.mcp -t trading-system-mcp:latest .
 - [Deployment Guide](../Deployment.md) - Full deployment instructions
 - [Main README](../README.md) - Trading system documentation
 - [FastAPI Documentation](https://fastapi.tiangolo.com/) - FastAPI framework docs
-

@@ -13,8 +13,6 @@ logger = logging.getLogger(__name__)
 class ValidationTimeoutError(Exception):
     """Raised when validation test exceeds maximum allowed duration."""
 
-    pass
-
 
 def compute_sharpe_from_r_multiples(r_multiples: List[float], trades_per_year: float = 15.0) -> float:
     """Compute Sharpe ratio from R-multiples.

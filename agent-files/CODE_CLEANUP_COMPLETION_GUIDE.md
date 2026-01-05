@@ -98,7 +98,7 @@ mypy trading_system/
 - Performs static type checking
 - Identifies missing type hints, type mismatches, and type-related errors
 
-**Expected output**: 
+**Expected output**:
 - May show warnings (these are OK - the config is lenient for gradual adoption)
 - Errors should be addressed
 
@@ -170,7 +170,7 @@ The following functions have already been improved with type hints:
 
 **Status**: Tools configured, needs to be run and issues fixed
 
-**Action**: 
+**Action**:
 1. Run `make lint` or `flake8 trading_system/`
 2. Review and fix any issues found
 3. Re-run until clean
@@ -325,9 +325,8 @@ If black and isort have conflicts:
 
 **Estimated Total Time**: 2-4 hours for complete cleanup (when tools can be run)
 
-**Current Status**: 
+**Current Status**:
 - ✅ Tools configured
 - ✅ Some manual improvements completed
 - ⏳ Automated formatting and linting pending
 - ⏳ Comprehensive type checking pending
-

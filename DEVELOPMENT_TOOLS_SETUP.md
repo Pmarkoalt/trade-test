@@ -372,4 +372,3 @@ line_length = 127
 - [isort documentation](https://pycqa.github.io/isort/)
 - [Flake8 documentation](https://flake8.pycqa.org/)
 - [Mypy documentation](https://mypy.readthedocs.io/)
-

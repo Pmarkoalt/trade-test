@@ -3,7 +3,7 @@
 import asyncio
 import logging
 from collections import deque
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from typing import Dict, List, Optional
 
 import pandas as pd

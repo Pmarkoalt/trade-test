@@ -1,6 +1,5 @@
 """Integration tests for backtest engine."""
 
-import shutil
 import tempfile
 from pathlib import Path
 
@@ -9,6 +8,7 @@ import pandas as pd
 import pytest
 
 from trading_system.backtest import BacktestEngine, WalkForwardSplit, create_default_split
+from trading_system.configs.strategy_config import StrategyConfig
 from trading_system.models.market_data import MarketData
 from trading_system.portfolio.portfolio import Portfolio
 from trading_system.strategies import CryptoMomentumStrategy, EquityMomentumStrategy
@@ -16,7 +16,6 @@ from trading_system.strategies import CryptoMomentumStrategy, EquityMomentumStra
 # Backward compatibility aliases
 EquityStrategy = EquityMomentumStrategy
 CryptoStrategy = CryptoMomentumStrategy
-from trading_system.configs.strategy_config import StrategyConfig
 
 
 @pytest.fixture
@@ -203,14 +202,14 @@ def test_backtest_no_lookahead(sample_market_data, simple_strategy, test_split):
     engine = BacktestEngine(market_data=sample_market_data, strategies=[simple_strategy], starting_equity=100000.0, seed=42)
 
     # Run backtest
-    results = engine.run(split=test_split, period="train")
+    engine.run(split=test_split, period="train")
 
     # Check that daily events are in order
     assert len(engine.daily_events) > 0
 
     # Verify timing: signals generated at day t, orders execute at t+1
     for i, event in enumerate(engine.daily_events):
-        date = event["date"]
+        event.get("date")  # Access date to verify it exists
 
         # Signals should be generated at this date
         if event["signals_generated"]:
@@ -226,7 +225,7 @@ def test_backtest_export_results(sample_market_data, simple_strategy, test_split
     engine = BacktestEngine(market_data=sample_market_data, strategies=[simple_strategy], starting_equity=100000.0, seed=42)
 
     # Run backtest
-    results = engine.run(split=test_split, period="train")
+    engine.run(split=test_split, period="train")
 
     # Export to temporary directory
     with tempfile.TemporaryDirectory() as tmpdir:

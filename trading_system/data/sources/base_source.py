@@ -2,7 +2,7 @@
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Tuple, TypedDict, Union
+from typing import Dict, List, Optional, Tuple, TypedDict
 
 import pandas as pd
 
@@ -51,7 +51,6 @@ class BaseDataSource(ABC):
             - Index: date (pd.Timestamp)
             - Columns: open, high, low, close, volume, dollar_volume
         """
-        pass
 
     @abstractmethod
     def get_available_symbols(self) -> List[str]:
@@ -60,7 +59,6 @@ class BaseDataSource(ABC):
         Returns:
             List of symbol strings
         """
-        pass
 
     @abstractmethod
     def get_date_range(self, symbol: str) -> Optional[Tuple[pd.Timestamp, pd.Timestamp]]:
@@ -72,7 +70,6 @@ class BaseDataSource(ABC):
         Returns:
             Tuple of (start_date, end_date) or None if symbol not available
         """
-        pass
 
     def supports_incremental(self) -> bool:
         """Check if this source supports incremental loading.

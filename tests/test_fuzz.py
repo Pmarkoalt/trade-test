@@ -2,13 +2,11 @@
 
 import numpy as np
 import pandas as pd
-import pytest
-from hypothesis import assume, given, settings
+from hypothesis import given, settings
 from hypothesis import strategies as st
 
 from trading_system.data.validator import validate_ohlcv
 from trading_system.indicators.atr import atr
-from trading_system.indicators.breakouts import highest_close
 from trading_system.indicators.ma import ma
 from trading_system.indicators.momentum import roc
 from trading_system.models.orders import Fill

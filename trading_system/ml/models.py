@@ -111,7 +111,6 @@ class MLModel(ABC):
         Returns:
             The model instance (e.g., sklearn model, xgboost model, etc.)
         """
-        pass
 
     @abstractmethod
     def train(
@@ -130,7 +129,6 @@ class MLModel(ABC):
         Returns:
             Dictionary of performance metrics
         """
-        pass
 
     @abstractmethod
     def predict(self, X: pd.DataFrame) -> np.ndarray:
@@ -142,7 +140,6 @@ class MLModel(ABC):
         Returns:
             Array of predictions
         """
-        pass
 
     def predict_proba(self, X: pd.DataFrame) -> Optional[np.ndarray]:
         """Make probability predictions (if supported).
@@ -363,15 +360,7 @@ class SklearnMLModel(MLModel):
         """
         import time
 
-        from sklearn.metrics import (
-            accuracy_score,
-            f1_score,
-            mean_absolute_error,
-            mean_squared_error,
-            precision_score,
-            r2_score,
-            recall_score,
-        )
+        from sklearn.metrics import accuracy_score, mean_absolute_error, mean_squared_error, r2_score
 
         start_time = time.time()
 

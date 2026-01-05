@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 
 import numpy as np
-import pandas as pd
 
 from ...configs.strategy_config import StrategyConfig
 from ...models.features import FeatureRow
@@ -41,7 +40,6 @@ class StrategyInterface(ABC):
         Returns:
             Tuple of (is_eligible, failure_reasons)
         """
-        pass
 
     @abstractmethod
     def check_entry_triggers(self, features: FeatureRow) -> tuple[Optional[BreakoutType], float]:
@@ -54,7 +52,6 @@ class StrategyInterface(ABC):
             Tuple of (breakout_type, clearance) or (None, 0.0) if no trigger.
             For non-breakout strategies, breakout_type may be a custom enum value.
         """
-        pass
 
     @abstractmethod
     def check_exit_signals(self, position: Position, features: FeatureRow) -> Optional[ExitReason]:
@@ -67,7 +64,6 @@ class StrategyInterface(ABC):
         Returns:
             ExitReason if exit triggered, None otherwise
         """
-        pass
 
     @abstractmethod
     def update_stop_price(self, position: Position, features: FeatureRow) -> Optional[float]:
@@ -80,7 +76,6 @@ class StrategyInterface(ABC):
         Returns:
             New stop price if updated, None if unchanged
         """
-        pass
 
     def calculate_stop_price(self, entry_price: float, atr14: float, atr_mult: float) -> float:
         """Calculate initial stop price from entry price and ATR.

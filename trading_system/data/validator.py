@@ -1,9 +1,8 @@
 """Data validation functions for OHLCV data quality checks."""
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
-import numpy as np
 import pandas as pd
 
 logger = logging.getLogger(__name__)

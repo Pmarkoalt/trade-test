@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from .models import NewsArticle, NewsFetchResult
+from .models import NewsFetchResult
 
 
 class BaseNewsSource(ABC):
@@ -21,7 +21,6 @@ class BaseNewsSource(ABC):
     @abstractmethod
     def source_name(self) -> str:
         """Return the name of this news source."""
-        pass
 
     @abstractmethod
     async def fetch_articles(
@@ -40,7 +39,6 @@ class BaseNewsSource(ABC):
         Returns:
             NewsFetchResult with fetched articles
         """
-        pass
 
     @abstractmethod
     async def fetch_market_news(
@@ -59,7 +57,6 @@ class BaseNewsSource(ABC):
         Returns:
             NewsFetchResult with fetched articles
         """
-        pass
 
     async def _respect_rate_limit(self) -> None:
         """Wait if necessary to respect rate limits."""

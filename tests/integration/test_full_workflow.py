@@ -1,7 +1,6 @@
 """Integration tests for full workflows (backtest -> validation -> reporting)."""
 
 import os
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -75,7 +74,6 @@ class TestFullWorkflow:
         """Test complete workflow: backtest -> reporting."""
         from trading_system.configs.run_config import RunConfig
         from trading_system.integration.runner import BacktestRunner
-        from trading_system.reporting.report_generator import ReportGenerator
 
         # Load config
         config = RunConfig.from_yaml(test_config_path)
@@ -129,7 +127,7 @@ class TestFullWorkflow:
                         r_multiples.append(r_mult)
 
             if len(r_multiples) >= 10:
-                bootstrap_results = run_bootstrap_test(r_multiples, n_iterations=100, random_seed=42)
+                _ = run_bootstrap_test(r_multiples, n_iterations=100, random_seed=42)  # Run bootstrap test
 
                 # Run permutation test
                 from trading_system.validation.permutation import run_permutation_test
@@ -209,7 +207,7 @@ class TestFullWorkflow:
         # Run backtest
         runner = BacktestRunner(config)
         runner.initialize()
-        backtest_results = runner.run_backtest(period="train")
+        _ = runner.run_backtest(period="train")  # Run backtest but results not needed for this test
 
         # Get portfolio history from daily events (if available)
         if hasattr(runner.engine, "daily_events"):

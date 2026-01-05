@@ -2,7 +2,7 @@
 
 from datetime import date, datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 from ..formatters.recommendation_formatter import RecommendationFormatter
 
@@ -220,12 +220,12 @@ class ReportGenerator:
 
         rows = []
         for pos in positions:
-            symbol = pos.get("symbol", "")
-            entry = pos.get("entry_price", 0)
-            current = pos.get("current_price", 0)
+            pos.get("symbol", "")
+            pos.get("entry_price", 0)
+            pos.get("current_price", 0)
             pnl_pct = pos.get("pnl_pct", 0)
-            days = pos.get("days_held", 0)
-            status = pos.get("status", "")
+            pos.get("days_held", 0)
+            pos.get("status", "")
 
             pnl_class = "positive" if pnl_pct >= 0 else "negative"
             rows.append(

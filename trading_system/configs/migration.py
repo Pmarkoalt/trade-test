@@ -1,13 +1,12 @@
 """Configuration migration tool for upgrading configs between versions."""
 
-import json
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import yaml
 
-from .validation import ConfigValidationError, validate_config_file
+from .validation import validate_config_file
 
 # Current config schema version
 CURRENT_CONFIG_VERSION = "1.0"
@@ -179,8 +178,8 @@ def _get_version_chain(from_version: str, to_version: str) -> List[str]:
         List of versions in migration order
     """
     # Parse versions
-    from_parts = [int(x) for x in from_version.split(".")]
-    to_parts = [int(x) for x in to_version.split(".")]
+    [int(x) for x in from_version.split(".")]
+    [int(x) for x in to_version.split(".")]
 
     # Simple linear migration for now
     # In the future, this could handle more complex versioning

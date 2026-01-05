@@ -5,7 +5,7 @@ import time
 import uuid
 from dataclasses import dataclass
 from enum import Enum
-from typing import Callable, Dict, List, Optional, Set
+from typing import Callable, Dict, List, Optional
 
 import pandas as pd
 
@@ -13,8 +13,8 @@ from ..adapters.base_adapter import BaseAdapter
 from ..logging.logger import get_logger
 from ..models.features import FeatureRow
 from ..models.orders import Fill, Order, OrderStatus, SignalSide
-from ..models.positions import ExitReason, Position
-from ..models.signals import BreakoutType, Signal
+from ..models.positions import ExitReason
+from ..models.signals import Signal
 from ..portfolio.portfolio import Portfolio
 from ..portfolio.position_sizing import calculate_position_size
 from ..strategies.base.strategy_interface import StrategyInterface

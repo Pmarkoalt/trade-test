@@ -347,7 +347,7 @@ class BinanceClient(BaseDataSource):
             DataValidationError: If fetched data fails validation
         """
         # Map symbol to Binance trading pair
-        trading_pair = self._map_symbol(symbol)
+        self._map_symbol(symbol)
 
         # Fetch last 2 days to ensure we get the latest bar
         end_date = date.today()

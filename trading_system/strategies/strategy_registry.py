@@ -8,7 +8,7 @@ their type name (e.g., "momentum") and asset class (e.g., "equity", "crypto").
 from typing import Dict, Optional, Type
 
 from ..configs.strategy_config import StrategyConfig
-from ..exceptions import StrategyError, StrategyNotFoundError
+from ..exceptions import StrategyNotFoundError
 from .base.strategy_interface import StrategyInterface
 from .factor.equity_factor import EquityFactorStrategy
 from .mean_reversion.equity_mean_reversion import EquityMeanReversionStrategy

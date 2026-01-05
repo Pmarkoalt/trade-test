@@ -7,8 +7,6 @@ import time
 from functools import wraps
 from typing import Any, Callable, Dict, Optional
 
-import pandas as pd
-
 
 class IndicatorProfiler:
     """Profiler for measuring indicator calculation performance."""

@@ -33,4 +33,3 @@ echo ""
 echo "For interactive API documentation, visit:"
 echo "  $MCP_URL/docs"
 echo ""
-

@@ -74,7 +74,7 @@ class TestGenerateRunConfigTemplate:
         temp_dir = Path(tempfile.mkdtemp())
         try:
             output_path = temp_dir / "nested" / "deep" / "template.yaml"
-            template = generate_run_config_template(output_path=str(output_path))
+            generate_run_config_template(output_path=str(output_path))
 
             assert output_path.parent.exists()
             assert output_path.exists()
@@ -150,7 +150,7 @@ class TestGenerateStrategyConfigTemplate:
         temp_dir = Path(tempfile.mkdtemp())
         try:
             output_path = temp_dir / "nested" / "deep" / "template.yaml"
-            template = generate_strategy_config_template(asset_class="crypto", output_path=str(output_path))
+            generate_strategy_config_template(asset_class="crypto", output_path=str(output_path))
 
             assert output_path.parent.exists()
             assert output_path.exists()

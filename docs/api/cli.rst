@@ -24,4 +24,3 @@ Strategy Wizard
    :members:
    :undoc-members:
    :show-inheritance:
-
