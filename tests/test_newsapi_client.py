@@ -4,8 +4,11 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from trading_system.data_pipeline.sources.news.models import NewsArticle
-from trading_system.data_pipeline.sources.news.newsapi_client import NewsAPIClient
+from trading_system.data_pipeline.sources.news.models import NewsArticle  # noqa: E402
+from trading_system.data_pipeline.sources.news.newsapi_client import NewsAPIClient  # noqa: E402
+
+# Skip if aiohttp is not installed
+pytest.importorskip("aiohttp", reason="aiohttp required for NewsAPIClient tests")
 
 
 @pytest.fixture

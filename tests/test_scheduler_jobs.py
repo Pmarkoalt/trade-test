@@ -98,7 +98,8 @@ class TestLoadConfig:
         config_file.write_text("test: config")
 
         # Mock RunConfig.from_yaml to avoid actual file loading
-        with patch("trading_system.scheduler.jobs.daily_signals_job.RunConfig") as mock_run_config:
+        # Use the configs.run_config path since daily_signals_job imports from there
+        with patch("trading_system.configs.run_config.RunConfig") as mock_run_config:
             mock_config = MagicMock()
             mock_config.strategies.equity = None
             mock_config.strategies.crypto = None

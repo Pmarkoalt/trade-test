@@ -759,7 +759,7 @@ class ResultsDatabase:
     def archive_runs(self, run_ids: List[int], archive_db_path: Optional[Path] = None) -> None:
         """Archive runs to a separate database.
 
-        Note: This is a simplified implementation that copies run metadata.
+        This archives run metadata and metrics to a separate database file.
         For full archival including all trades and equity curves, use database
         backup/restore tools or implement a more comprehensive copy mechanism.
 
@@ -767,6 +767,8 @@ class ResultsDatabase:
             run_ids: List of run IDs to archive
             archive_db_path: Path to archive database (default: results/backtest_results_archive.db)
         """
+        from .schema import create_schema
+
         if archive_db_path is None:
             archive_db_path = self.db_path.parent / f"{self.db_path.stem}_archive{self.db_path.suffix}"
 
@@ -774,9 +776,15 @@ class ResultsDatabase:
         archive_db_path.parent.mkdir(parents=True, exist_ok=True)
 
         conn = self._get_connection()
+        archive_conn = sqlite3.connect(str(archive_db_path))
+        archive_conn.row_factory = sqlite3.Row
 
         try:
+            # Initialize archive database schema
+            create_schema(archive_conn)
+
             cursor = conn.cursor()
+            archive_cursor = archive_conn.cursor()
             archived_count = 0
 
             # Copy each run's data to archive
@@ -788,22 +796,37 @@ class ResultsDatabase:
                     logger.warning(f"Run ID {run_id} not found, skipping")
                     continue
 
+                # Copy backtest_runs entry
+                run_dict = dict(run_row)
+                columns = list(run_dict.keys())
+                placeholders = ", ".join(["?" for _ in columns])
+                column_names = ", ".join(columns)
+                archive_cursor.execute(
+                    f"INSERT OR REPLACE INTO backtest_runs ({column_names}) VALUES ({placeholders})",
+                    list(run_dict.values()),
+                )
+
+                # Copy run_metrics
+                cursor.execute("SELECT * FROM run_metrics WHERE run_id = ?", (run_id,))
+                metrics_row = cursor.fetchone()
+                if metrics_row:
+                    metrics_dict = dict(metrics_row)
+                    m_columns = list(metrics_dict.keys())
+                    m_placeholders = ", ".join(["?" for _ in m_columns])
+                    m_column_names = ", ".join(m_columns)
+                    archive_cursor.execute(
+                        f"INSERT OR REPLACE INTO run_metrics ({m_column_names}) VALUES ({m_placeholders})",
+                        list(metrics_dict.values()),
+                    )
+
                 archived_count += 1
-                logger.info(f"Archived run_id {run_id} metadata to archive database")
-                # Note: Full implementation would copy all related tables (trades, equity_curve, etc.)
+                logger.info(f"Archived run_id {run_id} to archive database")
 
-            # Note: Actual deletion from main database is commented out for safety
-            # Uncomment the following lines if you want to delete archived runs:
-            # placeholders = ','.join(['?' for _ in run_ids])
-            # cursor.execute(f"DELETE FROM backtest_runs WHERE run_id IN ({placeholders})", run_ids)
-            # conn.commit()
-
-            logger.info(f"Archived metadata for {archived_count} runs to {archive_db_path}")
-            logger.warning(
-                "Full archival (trades, equity curves) not implemented - use database backup tools for complete archival"
-            )
+            archive_conn.commit()
+            logger.info(f"Archived {archived_count} runs to {archive_db_path}")
         finally:
             conn.close()
+            archive_conn.close()
 
     def delete_run(self, run_id: int) -> None:
         """Delete a run and all associated data.

@@ -194,9 +194,10 @@ class TestPortfolioOptimizer:
 
         result = self.optimizer.optimize_markowitz(returns_data, min_weight=0.1, max_weight=0.6)
 
-        # All weights should be within bounds
+        # All weights should be within bounds (with tolerance for floating point)
         for weight in result.weights.values():
-            assert 0.1 <= weight <= 0.6
+            assert weight >= 0.1 - 1e-9
+            assert weight <= 0.6 + 1e-9
 
     def test_optimize_markowitz_empty_data(self):
         """Test optimization with empty returns data."""

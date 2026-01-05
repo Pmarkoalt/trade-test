@@ -212,7 +212,7 @@ class TestModelTrainer:
         )
 
         assert not result.success
-        assert "Insufficient" in result.error_message.lower()
+        assert "insufficient" in result.error_message.lower()
 
     def test_retrain_logic_checks_new_samples(self, trainer, temp_db):
         """Test: Retrain logic checks for new samples."""
@@ -221,13 +221,15 @@ class TestModelTrainer:
 
         from trading_system.ml_refinement.config import ModelMetadata
 
+        # The temp_db fixture creates samples with timestamps in January 2023
+        # Set train_end_date to before the samples so they count as "new"
         active_model = ModelMetadata(
             model_id="test-model-1",
             model_type=ModelType.SIGNAL_QUALITY,
             version="1.0",
             created_at=datetime.now().isoformat(),
-            train_start_date="2023-01-01",
-            train_end_date="2023-06-30",
+            train_start_date="2022-01-01",
+            train_end_date="2022-12-31",  # Before the temp_db samples (Jan 2023)
             train_samples=100,
             validation_samples=20,
         )
@@ -273,6 +275,8 @@ class TestHyperparameterTuner:
 
     def test_grid_search(self, temp_db):
         """Test: Hyperparameter tuning works - grid search."""
+        from trading_system.ml_refinement.validation.walk_forward import WalkForwardValidator
+
         # Get training data
         X, y, feature_names = temp_db.get_training_data(
             start_date="2023-01-01",
@@ -282,9 +286,18 @@ class TestHyperparameterTuner:
         if len(X) < 50:
             pytest.skip("Not enough data for hyperparameter tuning")
 
+        # Use custom CV with lower minimums for the test data size
+        cv = WalkForwardValidator(
+            train_window=50,
+            val_window=20,
+            step_size=10,
+            min_train_samples=50,
+            min_val_samples=20,
+        )
+
         tuner = HyperparameterTuner(
             model_class=MockModel,
-            cv=None,  # Will use default WalkForwardValidator
+            cv=cv,
         )
 
         # Small grid for testing
@@ -308,6 +321,8 @@ class TestHyperparameterTuner:
 
     def test_random_search(self, temp_db):
         """Test: Hyperparameter tuning works - random search."""
+        from trading_system.ml_refinement.validation.walk_forward import WalkForwardValidator
+
         # Get training data
         X, y, feature_names = temp_db.get_training_data(
             start_date="2023-01-01",
@@ -317,9 +332,18 @@ class TestHyperparameterTuner:
         if len(X) < 50:
             pytest.skip("Not enough data for hyperparameter tuning")
 
+        # Use custom CV with lower minimums for the test data size
+        cv = WalkForwardValidator(
+            train_window=50,
+            val_window=20,
+            step_size=10,
+            min_train_samples=50,
+            min_val_samples=20,
+        )
+
         tuner = HyperparameterTuner(
             model_class=MockModel,
-            cv=None,
+            cv=cv,
         )
 
         param_distributions = {
@@ -357,6 +381,8 @@ class TestHyperparameterTuner:
             train_window=30,
             val_window=10,
             step_size=10,
+            min_train_samples=30,  # Match train_window
+            min_val_samples=10,  # Match val_window
         )
 
         tuner = HyperparameterTuner(

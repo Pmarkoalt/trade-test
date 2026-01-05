@@ -6,9 +6,12 @@ from unittest.mock import AsyncMock, patch
 import pandas as pd
 import pytest
 
-from trading_system.data_pipeline.exceptions import APIRateLimitError, DataFetchError
-from trading_system.data_pipeline.sources.massive_client import MassiveClient
-from trading_system.models.bar import Bar
+from trading_system.data_pipeline.exceptions import APIRateLimitError, DataFetchError  # noqa: E402
+from trading_system.data_pipeline.sources.massive_client import MassiveClient  # noqa: E402
+from trading_system.models.bar import Bar  # noqa: E402
+
+# Skip if aiohttp is not installed
+pytest.importorskip("aiohttp", reason="aiohttp required for MassiveClient tests")
 
 
 @pytest.fixture

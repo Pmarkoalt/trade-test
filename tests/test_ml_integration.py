@@ -87,12 +87,15 @@ class TestFeatureExtraction:
 
     def test_trend_features(self, sample_ohlcv):
         """Test trend feature extraction."""
+        import numbers
+
         extractor = TrendFeatures()
         features = extractor.extract(sample_ohlcv)
 
         # Check that features are extracted
         assert len(features) > 0
-        assert all(isinstance(v, float) for v in features.values())
+        # Features should be numeric (float, int, or numpy numeric types)
+        assert all(isinstance(v, numbers.Real) for v in features.values())
         # Check for common trend features
         feature_names = list(features.keys())
         assert any("ma" in name.lower() or "trend" in name.lower() for name in feature_names)
@@ -104,7 +107,10 @@ class TestFeatureExtraction:
 
         # Check that features are extracted
         assert len(features) > 0
-        assert all(isinstance(v, float) for v in features.values())
+        # Features should be numeric (float, int, or numpy numeric types)
+        import numbers
+
+        assert all(isinstance(v, numbers.Real) for v in features.values())
         # Check for momentum-related features
         feature_names = list(features.keys())
         assert any("rsi" in name.lower() or "momentum" in name.lower() for name in feature_names)
@@ -130,7 +136,10 @@ class TestFeatureExtraction:
         )
 
         assert len(features) > 0
-        assert all(isinstance(v, float) for v in features.values())
+        # Features should be numeric (float, int, or numpy numeric types)
+        import numbers
+
+        assert all(isinstance(v, numbers.Real) for v in features.values())
 
 
 class TestFeatureDatabase:
@@ -219,12 +228,16 @@ class TestModelTraining:
         )
 
         # Mock the model class to use a simple mock
+        from trading_system.ml_refinement.config import ModelMetadata
+
         with patch.object(trainer, "MODEL_CLASSES", {ModelType.SIGNAL_QUALITY: MagicMock}):
             # Create a proper mock model
             mock_model = MagicMock()
             mock_model.model_id = "test-model-123"
+            mock_model.feature_names = ["feature_1", "feature_2"]
             mock_model.get_top_features.return_value = [("feature_1", 0.5), ("feature_2", 0.3)]
-            mock_model.get_metadata.return_value = MagicMock(
+            # Use actual ModelMetadata dataclass
+            mock_model.get_metadata.return_value = ModelMetadata(
                 model_id="test-model-123",
                 model_type=ModelType.SIGNAL_QUALITY,
                 version="1.0",
@@ -235,9 +248,14 @@ class TestModelTraining:
                 validation_samples=50,
                 train_metrics={},
                 validation_metrics={},
+                feature_names=["feature_1", "feature_2"],
+                feature_importance={"feature_1": 0.5, "feature_2": 0.3},
             )
-            mock_model.predict.return_value = np.array([1, 0, 1])
-            mock_model.predict_proba.return_value = np.array([[0.3, 0.7], [0.8, 0.2], [0.4, 0.6]])
+            # Mock fit to return a dict with accuracy
+            mock_model.fit.return_value = {"accuracy": 0.75}
+            # Mock predict and predict_proba to return arrays matching input size
+            mock_model.predict.side_effect = lambda X: (np.random.rand(len(X)) > 0.5).astype(int)
+            mock_model.predict_proba.side_effect = lambda X: np.column_stack([np.random.rand(len(X)), np.random.rand(len(X))])
 
             trainer.MODEL_CLASSES[ModelType.SIGNAL_QUALITY] = lambda **kwargs: mock_model
 
@@ -407,11 +425,14 @@ class TestEndToEndWorkflow:
         # Step 1: Train model
         trainer = ModelTrainer(config, populated_feature_db, model_dir)
 
+        from trading_system.ml_refinement.config import ModelMetadata
+
         with patch.object(trainer, "MODEL_CLASSES", {ModelType.SIGNAL_QUALITY: MagicMock}):
             mock_model = MagicMock()
             mock_model.model_id = "e2e-model-123"
+            mock_model.feature_names = ["feature_1"]
             mock_model.get_top_features.return_value = []
-            mock_model.get_metadata.return_value = MagicMock(
+            mock_model.get_metadata.return_value = ModelMetadata(
                 model_id="e2e-model-123",
                 model_type=ModelType.SIGNAL_QUALITY,
                 version="1.0",
@@ -420,9 +441,14 @@ class TestEndToEndWorkflow:
                 train_end_date="2023-12-31",
                 train_samples=200,
                 validation_samples=50,
+                train_metrics={},
+                validation_metrics={},
+                feature_names=["feature_1"],
+                feature_importance={"feature_1": 1.0},
             )
-            mock_model.predict.return_value = np.array([1])
-            mock_model.predict_proba.return_value = np.array([[0.3, 0.7]])
+            mock_model.fit.return_value = {"accuracy": 0.75}
+            mock_model.predict.side_effect = lambda X: (np.random.rand(len(X)) > 0.5).astype(int)
+            mock_model.predict_proba.side_effect = lambda X: np.column_stack([np.random.rand(len(X)), np.random.rand(len(X))])
 
             trainer.MODEL_CLASSES[ModelType.SIGNAL_QUALITY] = lambda **kwargs: mock_model
 

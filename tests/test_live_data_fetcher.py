@@ -8,10 +8,13 @@ from unittest.mock import AsyncMock, patch
 import pandas as pd
 import pytest
 
-from trading_system.data_pipeline.config import DataPipelineConfig
-from trading_system.data_pipeline.exceptions import DataFetchError
-from trading_system.data_pipeline.live_data_fetcher import LiveDataFetcher
-from trading_system.models.bar import Bar
+from trading_system.data_pipeline.config import DataPipelineConfig  # noqa: E402
+from trading_system.data_pipeline.exceptions import DataFetchError  # noqa: E402
+from trading_system.data_pipeline.live_data_fetcher import LiveDataFetcher  # noqa: E402
+from trading_system.models.bar import Bar  # noqa: E402
+
+# Skip if aiohttp is not installed (required by BinanceClient used in LiveDataFetcher)
+pytest.importorskip("aiohttp", reason="aiohttp required for LiveDataFetcher tests")
 
 
 @pytest.fixture

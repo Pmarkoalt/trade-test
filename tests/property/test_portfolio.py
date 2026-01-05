@@ -69,7 +69,7 @@ class TestPortfolioProperties:
             open_price=price,
             slippage_bps=10.0,
             fee_bps=5.0,
-            total_cost=notional * 1.0015,  # Include fees
+            total_cost=notional * 0.0015,  # Just fees: (10+5)bps = 0.15%
             vol_mult=1.0,
             size_penalty=1.0,
             weekend_penalty=1.0,
@@ -110,7 +110,7 @@ class TestPortfolioProperties:
             # More restrictive constraints
             if notional > equity * 0.14:  # Stay under 15% per-position limit
                 continue
-            if portfolio.cash < notional * 1.0015:  # Need enough cash
+            if portfolio.cash < notional * 1.0015:  # Need enough cash (notional + fees)
                 continue
 
             fill = Fill(
@@ -125,7 +125,7 @@ class TestPortfolioProperties:
                 open_price=price,
                 slippage_bps=10.0,
                 fee_bps=5.0,
-                total_cost=notional * 1.0015,
+                total_cost=notional * 0.0015,  # Just fees: (10+5)bps = 0.15%
                 vol_mult=1.0,
                 size_penalty=1.0,
                 weekend_penalty=1.0,
@@ -186,7 +186,7 @@ class TestPortfolioProperties:
             open_price=entry_price,
             slippage_bps=10.0,
             fee_bps=5.0,
-            total_cost=notional * 1.0015,
+            total_cost=notional * 0.0015,  # Just fees: (10+5)bps = 0.15%
             vol_mult=1.0,
             size_penalty=1.0,
             weekend_penalty=1.0,
@@ -245,7 +245,7 @@ class TestPortfolioProperties:
                 open_price=price,
                 slippage_bps=10.0,
                 fee_bps=5.0,
-                total_cost=notional * 1.0015,
+                total_cost=notional * 0.0015,  # Just fees: (10+5)bps = 0.15%
                 vol_mult=1.0,
                 size_penalty=1.0,
                 weekend_penalty=1.0,

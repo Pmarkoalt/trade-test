@@ -1,5 +1,7 @@
 """Tests for ML refinement feature pipeline."""
 
+import numbers
+
 import pandas as pd
 
 from trading_system.ml_refinement import FeatureConfig, FeatureSet, FeatureVector
@@ -34,7 +36,8 @@ def test_pipeline_standard_features():
     )
 
     assert len(features) > 0
-    assert all(isinstance(v, float) for v in features.values())
+    # Features should be numeric (float, int, or numpy numeric types)
+    assert all(isinstance(v, numbers.Real) for v in features.values())
 
 
 def test_pipeline_minimal_features():

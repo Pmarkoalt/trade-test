@@ -35,3 +35,16 @@ myst-parser>=2.0.0,<3.0.0  # Markdown support for Sphinx
 
 # API dependencies (required for tests)
 aiohttp>=3.8.0,<4.0.0  # Required for tests that use AlphaVantageNewsClient and BinanceClient
+
+# ML dependencies (for ML refinement tests)
+scikit-learn>=1.0.0,<2.0.0  # Required for ML refinement model tests
+
+# Sentiment analysis (for news/sentiment tests)
+vaderSentiment>=3.3.0,<4.0.0  # Required for sentiment analysis tests
+
+# Dashboard dependencies (for dashboard tests)
+streamlit>=1.20.0,<2.0.0  # Required for dashboard tests
+plotly>=5.0.0,<6.0.0  # Required for dashboard visualization tests
+
+# Data storage format (for data pipeline cache tests)
+pyarrow>=10.0.0,<19.0.0  # Required for parquet file tests

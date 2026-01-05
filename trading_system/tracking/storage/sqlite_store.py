@@ -267,9 +267,9 @@ class SQLiteTrackingStore(BaseTrackingStore):
 
     # Outcome operations
     def insert_outcome(self, outcome: SignalOutcome) -> bool:
-        """Insert a signal outcome."""
+        """Insert a signal outcome (or replace if duplicate)."""
         sql = """
-            INSERT INTO signal_outcomes (
+            INSERT OR REPLACE INTO signal_outcomes (
                 signal_id, actual_entry_price, actual_entry_date,
                 actual_exit_price, actual_exit_date, exit_reason,
                 holding_days, return_pct, return_dollars, r_multiple,

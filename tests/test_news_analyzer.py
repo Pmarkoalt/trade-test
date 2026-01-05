@@ -5,9 +5,12 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from trading_system.data_pipeline.sources.news.models import NewsArticle, NewsFetchResult, SentimentLabel
-from trading_system.research.config import ResearchConfig, SentimentConfig
-from trading_system.research.news_analyzer import NewsAnalysisResult, NewsAnalyzer, SymbolNewsSummary
+from trading_system.data_pipeline.sources.news.models import NewsArticle, NewsFetchResult, SentimentLabel  # noqa: E402
+from trading_system.research.config import ResearchConfig, SentimentConfig  # noqa: E402
+from trading_system.research.news_analyzer import NewsAnalysisResult, NewsAnalyzer, SymbolNewsSummary  # noqa: E402
+
+# Skip if vaderSentiment is not installed
+pytest.importorskip("vaderSentiment", reason="vaderSentiment required for NewsAnalyzer tests")
 
 
 class TestNewsAnalyzer:

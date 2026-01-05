@@ -5,8 +5,11 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from trading_system.data_pipeline.sources.news.alpha_vantage_news import AlphaVantageNewsClient
-from trading_system.data_pipeline.sources.news.models import NewsArticle, SentimentLabel
+from trading_system.data_pipeline.sources.news.alpha_vantage_news import AlphaVantageNewsClient  # noqa: E402
+from trading_system.data_pipeline.sources.news.models import NewsArticle, SentimentLabel  # noqa: E402
+
+# Skip if aiohttp is not installed
+pytest.importorskip("aiohttp", reason="aiohttp required for Alpha Vantage News client tests")
 
 
 @pytest.fixture
