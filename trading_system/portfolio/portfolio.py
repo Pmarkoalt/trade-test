@@ -53,6 +53,9 @@ class Portfolio:
     # Positions - supports both single-strategy (symbol -> Position) and multi-strategy ((strategy_name, symbol) -> Position)
     positions: Dict[Union[str, Tuple[str, str]], Position] = field(default_factory=dict)
 
+    # Closed positions - accumulated as trades are closed
+    closed_positions: List[Position] = field(default_factory=list)
+
     # Multi-strategy support
     strategies: Dict[str, StrategyInterface] = field(default_factory=dict)  # strategy_name -> Strategy
     strategy_allocations: Dict[str, float] = field(default_factory=dict)  # strategy_name -> allocated_capital
@@ -832,6 +835,9 @@ class Portfolio:
 
         # Update portfolio realized P&L
         self.realized_pnl += realized_pnl
+
+        # Add to closed positions list before removing from active positions
+        self.closed_positions.append(position)
 
         # Remove from positions
         self.remove_position(symbol, strategy_name=strategy_name or position.strategy_name)

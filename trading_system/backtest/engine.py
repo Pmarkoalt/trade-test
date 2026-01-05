@@ -213,8 +213,8 @@ class BacktestEngine:
             ps.print_stats(20)  # Top 20 functions
             logger.info(f"Profiling results:\n{s.getvalue()}")
 
-        # Collect closed trades
-        self.closed_trades = [p for p in self.portfolio.positions.values() if not p.is_open()]
+        # Collect closed trades from portfolio's accumulated list
+        self.closed_trades = self.portfolio.closed_positions.copy()
 
         # Compute results
         results = self._compute_results(split, period)

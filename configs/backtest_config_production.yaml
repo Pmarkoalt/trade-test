@@ -1,17 +1,17 @@
-# Test Backtest Run Configuration
-# Uses real market data in data/equity/daily/
+# Production Backtest Run Configuration
+# Uses tightened strategy parameters
 
 dataset:
   equity_path: "data/equity/daily"
-  crypto_path: "data/crypto"  # May not exist, that's ok
+  crypto_path: "data/crypto"
   benchmark_path: "data/test_benchmarks"
   format: "csv"
   start_date: "2024-01-01"
   end_date: "2025-12-31"
-  min_lookback_days: 60  # Reduced for limited data
+  min_lookback_days: 60
 
 splits:
-  train_start: "2024-03-01"  # Allow 2 months lookback
+  train_start: "2024-03-01"
   train_end: "2025-06-30"
   validation_start: "2025-07-01"
   validation_end: "2025-09-30"
@@ -20,11 +20,11 @@ splits:
 
 strategies:
   equity:
-    config_path: "configs/test_equity_strategy.yaml"
+    config_path: "configs/equity_strategy_production.yaml"
     enabled: true
   crypto:
     config_path: "EXAMPLE_CONFIGS/crypto_config.yaml"
-    enabled: false  # Disabled - no crypto data
+    enabled: false
 
 portfolio:
   starting_equity: 100000
@@ -38,7 +38,7 @@ volatility_scaling:
   max_multiplier: 1.0
 
 correlation_guard:
-  enabled: false  # Disabled for small universe
+  enabled: false
   min_positions: 4
   avg_pairwise_threshold: 0.70
   candidate_threshold: 0.75
@@ -56,13 +56,13 @@ execution:
 
 output:
   base_path: "results/"
-  run_id: null  # Auto-generated
+  run_id: null
   equity_curve: "equity_curve.csv"
   trade_log: "trade_log.csv"
   weekly_summary: "weekly_summary.csv"
   monthly_report: "monthly_report.json"
   scenario_comparison: "scenario_comparison.json"
-  log_level: "DEBUG"
+  log_level: "INFO"
   log_file: "backtest.log"
 
 random_seed: 42
