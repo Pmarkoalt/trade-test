@@ -505,7 +505,7 @@ class TestFillSimulator:
             quantity=10,
             signal_date=pd.Timestamp("2024-01-15"),
             expected_fill_price=50000.0,
-            stop_price=49000.0,  # Use valid stop price (Order validation requires positive)
+            stop_price=51000.0,  # For SHORT: stop must be above entry (50000.0)
         )
 
         open_bar = Bar(

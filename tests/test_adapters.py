@@ -514,13 +514,10 @@ class TestAlpacaAdapter:
         with pytest.raises(ValueError, match="API key and secret are required"):
             adapter.connect()
 
-    @patch("trading_system.adapters.alpaca_adapter.tradeapi")
-    def test_connect_import_error(self, mock_tradeapi):
+    @patch("trading_system.adapters.alpaca_adapter.tradeapi", None)
+    def test_connect_import_error(self):
         """Test connection fails when alpaca-trade-api is not installed."""
         config = AdapterConfig(api_key="test_key", api_secret="test_secret", paper_trading=True)
-
-        # Simulate ImportError
-        mock_tradeapi.side_effect = ImportError("No module named 'alpaca_trade_api'")
 
         adapter = AlpacaAdapter(config)
 
@@ -711,13 +708,10 @@ class TestIBAdapter:
         assert adapter.is_connected() is True
         mock_ib.connect.assert_called_once()
 
-    @patch("trading_system.adapters.ib_adapter.IB")
-    def test_connect_import_error(self, mock_ib_class):
+    @patch("trading_system.adapters.ib_adapter.IB", None)
+    def test_connect_import_error(self):
         """Test connection fails when ib_insync is not installed."""
         config = AdapterConfig(host="127.0.0.1", port=7497, client_id=1, paper_trading=True)
-
-        # Simulate ImportError
-        mock_ib_class.side_effect = ImportError("No module named 'ib_insync'")
 
         adapter = IBAdapter(config)
 
@@ -1016,7 +1010,7 @@ class TestAlpacaAdapterErrorHandling:
         # Simulate rate limit error
         from requests.exceptions import HTTPError
 
-        rate_limit_error = HTTPError()
+        rate_limit_error = HTTPError("Rate limit exceeded")
         rate_limit_error.response = Mock()
         rate_limit_error.response.status_code = 429
         mock_api.submit_order.side_effect = rate_limit_error
@@ -1092,7 +1086,7 @@ class TestAlpacaAdapterErrorHandling:
         # Simulate invalid order error (400 Bad Request)
         from requests.exceptions import HTTPError
 
-        invalid_error = HTTPError()
+        invalid_error = HTTPError("Invalid order")
         invalid_error.response = Mock()
         invalid_error.response.status_code = 400
         invalid_error.response.text = "Invalid order"
@@ -1136,10 +1130,16 @@ class TestAlpacaAdapterErrorHandling:
         # Simulate rate limit on second call
         from requests.exceptions import HTTPError
 
-        rate_limit_error = HTTPError()
+        rate_limit_error = HTTPError("Rate limit exceeded")
         rate_limit_error.response = Mock()
         rate_limit_error.response.status_code = 429
         mock_api.get_account.side_effect = [mock_account, rate_limit_error]
+
+        # Ensure mock_account has all required attributes for first call
+        mock_account.equity = "100000.0"
+        mock_account.cash = "50000.0"
+        mock_account.buying_power = "200000.0"
+        mock_account.portfolio_value = "150000.0"
 
         # First call should succeed
         account1 = adapter.get_account_info()
@@ -1205,21 +1205,20 @@ class TestMockAdapterEdgeCases:
         adapter.set_price("AAPL", 150.0)
         adapter.set_account_balance(equity=100000.0, cash=100000.0)
 
-        order = create_sample_order(
-            order_id="ORD001",
-            symbol="AAPL",
-            asset_class="equity",
-            date=pd.Timestamp.now(),
-            execution_date=pd.Timestamp.now(),
-            quantity=0,  # Invalid
-            expected_fill_price=150.0,
-            stop_price=145.0,
-            side=SignalSide.BUY,
-        )
-
         with adapter:
+            # Order validation happens during creation, not in submit_order
             with pytest.raises(ValueError, match="quantity"):
-                adapter.submit_order(order)
+                order = create_sample_order(
+                    order_id="ORD001",
+                    symbol="AAPL",
+                    asset_class="equity",
+                    date=pd.Timestamp.now(),
+                    execution_date=pd.Timestamp.now(),
+                    quantity=0,  # Invalid
+                    expected_fill_price=150.0,
+                    stop_price=145.0,
+                    side=SignalSide.BUY,
+                )
 
     def test_submit_order_negative_quantity(self):
         """Test submitting order with negative quantity."""
@@ -1228,21 +1227,20 @@ class TestMockAdapterEdgeCases:
         adapter.set_price("AAPL", 150.0)
         adapter.set_account_balance(equity=100000.0, cash=100000.0)
 
-        order = create_sample_order(
-            order_id="ORD002",
-            symbol="AAPL",
-            asset_class="equity",
-            date=pd.Timestamp.now(),
-            execution_date=pd.Timestamp.now(),
-            quantity=-10,  # Invalid
-            expected_fill_price=150.0,
-            stop_price=145.0,
-            side=SignalSide.BUY,
-        )
-
         with adapter:
+            # Order validation happens during creation, not in submit_order
             with pytest.raises(ValueError, match="quantity"):
-                adapter.submit_order(order)
+                order = create_sample_order(
+                    order_id="ORD002",
+                    symbol="AAPL",
+                    asset_class="equity",
+                    date=pd.Timestamp.now(),
+                    execution_date=pd.Timestamp.now(),
+                    quantity=-10,  # Invalid
+                    expected_fill_price=150.0,
+                    stop_price=145.0,
+                    side=SignalSide.BUY,
+                )
 
     def test_submit_order_timeout_simulation(self):
         """Test order submission with timeout simulation."""

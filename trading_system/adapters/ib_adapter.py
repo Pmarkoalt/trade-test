@@ -212,7 +212,11 @@ class IBAdapter(BaseAdapter):
         Raises:
             ConnectionError: If not connected
             ValueError: If order is invalid
+            ImportError: If ib_insync is not installed
         """
+        if IB is None:
+            raise ImportError("ib_insync is required for IBAdapter. " "Install with: pip install ib-insync")
+
         if not self.is_connected():
             raise ConnectionError("Not connected to IB")
 
@@ -424,6 +428,20 @@ class IBAdapter(BaseAdapter):
                 if hasattr(ip.contract, "secType") and ip.contract.secType == "CRYPTO":
                     asset_class = "crypto"
 
+                # Calculate default stop price based on entry price and side
+                # For LONG: stop below entry (5% below)
+                # For SHORT: stop above entry (5% above)
+                if avg_cost <= 0:
+                    raise ValueError(f"Invalid avg_cost: {avg_cost}, must be positive")
+
+                if side == PositionSide.LONG:
+                    default_stop = avg_cost * 0.95
+                else:  # SHORT
+                    default_stop = avg_cost * 1.05
+
+                # Ensure stop_price is always positive
+                default_stop = max(default_stop, 0.01)
+
                 # Create Position object
                 # Note: Many fields are not available from IB positions
                 position = Position(
@@ -434,8 +452,8 @@ class IBAdapter(BaseAdapter):
                     entry_fill_id="",  # Not available
                     quantity=quantity,
                     side=side,
-                    stop_price=0.0,  # Not available from IB
-                    initial_stop_price=0.0,
+                    stop_price=default_stop,  # Default stop (not available from IB)
+                    initial_stop_price=default_stop,
                     hard_stop_atr_mult=2.5,
                     entry_slippage_bps=0.0,
                     entry_fee_bps=0.0,

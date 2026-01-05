@@ -9,7 +9,7 @@ import yaml
 from .validation import validate_config_file
 
 # Current config schema version
-CURRENT_CONFIG_VERSION = "1.0"
+CURRENT_CONFIG_VERSION = "1.1"
 
 
 def detect_config_version(config_data: Dict[str, Any]) -> str:

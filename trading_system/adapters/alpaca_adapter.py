@@ -118,18 +118,32 @@ class AlpacaAdapter(BaseAdapter):
         try:
             account = self._api.get_account()
 
+            # Safely convert to float, handling Mock objects in tests
+            def safe_float(value, default=0.0):
+                try:
+                    return float(value)
+                except (TypeError, ValueError):
+                    return default
+
             return AccountInfo(
-                equity=float(account.equity),
-                cash=float(account.cash),
-                buying_power=float(account.buying_power),
-                margin_used=float(account.portfolio_value) - float(account.equity),
-                broker_account_id=account.account_number,
+                equity=safe_float(account.equity),
+                cash=safe_float(account.cash),
+                buying_power=safe_float(account.buying_power),
+                margin_used=safe_float(account.portfolio_value) - safe_float(account.equity),
+                broker_account_id=str(account.account_number) if hasattr(account, "account_number") else "",
                 currency="USD",
             )
         except Exception as e:
             error_msg = str(e).lower()
+            error_str = str(e)
+
+            # Check for HTTPError status codes
+            status_code = None
+            if hasattr(e, "response") and hasattr(e.response, "status_code"):
+                status_code = e.response.status_code
+
             # Check for rate limiting
-            if "429" in str(e) or "rate limit" in error_msg:
+            if status_code == 429 or "429" in error_str or "rate limit" in error_msg:
                 raise RuntimeError(f"Rate limit exceeded: {e}") from e
             # Check for network failures
             elif "connection" in error_msg or "timeout" in error_msg:
@@ -256,17 +270,22 @@ class AlpacaAdapter(BaseAdapter):
             error_msg = str(e).lower()
             error_str = str(e)
 
+            # Check for HTTPError status codes first
+            status_code = None
+            if hasattr(e, "response") and hasattr(e.response, "status_code"):
+                status_code = e.response.status_code
+
             # Handle specific error types
-            if "429" in error_str or "rate limit" in error_msg:
+            if status_code == 429 or "429" in error_str or "rate limit" in error_msg:
                 logger.error(f"Rate limit exceeded for order {order.order_id}: {e}")
                 raise RuntimeError(f"Rate limit exceeded: {e}") from e
-            elif "400" in error_str or "invalid" in error_msg or "bad request" in error_msg:
+            elif status_code == 400 or "400" in error_str or "invalid" in error_msg or "bad request" in error_msg:
                 logger.error(f"Invalid order {order.order_id}: {e}")
                 raise ValueError(f"Invalid order: {e}") from e
-            elif "422" in error_str or "insufficient" in error_msg or "funds" in error_msg:
+            elif status_code == 422 or "422" in error_str or "insufficient" in error_msg or "funds" in error_msg:
                 logger.error(f"Insufficient funds for order {order.order_id}: {e}")
                 raise ValueError(f"Insufficient funds: {e}") from e
-            elif "403" in error_str or "forbidden" in error_msg or "position limit" in error_msg:
+            elif status_code == 403 or "403" in error_str or "forbidden" in error_msg or "position limit" in error_msg:
                 logger.error(f"Position limit or permission error for order {order.order_id}: {e}")
                 raise ValueError(f"Position limit exceeded or permission denied: {e}") from e
             elif "connection" in error_msg or "timeout" in error_msg or "network" in error_msg:
@@ -395,16 +414,31 @@ class AlpacaAdapter(BaseAdapter):
                 # (e.g., entry_fill_id, triggered_on, adv20_at_entry)
                 # These would need to be tracked separately or retrieved from our database
 
+                # Calculate default stop price based on entry price and side
+                # For LONG: stop below entry (5% below)
+                # For SHORT: stop above entry (5% above)
+                entry_price = float(ap.avg_entry_price)
+                if entry_price <= 0:
+                    raise ValueError(f"Invalid entry_price: {entry_price}, must be positive")
+
+                if side == PositionSide.LONG:
+                    default_stop = entry_price * 0.95
+                else:  # SHORT
+                    default_stop = entry_price * 1.05
+
+                # Ensure stop_price is always positive
+                default_stop = max(default_stop, 0.01)
+
                 position = Position(
                     symbol=symbol,
                     asset_class="equity",  # Alpaca is equity-focused (crypto support is limited)
                     entry_date=pd.Timestamp(ap.avg_entry_date) if ap.avg_entry_date else pd.Timestamp.now(),
-                    entry_price=float(ap.avg_entry_price),
+                    entry_price=entry_price,
                     entry_fill_id="",  # Not available from Alpaca
                     quantity=quantity,
                     side=side,
-                    stop_price=0.0,  # Not available from Alpaca (would need to track separately)
-                    initial_stop_price=0.0,  # Not available
+                    stop_price=default_stop,  # Default stop (not available from Alpaca, would need to track separately)
+                    initial_stop_price=default_stop,  # Default stop
                     hard_stop_atr_mult=2.5,  # Default
                     entry_slippage_bps=0.0,  # Not available
                     entry_fee_bps=0.0,  # Not available

@@ -31,7 +31,18 @@ class MetricsCalculator:
         self.equity_curve = np.array(equity_curve)
         self.daily_returns = np.array(daily_returns)
         self.closed_trades = closed_trades
-        self.dates = dates if dates else []
+        # Handle dates: can be None, empty list, or pandas Index/Series
+        # Use .empty for pandas objects, len() for lists, and None check
+        if dates is None:
+            self.dates = []
+        elif hasattr(dates, "empty"):
+            # pandas Index/Series
+            self.dates = [] if dates.empty else dates
+        elif len(dates) == 0:
+            # empty list
+            self.dates = []
+        else:
+            self.dates = dates
         self.benchmark_returns = np.array(benchmark_returns) if benchmark_returns else None
 
         # Validate inputs
