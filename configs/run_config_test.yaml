@@ -1,0 +1,58 @@
+# Test Run Configuration for verifying fixes
+dataset:
+  equity_path: "tests/fixtures"
+  crypto_path: "tests/fixtures"
+  benchmark_path: "tests/fixtures"
+  format: "csv"
+  start_date: "2023-01-01"
+  end_date: "2023-12-31"
+  min_lookback_days: 250
+
+splits:
+  train_start: "2023-01-01"
+  train_end: "2023-09-30"
+  validation_start: "2023-10-01"
+  validation_end: "2023-10-31"
+  holdout_start: "2023-11-01"
+  holdout_end: "2023-12-31"
+
+strategies:
+  equity:
+    config_path: "configs/test_equity_strategy.yaml"
+    enabled: true
+  crypto:
+    config_path: "EXAMPLE_CONFIGS/crypto_config.yaml"
+    enabled: false
+
+portfolio:
+  starting_equity: 100000
+
+volatility_scaling:
+  enabled: false
+
+correlation_guard:
+  enabled: false
+
+scoring:
+  weights:
+    breakout: 0.50
+    momentum: 0.30
+    diversification: 0.20
+
+execution:
+  signal_timing: "close"
+  execution_timing: "next_open"
+  slippage_model: "full"
+
+output:
+  base_path: "results/"
+  run_id: "test_cash_fix"
+  equity_curve: "equity_curve.csv"
+  trade_log: "trade_log.csv"
+  weekly_summary: "weekly_summary.csv"
+  monthly_report: "monthly_report.json"
+  scenario_comparison: "scenario_comparison.json"
+  log_level: "DEBUG"
+  log_file: "backtest.log"
+
+random_seed: 42

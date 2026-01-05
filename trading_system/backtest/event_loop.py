@@ -6,6 +6,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 import numpy as np
 import pandas as pd
 
+from ..data.calendar import is_trading_day
 from ..data.validator import detect_missing_data
 from ..exceptions import BacktestError
 from ..execution.fill_simulator import simulate_fill
@@ -176,12 +177,20 @@ class DailyEventLoop:
         executed_fills = self._execute_pending_orders(next_day)
         events["orders_executed"] = [f.symbol for f in executed_fills]
 
+        # Step 4b: Update data through next_day for exit checks
+        # This ensures features (MA20, etc.) are computed for exit day
+        self._update_data_through_date(next_day)
+
         # Step 5: Update stops and check exits at day t+1 close
         exit_signals = self._update_stops_and_check_exits(next_day)
         events["exits_triggered"] = [s[0] for s in exit_signals]
+        if exit_signals:
+            logger.info(f"EXIT_SIGNALS_RETURNED: {exit_signals}")
 
         # Create exit orders for day t+2 open
         exit_orders = self._create_exit_orders(exit_signals, next_day)
+        if exit_orders:
+            logger.info(f"EXIT_ORDERS_CREATED: {len(exit_orders)} orders for {[o.symbol for o in exit_orders]}")
         # Convert orders to tuples with exit reasons
         exit_order_tuples = []
         for i, order in enumerate(exit_orders):
@@ -191,6 +200,8 @@ class DailyEventLoop:
 
         # Step 6: Execute exit orders at day t+2 open (if any pending from previous day)
         day_after_next = self.get_next_trading_day(next_day)
+        # Update data through day t+2 for exit order execution (features needed for slippage calc)
+        self._update_data_through_date(day_after_next)
         exit_fills = self._execute_pending_exit_orders(day_after_next)
         events["exits_executed"] = [f.symbol for f in exit_fills]
 
@@ -304,19 +315,26 @@ class DailyEventLoop:
 
             # Check for missing data - if current date is not in available data
             if date not in available_data.index:
-                # Increment consecutive missing count
+                asset_class = self._get_asset_class(symbol)
+
+                # Skip weekends and holidays for equity - these are expected to be missing
+                if not is_trading_day(date, asset_class):
+                    # Not a trading day - skip without incrementing missing count
+                    continue
+
+                # Increment consecutive missing count (only for actual trading days)
                 self.missing_data_counts[symbol] = self.missing_data_counts.get(symbol, 0) + 1
                 consecutive_count = self.missing_data_counts[symbol]
 
                 # Handle based on consecutive count
                 if consecutive_count == 1:
-                    # Single day missing: log warning, skip signal generation
-                    logger.warning(f"MISSING_DATA_1DAY: {symbol} {date}")
+                    # Single trading day missing: log warning, skip signal generation
+                    logger.warning(f"MISSING_DATA_1DAY: {symbol} {date} (trading day)")
                 else:
-                    # 2+ consecutive days: mark unhealthy, force exit if position exists
-                    logger.error(f"DATA_UNHEALTHY: {symbol}, missing {consecutive_count} consecutive days")
+                    # 2+ consecutive trading days: mark unhealthy, force exit if position exists
+                    logger.error(f"DATA_UNHEALTHY: {symbol}, missing {consecutive_count} consecutive trading days")
                     # Get all missing dates in the gap for proper handling
-                    missing_info = detect_missing_data(available_data, symbol, asset_class=self._get_asset_class(symbol))
+                    missing_info = detect_missing_data(available_data, symbol, asset_class=asset_class)
                     consecutive_dates = self._find_consecutive_missing_dates(date, missing_info, available_data)
                     if consecutive_dates:
                         self._handle_missing_data(symbol, consecutive_dates, date)
@@ -523,15 +541,37 @@ class DailyEventLoop:
             )
 
             if qty < 1:
+                logger.warning(
+                    f"ORDER_SKIPPED: {signal.symbol} qty=0 (equity={self.portfolio.equity:.0f}, "
+                    f"entry={signal.entry_price:.2f}, stop={signal.stop_price:.2f}, cash={self.portfolio.cash:.0f})"
+                )
                 continue  # Cannot afford position
 
             # Get expected fill price (next open, estimated)
             next_bar = self.market_data.get_bar(signal.symbol, next_day)
             if next_bar is None:
                 # Missing data - skip this order
+                logger.warning(f"ORDER_SKIPPED: {signal.symbol} no data for {next_day}")
                 continue
 
             expected_fill_price = next_bar.open
+
+            # Adjust stop price if it would be invalid due to price gap
+            # For long positions, stop must be below entry price
+            adjusted_stop_price = signal.stop_price
+            if signal.stop_price >= expected_fill_price:
+                # Stock gapped down - recalculate stop based on new entry and ATR
+                features = self.market_data.get_features(signal.symbol, date)
+                if features is not None and features.atr14 is not None:
+                    atr_mult = signal.atr_mult if signal.atr_mult else strategy.config.exit.hard_stop_atr_mult
+                    adjusted_stop_price = expected_fill_price - (atr_mult * features.atr14)
+                else:
+                    # Fallback: use a percentage-based stop (2% below entry)
+                    adjusted_stop_price = expected_fill_price * 0.98
+                logger.warning(
+                    f"Adjusted stop for {signal.symbol}: {signal.stop_price:.2f} -> {adjusted_stop_price:.2f} "
+                    f"(entry gapped from {signal.entry_price:.2f} to {expected_fill_price:.2f})"
+                )
 
             # Create order
             order = Order(
@@ -544,7 +584,7 @@ class DailyEventLoop:
                 quantity=qty,
                 signal_date=date,
                 expected_fill_price=expected_fill_price,
-                stop_price=signal.stop_price,
+                stop_price=adjusted_stop_price,
                 status=OrderStatus.PENDING,
             )
 
@@ -560,6 +600,11 @@ class DailyEventLoop:
             # Reserve cash (estimate with buffer)
             estimated_cost = expected_fill_price * qty * 1.01  # 1% buffer
             self.portfolio.cash -= estimated_cost
+
+            logger.info(
+                f"ORDER_CREATED: {signal.symbol} qty={qty} @ {expected_fill_price:.2f} "
+                f"(reserved ${estimated_cost:.0f}, cash now ${self.portfolio.cash:.0f})"
+            )
 
         return orders
 
@@ -613,7 +658,19 @@ class DailyEventLoop:
 
         for order in self.pending_orders:
             if order.execution_date != date:
-                continue  # Not ready to execute yet
+                # Check if execution date has passed - reject stale orders and return cash
+                if order.execution_date < date:
+                    order.status = OrderStatus.REJECTED
+                    order.rejection_reason = "EXECUTION_DATE_PASSED"
+                    # Return reserved cash (was reserved in _create_orders)
+                    reserved_cost = order.expected_fill_price * order.quantity * 1.01
+                    self.portfolio.cash += reserved_cost
+                    logger.warning(
+                        f"ORDER_STALE: {order.symbol} execution date {order.execution_date} < current {date}, "
+                        f"returned ${reserved_cost:.0f}"
+                    )
+                    orders_to_remove.append(order)
+                continue  # Not ready to execute yet (or already handled above)
 
             if order.status != OrderStatus.PENDING:
                 orders_to_remove.append(order)
@@ -622,17 +679,28 @@ class DailyEventLoop:
             # Get open bar
             open_bar = self.market_data.get_bar(order.symbol, date)
             if open_bar is None:
-                # Missing data: reject order
+                # Missing data: reject order and return reserved cash
                 order.status = OrderStatus.REJECTED
                 order.rejection_reason = "MISSING_DATA"
+                # Return reserved cash (was reserved in _create_orders)
+                reserved_cost = order.expected_fill_price * order.quantity * 1.01
+                self.portfolio.cash += reserved_cost
+                logger.warning(
+                    f"ORDER_REJECTED: {order.symbol} no data for execution on {date}, returned ${reserved_cost:.0f}"
+                )
                 orders_to_remove.append(order)
                 continue
 
-            # Get features for slippage calculation
-            features = self.market_data.get_features(order.symbol, date)
+            # Get features for slippage calculation - use signal date (order.date) since
+            # features are computed through signal day, not execution day
+            features = self.market_data.get_features(order.symbol, order.date)
             if features is None or features.atr14 is None:
                 order.status = OrderStatus.REJECTED
                 order.rejection_reason = "MISSING_FEATURES"
+                # Return reserved cash (was reserved in _create_orders)
+                reserved_cost = order.expected_fill_price * order.quantity * 1.01
+                self.portfolio.cash += reserved_cost
+                logger.warning(f"ORDER_REJECTED: {order.symbol} missing features for signal date {order.date}")
                 orders_to_remove.append(order)
                 continue
 
@@ -656,7 +724,14 @@ class DailyEventLoop:
             # Simulate fill
             try:
                 if features.adv20 is None or features.atr14 is None:
-                    continue  # Skip if required features are missing
+                    # Reject order and return reserved cash
+                    order.status = OrderStatus.REJECTED
+                    order.rejection_reason = "MISSING_FEATURES_ADV20_ATR14"
+                    reserved_cost = order.expected_fill_price * order.quantity * 1.01
+                    self.portfolio.cash += reserved_cost
+                    logger.warning(f"ORDER_REJECTED: {order.symbol} missing adv20/atr14, returned ${reserved_cost:.0f}")
+                    orders_to_remove.append(order)
+                    continue
                 fill = simulate_fill(
                     order=order,
                     open_bar=open_bar,
@@ -668,16 +743,8 @@ class DailyEventLoop:
                     rng=self.rng,
                 )
 
-                # Update order status
-                order.status = OrderStatus.FILLED
-
-                # Adjust cash (actual cost vs reserved)
-                actual_cost = fill.fill_price * fill.quantity + fill.total_cost
-                reserved_cost = order.expected_fill_price * order.quantity * 1.01
-                cash_adjustment = reserved_cost - actual_cost
-                self.portfolio.cash += cash_adjustment
-
-                # Create position
+                # Create position FIRST (before adjusting cash)
+                # If this fails, we return the reserved cash
                 strategy = self._get_strategy_for_signal_symbol(order.symbol)
                 if strategy:
                     # Get signal metadata from order
@@ -688,13 +755,9 @@ class DailyEventLoop:
                     triggered_on = signal_metadata.get("triggered_on")
                     if triggered_on is not None and not isinstance(triggered_on, BreakoutType):
                         triggered_on = None
-                    # process_fill expects BreakoutType or None, but we need to handle None case
                     adv20_at_entry = signal_metadata.get("adv20_at_entry", features.adv20)
                     if adv20_at_entry is None:
                         adv20_at_entry = 0.0
-
-                    # Provide default BreakoutType if None
-                    from ..models.signals import BreakoutType
 
                     final_triggered_on = triggered_on if triggered_on is not None else BreakoutType.FAST_20D
                     _ = self.portfolio.process_fill(
@@ -703,8 +766,24 @@ class DailyEventLoop:
                         atr_mult=atr_mult,
                         triggered_on=final_triggered_on,
                         adv20_at_entry=adv20_at_entry,
+                        manage_cash=False,  # event_loop handles cash reservation/adjustment
                     )
 
+                # Position created successfully - now adjust cash and update order status
+                order.status = OrderStatus.FILLED
+
+                # Adjust cash (actual cost vs reserved)
+                actual_cost = fill.fill_price * fill.quantity + fill.total_cost
+                reserved_cost = order.expected_fill_price * order.quantity * 1.01
+                cash_adjustment = reserved_cost - actual_cost
+                self.portfolio.cash += cash_adjustment
+
+                logger.info(
+                    f"ORDER_FILLED: {order.symbol} qty={fill.quantity} @ {fill.fill_price:.2f} "
+                    f"(cash now ${self.portfolio.cash:.0f})"
+                )
+
+                if strategy:
                     # Log trade entry
                     log_trade_event(
                         logger,
@@ -732,6 +811,13 @@ class DailyEventLoop:
                 logger.error(f"Error executing order {order.order_id}: {e}")
                 order.status = OrderStatus.REJECTED
                 order.rejection_reason = f"EXECUTION_ERROR: {str(e)}"
+                # Return reserved cash (was reserved in _create_orders)
+                reserved_cost = order.expected_fill_price * order.quantity * 1.01
+                self.portfolio.cash += reserved_cost
+                logger.warning(
+                    f"ORDER_REJECTED: {order.symbol} - {e}, returned ${reserved_cost:.0f} "
+                    f"(cash now ${self.portfolio.cash:.0f})"
+                )
 
                 # Log rejected order
                 log_trade_event(
@@ -782,6 +868,8 @@ class DailyEventLoop:
             features = self.market_data.get_features(symbol, date)
             if features:
                 features_data[symbol] = {"ma20": features.ma20, "ma50": features.ma50, "atr14": features.atr14}
+            else:
+                logger.debug(f"EXIT_FEATURES_MISSING: {symbol} on {date} - get_features returned None")
 
         # Get strategy config for exit mode
         strategy = self.strategies[0] if self.strategies else None
@@ -825,6 +913,19 @@ class DailyEventLoop:
             if position is None or not position.is_open():
                 continue
 
+            # Get expected fill price (next day open)
+            next_bar = self.market_data.get_bar(symbol, next_day)
+            if next_bar is None:
+                # No data for next day - try to get any available bar
+                if symbol in self.market_data.bars and len(self.market_data.bars[symbol]) > 0:
+                    last_bar = self.market_data.bars[symbol].iloc[-1]
+                    expected_fill = last_bar["close"]
+                else:
+                    logger.warning(f"Cannot create exit order for {symbol}: no price data available")
+                    continue
+            else:
+                expected_fill = next_bar.open
+
             # Create exit order
             order = Order(
                 order_id=str(uuid.uuid4()),
@@ -835,19 +936,16 @@ class DailyEventLoop:
                 side=SignalSide.SELL,
                 quantity=position.quantity,
                 signal_date=date,
-                expected_fill_price=0.0,  # Will be set at execution
-                stop_price=0.0,  # Not used for exits
+                expected_fill_price=expected_fill,
+                stop_price=0.01,  # Not used for exits
                 status=OrderStatus.PENDING,
+                is_exit=True,
             )
 
-            # Store exit reason in order (we'll need to track this)
-            # For now, we'll pass it through the execution
+            orders.append(order)
+            logger.debug(f"EXIT_ORDER_CREATED: {symbol} execution_date={next_day}")
 
-            orders.append((order, exit_reason))
-
-        # Store exit orders with their reasons
-        self.pending_exit_orders.extend(orders)
-        return [o[0] for o in orders]
+        return orders
 
     def _execute_pending_exit_orders(self, date: pd.Timestamp) -> List[Fill]:
         """Execute pending exit orders at day t+2 open.
@@ -860,6 +958,11 @@ class DailyEventLoop:
         """
         fills = []
         orders_to_remove = []
+
+        if self.pending_exit_orders:
+            logger.info(f"PENDING_EXIT_ORDERS: {len(self.pending_exit_orders)} orders, execution_date={date}")
+            for ot in self.pending_exit_orders:
+                logger.debug(f"  - {ot[0].symbol} exec_date={ot[0].execution_date} status={ot[0].status}")
 
         for order_tuple in self.pending_exit_orders:
             order, exit_reason = order_tuple
@@ -1175,8 +1278,9 @@ class DailyEventLoop:
                             quantity=position.quantity,
                             signal_date=date,
                             expected_fill_price=next_bar.open,
-                            stop_price=max(0.01, next_bar.open - 1.0),  # Ensure stop < expected_fill_price
+                            stop_price=0.01,  # Not used for exits
                             status=OrderStatus.PENDING,
+                            is_exit=True,
                         )
                         self.pending_exit_orders.append((exit_order, ExitReason.DATA_MISSING))
                     except Exception as e:

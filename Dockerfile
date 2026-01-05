@@ -45,6 +45,9 @@ COPY tests/ ./tests/
 # Copy example configs
 COPY EXAMPLE_CONFIGS/ ./EXAMPLE_CONFIGS/
 
+# Copy configs directory
+COPY configs/ ./configs/
+
 # Set default command
 ENTRYPOINT ["python", "-m", "trading_system"]
 

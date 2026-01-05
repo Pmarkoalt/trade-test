@@ -180,9 +180,9 @@ def display_results_table(results: Dict[str, Any], title: str = "Results") -> No
     """
     if not console or not Table:
         # Fallback: print as formatted text
-        print("\n{title}:")
+        print(f"\n{title}:")
         for key, value in results.items():
-            print("  {key}: {value}")
+            print(f"  {key}: {value}")
         return
 
     table = Table(title=title, box=box.ROUNDED, show_header=True, header_style="bold magenta")
@@ -193,11 +193,11 @@ def display_results_table(results: Dict[str, Any], title: str = "Results") -> No
         # Format value based on type
         if isinstance(value, float):
             if abs(value) < 0.01:
-                formatted_value = "{value:.6f}"
+                formatted_value = f"{value:.6f}"
             elif abs(value) < 1:
-                formatted_value = "{value:.4f}"
+                formatted_value = f"{value:.4f}"
             else:
-                formatted_value = "{value:.2f}"
+                formatted_value = f"{value:.2f}"
         elif isinstance(value, (int, str)):
             formatted_value = str(value)
         else:
@@ -424,7 +424,7 @@ def cmd_backtest(args: argparse.Namespace) -> int:
                 "Total Trades": results.get("total_trades", 0),
                 "Win Rate": results.get("win_rate", 0) * 100 if results.get("win_rate") is not None else 0,
             }
-            display_results_table(key_metrics, title="Backtest Results - {period.upper()}")
+            display_results_table(key_metrics, title=f"Backtest Results - {period.upper()}")
 
             # Get run_id if available for helpful next steps
             run_id = results.get("run_id")

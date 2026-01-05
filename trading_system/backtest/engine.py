@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
 
+from ..data.calendar import is_trading_day
 from ..indicators.feature_computer import compute_features
 from ..ml.feature_engineering import MLFeatureEngineer
 from ..ml.models import MLModel
@@ -125,13 +126,15 @@ class BacktestEngine:
 
         logger.info(f"Processing {len(trading_dates)} trading days")
 
-        # Initialize event loop
-        event_loop = self._create_event_loop()
-
-        # Reset portfolio for this run
+        # Reset portfolio for this run FIRST (before creating event loop)
         self.portfolio = Portfolio(
             date=start_date, cash=self.starting_equity, starting_equity=self.starting_equity, equity=self.starting_equity
         )
+        # Initialize strategies for risk limit checks
+        self.portfolio.initialize_strategies(self.strategies)
+
+        # Initialize event loop AFTER portfolio is set up
+        event_loop = self._create_event_loop()
 
         # Optional profiling
         profiler = None
@@ -261,20 +264,25 @@ class BacktestEngine:
         def get_next_trading_day(date: pd.Timestamp) -> pd.Timestamp:
             """Get next trading day.
 
-            For equity: skip weekends
+            For equity: skip weekends and holidays
             For crypto: next calendar day
             """
-            # Simple implementation: next calendar day
-            # In production, use trading calendar
-            next_day = date + pd.Timedelta(days=1)
-
             # Use cached dates for efficient lookup
             # Use binary search to find next available date
             idx = bisect.bisect_right(_cached_all_dates, date)
-            if idx < len(_cached_all_dates):
-                return _cached_all_dates[idx]
-            else:
-                return next_day
+
+            # Find next trading day in cached dates (skip weekends and holidays)
+            while idx < len(_cached_all_dates):
+                next_date = _cached_all_dates[idx]
+                if is_trading_day(next_date, asset_class="equity"):
+                    return next_date
+                idx += 1
+
+            # Fallback: skip weekends and holidays manually
+            next_day = date + pd.Timedelta(days=1)
+            while not is_trading_day(next_day, asset_class="equity"):
+                next_day = next_day + pd.Timedelta(days=1)
+            return next_day
 
         # Check if any strategy has ML enabled and create ML predictor
         ml_predictor = self._create_ml_predictor()

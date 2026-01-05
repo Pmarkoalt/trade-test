@@ -157,9 +157,17 @@ class LazyMarketData(MarketData):
             FeatureRow object or None if not found
         """
         if not self._ensure_features_computed(symbol):
+            logger.warning(f"FEATURES_NOT_COMPUTED: {symbol} - _ensure_features_computed returned False")
             return None
 
-        return super().get_features(symbol, date)
+        result = super().get_features(symbol, date)
+        if result is None and symbol in self.features:
+            df = self.features[symbol]
+            logger.warning(
+                f"FEATURES_NOT_IN_INDEX: {symbol} on {date} - Index range: {df.index.min()} to {df.index.max()}, "
+                f"len={len(df)}, date_type={type(date).__name__}, index_type={type(df.index[0]).__name__ if len(df) > 0 else 'empty'}"
+            )
+        return result
 
     def preload_universe(self, symbols: List[str], asset_classes: Optional[Dict[str, str]] = None) -> None:
         """Preload bars and features for a universe of symbols.

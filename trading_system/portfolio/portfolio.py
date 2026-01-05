@@ -1,5 +1,6 @@
 """Portfolio state management with position tracking and risk metrics."""
 
+import logging
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple, Union
 
@@ -449,6 +450,7 @@ class Portfolio:
         triggered_on: Optional[BreakoutType],
         adv20_at_entry: float,
         strategy_name: Optional[str] = None,
+        manage_cash: bool = True,
     ) -> Position:
         """Process a fill and create a new position.
 
@@ -459,6 +461,7 @@ class Portfolio:
             triggered_on: Breakout type that triggered entry
             adv20_at_entry: ADV20 at entry time
             strategy_name: Strategy name (for multi-strategy)
+            manage_cash: Whether to handle cash deduction (False when caller handles cash)
 
         Returns:
             Created Position object
@@ -489,6 +492,12 @@ class Portfolio:
         elif self.strategies:
             # Fallback to first strategy's config
             risk_config = list(self.strategies.values())[0].config.risk
+
+        # Debug: log risk config lookup
+        logging.getLogger(__name__).debug(
+            f"RISK_CONFIG_LOOKUP: strategy_name={strategy_name}, strategies={list(self.strategies.keys()) if self.strategies else 'empty'}, "
+            f"risk_config={'found' if risk_config else 'None'}, max_position_notional={risk_config.max_position_notional if risk_config else 'N/A'}"
+        )
 
         # Check gross exposure limit (default 80%)
         # Use risk_config if available, otherwise use default 0.80
@@ -548,30 +557,32 @@ class Portfolio:
                         f"Would exceed max net exposure limit: {new_net_exposure_pct:.2%} > {risk_config.max_net_exposure:.2%}"
                     )
 
-        # Handle cash based on position side
+        # Handle cash based on position side (only if manage_cash=True)
         # Long: pay cash to buy (cash decreases)
         # Short: receive proceeds from short sale (cash increases), margin handled via exposure limits
-        if position_side == PositionSide.LONG:
-            # Long: need enough cash to pay for purchase
-            # total_cost is (slippage + fee) * notional, so we need notional + total_cost
-            required_cash = position_notional + fill.total_cost
-            if required_cash > self.cash:
-                raise ValueError(f"Insufficient cash for long: need {required_cash:.2f}, have {self.cash:.2f}")
-            self.cash -= required_cash
-            # Ensure cash doesn't go negative (defensive check)
-            if self.cash < 0:
-                # This should not happen if check above works, but ensure cash >= 0
-                self.cash = 0.0
-        else:  # SHORT
-            # Short: receive proceeds from short sale (cash increases)
-            # Note: margin requirement is handled via exposure limits (gross exposure)
-            # For shorts, we receive notional but pay total_cost
-            proceeds = position_notional - fill.total_cost
-            self.cash += proceeds
-            # Ensure cash doesn't go negative (defensive check)
-            if self.cash < 0:
-                # This should not happen, but ensure cash >= 0
-                self.cash = 0.0
+        # When manage_cash=False, caller (e.g., event_loop) handles cash reservation/adjustment
+        if manage_cash:
+            if position_side == PositionSide.LONG:
+                # Long: need enough cash to pay for purchase
+                # total_cost is (slippage + fee) * notional, so we need notional + total_cost
+                required_cash = position_notional + fill.total_cost
+                if required_cash > self.cash:
+                    raise ValueError(f"Insufficient cash for long: need {required_cash:.2f}, have {self.cash:.2f}")
+                self.cash -= required_cash
+                # Ensure cash doesn't go negative (defensive check)
+                if self.cash < 0:
+                    # This should not happen if check above works, but ensure cash >= 0
+                    self.cash = 0.0
+            else:  # SHORT
+                # Short: receive proceeds from short sale (cash increases)
+                # Note: margin requirement is handled via exposure limits (gross exposure)
+                # For shorts, we receive notional but pay total_cost
+                proceeds = position_notional - fill.total_cost
+                self.cash += proceeds
+                # Ensure cash doesn't go negative (defensive check)
+                if self.cash < 0:
+                    # This should not happen, but ensure cash >= 0
+                    self.cash = 0.0
 
         # Create position with side field
         position = Position(
@@ -897,6 +908,9 @@ class Portfolio:
                 # Long: exit if price drops to stop
                 if current_price <= position.stop_price:
                     exit_reason = ExitReason.HARD_STOP
+                    logging.getLogger(__name__).debug(
+                        f"EXIT_TRIGGER: {position.symbol} HARD_STOP - price {current_price:.2f} <= stop {position.stop_price:.2f}"
+                    )
             else:  # SHORT
                 # Short: exit if price rises to stop
                 if current_price >= position.stop_price:
@@ -910,10 +924,17 @@ class Portfolio:
                         # Long: exit if price drops below MA
                         if current_price < ma_level:
                             exit_reason = ExitReason.TRAILING_MA_CROSS
+                            logging.getLogger(__name__).debug(
+                                f"EXIT_TRIGGER: {position.symbol} MA cross - price {current_price:.2f} < MA{exit_ma} {ma_level:.2f}"
+                            )
                     else:  # SHORT
                         # Short: exit if price rises above MA
                         if current_price > ma_level:
                             exit_reason = ExitReason.TRAILING_MA_CROSS
+                else:
+                    logging.getLogger(__name__).debug(
+                        f"EXIT_CHECK_SKIPPED: {position.symbol} - ma{exit_ma} is None, features={features}"
+                    )
 
             if exit_reason is None and exit_mode == "staged" and position.asset_class == "crypto":
                 ma50 = features.get("ma50")

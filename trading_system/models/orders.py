@@ -38,6 +38,7 @@ class Order:
     limit_price: Optional[float] = None  # Not used (market orders only)
     status: OrderStatus = OrderStatus.PENDING
     rejection_reason: Optional[str] = None  # If REJECTED
+    is_exit: bool = False  # True for exit orders (closing positions)
 
     # Constraints checked
     capacity_checked: bool = False
@@ -56,24 +57,26 @@ class Order:
         if self.expected_fill_price <= 0:
             raise ValueError(f"Invalid expected_fill_price: {self.expected_fill_price}, must be positive")
 
-        if self.stop_price <= 0:
-            raise ValueError(f"Invalid stop_price: {self.stop_price}, must be positive")
+        # Skip stop_price validation for exit orders (closing positions)
+        if not self.is_exit:
+            if self.stop_price <= 0:
+                raise ValueError(f"Invalid stop_price: {self.stop_price}, must be positive")
 
-        # Validate stop price relative to entry based on order side
-        if self.side == SignalSide.BUY:
-            # Long: stop must be below entry
-            if self.stop_price >= self.expected_fill_price:
-                raise ValueError(
-                    f"Invalid stop_price: {self.stop_price} >= expected_fill_price "
-                    f"{self.expected_fill_price} (stop must be below entry for long positions)"
-                )
-        else:  # SELL (short entry)
-            # Short: stop must be above entry
-            if self.stop_price <= self.expected_fill_price:
-                raise ValueError(
-                    f"Invalid stop_price: {self.stop_price} <= expected_fill_price "
-                    f"{self.expected_fill_price} (stop must be above entry for short positions)"
-                )
+            # Validate stop price relative to entry based on order side
+            if self.side == SignalSide.BUY:
+                # Long: stop must be below entry
+                if self.stop_price >= self.expected_fill_price:
+                    raise ValueError(
+                        f"Invalid stop_price: {self.stop_price} >= expected_fill_price "
+                        f"{self.expected_fill_price} (stop must be below entry for long positions)"
+                    )
+            else:  # SELL (short entry)
+                # Short: stop must be above entry
+                if self.stop_price <= self.expected_fill_price:
+                    raise ValueError(
+                        f"Invalid stop_price: {self.stop_price} <= expected_fill_price "
+                        f"{self.expected_fill_price} (stop must be above entry for short positions)"
+                    )
 
 
 @dataclass
