@@ -842,9 +842,11 @@ def cmd_config_validate(args: argparse.Namespace) -> int:
                         print_section("Validating Equity Strategy Config")
                         equity_path_str = config.strategies.equity.config_path
                         equity_path = Path(equity_path_str)
-                        # Resolve relative paths relative to the config file's directory
+                        # Resolve relative paths relative to current working directory (project root)
+                        # This matches the convention used in tests and other parts of the codebase
                         if not equity_path.is_absolute():
-                            equity_path = (config_path.parent / equity_path_str).resolve()
+                            equity_path = Path.cwd() / equity_path_str
+                        equity_path = equity_path.resolve()
                         if not equity_path.exists():
                             print_error(f"Equity strategy config file not found: {equity_path}")
                             if console:
@@ -864,9 +866,11 @@ def cmd_config_validate(args: argparse.Namespace) -> int:
                         print_section("Validating Crypto Strategy Config")
                         crypto_path_str = config.strategies.crypto.config_path
                         crypto_path = Path(crypto_path_str)
-                        # Resolve relative paths relative to the config file's directory
+                        # Resolve relative paths relative to current working directory (project root)
+                        # This matches the convention used in tests and other parts of the codebase
                         if not crypto_path.is_absolute():
-                            crypto_path = (config_path.parent / crypto_path_str).resolve()
+                            crypto_path = Path.cwd() / crypto_path_str
+                        crypto_path = crypto_path.resolve()
                         if not crypto_path.exists():
                             print_error(f"Crypto strategy config file not found: {crypto_path}")
                             if console:

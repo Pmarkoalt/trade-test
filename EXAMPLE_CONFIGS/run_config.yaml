@@ -40,11 +40,11 @@ splits:
 # Strategy configurations to load
 strategies:
   equity:
-    config_path: "configs/equity_config.yaml"
+    config_path: "EXAMPLE_CONFIGS/equity_config.yaml"
     enabled: true
 
   crypto:
-    config_path: "configs/crypto_config.yaml"
+    config_path: "EXAMPLE_CONFIGS/crypto_config.yaml"
     enabled: true
 
 # Portfolio configuration
