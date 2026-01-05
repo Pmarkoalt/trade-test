@@ -97,12 +97,16 @@ class TestPortfolioProperties:
             ),
             min_size=1,
             max_size=5,  # Reduced to avoid too many positions
+            unique_by=lambda x: x[0],  # Unique symbols only
         ),
     )
     @settings(max_examples=30, deadline=5000, suppress_health_check=[HealthCheck.filter_too_much])
     def test_portfolio_exposure_limits(self, equity, date, positions_data):
         """Property: Portfolio respects exposure limits."""
         portfolio = Portfolio(date=date, starting_equity=equity, cash=equity, equity=equity)
+
+        # Track entry prices for update_equity
+        entry_prices = {}
 
         # Add positions - skip if constraints can't be met
         for symbol, price, quantity in positions_data:
@@ -141,13 +145,13 @@ class TestPortfolioProperties:
                     triggered_on=BreakoutType.FAST_20D,
                     adv20_at_entry=notional,
                 )
+                entry_prices[symbol] = price  # Track entry price
             except ValueError:
                 # Skip if portfolio rejects the position
                 continue
 
-        # Update equity to calculate exposure metrics
-        current_prices = {symbol: price for symbol, price, _ in positions_data}
-        portfolio.update_equity(current_prices)
+        # Update equity using entry prices (no price change = stable exposure)
+        portfolio.update_equity(entry_prices)
 
         # Check exposure limits
         if portfolio.gross_exposure_pct is not None:

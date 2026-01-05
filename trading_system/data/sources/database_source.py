@@ -109,11 +109,13 @@ class DatabaseDataSource(BaseDataSource):
 
         if start_date is not None:
             query += f" AND date >= {param_style}"
-            params.append(start_date)
+            # Convert to string for SQLite compatibility
+            params.append(start_date.strftime("%Y-%m-%d") if hasattr(start_date, "strftime") else str(start_date))
 
         if end_date is not None:
             query += f" AND date <= {param_style}"
-            params.append(end_date)
+            # Convert to string for SQLite compatibility
+            params.append(end_date.strftime("%Y-%m-%d") if hasattr(end_date, "strftime") else str(end_date))
 
         query += " ORDER BY symbol, date"
 

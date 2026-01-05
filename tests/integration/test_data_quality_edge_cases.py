@@ -90,7 +90,7 @@ class TestMissingDays:
         """Test that missing days don't cause validation to fail."""
         # Create data with missing days
         dates = pd.bdate_range("2023-01-01", "2023-01-31", freq="B")
-        dates = dates.drop(pd.Timestamp("2023-01-15"))  # Remove a day
+        dates = dates.drop(pd.Timestamp("2023-01-13"))  # Remove a Friday (business day)
         df = create_sample_ohlcv_data("TEST", dates)
 
         # Validation should pass (missing days are warnings, not errors)
@@ -174,7 +174,8 @@ class TestExtremePriceMoves:
     def test_multiple_extreme_moves(self):
         """Test handling of multiple extreme moves."""
         dates = pd.date_range("2023-01-01", periods=10, freq="D")
-        prices = [100.0, 101.0, 162.0, 103.0, 104.0, 156.0, 105.0, 106.0, 107.0, 108.0]  # Two extreme moves
+        # Two extreme moves: day 3 (162/101=60.4%) and day 6 (158/104=51.9%)
+        prices = [100.0, 101.0, 162.0, 103.0, 104.0, 158.0, 105.0, 106.0, 107.0, 108.0]
 
         df = pd.DataFrame(
             {
@@ -319,8 +320,8 @@ class TestGapsInData:
     def test_large_gap_handling(self):
         """Test handling of large gaps (e.g., > 5 days)."""
         dates = pd.bdate_range("2023-01-01", "2023-01-31", freq="B")
-        # Remove 7 consecutive business days (large gap) - Jan 10-18, 2023
-        gap_dates = pd.bdate_range("2023-01-10", "2023-01-18", freq="B")
+        # Remove 5 consecutive business days within same week (Mon-Fri) - Jan 9-13, 2023
+        gap_dates = pd.bdate_range("2023-01-09", "2023-01-13", freq="B")
         dates = dates.drop(gap_dates)
         df = create_sample_ohlcv_data("TEST", dates)
 
