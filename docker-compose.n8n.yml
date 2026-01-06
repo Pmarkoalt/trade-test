@@ -1,0 +1,105 @@
+services:
+  trading-system:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: trading-system:latest
+    container_name: trading-system
+    volumes:
+      - ./data:/app/data
+      - ./scripts:/app/scripts:ro
+      - ./EXAMPLE_CONFIGS:/app/configs:ro
+      - ./results:/app/results
+      - ./configs:/app/custom_configs:ro
+      - ./trading_system:/app/trading_system
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    networks:
+      - trading-network
+
+  # API server for n8n integration
+  trading-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: trading-system:latest
+    container_name: trading-api
+    command: uvicorn trading_system.api.server:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./EXAMPLE_CONFIGS:/app/configs:ro
+      - ./results:/app/results
+      - ./configs:/app/custom_configs:ro
+      - ./trading_system:/app/trading_system
+    env_file:
+      - .env
+    environment:
+      - PYTHONPATH=/app
+      - PYTHONUNBUFFERED=1
+    working_dir: /app
+    networks:
+      - trading-network
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=changeme
+      - GENERIC_TIMEZONE=America/New_York
+      - TZ=America/New_York
+      # Allow executing shell commands
+      - N8N_ALLOW_EXEC=true
+      # Increase timeout for long-running backtests (10 minutes)
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+      - EXECUTIONS_TIMEOUT=600
+      - EXECUTIONS_TIMEOUT_MAX=3600
+    volumes:
+      # n8n data persistence
+      - n8n_data:/home/node/.n8n
+      # Shared access to trading system directories
+      - ./results:/data/results
+      - ./configs:/data/configs:ro
+      - ./EXAMPLE_CONFIGS:/data/example_configs:ro
+      - ./data:/data/market_data:ro
+    networks:
+      - trading-network
+    depends_on:
+      - trading-system
+
+  # Optional: PostgreSQL for n8n and results storage
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=trading
+      - POSTGRES_PASSWORD=trading_password
+      - POSTGRES_DB=trading_results
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - trading-network
+
+networks:
+  trading-network:
+    driver: bridge
+
+volumes:
+  n8n_data:
+  postgres_data:

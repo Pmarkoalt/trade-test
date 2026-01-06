@@ -1,0 +1,67 @@
+# Experiment 2: MA200 Trend Filter
+# Hypothesis: Stronger trend filter may improve signal quality
+
+name: "equity_momentum_exp2_ma200"
+asset_class: "equity"
+universe: ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA"]
+benchmark: "SPY"
+
+# Indicator calculation parameters
+indicators:
+  ma_periods: [20, 50, 200]
+  atr_period: 14
+  roc_period: 60
+  breakout_fast: 20
+  breakout_slow: 55
+  adv_lookback: 20
+  corr_lookback: 20
+
+# Eligibility filter - CHANGED: Use MA200 filter
+eligibility:
+  trend_ma: 200  # Changed from 50 to 200
+  ma_slope_lookback: 20
+  ma_slope_min: 0.003  # Slightly relaxed for MA200
+  require_close_above_trend_ma: true
+  require_close_above_ma200: true  # Now required
+  relative_strength_enabled: false
+  relative_strength_min: 0.0
+
+# Entry trigger configuration (same as production)
+entry:
+  fast_clearance: 0.005
+  slow_clearance: 0.010
+
+# Exit configuration (same as production)
+exit:
+  mode: "ma_cross"
+  exit_ma: 20
+  hard_stop_atr_mult: 2.5
+  tightened_stop_atr_mult: null
+
+# Risk management (same as production)
+risk:
+  risk_per_trade: 0.0075
+  max_positions: 5
+  max_exposure: 0.80
+  max_position_notional: 0.15
+
+# Capacity constraints (same as production)
+capacity:
+  max_order_pct_adv: 0.005
+
+# Execution costs (same as production)
+costs:
+  fee_bps: 1
+  slippage_base_bps: 8
+  slippage_std_mult: 0.75
+  weekend_penalty: 1.0
+  stress_threshold: -0.03
+  stress_slippage_mult: 2.0
+
+# ML disabled
+ml:
+  enabled: false
+  model_path: null
+  prediction_mode: "score_enhancement"
+  ml_weight: 0.3
+  confidence_threshold: 0.5

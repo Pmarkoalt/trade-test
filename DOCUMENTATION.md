@@ -17,6 +17,7 @@ Documentation is organized across three main locations:
 - **[Getting Started](docs/user_guide/getting_started.md)** - Installation and first backtest
 - **[User Guide Index](docs/user_guide/README.md)** - Complete user documentation
 - **[Example Configurations](EXAMPLE_CONFIGS/README.md)** - Working configuration examples
+- **[n8n Integration](docs/N8N_INTEGRATION.md)** - Workflow automation with n8n
 - **[Main README](README.md)** - Project overview
 
 ### For Developers
@@ -102,6 +103,7 @@ trade-test/
 - **Find examples**: [Example Configurations](EXAMPLE_CONFIGS/README.md)
 - **Understand strategies**: [Equity Strategy](agent-files/06_STRATEGY_EQUITY.md) | [Crypto Strategy](agent-files/07_STRATEGY_CRYPTO.md)
 - **Learn about validation**: [Validation Suite](agent-files/12_VALIDATION_SUITE.md)
+- **Automate with n8n**: [n8n Integration Guide](docs/N8N_INTEGRATION.md)
 - **Troubleshoot errors**: [Troubleshooting Guide](TROUBLESHOOTING.md) | [Error Code Reference](ERROR_CODE_REFERENCE.md)
 - **Set up development**: [Developer Guide](docs/developer_guide/README.md)
 - **Check project status**: [Review Summary](agent-files/REVIEW_SUMMARY.md) | [Production Readiness](PRODUCTION_READINESS.md)

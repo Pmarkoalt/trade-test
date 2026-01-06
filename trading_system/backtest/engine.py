@@ -17,8 +17,10 @@ from ..ml.predictor import MLPredictor
 from ..models.market_data import MarketData
 from ..models.positions import Position
 from ..portfolio.portfolio import Portfolio
+from ..research.sentiment.synthetic_generator import SentimentConfig, SyntheticSentimentGenerator, generate_sentiment_for_backtest
 from ..strategies.base.strategy_interface import StrategyInterface
 from .event_loop import DailyEventLoop
+from .ml_data_collector import MLDataCollector
 from .splits import WalkForwardSplit
 
 try:
@@ -63,6 +65,9 @@ class BacktestEngine:
         slippage_multiplier: float = 1.0,
         crash_dates: Optional[List[pd.Timestamp]] = None,
         max_duration_seconds: Optional[int] = None,
+        sentiment_data: Optional[pd.DataFrame] = None,
+        ml_data_collection: bool = False,
+        ml_feature_db_path: str = "features.db",
     ):
         """Initialize backtest engine.
 
@@ -75,6 +80,10 @@ class BacktestEngine:
             crash_dates: List of dates on which to simulate flash crashes (5x slippage + forced stops)
             max_duration_seconds: Maximum time allowed for backtest (default: 3600 = 1 hour).
                                   Set to None to disable timeout.
+            sentiment_data: Optional DataFrame with synthetic sentiment for backtesting.
+                           If None and sentiment is enabled in strategy config, will be auto-generated.
+            ml_data_collection: Enable ML feature collection during backtest (default: False)
+            ml_feature_db_path: Path to SQLite database for ML features (default: features.db)
         """
         self.market_data = market_data
         self.strategies = strategies
@@ -83,6 +92,18 @@ class BacktestEngine:
         self.slippage_multiplier = slippage_multiplier
         self.crash_dates = set(crash_dates) if crash_dates else set()
         self.max_duration_seconds = max_duration_seconds if max_duration_seconds is not None else self.DEFAULT_TIMEOUT_SECONDS
+        self.sentiment_data = sentiment_data
+        self.ml_data_collection = ml_data_collection
+        self.ml_feature_db_path = ml_feature_db_path
+
+        # Initialize ML data collector if enabled
+        self.ml_collector: Optional[MLDataCollector] = None
+        if ml_data_collection:
+            self.ml_collector = MLDataCollector(
+                db_path=ml_feature_db_path,
+                enabled=True,
+            )
+            logger.info(f"ML data collection enabled, database: {ml_feature_db_path}")
 
         # Initialize random number generator
         self.rng = np.random.default_rng(seed) if seed is not None else np.random.default_rng()
@@ -91,6 +112,11 @@ class BacktestEngine:
         self.results: Dict[str, Any] = {}
         self.daily_events: List[Dict] = []
         self.closed_trades: List[Position] = []
+
+        # Check if sentiment is enabled and auto-generate if needed
+        self._sentiment_config = self._get_sentiment_config()
+        if self._sentiment_config and self._sentiment_config.enabled and self.sentiment_data is None:
+            self.sentiment_data = self._generate_sentiment_data()
 
         # Initialize portfolio
         self.portfolio = Portfolio(
@@ -219,6 +245,15 @@ class BacktestEngine:
         # Compute results
         results = self._compute_results(split, period)
 
+        # Add ML data collection stats if enabled
+        if self.ml_collector:
+            ml_stats = self.ml_collector.get_statistics()
+            results["ml_data_collection"] = ml_stats
+            logger.info(
+                f"ML data collection: {ml_stats['signals_recorded']} signals, "
+                f"{ml_stats['outcomes_recorded']} outcomes recorded"
+            )
+
         return results
 
     def _get_all_dates(self) -> List[pd.Timestamp]:
@@ -287,6 +322,11 @@ class BacktestEngine:
         # Check if any strategy has ML enabled and create ML predictor
         ml_predictor = self._create_ml_predictor()
 
+        # Get sentiment weight from config
+        sentiment_weight = 0.0
+        if self._sentiment_config and self._sentiment_config.enabled:
+            sentiment_weight = self._sentiment_config.weight
+
         return DailyEventLoop(
             market_data=self.market_data,
             portfolio=self.portfolio,
@@ -297,6 +337,9 @@ class BacktestEngine:
             slippage_multiplier=self.slippage_multiplier,
             crash_dates=self.crash_dates,
             ml_predictor=ml_predictor,
+            sentiment_data=self.sentiment_data,
+            sentiment_weight=sentiment_weight,
+            ml_collector=self.ml_collector,
         )
 
     def _create_ml_predictor(self) -> Optional[MLPredictor]:
@@ -357,6 +400,78 @@ class BacktestEngine:
 
         except Exception as e:
             logger.error(f"Failed to load ML predictor: {e}. ML integration disabled.", exc_info=True)
+            return None
+
+    def _get_sentiment_config(self):
+        """Get sentiment config from first strategy that has it enabled.
+
+        Returns:
+            SentimentConfig if any strategy has sentiment enabled, None otherwise
+        """
+        for strategy in self.strategies:
+            if hasattr(strategy.config, 'sentiment') and strategy.config.sentiment.enabled:
+                return strategy.config.sentiment
+        return None
+
+    def _generate_sentiment_data(self) -> Optional[pd.DataFrame]:
+        """Generate synthetic sentiment data for backtesting.
+
+        Returns:
+            DataFrame with sentiment data, or None if generation fails
+        """
+        if not self._sentiment_config:
+            return None
+
+        try:
+            # Get all symbols from strategies
+            all_symbols = set()
+            for strategy in self.strategies:
+                all_symbols.update(strategy.universe)
+
+            # Get date range from market data
+            all_dates = self._get_all_dates()
+            if not all_dates:
+                logger.warning("No dates available for sentiment generation")
+                return None
+
+            start_date = min(all_dates)
+            end_date = max(all_dates)
+
+            # Create sentiment config for generator
+            from ..research.sentiment.synthetic_generator import SentimentConfig as GenSentimentConfig, SentimentMode
+
+            mode_map = {
+                "random_walk": SentimentMode.RANDOM_WALK,
+                "price_correlated": SentimentMode.PRICE_CORRELATED,
+                "event_based": SentimentMode.EVENT_BASED,
+                "regime_based": SentimentMode.REGIME_BASED,
+                "combined": SentimentMode.COMBINED,
+            }
+
+            gen_config = GenSentimentConfig(
+                mode=mode_map.get(self._sentiment_config.mode, SentimentMode.PRICE_CORRELATED),
+                correlation_lag=self._sentiment_config.correlation_lag,
+                noise_std=self._sentiment_config.noise_std,
+                event_calendar_path=self._sentiment_config.event_calendar_path,
+                seed=self._sentiment_config.seed if hasattr(self._sentiment_config, 'seed') else 42,
+            )
+
+            # Generate sentiment
+            sentiment_df = generate_sentiment_for_backtest(
+                symbols=list(all_symbols),
+                start_date=start_date,
+                end_date=end_date,
+                price_data=self.market_data.bars,
+                config=gen_config,
+            )
+
+            logger.info(f"Generated synthetic sentiment for {len(all_symbols)} symbols, "
+                       f"{len(sentiment_df)} records ({start_date.date()} to {end_date.date()})")
+
+            return sentiment_df
+
+        except Exception as e:
+            logger.error(f"Failed to generate sentiment data: {e}", exc_info=True)
             return None
 
     def _compute_results(self, split: WalkForwardSplit, period: str) -> Dict[str, Any]:
@@ -637,8 +752,18 @@ def create_backtest_engine_from_config(
 
     # Create and return engine
     logger.info("Creating backtest engine...")
+
+    # Get ML data collection config
+    ml_data_collection = config.ml_data_collection.enabled if hasattr(config, 'ml_data_collection') else False
+    ml_feature_db_path = config.ml_data_collection.db_path if hasattr(config, 'ml_data_collection') else "features.db"
+
     engine = BacktestEngine(
-        market_data=market_data, strategies=strategies, starting_equity=config.portfolio.starting_equity, seed=final_seed
+        market_data=market_data,
+        strategies=strategies,
+        starting_equity=config.portfolio.starting_equity,
+        seed=final_seed,
+        ml_data_collection=ml_data_collection,
+        ml_feature_db_path=ml_feature_db_path,
     )
 
     logger.info("Backtest engine created successfully")

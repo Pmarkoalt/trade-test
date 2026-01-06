@@ -15,8 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy requirements and install Python dependencies
 COPY requirements.txt .
 COPY pyproject.toml .
-# Install package in editable mode with dev dependencies for testing
-RUN pip install --no-cache-dir --user -e ".[dev]"
+# Install package in editable mode with dev and n8n dependencies
+RUN pip install --no-cache-dir --user -e ".[dev,n8n]"
 
 # Runtime stage
 FROM python:3.11-slim

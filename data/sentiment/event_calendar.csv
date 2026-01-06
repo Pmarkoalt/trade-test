@@ -1,0 +1,76 @@
+date,event_type,symbols,sentiment_impact,description
+2024-01-25,earnings,MSFT,0.35,Strong cloud growth beats expectations
+2024-01-26,earnings,AAPL,-0.15,iPhone sales slightly miss in China
+2024-01-30,fed_meeting,ALL,-0.1,Fed holds rates steady signals patience
+2024-02-01,earnings,AMZN,0.4,AWS growth accelerates retail strong
+2024-02-01,earnings,META,0.5,Ad revenue beats dividend announced
+2024-02-15,earnings,NVDA,0.6,AI chip demand exceeds all forecasts
+2024-02-22,earnings,GOOGL,0.25,Search revenue solid cloud growing
+2024-03-20,fed_meeting,ALL,0.1,Fed signals rate cuts coming in 2024
+2024-04-18,earnings,TSLA,-0.35,EV demand softens margins compress
+2024-04-25,earnings,MSFT,0.3,Azure growth strong AI integration
+2024-04-25,earnings,GOOGL,0.2,YouTube ad revenue rebounds
+2024-05-01,fed_meeting,ALL,-0.15,Fed delays rate cut expectations
+2024-05-02,earnings,AAPL,0.2,Services revenue hits record high
+2024-05-02,earnings,AMZN,0.35,Prime membership growth accelerates
+2024-05-22,earnings,NVDA,0.55,Data center revenue doubles YoY
+2024-06-10,product,AAPL,0.3,WWDC Apple Intelligence announced
+2024-06-12,fed_meeting,ALL,0.05,Fed holds rates one cut expected
+2024-06-18,analyst,NVDA,0.25,Multiple analysts raise price targets
+2024-07-18,earnings,TSLA,-0.2,Robotaxi delay disappoints investors
+2024-07-23,earnings,GOOGL,0.3,AI features driving search engagement
+2024-07-25,earnings,MSFT,0.2,Copilot adoption exceeds expectations
+2024-07-30,fed_meeting,ALL,0.2,Fed signals September rate cut likely
+2024-08-01,earnings,AAPL,0.15,iPhone 15 Pro demand strong
+2024-08-01,earnings,AMZN,0.25,AWS margins improve significantly
+2024-08-01,earnings,META,0.35,Reels monetization improving rapidly
+2024-08-28,earnings,NVDA,0.45,Blackwell chips in high demand
+2024-09-09,product,AAPL,0.2,iPhone 16 with AI features launched
+2024-09-18,fed_meeting,ALL,0.35,Fed cuts rates 50bps economy strong
+2024-10-10,analyst,TSLA,0.3,Robotaxi event exceeds expectations
+2024-10-23,earnings,TSLA,0.25,Margins stabilize cybertruck ramps
+2024-10-29,earnings,GOOGL,0.2,Cloud revenue beats expectations
+2024-10-30,earnings,MSFT,0.25,Azure growth 33% beats estimates
+2024-10-31,earnings,AMZN,0.3,Holiday outlook strong AWS solid
+2024-10-31,earnings,META,0.2,Reality Labs losses narrow
+2024-11-01,earnings,AAPL,0.15,iPhone 16 demand in line
+2024-11-07,fed_meeting,ALL,0.15,Fed cuts rates another 25bps
+2024-11-20,earnings,NVDA,0.4,Blackwell demand overwhelming
+2024-12-18,fed_meeting,ALL,0.1,Fed signals slower pace of cuts
+2025-01-23,earnings,MSFT,0.3,Copilot revenue materializing
+2025-01-29,fed_meeting,ALL,0.0,Fed holds rates monitors inflation
+2025-01-30,earnings,AAPL,0.2,Services and wearables strong
+2025-01-30,earnings,AMZN,0.25,AWS growth remains robust
+2025-02-06,earnings,GOOGL,0.15,Search market share stable
+2025-02-13,earnings,NVDA,0.35,Data center demand continues
+2025-02-19,analyst,META,0.2,Metaverse costs declining
+2025-02-26,earnings,TSLA,0.1,Model refresh cycle beginning
+2025-03-19,fed_meeting,ALL,0.1,Fed signals potential cut Q2
+2025-04-17,earnings,TSLA,-0.1,Transition quarter expected
+2025-04-24,earnings,MSFT,0.2,AI revenue growing steadily
+2025-04-24,earnings,GOOGL,0.15,Gemini adoption increasing
+2025-05-01,earnings,AAPL,0.1,Steady growth continues
+2025-05-01,earnings,AMZN,0.2,Prime Day preview positive
+2025-05-07,fed_meeting,ALL,0.15,Fed cuts rates 25bps
+2025-05-21,earnings,NVDA,0.3,Next gen chips announced
+2025-06-04,product,AAPL,0.25,WWDC new AI features
+2025-06-18,fed_meeting,ALL,0.1,Fed stays accommodative
+2025-07-17,earnings,TSLA,0.15,Robotaxi progress shown
+2025-07-22,earnings,GOOGL,0.2,Cloud growth accelerating
+2025-07-24,earnings,MSFT,0.2,Azure momentum continues
+2025-07-30,fed_meeting,ALL,0.05,Fed holds rates steady
+2025-07-31,earnings,AAPL,0.15,iPhone cycle beginning
+2025-07-31,earnings,AMZN,0.2,AWS margins expanding
+2025-07-31,earnings,META,0.25,Ad targeting improvements
+2025-08-27,earnings,NVDA,0.25,Supply meeting demand
+2025-09-08,product,AAPL,0.2,iPhone 17 launch event
+2025-09-17,fed_meeting,ALL,0.1,Fed signals continued support
+2025-10-22,earnings,TSLA,0.2,Robotaxi rollout begins
+2025-10-28,earnings,GOOGL,0.15,Quantum computing progress
+2025-10-29,earnings,MSFT,0.2,Enterprise AI adoption
+2025-10-30,earnings,AMZN,0.2,Holiday guidance strong
+2025-10-30,earnings,META,0.15,AR glasses announced
+2025-10-31,earnings,AAPL,0.15,Strong iPhone 17 demand
+2025-11-05,fed_meeting,ALL,0.1,Fed cuts rates 25bps
+2025-11-19,earnings,NVDA,0.3,Next architecture preview
+2025-12-17,fed_meeting,ALL,0.05,Fed signals 2026 outlook

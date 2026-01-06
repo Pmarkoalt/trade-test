@@ -1,0 +1,143 @@
+{
+  "generated_at": "2026-01-05T23:06:33.282516",
+  "period": {
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-12-30T00:00:00",
+    "total_days": 91,
+    "trading_days": 91
+  },
+  "overall_metrics": {
+    "sharpe_ratio": 1.108278403590861,
+    "max_drawdown": 0.03347193648405873,
+    "calmar_ratio": 2.8580784790895835,
+    "total_trades": 8.0,
+    "expectancy": 0.5652056929875715,
+    "profit_factor": 1.8673106493649068,
+    "correlation_to_benchmark": -0.059602539045334,
+    "percentile_99_daily_loss": 0.01948410025704047,
+    "recovery_factor": 0.9909020390528975,
+    "drawdown_duration": 58.0,
+    "turnover": 1.8666666666666667,
+    "average_holding_period": 18.75,
+    "max_consecutive_losses": 3.0,
+    "win_rate": 0.25
+  },
+  "monthly_summary": [
+    {
+      "month": "2025-10",
+      "month_start": "2025-10-01T00:00:00",
+      "month_end": "2025-10-31T00:00:00",
+      "start_equity": 99367.71181985046,
+      "end_equity": 105008.45149149522,
+      "monthly_return": 0.05676632347005417,
+      "monthly_return_pct": 5.676632347005417,
+      "trades_count": 2,
+      "winning_trades": 0,
+      "losing_trades": 2,
+      "win_rate": 0.0,
+      "realized_pnl": -1119.626714069969,
+      "volatility_annualized": 0.11137623580571897,
+      "sharpe_ratio": 4.088852695787823,
+      "max_drawdown": 0.016628672253669874,
+      "max_drawdown_pct": 1.6628672253669874,
+      "trades": [
+        {
+          "symbol": "TSLA",
+          "entry_date": "2025-10-02T00:00:00",
+          "exit_date": "2025-10-13T00:00:00",
+          "realized_pnl": -865.7170114620195,
+          "r_multiple": -0.9184903481941012
+        },
+        {
+          "symbol": "NVDA",
+          "entry_date": "2025-10-03T00:00:00",
+          "exit_date": "2025-10-15T00:00:00",
+          "realized_pnl": -253.90970260794947,
+          "r_multiple": -0.3315535979381983
+        }
+      ]
+    },
+    {
+      "month": "2025-11",
+      "month_start": "2025-11-01T00:00:00",
+      "month_end": "2025-11-30T00:00:00",
+      "start_equity": 105008.45149149522,
+      "end_equity": 103362.05522060106,
+      "monthly_return": -0.0156787024997459,
+      "monthly_return_pct": -1.56787024997459,
+      "trades_count": 4,
+      "winning_trades": 1,
+      "losing_trades": 3,
+      "win_rate": 0.25,
+      "realized_pnl": 1367.9905309462274,
+      "volatility_annualized": 0.08768725399368914,
+      "sharpe_ratio": -1.4692991826206425,
+      "max_drawdown": 0.03347193648405873,
+      "max_drawdown_pct": 3.3471936484058733,
+      "trades": [
+        {
+          "symbol": "AMD",
+          "entry_date": "2025-10-03T00:00:00",
+          "exit_date": "2025-11-07T00:00:00",
+          "realized_pnl": 3162.0797600559804,
+          "r_multiple": 3.985383616730487
+        },
+        {
+          "symbol": "NVDA",
+          "entry_date": "2025-10-29T00:00:00",
+          "exit_date": "2025-11-07T00:00:00",
+          "realized_pnl": -1248.6278908581533,
+          "r_multiple": -1.0721305884393106
+        },
+        {
+          "symbol": "TSLA",
+          "entry_date": "2025-11-04T00:00:00",
+          "exit_date": "2025-11-10T00:00:00",
+          "realized_pnl": -253.90020171789752,
+          "r_multiple": -0.4542498577040762
+        },
+        {
+          "symbol": "AAPL",
+          "entry_date": "2025-11-12T00:00:00",
+          "exit_date": "2025-11-18T00:00:00",
+          "realized_pnl": -291.5611365337022,
+          "r_multiple": -0.40945891973312465
+        }
+      ]
+    },
+    {
+      "month": "2025-12",
+      "month_start": "2025-12-01T00:00:00",
+      "month_end": "2025-12-30T00:00:00",
+      "start_equity": 103409.89433192919,
+      "end_equity": 102663.48146978006,
+      "monthly_return": -0.007218002367870735,
+      "monthly_return_pct": -0.7218002367870735,
+      "trades_count": 2,
+      "winning_trades": 1,
+      "losing_trades": 1,
+      "win_rate": 0.5,
+      "realized_pnl": 2415.1176529037875,
+      "volatility_annualized": 0.02716924756898781,
+      "sharpe_ratio": -2.0828101552936644,
+      "max_drawdown": 0.00993629590025587,
+      "max_drawdown_pct": 0.9936295900255869,
+      "trades": [
+        {
+          "symbol": "GOOGL",
+          "entry_date": "2025-10-21T00:00:00",
+          "exit_date": "2025-12-16T00:00:00",
+          "realized_pnl": 2572.367656850847,
+          "r_multiple": 3.8823257167810614
+        },
+        {
+          "symbol": "TSLA",
+          "entry_date": "2025-12-15T00:00:00",
+          "exit_date": "2025-12-30T00:00:00",
+          "realized_pnl": -157.25000394705987,
+          "r_multiple": -0.16018047760216553
+        }
+      ]
+    }
+  ]
+}

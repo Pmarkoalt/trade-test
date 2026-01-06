@@ -143,6 +143,20 @@ class MLConfig(BaseModel):
         return self
 
 
+class SentimentConfig(BaseModel):
+    """News sentiment integration configuration for backtesting and live trading."""
+
+    enabled: bool = False
+    mode: Literal["random_walk", "price_correlated", "event_based", "regime_based", "combined"] = "price_correlated"
+    weight: float = Field(default=0.15, ge=0.0, le=0.5, description="Weight for sentiment in signal scoring")
+    correlation_lag: int = Field(default=1, ge=0, le=5, description="Days sentiment lags price")
+    noise_std: float = Field(default=0.2, ge=0.0, le=0.5, description="Noise standard deviation")
+    event_calendar_path: Optional[str] = None
+    min_score_for_boost: float = Field(default=0.3, ge=0.0, le=1.0, description="Min sentiment for score boost")
+    max_score_for_penalty: float = Field(default=-0.3, ge=-1.0, le=0.0, description="Max sentiment for score penalty")
+    seed: int = 42
+
+
 class IndicatorsConfig(BaseModel):
     """Indicator calculation configuration."""
 
@@ -204,6 +218,7 @@ class StrategyConfig(BaseModel):
     capacity: CapacityConfig = Field(default_factory=CapacityConfig)
     costs: CostsConfig = Field(default_factory=CostsConfig)
     ml: MLConfig = Field(default_factory=MLConfig)
+    sentiment: SentimentConfig = Field(default_factory=SentimentConfig)
 
     @classmethod
     def from_yaml(cls, path: str) -> "StrategyConfig":

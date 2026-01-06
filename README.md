@@ -687,6 +687,30 @@ This is the initial implementation (V0.1) with:
 - Real-time data integration
 - Enhanced reporting and visualization
 
+## n8n Integration
+
+The trading system can be integrated with [n8n](https://n8n.io/) for workflow automation, scheduled backtests, and database storage. This provides:
+
+- Visual workflow management
+- Scheduled automated backtests
+- Database storage (PostgreSQL)
+- Slack/email alerts
+- Multi-stage pipelines
+
+### Quick Start with n8n
+
+```bash
+# Start the full stack (n8n + API + PostgreSQL)
+docker-compose -f docker-compose.n8n.yml up -d
+
+# Access services:
+# - n8n:          http://localhost:5678  (admin / changeme)
+# - Trading API:  http://localhost:8000/docs
+# - PostgreSQL:   localhost:5432
+```
+
+See **[n8n Integration Guide](docs/N8N_INTEGRATION.md)** for complete documentation.
+
 ## Contributing
 
 This is a V0.1 implementation. For questions or issues:

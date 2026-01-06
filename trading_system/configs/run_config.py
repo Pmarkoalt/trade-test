@@ -230,6 +230,7 @@ class OutputConfig(BaseModel):
 
     base_path: str = "results/"
     run_id: Optional[str] = None
+    config_name: Optional[str] = None  # Optional name to include in output directory
     equity_curve: str = "equity_curve.csv"
     trade_log: str = "trade_log.csv"
     weekly_summary: str = "weekly_summary.csv"
@@ -252,11 +253,15 @@ class OutputConfig(BaseModel):
         """Get or generate run ID.
 
         Returns:
-            Run ID string (format: run_YYYYMMDD_HHMMSS)
+            Run ID string (format: run_YYYYMMDD_HHMMSS or run_YYYYMMDD_HHMMSS_configname)
         """
         if self.run_id:
             return self.run_id
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        if self.config_name:
+            # Sanitize config_name: replace spaces/special chars with underscores
+            safe_name = "".join(c if c.isalnum() or c == "_" else "_" for c in self.config_name)
+            return f"run_{timestamp}_{safe_name}"
         return f"run_{timestamp}"
 
 
@@ -332,6 +337,18 @@ class MetricsConfig(BaseModel):
     rejection: Optional[RejectionCriteriaConfig] = None
 
 
+class MLDataCollectionConfig(BaseModel):
+    """ML data collection configuration for feature accumulation.
+
+    When enabled, the backtest engine will extract features at signal generation
+    and record outcomes when trades close, storing them in a SQLite database
+    for ML model training.
+    """
+
+    enabled: bool = Field(default=False, description="Enable ML feature collection during backtest")
+    db_path: str = Field(default="features.db", description="Path to SQLite database for ML features")
+
+
 class RunConfig(BaseModel):
     """Complete run configuration."""
 
@@ -349,6 +366,7 @@ class RunConfig(BaseModel):
     random_seed: int = 42
     validation: Optional[ValidationConfig] = None
     metrics: Optional[MetricsConfig] = None
+    ml_data_collection: MLDataCollectionConfig = Field(default_factory=MLDataCollectionConfig)
 
     @classmethod
     def from_yaml(cls, path: str) -> "RunConfig":

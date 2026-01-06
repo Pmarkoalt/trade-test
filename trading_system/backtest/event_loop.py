@@ -23,6 +23,11 @@ from ..strategies.base.strategy_interface import StrategyInterface
 from ..strategies.queue import select_signals_from_queue
 from ..strategies.scoring import score_signals
 
+# Import MLDataCollector with lazy loading to avoid circular imports
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .ml_data_collector import MLDataCollector
+
 logger = get_logger(__name__)
 
 
@@ -54,6 +59,9 @@ class DailyEventLoop:
         slippage_multiplier: float = 1.0,
         crash_dates: Optional[Set[pd.Timestamp]] = None,
         ml_predictor: Optional[MLPredictor] = None,
+        sentiment_data: Optional[pd.DataFrame] = None,
+        sentiment_weight: float = 0.0,
+        ml_collector: Optional["MLDataCollector"] = None,
     ):
         """Initialize event loop.
 
@@ -67,6 +75,9 @@ class DailyEventLoop:
             slippage_multiplier: Multiplier for base slippage (for stress tests)
             crash_dates: Set of dates on which to simulate flash crashes
             ml_predictor: Optional ML predictor for signal enhancement
+            sentiment_data: Optional DataFrame with sentiment scores for backtesting
+            sentiment_weight: Weight for sentiment in signal scoring (0.0-0.5)
+            ml_collector: Optional ML data collector for feature accumulation
         """
         self.market_data = market_data
         self.portfolio = portfolio
@@ -77,6 +88,9 @@ class DailyEventLoop:
         self.slippage_multiplier = slippage_multiplier
         self.crash_dates = crash_dates or set()
         self.ml_predictor = ml_predictor
+        self.sentiment_data = sentiment_data
+        self.sentiment_weight = sentiment_weight
+        self.ml_collector = ml_collector
 
         # Track pending orders and exit orders
         self.pending_orders: List[Order] = []
@@ -84,6 +98,9 @@ class DailyEventLoop:
 
         # Track signal metadata for orders (order_id -> signal metadata)
         self.order_signal_metadata: Dict[str, Dict[str, Any]] = {}  # order_id -> {triggered_on, atr_mult, etc}
+
+        # Track order_id to signal_id mapping for ML data collection
+        self.order_to_signal_id: Dict[str, str] = {}  # order_id -> signal_id
 
         # Track returns data for correlation calculations
         self.returns_data: Dict[str, List[float]] = {}
@@ -472,7 +489,7 @@ class DailyEventLoop:
         candidate_returns = self._get_candidate_returns(signals, date)
         portfolio_returns = self._get_portfolio_returns(date)
 
-        # Score signals
+        # Score signals (with sentiment if enabled)
         score_signals(
             signals=signals,
             get_features=get_features,
@@ -480,6 +497,8 @@ class DailyEventLoop:
             candidate_returns=candidate_returns,
             portfolio_returns=portfolio_returns,
             lookback=20,
+            sentiment_data=self.sentiment_data,
+            sentiment_weight=self.sentiment_weight,
         )
 
         # Apply ML enhancement if ML predictor is configured
@@ -594,6 +613,18 @@ class DailyEventLoop:
                 "atr_mult": signal.atr_mult,
                 "adv20_at_entry": signal.adv20,
             }
+
+            # Record signal for ML data collection
+            if self.ml_collector:
+                features = self.market_data.get_features(signal.symbol, date)
+                if features:
+                    signal_id = self.ml_collector.record_signal(
+                        signal=signal,
+                        features=features,
+                        position_key=signal.symbol,
+                    )
+                    if signal_id:
+                        self.order_to_signal_id[order.order_id] = signal_id
 
             orders.append(order)
 
@@ -1049,6 +1080,13 @@ class DailyEventLoop:
                         if risk > 0:
                             reward = closed_position.realized_pnl / (closed_position.quantity * risk)
                             r_multiple = reward
+
+                    # Record outcome for ML data collection
+                    if self.ml_collector:
+                        self.ml_collector.record_outcome(
+                            position=closed_position,
+                            position_key=order.symbol,
+                        )
 
                     # Log trade exit
                     event_type = TradeEventType.STOP_HIT if exit_reason == ExitReason.HARD_STOP else TradeEventType.EXIT

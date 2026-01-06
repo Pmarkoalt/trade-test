@@ -1,0 +1,121 @@
+{
+  "generated_at": "2026-01-05T23:32:31.066263",
+  "period": {
+    "start_date": "2025-10-01T00:00:00",
+    "end_date": "2025-12-30T00:00:00",
+    "total_days": 91,
+    "trading_days": 91
+  },
+  "overall_metrics": {
+    "sharpe_ratio": 1.1839783259620122,
+    "max_drawdown": 0.03736327265781863,
+    "calmar_ratio": 2.912018949484321,
+    "total_trades": 7.0,
+    "expectancy": 0.6641543185446761,
+    "profit_factor": 2.376724509817687,
+    "correlation_to_benchmark": -0.034660226007579516,
+    "percentile_99_daily_loss": 0.01659615138381565,
+    "recovery_factor": 1.0056580890067623,
+    "drawdown_duration": 58.0,
+    "turnover": 1.6333333333333333,
+    "average_holding_period": 33.714285714285715,
+    "max_consecutive_losses": 4.0,
+    "win_rate": 0.2857142857142857
+  },
+  "monthly_summary": [
+    {
+      "month": "2025-10",
+      "month_start": "2025-10-01T00:00:00",
+      "month_end": "2025-10-31T00:00:00",
+      "start_equity": 99367.71181985046,
+      "end_equity": 105926.37810897581,
+      "monthly_return": 0.06600399837138182,
+      "monthly_return_pct": 6.600399837138182,
+      "trades_count": 2,
+      "winning_trades": 1,
+      "losing_trades": 1,
+      "win_rate": 0.5,
+      "realized_pnl": 2057.9488872642496,
+      "volatility_annualized": 0.10451619624118128,
+      "sharpe_ratio": 5.02824947415103,
+      "max_drawdown": 0.013404614015424629,
+      "max_drawdown_pct": 1.340461401542463,
+      "trades": [
+        {
+          "symbol": "AMD",
+          "entry_date": "2025-10-03T00:00:00",
+          "exit_date": "2025-10-06T00:00:00",
+          "realized_pnl": 2918.4537854989408,
+          "r_multiple": 3.6833198368240594
+        },
+        {
+          "symbol": "TSLA",
+          "entry_date": "2025-10-02T00:00:00",
+          "exit_date": "2025-10-13T00:00:00",
+          "realized_pnl": -860.504898234691,
+          "r_multiple": -0.9156900730347926
+        }
+      ]
+    },
+    {
+      "month": "2025-11",
+      "month_start": "2025-11-01T00:00:00",
+      "month_end": "2025-11-30T00:00:00",
+      "start_equity": 105926.37810897581,
+      "end_equity": 103847.5522904041,
+      "monthly_return": -0.01962519492956738,
+      "monthly_return_pct": -1.962519492956738,
+      "trades_count": 3,
+      "winning_trades": 0,
+      "losing_trades": 3,
+      "win_rate": 0.0,
+      "realized_pnl": -1579.3533255868285,
+      "volatility_annualized": 0.10252966425204339,
+      "sharpe_ratio": -1.5719778903633366,
+      "max_drawdown": 0.03736327265781863,
+      "max_drawdown_pct": 3.736327265781863,
+      "trades": [
+        {
+          "symbol": "TSLA",
+          "entry_date": "2025-11-04T00:00:00",
+          "exit_date": "2025-11-14T00:00:00",
+          "realized_pnl": -1104.8279725650616,
+          "r_multiple": -2.033765256957326
+        },
+        {
+          "symbol": "NVDA",
+          "entry_date": "2025-10-03T00:00:00",
+          "exit_date": "2025-11-19T00:00:00",
+          "realized_pnl": -264.74583978742544,
+          "r_multiple": -0.33914977331044144
+        },
+        {
+          "symbol": "AMD",
+          "entry_date": "2025-10-07T00:00:00",
+          "exit_date": "2025-11-21T00:00:00",
+          "realized_pnl": -209.7795132343414,
+          "r_multiple": -0.1796360242907852
+        }
+      ]
+    },
+    {
+      "month": "2025-12",
+      "month_start": "2025-12-01T00:00:00",
+      "month_end": "2025-12-30T00:00:00",
+      "start_equity": 103997.36128088261,
+      "end_equity": 103101.42153348014,
+      "monthly_return": -0.008615023846447967,
+      "monthly_return_pct": -0.8615023846447967,
+      "trades_count": 0,
+      "winning_trades": 0,
+      "losing_trades": 0,
+      "win_rate": 0.0,
+      "realized_pnl": 0.0,
+      "volatility_annualized": 0.04211170334535019,
+      "sharpe_ratio": -1.4170539581197923,
+      "max_drawdown": 0.015780662948362903,
+      "max_drawdown_pct": 1.5780662948362902,
+      "trades": []
+    }
+  ]
+}

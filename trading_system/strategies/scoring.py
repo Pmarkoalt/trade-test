@@ -3,6 +3,7 @@
 from typing import TYPE_CHECKING, Callable, Dict, List, Optional
 
 import numpy as np
+import pandas as pd
 
 from trading_system.models.features import FeatureRow
 from trading_system.models.signals import Signal
@@ -188,6 +189,41 @@ def rank_normalize(values: List[float]) -> List[float]:
     return [float(x) for x in normalized.tolist()]
 
 
+def get_sentiment_score(
+    symbol: str,
+    date: pd.Timestamp,
+    sentiment_data: Optional[pd.DataFrame],
+) -> float:
+    """Get sentiment score for a symbol on a given date.
+
+    Args:
+        symbol: Stock symbol
+        date: Date to get sentiment for
+        sentiment_data: DataFrame with columns: date, symbol, sentiment_score
+
+    Returns:
+        Sentiment score (-1 to 1), or 0.0 if not available
+    """
+    if sentiment_data is None or sentiment_data.empty:
+        return 0.0
+
+    # Normalize date for comparison
+    date_normalized = pd.Timestamp(date.date()) if hasattr(date, 'date') else pd.Timestamp(date)
+
+    # Filter for symbol and date
+    mask = (
+        (sentiment_data["symbol"].str.upper() == symbol.upper()) &
+        (pd.to_datetime(sentiment_data["date"]).dt.normalize() == date_normalized)
+    )
+
+    matching = sentiment_data[mask]
+
+    if len(matching) > 0:
+        return float(matching.iloc[0]["sentiment_score"])
+
+    return 0.0
+
+
 def score_signals(
     signals: List[Signal],
     get_features: Callable[[Signal], Optional[FeatureRow]],
@@ -195,22 +231,31 @@ def score_signals(
     candidate_returns: Dict[str, List[float]],
     portfolio_returns: Dict[str, List[float]],
     lookback: int = 20,
+    sentiment_data: Optional[pd.DataFrame] = None,
+    sentiment_weight: float = 0.0,
 ) -> None:
     """Compute and assign scores to signals.
 
-    Computes breakout strength, momentum strength, and diversification bonus
-    for each signal, then rank-normalizes each component across all signals,
-    and computes final weighted score.
+    Computes breakout strength, momentum strength, diversification bonus,
+    and optionally sentiment score for each signal, then rank-normalizes
+    each component across all signals, and computes final weighted score.
 
-    Score weights:
+    Score weights (when sentiment_weight=0):
     - 0.50 * breakout_rank
     - 0.30 * momentum_rank
     - 0.20 * diversification_rank
+
+    When sentiment is enabled (sentiment_weight > 0), weights are adjusted:
+    - (0.50 - sentiment_weight/2) * breakout_rank
+    - (0.30 - sentiment_weight/3) * momentum_rank
+    - (0.20 - sentiment_weight/6) * diversification_rank
+    - sentiment_weight * sentiment_rank
 
     Updates signal objects in-place by setting:
     - signal.breakout_strength
     - signal.momentum_strength
     - signal.diversification_bonus
+    - signal.sentiment_score (if sentiment enabled)
     - signal.score
 
     Args:
@@ -220,14 +265,20 @@ def score_signals(
         candidate_returns: Dictionary mapping symbol to returns list for candidates
         portfolio_returns: Dictionary mapping symbol to returns list for existing positions
         lookback: Number of days for correlation calculation
+        sentiment_data: Optional DataFrame with sentiment scores
+        sentiment_weight: Weight for sentiment in scoring (0.0-0.5)
     """
     if not signals:
         return
+
+    # Determine if sentiment is enabled
+    use_sentiment = sentiment_data is not None and sentiment_weight > 0
 
     # Step 1: Compute raw components for all signals
     breakout_strengths = []
     momentum_strengths = []
     diversification_bonuses = []
+    sentiment_scores = []
 
     for signal in signals:
         # Get features for this signal
@@ -237,6 +288,7 @@ def score_signals(
             breakout_strengths.append(0.0)
             momentum_strengths.append(0.0)
             diversification_bonuses.append(0.5)
+            sentiment_scores.append(0.0)
             continue
 
         # Compute breakout strength
@@ -251,16 +303,56 @@ def score_signals(
         div_bonus = compute_diversification_bonus(signal, portfolio, candidate_returns, portfolio_returns, lookback)
         diversification_bonuses.append(div_bonus)
 
+        # Compute sentiment score if enabled
+        if use_sentiment:
+            sent_score = get_sentiment_score(signal.symbol, signal.date, sentiment_data)
+            # Normalize from [-1, 1] to [0, 1] for ranking
+            normalized_sent = (sent_score + 1.0) / 2.0
+            sentiment_scores.append(normalized_sent)
+        else:
+            sentiment_scores.append(0.5)  # Neutral
+
     # Step 2: Rank-normalize each component
     breakout_ranks = rank_normalize(breakout_strengths)
     momentum_ranks = rank_normalize(momentum_strengths)
     diversification_ranks = rank_normalize(diversification_bonuses)
+    sentiment_ranks = rank_normalize(sentiment_scores) if use_sentiment else [0.5] * len(signals)
 
     # Step 3: Compute weighted scores and update signals
+    # Adjust weights based on sentiment_weight
+    if use_sentiment and sentiment_weight > 0:
+        # Reduce other weights proportionally to make room for sentiment
+        breakout_weight = 0.50 - (sentiment_weight * 0.50 / 0.85)
+        momentum_weight = 0.30 - (sentiment_weight * 0.30 / 0.85)
+        diversification_weight = 0.20 - (sentiment_weight * 0.20 / 0.85)
+        # Ensure weights sum to ~1.0
+        total = breakout_weight + momentum_weight + diversification_weight + sentiment_weight
+        breakout_weight /= total
+        momentum_weight /= total
+        diversification_weight /= total
+        sentiment_weight_adj = sentiment_weight / total
+    else:
+        breakout_weight = 0.50
+        momentum_weight = 0.30
+        diversification_weight = 0.20
+        sentiment_weight_adj = 0.0
+
     for i, signal in enumerate(signals):
         signal.breakout_strength = breakout_strengths[i]
         signal.momentum_strength = momentum_strengths[i]
         signal.diversification_bonus = diversification_bonuses[i]
 
+        # Store sentiment score on signal if available
+        if use_sentiment:
+            # Store original score (-1 to 1)
+            original_sent = (sentiment_scores[i] * 2.0) - 1.0
+            if hasattr(signal, 'sentiment_score'):
+                signal.sentiment_score = original_sent  # type: ignore
+
         # Weighted score
-        signal.score = 0.50 * breakout_ranks[i] + 0.30 * momentum_ranks[i] + 0.20 * diversification_ranks[i]
+        signal.score = (
+            breakout_weight * breakout_ranks[i] +
+            momentum_weight * momentum_ranks[i] +
+            diversification_weight * diversification_ranks[i] +
+            sentiment_weight_adj * sentiment_ranks[i]
+        )

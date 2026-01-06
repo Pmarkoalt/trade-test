@@ -57,6 +57,7 @@ execution:
 output:
   base_path: "results/"
   run_id: null
+  config_name: "production"
   equity_curve: "equity_curve.csv"
   trade_log: "trade_log.csv"
   weekly_summary: "weekly_summary.csv"

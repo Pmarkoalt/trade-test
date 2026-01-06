@@ -1,0 +1,572 @@
+{
+  "generated_at": "2026-01-05T23:02:15.124250",
+  "period": {
+    "start_date": "2024-03-01T00:00:00",
+    "end_date": "2025-06-30T00:00:00",
+    "total_days": 487,
+    "trading_days": 487
+  },
+  "overall_metrics": {
+    "sharpe_ratio": 0.7785926523796696,
+    "max_drawdown": 0.052057082055817244,
+    "calmar_ratio": 0.6462681916365653,
+    "total_trades": 33.0,
+    "expectancy": 0.2963000336227484,
+    "profit_factor": 1.4428549225779648,
+    "correlation_to_benchmark": -0.016917870128757014,
+    "percentile_99_daily_loss": 0.011142801199773306,
+    "recovery_factor": 1.2658271421497964,
+    "drawdown_duration": 196.0,
+    "turnover": 1.425925925925926,
+    "average_holding_period": 21.96969696969697,
+    "max_consecutive_losses": 6.0,
+    "win_rate": 0.48484848484848486
+  },
+  "monthly_summary": [
+    {
+      "month": "2024-03",
+      "month_start": "2024-03-01T00:00:00",
+      "month_end": "2024-03-31T00:00:00",
+      "start_equity": 100000.0,
+      "end_equity": 100000.0,
+      "monthly_return": 0.0,
+      "monthly_return_pct": 0.0,
+      "trades_count": 0,
+      "winning_trades": 0,
+      "losing_trades": 0,
+      "win_rate": 0.0,
+      "realized_pnl": 0.0,
+      "volatility_annualized": 0.0,
+      "sharpe_ratio": 0.0,
+      "max_drawdown": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trades": []
+    },
+    {
+      "month": "2024-04",
+      "month_start": "2024-04-01T00:00:00",
+      "month_end": "2024-04-30T00:00:00",
+      "start_equity": 100000.0,
+      "end_equity": 100515.10966659077,
+      "monthly_return": 0.0051510966659076285,
+      "monthly_return_pct": 0.5151096665907628,
+      "trades_count": 0,
+      "winning_trades": 0,
+      "losing_trades": 0,
+      "win_rate": 0.0,
+      "realized_pnl": 0.0,
+      "volatility_annualized": 0.047562416312750315,
+      "sharpe_ratio": 0.9311014751015315,
+      "max_drawdown": 0.008151656201039246,
+      "max_drawdown_pct": 0.8151656201039246,
+      "trades": []
+    },
+    {
+      "month": "2024-05",
+      "month_start": "2024-05-01T00:00:00",
+      "month_end": "2024-05-31T00:00:00",
+      "start_equity": 100763.509172206,
+      "end_equity": 101401.83334975528,
+      "monthly_return": 0.0063348744281859215,
+      "monthly_return_pct": 0.6334874428185922,
+      "trades_count": 1,
+      "winning_trades": 1,
+      "losing_trades": 0,
+      "win_rate": 1.0,
+      "realized_pnl": 1211.8103778667646,
+      "volatility_annualized": 0.021473925466160153,
+      "sharpe_ratio": 3.336091764079066,
+      "max_drawdown": 0.004576900965688048,
+      "max_drawdown_pct": 0.45769009656880477,
+      "trades": [
+        {
+          "symbol": "GOOGL",
+          "entry_date": "2024-04-12T00:00:00",
+          "exit_date": "2024-05-31T00:00:00",
+          "realized_pnl": 1211.8103778667646,
+          "r_multiple": 1.9876155134002649
+        }
+      ]
+    },
+    {
+      "month": "2024-06",
+      "month_start": "2024-06-01T00:00:00",
+      "month_end": "2024-06-30T00:00:00",
+      "start_equity": 101401.83334975528,
+      "end_equity": 103563.73721000127,
+      "monthly_return": 0.021320165413470926,
+      "monthly_return_pct": 2.1320165413470926,
+      "trades_count": 1,
+      "winning_trades": 1,
+      "losing_trades": 0,
+      "win_rate": 1.0,
+      "realized_pnl": 238.58068853615345,
+      "volatility_annualized": 0.04341726320689323,
+      "sharpe_ratio": 4.1045882461131615,
+      "max_drawdown": 0.006740120507930131,
+      "max_drawdown_pct": 0.6740120507930131,
+      "trades": [
+        {
+          "symbol": "NVDA",
+          "entry_date": "2024-05-07T00:00:00",
+          "exit_date": "2024-06-25T00:00:00",
+          "realized_pnl": 238.58068853615345,
+          "r_multiple": 3.397181692289458
+        }
+      ]
+    },
+    {
+      "month": "2024-07",
+      "month_start": "2024-07-01T00:00:00",
+      "month_end": "2024-07-31T00:00:00",
+      "start_equity": 103984.03028742579,
+      "end_equity": 103485.78853844179,
+      "monthly_return": -0.004791521809712429,
+      "monthly_return_pct": -0.4791521809712429,
+      "trades_count": 5,
+      "winning_trades": 4,
+      "losing_trades": 1,
+      "win_rate": 0.8,
+      "realized_pnl": 2035.3974720388837,
+      "volatility_annualized": 0.04139795592257498,
+      "sharpe_ratio": -0.12712726939719834,
+      "max_drawdown": 0.01473183633756279,
+      "max_drawdown_pct": 1.473183633756279,
+      "trades": [
+        {
+          "symbol": "MSFT",
+          "entry_date": "2024-06-12T00:00:00",
+          "exit_date": "2024-07-16T00:00:00",
+          "realized_pnl": 582.4547210817499,
+          "r_multiple": 0.9188072423928385
+        },
+        {
+          "symbol": "AMZN",
+          "entry_date": "2024-06-24T00:00:00",
+          "exit_date": "2024-07-16T00:00:00",
+          "realized_pnl": 145.3190721501614,
+          "r_multiple": 0.663385906978454
+        },
+        {
+          "symbol": "GOOGL",
+          "entry_date": "2024-06-24T00:00:00",
+          "exit_date": "2024-07-18T00:00:00",
+          "realized_pnl": 34.78262078623077,
+          "r_multiple": 0.17540332120345836
+        },
+        {
+          "symbol": "ADBE",
+          "entry_date": "2024-07-02T00:00:00",
+          "exit_date": "2024-07-22T00:00:00",
+          "realized_pnl": -9.22664939538209,
+          "r_multiple": -0.059849802735360204
+        },
+        {
+          "symbol": "AAPL",
+          "entry_date": "2024-06-04T00:00:00",
+          "exit_date": "2024-07-25T00:00:00",
+          "realized_pnl": 1282.067707416124,
+          "r_multiple": 2.8211673026341333
+        }
+      ]
+    },
+    {
+      "month": "2024-08",
+      "month_start": "2024-08-01T00:00:00",
+      "month_end": "2024-08-31T00:00:00",
+      "start_equity": 103485.78853844179,
+      "end_equity": 102326.24780477158,
+      "monthly_return": -0.011204830634686358,
+      "monthly_return_pct": -1.1204830634686358,
+      "trades_count": 0,
+      "winning_trades": 0,
+      "losing_trades": 0,
+      "win_rate": 0.0,
+      "realized_pnl": 0.0,
+      "volatility_annualized": 0.03918245345304303,
+      "sharpe_ratio": -2.317635237189468,
+      "max_drawdown": 0.015586277523343068,
+      "max_drawdown_pct": 1.5586277523343068,
+      "trades": []
+    },
+    {
+      "month": "2024-09",
+      "month_start": "2024-09-01T00:00:00",
+      "month_end": "2024-09-30T00:00:00",
+      "start_equity": 102326.24780477158,
+      "end_equity": 101611.36803925758,
+      "monthly_return": -0.006986279482053548,
+      "monthly_return_pct": -0.6986279482053548,
+      "trades_count": 5,
+      "winning_trades": 0,
+      "losing_trades": 5,
+      "win_rate": 0.0,
+      "realized_pnl": -2071.1289508700274,
+      "volatility_annualized": 0.033367632074501455,
+      "sharpe_ratio": -1.7479122415883632,
+      "max_drawdown": 0.010994422925842373,
+      "max_drawdown_pct": 1.0994422925842373,
+      "trades": [
+        {
+          "symbol": "META",
+          "entry_date": "2024-08-12T00:00:00",
+          "exit_date": "2024-09-04T00:00:00",
+          "realized_pnl": -174.98854530382903,
+          "r_multiple": -0.22664453476865296
+        },
+        {
+          "symbol": "NVDA",
+          "entry_date": "2024-08-19T00:00:00",
+          "exit_date": "2024-09-04T00:00:00",
+          "realized_pnl": -822.7887817943424,
+          "r_multiple": -1.0819693126805145
+        },
+        {
+          "symbol": "AAPL",
+          "entry_date": "2024-08-30T00:00:00",
+          "exit_date": "2024-09-05T00:00:00",
+          "realized_pnl": -337.2801582470169,
+          "r_multiple": -0.6847059130715671
+        },
+        {
+          "symbol": "TSLA",
+          "entry_date": "2024-09-06T00:00:00",
+          "exit_date": "2024-09-09T00:00:00",
+          "realized_pnl": -100.82122425434693,
+          "r_multiple": -0.5525457464162793
+        },
+        {
+          "symbol": "ADBE",
+          "entry_date": "2024-08-20T00:00:00",
+          "exit_date": "2024-09-16T00:00:00",
+          "realized_pnl": -635.2502412704919,
+          "r_multiple": -0.7855488856332317
+        }
+      ]
+    },
+    {
+      "month": "2024-10",
+      "month_start": "2024-10-01T00:00:00",
+      "month_end": "2024-10-31T00:00:00",
+      "start_equity": 101788.36875642066,
+      "end_equity": 101876.81422632677,
+      "monthly_return": 0.0008689152895038355,
+      "monthly_return_pct": 0.08689152895038355,
+      "trades_count": 3,
+      "winning_trades": 3,
+      "losing_trades": 0,
+      "win_rate": 1.0,
+      "realized_pnl": 591.7143250249235,
+      "volatility_annualized": 0.027906739212996228,
+      "sharpe_ratio": 0.7739650352043671,
+      "max_drawdown": 0.007315944388196271,
+      "max_drawdown_pct": 0.731594438819627,
+      "trades": [
+        {
+          "symbol": "TSLA",
+          "entry_date": "2024-09-20T00:00:00",
+          "exit_date": "2024-10-08T00:00:00",
+          "realized_pnl": 9.921416712007714,
+          "r_multiple": 0.07080248886886117
+        },
+        {
+          "symbol": "META",
+          "entry_date": "2024-09-20T00:00:00",
+          "exit_date": "2024-10-17T00:00:00",
+          "realized_pnl": 112.6144440309187,
+          "r_multiple": 0.6068920445013994
+        },
+        {
+          "symbol": "CRM",
+          "entry_date": "2024-09-25T00:00:00",
+          "exit_date": "2024-10-24T00:00:00",
+          "realized_pnl": 469.1784642819971,
+          "r_multiple": 0.9159851415501746
+        }
+      ]
+    },
+    {
+      "month": "2024-11",
+      "month_start": "2024-11-01T00:00:00",
+      "month_end": "2024-11-30T00:00:00",
+      "start_equity": 101661.42965992593,
+      "end_equity": 104480.80874595138,
+      "monthly_return": 0.027733026138396122,
+      "monthly_return_pct": 2.773302613839612,
+      "trades_count": 4,
+      "winning_trades": 2,
+      "losing_trades": 2,
+      "win_rate": 0.5,
+      "realized_pnl": 51.681759866559716,
+      "volatility_annualized": 0.06567181335616008,
+      "sharpe_ratio": 3.2624051570516786,
+      "max_drawdown": 0.01514837706171722,
+      "max_drawdown_pct": 1.514837706171722,
+      "trades": [
+        {
+          "symbol": "NVDA",
+          "entry_date": "2024-10-15T00:00:00",
+          "exit_date": "2024-11-01T00:00:00",
+          "realized_pnl": -210.75515106164949,
+          "r_multiple": -0.27274965652324684
+        },
+        {
+          "symbol": "AMZN",
+          "entry_date": "2024-10-31T00:00:00",
+          "exit_date": "2024-11-01T00:00:00",
+          "realized_pnl": 632.6924748421474,
+          "r_multiple": 1.097251286342797
+        },
+        {
+          "symbol": "NVDA",
+          "entry_date": "2024-11-07T00:00:00",
+          "exit_date": "2024-11-18T00:00:00",
+          "realized_pnl": -455.9824116523642,
+          "r_multiple": -0.5499695267508222
+        },
+        {
+          "symbol": "AMZN",
+          "entry_date": "2024-11-04T00:00:00",
+          "exit_date": "2024-11-22T00:00:00",
+          "realized_pnl": 85.72684773842603,
+          "r_multiple": 0.15062082986396116
+        }
+      ]
+    },
+    {
+      "month": "2024-12",
+      "month_start": "2024-12-01T00:00:00",
+      "month_end": "2024-12-31T00:00:00",
+      "start_equity": 104480.80874595138,
+      "end_equity": 105554.6350769861,
+      "monthly_return": 0.010277737547435883,
+      "monthly_return_pct": 1.0277737547435883,
+      "trades_count": 3,
+      "winning_trades": 2,
+      "losing_trades": 1,
+      "win_rate": 0.6666666666666666,
+      "realized_pnl": 229.42628868624308,
+      "volatility_annualized": 0.08126675145276185,
+      "sharpe_ratio": 1.0636933432732192,
+      "max_drawdown": 0.028278829450365677,
+      "max_drawdown_pct": 2.827882945036568,
+      "trades": [
+        {
+          "symbol": "CRM",
+          "entry_date": "2024-11-11T00:00:00",
+          "exit_date": "2024-12-19T00:00:00",
+          "realized_pnl": 190.5813052601975,
+          "r_multiple": 0.8081132886790398
+        },
+        {
+          "symbol": "META",
+          "entry_date": "2024-12-04T00:00:00",
+          "exit_date": "2024-12-19T00:00:00",
+          "realized_pnl": -41.46813558945736,
+          "r_multiple": -0.08628065466310218
+        },
+        {
+          "symbol": "AMZN",
+          "entry_date": "2024-12-06T00:00:00",
+          "exit_date": "2024-12-31T00:00:00",
+          "realized_pnl": 80.31311901550293,
+          "r_multiple": 0.1717985839216616
+        }
+      ]
+    },
+    {
+      "month": "2025-01",
+      "month_start": "2025-01-01T00:00:00",
+      "month_end": "2025-01-31T00:00:00",
+      "start_equity": 105554.6350769861,
+      "end_equity": 104895.94768802196,
+      "monthly_return": -0.006240250733506203,
+      "monthly_return_pct": -0.6240250733506203,
+      "trades_count": 5,
+      "winning_trades": 2,
+      "losing_trades": 3,
+      "win_rate": 0.4,
+      "realized_pnl": 1746.3117713037364,
+      "volatility_annualized": 0.04612726616578261,
+      "sharpe_ratio": -1.0799666845117546,
+      "max_drawdown": 0.014315360038234025,
+      "max_drawdown_pct": 1.4315360038234024,
+      "trades": [
+        {
+          "symbol": "TSLA",
+          "entry_date": "2024-10-28T00:00:00",
+          "exit_date": "2025-01-02T00:00:00",
+          "realized_pnl": 3103.66182815313,
+          "r_multiple": 4.039617718621212
+        },
+        {
+          "symbol": "AAPL",
+          "entry_date": "2024-11-27T00:00:00",
+          "exit_date": "2025-01-03T00:00:00",
+          "realized_pnl": 163.4912876834536,
+          "r_multiple": 0.972559623595519
+        },
+        {
+          "symbol": "NVDA",
+          "entry_date": "2025-01-07T00:00:00",
+          "exit_date": "2025-01-10T00:00:00",
+          "realized_pnl": -254.36174876643844,
+          "r_multiple": -0.9250010520026044
+        },
+        {
+          "symbol": "GOOGL",
+          "entry_date": "2025-01-22T00:00:00",
+          "exit_date": "2025-01-28T00:00:00",
+          "realized_pnl": -434.1756497832044,
+          "r_multiple": -0.49265176327167465
+        },
+        {
+          "symbol": "MSFT",
+          "entry_date": "2025-01-23T00:00:00",
+          "exit_date": "2025-01-31T00:00:00",
+          "realized_pnl": -832.3039459832047,
+          "r_multiple": -1.2776691607754527
+        }
+      ]
+    },
+    {
+      "month": "2025-02",
+      "month_start": "2025-02-01T00:00:00",
+      "month_end": "2025-02-28T00:00:00",
+      "start_equity": 104895.94768802196,
+      "end_equity": 103662.64566885246,
+      "monthly_return": -0.01175738478322863,
+      "monthly_return_pct": -1.175738478322863,
+      "trades_count": 5,
+      "winning_trades": 1,
+      "losing_trades": 4,
+      "win_rate": 0.2,
+      "realized_pnl": -371.1480636008141,
+      "volatility_annualized": 0.03781626744379803,
+      "sharpe_ratio": -2.7952362158161503,
+      "max_drawdown": 0.018741899413571284,
+      "max_drawdown_pct": 1.8741899413571284,
+      "trades": [
+        {
+          "symbol": "GOOGL",
+          "entry_date": "2025-02-03T00:00:00",
+          "exit_date": "2025-02-06T00:00:00",
+          "realized_pnl": -414.40151141175454,
+          "r_multiple": -1.2597458354896105
+        },
+        {
+          "symbol": "CRM",
+          "entry_date": "2025-01-28T00:00:00",
+          "exit_date": "2025-02-07T00:00:00",
+          "realized_pnl": -774.8317097144858,
+          "r_multiple": -0.733037441179195
+        },
+        {
+          "symbol": "AMZN",
+          "entry_date": "2025-01-22T00:00:00",
+          "exit_date": "2025-02-10T00:00:00",
+          "realized_pnl": -131.71956214564293,
+          "r_multiple": -0.12469435635524022
+        },
+        {
+          "symbol": "META",
+          "entry_date": "2025-01-24T00:00:00",
+          "exit_date": "2025-02-21T00:00:00",
+          "realized_pnl": 1065.6516779447295,
+          "r_multiple": 1.37104919074832
+        },
+        {
+          "symbol": "AAPL",
+          "entry_date": "2025-02-14T00:00:00",
+          "exit_date": "2025-02-28T00:00:00",
+          "realized_pnl": -115.84695827366045,
+          "r_multiple": -0.3058422028823493
+        }
+      ]
+    },
+    {
+      "month": "2025-03",
+      "month_start": "2025-03-01T00:00:00",
+      "month_end": "2025-03-31T00:00:00",
+      "start_equity": 103662.64566885246,
+      "end_equity": 103662.64566885246,
+      "monthly_return": 0.0,
+      "monthly_return_pct": 0.0,
+      "trades_count": 0,
+      "winning_trades": 0,
+      "losing_trades": 0,
+      "win_rate": 0.0,
+      "realized_pnl": 0.0,
+      "volatility_annualized": 0.0,
+      "sharpe_ratio": 0.0,
+      "max_drawdown": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trades": []
+    },
+    {
+      "month": "2025-04",
+      "month_start": "2025-04-01T00:00:00",
+      "month_end": "2025-04-30T00:00:00",
+      "start_equity": 103662.64566885246,
+      "end_equity": 103662.64566885246,
+      "monthly_return": 0.0,
+      "monthly_return_pct": 0.0,
+      "trades_count": 0,
+      "winning_trades": 0,
+      "losing_trades": 0,
+      "win_rate": 0.0,
+      "realized_pnl": 0.0,
+      "volatility_annualized": 0.0,
+      "sharpe_ratio": 0.0,
+      "max_drawdown": 0.0,
+      "max_drawdown_pct": 0.0,
+      "trades": []
+    },
+    {
+      "month": "2025-05",
+      "month_start": "2025-05-01T00:00:00",
+      "month_end": "2025-05-31T00:00:00",
+      "start_equity": 103662.64566885246,
+      "end_equity": 103364.50737224585,
+      "monthly_return": -0.0028760436768998643,
+      "monthly_return_pct": -0.28760436768998643,
+      "trades_count": 0,
+      "winning_trades": 0,
+      "losing_trades": 0,
+      "win_rate": 0.0,
+      "realized_pnl": 0.0,
+      "volatility_annualized": 0.01744758230560086,
+      "sharpe_ratio": -1.3331210626441974,
+      "max_drawdown": 0.005533869350483108,
+      "max_drawdown_pct": 0.5533869350483108,
+      "trades": []
+    },
+    {
+      "month": "2025-06",
+      "month_start": "2025-06-01T00:00:00",
+      "month_end": "2025-06-30T00:00:00",
+      "start_equity": 103364.50737224585,
+      "end_equity": 106589.52674073726,
+      "monthly_return": 0.03120045217143219,
+      "monthly_return_pct": 3.120045217143219,
+      "trades_count": 1,
+      "winning_trades": 0,
+      "losing_trades": 1,
+      "win_rate": 0.0,
+      "realized_pnl": -774.7914493612126,
+      "volatility_annualized": 0.07366995534219752,
+      "sharpe_ratio": 3.5417243671541896,
+      "max_drawdown": 0.011003441307276207,
+      "max_drawdown_pct": 1.1003441307276207,
+      "trades": [
+        {
+          "symbol": "TSLA",
+          "entry_date": "2025-05-28T00:00:00",
+          "exit_date": "2025-06-05T00:00:00",
+          "realized_pnl": -774.7914493612126,
+          "r_multiple": -0.9714442208419501
+        }
+      ]
+    }
+  ]
+}

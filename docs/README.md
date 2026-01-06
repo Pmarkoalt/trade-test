@@ -9,6 +9,7 @@ Welcome to the Trading System documentation. This directory contains comprehensi
 - **[Getting Started Guide](user_guide/getting_started.md)** - Installation, first backtest, and basic usage
 - **[User Guide Index](user_guide/README.md)** - Complete user documentation index
 - **[Example Configurations](../EXAMPLE_CONFIGS/README.md)** - Example configuration files with explanations
+- **[n8n Integration Guide](N8N_INTEGRATION.md)** - Workflow automation with n8n
 
 ### For Developers
 
@@ -55,6 +56,7 @@ Welcome to the Trading System documentation. This directory contains comprehensi
 - **Find examples**: [Example Configurations](../EXAMPLE_CONFIGS/README.md)
 - **Understand strategies**: [Equity Strategy](../agent-files/06_STRATEGY_EQUITY.md) | [Crypto Strategy](../agent-files/07_STRATEGY_CRYPTO.md)
 - **Learn about validation**: [Validation Suite](../agent-files/12_VALIDATION_SUITE.md)
+- **Automate with n8n**: [n8n Integration Guide](N8N_INTEGRATION.md)
 
 ## 📖 Documentation Locations
 

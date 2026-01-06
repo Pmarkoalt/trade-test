@@ -119,6 +119,12 @@ research = [
     "nltk>=3.8.0,<4.0.0",            # NLP utilities
 ]
 
+# n8n/API integration (FastAPI server for workflow automation)
+n8n = [
+    "fastapi>=0.104.0,<1.0.0",
+    "uvicorn[standard]>=0.24.0,<1.0.0",
+]
+
 # All optional dependencies (convenience group)
 all = [
     "psycopg2-binary>=2.9.0,<3.0.0",
@@ -134,6 +140,8 @@ all = [
     "polars>=0.18.0,<1.0.0",
     "vaderSentiment>=3.3.0,<4.0.0",
     "nltk>=3.8.0,<4.0.0",
+    "fastapi>=0.104.0,<1.0.0",
+    "uvicorn[standard]>=0.24.0,<1.0.0",
 ]
 
 # Black configuration

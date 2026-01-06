@@ -1,0 +1,128 @@
+{
+  "generated_at": "2026-01-05T23:04:14.312171",
+  "period": {
+    "start_date": "2025-07-01T00:00:00",
+    "end_date": "2025-09-30T00:00:00",
+    "total_days": 92,
+    "trading_days": 92
+  },
+  "overall_metrics": {
+    "sharpe_ratio": 3.126403957555179,
+    "max_drawdown": 0.023704136354563032,
+    "calmar_ratio": 9.336737127157313,
+    "total_trades": 7.0,
+    "expectancy": 1.0252045390166553,
+    "profit_factor": 6.407646084568739,
+    "correlation_to_benchmark": -0.11568212405106368,
+    "percentile_99_daily_loss": 0.014353643711220568,
+    "recovery_factor": 3.158421610019207,
+    "drawdown_duration": 23.0,
+    "turnover": 1.6153846153846154,
+    "average_holding_period": 32.714285714285715,
+    "max_consecutive_losses": 2.0,
+    "win_rate": 0.5714285714285714
+  },
+  "monthly_summary": [
+    {
+      "month": "2025-07",
+      "month_start": "2025-07-01T00:00:00",
+      "month_end": "2025-07-31T00:00:00",
+      "start_equity": 100000.0,
+      "end_equity": 102944.9513587807,
+      "monthly_return": 0.029449513587807008,
+      "monthly_return_pct": 2.944951358780701,
+      "trades_count": 0,
+      "winning_trades": 0,
+      "losing_trades": 0,
+      "win_rate": 0.0,
+      "realized_pnl": 0.0,
+      "volatility_annualized": 0.0531329268807046,
+      "sharpe_ratio": 4.469175023167792,
+      "max_drawdown": 0.014509339897743088,
+      "max_drawdown_pct": 1.4509339897743088,
+      "trades": []
+    },
+    {
+      "month": "2025-08",
+      "month_start": "2025-08-01T00:00:00",
+      "month_end": "2025-08-31T00:00:00",
+      "start_equity": 104462.58041761859,
+      "end_equity": 104157.63488381033,
+      "monthly_return": -0.0029191843872624634,
+      "monthly_return_pct": -0.29191843872624634,
+      "trades_count": 3,
+      "winning_trades": 2,
+      "losing_trades": 1,
+      "win_rate": 0.6666666666666666,
+      "realized_pnl": 2123.1966554587043,
+      "volatility_annualized": 0.07541864298657046,
+      "sharpe_ratio": 1.3002457148043305,
+      "max_drawdown": 0.023704136354563032,
+      "max_drawdown_pct": 2.3704136354563032,
+      "trades": [
+        {
+          "symbol": "NVDA",
+          "entry_date": "2025-07-07T00:00:00",
+          "exit_date": "2025-08-20T00:00:00",
+          "realized_pnl": 1214.96090143788,
+          "r_multiple": 1.8560251249050228
+        },
+        {
+          "symbol": "AMD",
+          "entry_date": "2025-07-14T00:00:00",
+          "exit_date": "2025-08-20T00:00:00",
+          "realized_pnl": 1112.439128102315,
+          "r_multiple": 1.6780895419088815
+        },
+        {
+          "symbol": "META",
+          "entry_date": "2025-08-01T00:00:00",
+          "exit_date": "2025-08-20T00:00:00",
+          "realized_pnl": -204.20337408149044,
+          "r_multiple": -0.3726127211026927
+        }
+      ]
+    },
+    {
+      "month": "2025-09",
+      "month_start": "2025-09-01T00:00:00",
+      "month_end": "2025-09-30T00:00:00",
+      "start_equity": 104157.63488381033,
+      "end_equity": 107486.76565090938,
+      "monthly_return": 0.03196242667004445,
+      "monthly_return_pct": 3.1962426670044453,
+      "trades_count": 3,
+      "winning_trades": 1,
+      "losing_trades": 2,
+      "win_rate": 0.3333333333333333,
+      "realized_pnl": -642.0495083143319,
+      "volatility_annualized": 0.06180541446352211,
+      "sharpe_ratio": 4.309058715122522,
+      "max_drawdown": 0.009660820846849804,
+      "max_drawdown_pct": 0.9660820846849805,
+      "trades": [
+        {
+          "symbol": "AAPL",
+          "entry_date": "2025-08-08T00:00:00",
+          "exit_date": "2025-09-11T00:00:00",
+          "realized_pnl": 121.85250711440858,
+          "r_multiple": 0.43695894623365256
+        },
+        {
+          "symbol": "AMZN",
+          "entry_date": "2025-09-05T00:00:00",
+          "exit_date": "2025-09-15T00:00:00",
+          "realized_pnl": -306.88299909316567,
+          "r_multiple": -0.3968859830235907
+        },
+        {
+          "symbol": "META",
+          "entry_date": "2025-09-17T00:00:00",
+          "exit_date": "2025-09-24T00:00:00",
+          "realized_pnl": -457.01901633557475,
+          "r_multiple": -0.5561138045497491
+        }
+      ]
+    }
+  ]
+}

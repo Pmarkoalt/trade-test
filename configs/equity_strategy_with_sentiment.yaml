@@ -1,0 +1,79 @@
+# Equity Momentum Strategy with News Sentiment Integration
+# Based on production config with sentiment scoring enabled
+
+name: "equity_momentum_sentiment"
+asset_class: "equity"
+universe: ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "META", "TSLA", "AMD", "CRM", "ADBE"]
+benchmark: "SPY"
+
+# Indicator calculation parameters
+indicators:
+  ma_periods: [20, 50, 200]
+  atr_period: 14
+  roc_period: 60
+  breakout_fast: 20
+  breakout_slow: 55
+  adv_lookback: 20
+  corr_lookback: 20
+
+# Eligibility filter (trend qualification)
+eligibility:
+  trend_ma: 50
+  ma_slope_lookback: 20
+  ma_slope_min: 0.005
+  require_close_above_trend_ma: true
+  require_close_above_ma200: false
+  relative_strength_enabled: false
+  relative_strength_min: 0.0
+
+# Entry trigger configuration
+entry:
+  fast_clearance: 0.005
+  slow_clearance: 0.010
+
+# Exit configuration - Using MA50 for longer holds (best performer from experiments)
+exit:
+  mode: "ma_cross"
+  exit_ma: 50
+  hard_stop_atr_mult: 2.5
+  tightened_stop_atr_mult: null
+
+# Risk management
+risk:
+  risk_per_trade: 0.0075
+  max_positions: 8
+  max_exposure: 0.80
+  max_position_notional: 0.15
+
+# Capacity constraints
+capacity:
+  max_order_pct_adv: 0.005
+
+# Execution costs
+costs:
+  fee_bps: 1
+  slippage_base_bps: 8
+  slippage_std_mult: 0.75
+  weekend_penalty: 1.0
+  stress_threshold: -0.03
+  stress_slippage_mult: 2.0
+
+# ML disabled
+ml:
+  enabled: false
+  model_path: null
+  prediction_mode: "score_enhancement"
+  ml_weight: 0.3
+  confidence_threshold: 0.5
+
+# Sentiment configuration - ENABLED
+sentiment:
+  enabled: true
+  mode: "combined"  # Uses price_correlated + event_based + regime_based
+  weight: 0.15  # 15% weight in signal scoring
+  correlation_lag: 1
+  noise_std: 0.2
+  event_calendar_path: "data/sentiment/event_calendar.csv"
+  min_score_for_boost: 0.3
+  max_score_for_penalty: -0.3
+  seed: 42

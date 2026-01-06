@@ -1,0 +1,68 @@
+# Backtest Config for Experiment 4b: Risk 1.0%
+
+dataset:
+  equity_path: "data/equity/daily"
+  crypto_path: "data/crypto"
+  benchmark_path: "data/test_benchmarks"
+  format: "csv"
+  start_date: "2024-01-01"
+  end_date: "2025-12-31"
+  min_lookback_days: 60
+
+splits:
+  train_start: "2024-03-01"
+  train_end: "2025-06-30"
+  validation_start: "2025-07-01"
+  validation_end: "2025-09-30"
+  holdout_start: "2025-10-01"
+  holdout_end: "2025-12-30"
+
+strategies:
+  equity:
+    config_path: "configs/experiments/exp4b_risk_1pct.yaml"
+    enabled: true
+  crypto:
+    config_path: "EXAMPLE_CONFIGS/crypto_config.yaml"
+    enabled: false
+
+portfolio:
+  starting_equity: 100000
+
+volatility_scaling:
+  enabled: true
+  mode: "continuous"
+  lookback: 20
+  baseline_lookback: 252
+  min_multiplier: 0.33
+  max_multiplier: 1.0
+
+correlation_guard:
+  enabled: false
+  min_positions: 4
+  avg_pairwise_threshold: 0.70
+  candidate_threshold: 0.75
+
+scoring:
+  weights:
+    breakout: 0.50
+    momentum: 0.30
+    diversification: 0.20
+
+execution:
+  signal_timing: "close"
+  execution_timing: "next_open"
+  slippage_model: "full"
+
+output:
+  base_path: "results/"
+  run_id: null
+  config_name: "exp4b_risk_1pct"
+  equity_curve: "equity_curve.csv"
+  trade_log: "trade_log.csv"
+  weekly_summary: "weekly_summary.csv"
+  monthly_report: "monthly_report.json"
+  scenario_comparison: "scenario_comparison.json"
+  log_level: "INFO"
+  log_file: "backtest.log"
+
+random_seed: 42
