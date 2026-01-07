@@ -1,0 +1,15 @@
+{
+  "last_retrain": "2026-01-06T00:17:54.323864",
+  "last_sample_count": 57,
+  "current_model_id": null,
+  "retrain_history": [
+    {
+      "timestamp": "2026-01-06T00:17:54.323864",
+      "triggered_by": "new_samples",
+      "model_id": "signal_quality_1.0_fc4af089",
+      "deployed": false,
+      "cv_auc": 0
+    }
+  ],
+  "drift_history": []
+}

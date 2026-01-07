@@ -67,10 +67,15 @@ class NewsAnalyzer:
         # Use provided keys or fall back to config
         newsapi_key = newsapi_key or config.newsapi_key
         alpha_vantage_key = alpha_vantage_key or config.alpha_vantage_key
+        massive_api_key = config.massive_api_key
 
         # Initialize components
         # NewsAggregator takes keys directly, not source objects
-        self.news_aggregator = NewsAggregator(newsapi_key=newsapi_key, alpha_vantage_key=alpha_vantage_key)
+        self.news_aggregator = NewsAggregator(
+            newsapi_key=newsapi_key,
+            alpha_vantage_key=alpha_vantage_key,
+            massive_api_key=massive_api_key,
+        )
 
         # Initialize sentiment analyzer (optional dependency)
         if not VADER_AVAILABLE or VADERSentimentAnalyzer is None:
@@ -102,7 +107,9 @@ class NewsAnalyzer:
             symbols=symbols, lookback_hours=lookback, max_articles_per_symbol=self.config.max_articles_per_symbol
         )
 
-        articles = fetch_result.articles if fetch_result.success else []
+        articles = fetch_result.articles
+        if fetch_result.error_message:
+            logger.warning(f"News fetch partial errors: {fetch_result.error_message}")
         logger.info(f"Fetched {len(articles)} articles")
 
         # 2. Process each article
@@ -140,22 +147,20 @@ class NewsAnalyzer:
         Returns:
             Processed article with sentiment and symbols
         """
-        # Skip if already processed (e.g., Alpha Vantage provides sentiment)
-        if article.is_processed and article.sentiment_score is not None:
-            # Still need to extract symbols if not done
-            if not article.symbols:
-                article.symbols = self.ticker_extractor.extract(f"{article.title} {article.summary or ''}")
-            return article
+        # Preserve any symbols already supplied by upstream sources (e.g., Alpha Vantage / Polygon)
+        existing_symbols = set(s for s in (article.symbols or []) if s)
 
-        # Extract symbols mentioned
+        # Extract symbols mentioned (can be empty for many headlines)
         text = f"{article.title} {article.summary or ''}"
-        found_symbols = self.ticker_extractor.extract(text)
+        found_symbols = set(self.ticker_extractor.extract(text))
 
-        # Only keep symbols we care about
-        article.symbols = [s for s in found_symbols if s in target_symbols]
+        # Merge extracted + existing, then filter to target universe
+        merged = existing_symbols.union(found_symbols)
+        article.symbols = [s for s in merged if s in target_symbols]
 
-        # Analyze sentiment
-        article = self.sentiment_analyzer.analyze_article(article)
+        # If already processed (e.g., Alpha Vantage provides sentiment), keep existing sentiment fields
+        if not (article.is_processed and article.sentiment_score is not None):
+            article = self.sentiment_analyzer.analyze_article(article)
 
         return article
 
@@ -211,8 +216,18 @@ class NewsAnalyzer:
             sentiment_label = SentimentLabel.NEUTRAL
 
         # Get top headlines (most recent, highest absolute sentiment)
+        def _article_time_key(a: NewsArticle) -> float:
+            if a.published_at is None:
+                return 0.0
+            try:
+                return a.published_at.timestamp()
+            except Exception:
+                return 0.0
+
         sorted_articles = sorted(
-            symbol_articles, key=lambda a: (abs(a.sentiment_score or 0), a.published_at or datetime.min), reverse=True
+            symbol_articles,
+            key=lambda a: (abs(a.sentiment_score or 0), _article_time_key(a)),
+            reverse=True,
         )
         top_headlines = [a.title for a in sorted_articles[:3]]
 
@@ -235,7 +250,8 @@ class NewsAnalyzer:
         if symbol_articles:
             dates = [a.published_at for a in symbol_articles if a.published_at]
             if dates:
-                most_recent = max(dates)
+                # Avoid naive vs aware comparisons by using timestamps
+                most_recent = max(dates, key=lambda d: d.timestamp() if hasattr(d, "timestamp") else 0.0)
 
         return SymbolNewsSummary(
             symbol=symbol,

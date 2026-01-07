@@ -1,0 +1,74 @@
+name: optimized_equity_with_ml_collection
+asset_class: equity
+benchmark: SPY
+
+universe:
+  - AAPL
+  - MSFT
+  - GOOGL
+  - AMZN
+  - NVDA
+  - META
+  - TSLA
+  - AMD
+  - NFLX
+  - COST
+
+# Optimized parameters from 100-trial optimization
+eligibility:
+  trend_ma: 100
+  require_close_above_trend_ma: false
+  require_close_above_ma200: false
+  ma_slope_min: 0.0
+  ma_slope_lookback: 10
+  relative_strength_enabled: false
+  relative_strength_min: 0.0
+
+entry:
+  fast_clearance: 0.0
+  slow_clearance: 0.005
+
+exit:
+  mode: ma_cross
+  exit_ma: 20
+  hard_stop_atr_mult: 4.0
+  tightened_stop_atr_mult: null
+
+risk:
+  risk_per_trade: 0.005
+  max_positions: 12
+  max_exposure: 0.95
+  max_position_notional: 0.3
+
+indicators:
+  ma_periods: [20, 50]
+  atr_period: 14
+  roc_period: 60
+  breakout_fast: 20
+  breakout_slow: 55
+  adv_lookback: 20
+  corr_lookback: 20
+
+costs:
+  fee_bps: 1
+  slippage_base_bps: 8
+  slippage_std_mult: 0.75
+  stress_slippage_mult: 2.0
+  stress_threshold: -0.03
+  weekend_penalty: 1.0
+
+capacity:
+  max_order_pct_adv: 0.1
+
+# ML configuration - disabled for now, will enable after training
+ml:
+  enabled: false
+  model_path: null
+  prediction_mode: score_enhancement
+  ml_weight: 0.3
+  confidence_threshold: 0.5
+
+# ML data collection - ENABLED to accumulate training samples
+ml_data_collection:
+  enabled: true
+  db_path: "ml_features.db"

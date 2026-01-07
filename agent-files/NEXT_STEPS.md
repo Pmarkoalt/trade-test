@@ -2,6 +2,75 @@
 
 This document outlines improvements and enhancements for the Trading System V0.1, organized by priority and category.
 
+---
+
+## Live Daily Signals + n8n (Jan 6, 2026) — Where to pick up tomorrow
+
+### Current status (working)
+
+- **Docker**
+  - `docker-compose -f docker-compose.n8n.yml` stack is running with:
+    - `trading-api` (FastAPI on port `8000`)
+    - `n8n` (UI on port `5678`)
+
+- **API endpoints**
+  - `GET /health` works.
+  - `GET /universe/sp500` works (served from `data/equity/universe/SP500.csv`).
+  - `POST /signals/daily` works and returns JSON suitable for n8n.
+    - Returns `recommendations[]` for actual entry signals.
+    - Returns `candidates[]` when `include_candidates=true` (near-breakout watchlist + eligibility blockers + optional news enrichment).
+    - Accepts `symbols[]` (so n8n can pass the SP500 list directly).
+
+- **News + data fixes included**
+  - Massive/Polygon API `status=DELAYED` is now treated as valid when results are present.
+  - `LiveDataFetcher` is used with `async with` to avoid unclosed aiohttp sessions.
+  - Strategy/run config paths are resolved for Docker mounts (`/app/custom_configs`).
+
+### Next steps for tomorrow
+
+1. **Wire n8n workflows (email-only for now)**
+   - **Workflow A: Entry Alerts (weekdays after close)**
+     - Cron
+     - HTTP Request: `GET http://trading-api:8000/universe/sp500`
+     - HTTP Request: `POST http://trading-api:8000/signals/daily` with:
+       - `symbols: {{$json.symbols}}`
+       - `include_candidates: false`
+     - IF: `recommendation_count > 0`
+     - Gmail node (HTML) to send an entry alert email
+
+   - **Workflow B: Daily Digest (daily after close)**
+     - Cron
+     - HTTP Request: `GET http://trading-api:8000/universe/sp500`
+     - HTTP Request: `POST http://trading-api:8000/signals/daily` with:
+       - `symbols: {{$json.symbols}}`
+       - `include_candidates: true`
+       - `candidate_limit: 25`
+       - `candidate_news: true`
+     - Gmail node (HTML) to send a digest email using `candidates[]`
+
+2. **Email formatting (HTML)**
+   - The codebase already has an HTML template used by the scheduler:
+     - `trading_system/output/email/templates/daily_signals.html`
+     - `trading_system/output/email/templates/base.html`
+   - In n8n, start with a robust HTML layout and iterate toward a nicer template.
+   - Optional upgrade: add an API endpoint that returns pre-rendered HTML using Jinja2 templates.
+
+3. **Universe expansion plan**
+   - Start with SP500 (via `GET /universe/sp500`).
+   - Later: add universes for low-float / volatile stocks (likely by swapping the symbol source feeding n8n).
+
+### Deferred / TODO
+
+- **SMS/text alerts**
+  - AT&T `txt.att.net` gateway appears to be deprecated.
+  - Keep alerts email-only for now.
+  - Future options:
+    - Twilio (paid)
+    - Telegram bot (free)
+    - Slack/Discord push (free)
+
+---
+
 ## Table of Contents
 
 1. [Critical Fixes](#critical-fixes)

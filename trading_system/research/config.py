@@ -29,6 +29,7 @@ class ResearchConfig(BaseModel):
     enabled: bool = True
     newsapi_key: Optional[str] = None
     alpha_vantage_key: Optional[str] = None
+    massive_api_key: Optional[str] = None
     lookback_hours: int = 48
     max_articles_per_symbol: int = 10
 

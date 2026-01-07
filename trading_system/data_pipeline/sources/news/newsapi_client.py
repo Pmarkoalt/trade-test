@@ -199,7 +199,8 @@ class NewsAPIClient(BaseNewsSource):
         if aiohttp is None:
             raise ImportError("aiohttp is required for NewsAPIClient. Install it with: pip install aiohttp")
         async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
+            headers = {"Accept-Encoding": "gzip, deflate"}
+            async with session.get(url, headers=headers) as response:
                 if response.status == 429:
                     raise Exception("NewsAPI rate limit exceeded")
                 if response.status != 200:
@@ -241,7 +242,8 @@ class NewsAPIClient(BaseNewsSource):
         if aiohttp is None:
             raise ImportError("aiohttp is required for NewsAPIClient. Install it with: pip install aiohttp")
         async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
+            headers = {"Accept-Encoding": "gzip, deflate"}
+            async with session.get(url, headers=headers) as response:
                 if response.status != 200:
                     text = await response.text()
                     raise Exception(f"NewsAPI error {response.status}: {text}")

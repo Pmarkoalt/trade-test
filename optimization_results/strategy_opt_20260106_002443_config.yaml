@@ -1,0 +1,55 @@
+asset_class: equity
+benchmark: SPY
+capacity:
+  max_order_pct_adv: 0.1
+costs:
+  fee_bps: 1
+  slippage_base_bps: 8
+  slippage_std_mult: 0.75
+  stress_slippage_mult: 2.0
+  stress_threshold: -0.03
+  weekend_penalty: 1.0
+eligibility:
+  ma_slope_lookback: 10
+  ma_slope_min: 0.0
+  relative_strength_enabled: false
+  relative_strength_min: 0.0
+  require_close_above_ma200: false
+  require_close_above_trend_ma: false
+  trend_ma: 20
+entry:
+  fast_clearance: 0.001
+  slow_clearance: 0.002
+exit:
+  exit_ma: 20
+  hard_stop_atr_mult: 2.5
+  mode: ma_cross
+  tightened_stop_atr_mult: null
+indicators:
+  adv_lookback: 20
+  atr_period: 14
+  breakout_fast: 20
+  breakout_slow: 55
+  corr_lookback: 20
+  ma_periods:
+  - 20
+  - 50
+  roc_period: 60
+ml:
+  confidence_threshold: 0.5
+  enabled: false
+  ml_weight: 0.3
+  model_path: null
+  prediction_mode: score_enhancement
+name: equity_momentum_test
+risk:
+  max_exposure: 0.95
+  max_position_notional: 0.3
+  max_positions: 5
+  risk_per_trade: 0.0075
+universe:
+- AAPL
+- MSFT
+- GOOGL
+- AMZN
+- NVDA

@@ -121,13 +121,16 @@ class MassiveClient(BaseDataSource):
                     if response.status == 200:
                         data = await response.json()
                         status = data.get("status", "unknown")
-                        if status == "OK":
+                        if status in {"OK", "DELAYED"}:
+                            # Polygon can return status=DELAYED while still including valid results.
+                            # Accept it as long as results are present (or it's explicitly OK).
+                            if status == "DELAYED" and not data.get("results"):
+                                raise DataFetchError("Massive API returned DELAYED with no results")
                             return dict(data) if data else {}
-                        elif status == "ERROR":
+                        if status == "ERROR":
                             error_msg = data.get("error", "Unknown error")
                             raise DataFetchError(f"Massive API error: {error_msg}")
-                        else:
-                            raise DataFetchError(f"Unexpected API status: {status}")
+                        raise DataFetchError(f"Unexpected API status: {status}")
 
                     elif response.status >= 500:
                         # Server error, retry with exponential backoff

@@ -1,0 +1,46 @@
+# Equity Strategy with ML Signal Enhancement
+# Uses trained signal quality model to enhance/filter signals
+
+name: "Equity Strategy with ML"
+asset_class: equity
+benchmark: SPY
+universe: ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA"]
+
+eligibility:
+  trend_ma: 50
+  ma_slope_lookback: 20
+  ma_slope_min: 0.005
+  require_close_above_trend_ma: true
+
+entry:
+  fast_clearance: 0.005
+  slow_clearance: 0.010
+
+exit:
+  mode: ma_cross
+  exit_ma: 50
+  hard_stop_atr_mult: 2.5
+
+risk:
+  risk_per_trade: 0.0075
+  max_positions: 8
+  max_exposure: 0.80
+  max_position_notional: 0.30
+
+capacity:
+  max_order_pct_adv: 0.005
+
+costs:
+  fee_bps: 1
+  slippage_base_bps: 8
+  slippage_std_mult: 0.75
+  stress_threshold: -0.03
+  stress_slippage_mult: 2.0
+
+# ML Integration - ENABLED
+ml:
+  enabled: true
+  model_path: "models/signal_quality"
+  prediction_mode: "score_enhancement"  # Options: score_enhancement, filter, replace
+  ml_weight: 0.3  # 30% ML, 70% technical score
+  confidence_threshold: 0.5

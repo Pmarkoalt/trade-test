@@ -69,6 +69,7 @@ def load_config(config_path: Optional[str] = None) -> Dict:
         enabled=os.getenv("RESEARCH_ENABLED", "true").lower() == "true",
         newsapi_key=os.getenv("NEWSAPI_KEY"),
         alpha_vantage_key=os.getenv("ALPHA_VANTAGE_API_KEY"),
+        massive_api_key=os.getenv("MASSIVE_API_KEY"),
         lookback_hours=int(os.getenv("RESEARCH_LOOKBACK_HOURS", "48")),
         max_articles_per_symbol=int(os.getenv("MAX_ARTICLES_PER_SYMBOL", "10")),
     )

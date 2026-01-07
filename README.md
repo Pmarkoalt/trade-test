@@ -52,6 +52,19 @@ This trading system implements a systematic momentum strategy that:
 - **Performance Metrics**: Sharpe ratio, Calmar ratio, max drawdown, R-multiples, profit factor
 - **Benchmark Comparison**: Relative performance vs SPY/BTC
 
+### 🤖 ML Signal Enhancement (NEW)
+- **Signal Quality Prediction**: ML model predicts which signals are likely to succeed
+- **Automatic Data Collection**: Features extracted during backtests, outcomes labeled on trade close
+- **Walk-Forward Training**: Prevents lookahead bias in model training
+- **Continuous Learning**: Automatic retraining when new data is available
+- **Drift Detection**: Monitors for concept drift and alerts when retraining needed
+
+### ⚡ Strategy Optimization (NEW)
+- **Bayesian Optimization**: Uses Optuna TPE sampler for efficient parameter search
+- **Walk-Forward Validation**: Prevents overfitting to historical data
+- **Parameter Importance**: Reports which parameters have the most impact
+- **Multiple Objectives**: Optimize for Sharpe, Calmar, or total return
+
 ## Installation
 
 ### Docker Installation (Recommended) ⭐
@@ -667,11 +680,56 @@ graph TB
 
 For detailed architecture documentation, see [Architecture Overview](agent-files/01_ARCHITECTURE_OVERVIEW.md).
 
+## ML & Optimization
+
+### Strategy Parameter Optimization
+
+Find optimal strategy parameters using Bayesian optimization:
+
+```bash
+# Find best parameters (50 trials)
+python scripts/optimize_strategy.py --config configs/test_equity_strategy.yaml
+
+# Quick test (5 trials)
+python scripts/optimize_strategy.py --config configs/test_equity_strategy.yaml --trials 5 --quick
+```
+
+### ML Signal Enhancement
+
+Train ML models to predict which signals will succeed:
+
+```bash
+# 1. Collect training data (run backtests with ML data collection)
+python scripts/ml_training_pipeline.py --accumulate
+
+# 2. Train model
+python scripts/ml_training_pipeline.py --train
+
+# 3. Enable in strategy config
+# ml:
+#   enabled: true
+#   model_path: "models/signal_quality"
+```
+
+### Continuous Learning
+
+Automatically retrain models when new data is available:
+
+```bash
+# Check status
+python scripts/ml_continuous_learning.py --status
+
+# Run retraining cycle
+python scripts/ml_continuous_learning.py --cycle
+```
+
+See **[ML Integration Guide](docs/ML_INTEGRATION_GUIDE.md)** for complete documentation.
+
 ## Status
 
-**Version**: 0.0.2
+**Version**: 0.0.3
 
-This is the initial implementation (V0.1) with:
+This is the current implementation with:
 - ✅ Core backtest engine
 - ✅ Equity and crypto strategies
 - ✅ Data pipeline and validation
@@ -680,6 +738,9 @@ This is the initial implementation (V0.1) with:
 - ✅ Validation suite
 - ✅ CLI interface
 - ✅ Comprehensive test suite
+- ✅ **ML Signal Enhancement** (NEW)
+- ✅ **Strategy Parameter Optimization** (NEW)
+- ✅ **Continuous Learning Pipeline** (NEW)
 
 ### Future Enhancements
 - Paper trading adapters

@@ -1,0 +1,68 @@
+{
+  "study_name": "strategy_opt_20260106_002443",
+  "best_params": {
+    "exit.hard_stop_atr_mult": 2.5,
+    "exit.exit_ma": 20,
+    "risk.risk_per_trade": 0.0075
+  },
+  "best_value": 2.5003436143654185,
+  "objective": "sharpe_ratio",
+  "n_trials": 5,
+  "n_completed": 5,
+  "optimization_time_seconds": 319.75262,
+  "trials_summary": [
+    {
+      "number": 0,
+      "value": 2.5003436143654185,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 20,
+        "risk.risk_per_trade": 0.0075
+      }
+    },
+    {
+      "number": 1,
+      "value": 1.8658398238603202,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 50,
+        "risk.risk_per_trade": 0.0075
+      }
+    },
+    {
+      "number": 2,
+      "value": 2.494736706055774,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 20,
+        "risk.risk_per_trade": 0.01
+      }
+    },
+    {
+      "number": 3,
+      "value": 1.9456718614415371,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 50,
+        "risk.risk_per_trade": 0.01
+      }
+    },
+    {
+      "number": 4,
+      "value": 2.494736706055774,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 20,
+        "risk.risk_per_trade": 0.01
+      }
+    }
+  ],
+  "validation_metrics": {},
+  "holdout_metrics": {
+    "sharpe_ratio": 0.18278548688655685,
+    "calmar_ratio": 0,
+    "total_return": 0.0029073351011927873,
+    "total_trades": 10,
+    "max_drawdown": 0.019338647873157866
+  }
+}

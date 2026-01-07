@@ -39,6 +39,51 @@ class BacktestTimeoutError(Exception):
     """Raised when backtest exceeds maximum allowed duration."""
 
 
+class _MLModelAdapter:
+    """Adapter to make SignalQualityModel compatible with MLPredictor interface."""
+
+    def __init__(self, model):
+        """Wrap a SignalQualityModel or similar model.
+        
+        Args:
+            model: Model with predict() and predict_proba() methods
+        """
+        self._model = model
+        # Get feature names the model was trained with
+        self._feature_names = getattr(model, '_feature_names', None)
+        if self._feature_names:
+            logger.info(f"ML model expects {len(self._feature_names)} features")
+
+    def _align_features(self, X: pd.DataFrame) -> np.ndarray:
+        """Align input features with model's expected features."""
+        if self._feature_names and hasattr(X, 'columns'):
+            # Filter to only features the model knows
+            available = [f for f in self._feature_names if f in X.columns]
+            missing = [f for f in self._feature_names if f not in X.columns]
+            if missing:
+                # Add missing features as zeros
+                for f in missing:
+                    X = X.copy()
+                    X[f] = 0.0
+            # Reorder to match training order
+            X = X[self._feature_names]
+        return X.values if hasattr(X, 'values') else X
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        """Make predictions."""
+        X_aligned = self._align_features(X)
+        return self._model.predict(X_aligned)
+
+    def predict_proba(self, X: pd.DataFrame) -> np.ndarray:
+        """Predict probabilities."""
+        X_aligned = self._align_features(X)
+        proba = self._model.predict_proba(X_aligned)
+        # Ensure 2D array for compatibility
+        if proba.ndim == 1:
+            proba = np.column_stack([1 - proba, proba])
+        return proba
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -373,23 +418,48 @@ class BacktestEngine:
                 logger.warning(f"ML model path does not exist: {model_path}. ML integration disabled.")
                 return None
 
-            # Load model
-            model = MLModel.load(model_path)
+            # Try to load model - support both SignalQualityModel (.pkl) and MLModel (directory) formats
+            model = None
+            if model_path.is_dir():
+                # Check for SignalQualityModel format (single .pkl file in directory)
+                pkl_files = list(model_path.glob("*.pkl"))
+                if pkl_files and not (model_path / "config.json").exists():
+                    # SignalQualityModel format - load the most recent .pkl file
+                    latest_pkl = max(pkl_files, key=lambda p: p.stat().st_mtime)
+                    from ..ml_refinement.models.base_model import SignalQualityModel
+                    model = SignalQualityModel()
+                    if not model.load(str(latest_pkl)):
+                        logger.warning(f"Failed to load SignalQualityModel from {latest_pkl}")
+                        return None
+                    logger.info(f"Loaded SignalQualityModel from {latest_pkl}")
+                else:
+                    # MLModel format (directory with config.json)
+                    model = MLModel.load(model_path)
+            elif model_path.suffix == ".pkl":
+                # Direct .pkl file path
+                from ..ml_refinement.models.base_model import SignalQualityModel
+                model = SignalQualityModel()
+                if not model.load(str(model_path)):
+                    logger.warning(f"Failed to load SignalQualityModel from {model_path}")
+                    return None
 
-            # Load feature engineer
-            feature_engineer_path = model_path / "feature_engineer.pkl"
-            if not feature_engineer_path.exists():
-                logger.warning(f"Feature engineer not found at {feature_engineer_path}. Creating default.")
-                feature_engineer = MLFeatureEngineer()
-            else:
+            if model is None:
+                logger.warning(f"Could not load ML model from {model_path}")
+                return None
+
+            # Load feature engineer or create default
+            feature_engineer_path = model_path / "feature_engineer.pkl" if model_path.is_dir() else model_path.parent / "feature_engineer.pkl"
+            if feature_engineer_path.exists():
                 import pickle as pickle_module
-
                 with open(feature_engineer_path, "rb") as f:
                     feature_engineer = pickle_module.load(f)
+            else:
+                logger.info("Creating default feature engineer (no saved feature_engineer.pkl found)")
+                feature_engineer = MLFeatureEngineer(normalize_features=False)
 
-            # Create ML predictor
+            # Create ML predictor with adapter wrapper
             ml_predictor = MLPredictor(
-                model=model,
+                model=_MLModelAdapter(model),
                 feature_engineer=feature_engineer,
                 prediction_mode=ml_config.prediction_mode,
                 confidence_threshold=ml_config.confidence_threshold,

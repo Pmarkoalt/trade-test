@@ -177,7 +177,8 @@ class AlphaVantageNewsClient(BaseNewsSource):
         if aiohttp is None:
             raise ImportError("aiohttp is required for AlphaVantageNewsClient. Install it with: pip install aiohttp")
         async with aiohttp.ClientSession() as session:
-            async with session.get(url) as response:
+            headers = {"Accept-Encoding": "gzip, deflate"}
+            async with session.get(url, headers=headers) as response:
                 if response.status != 200:
                     text = await response.text()
                     raise Exception(f"Alpha Vantage error {response.status}: {text}")

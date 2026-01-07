@@ -8,7 +8,9 @@ from typing import Dict, List, Optional, Tuple
 from .alpha_vantage_news import AlphaVantageNewsClient
 from .base_news_source import BaseNewsSource
 from .models import NewsArticle
+from .models import NewsFetchResult
 from .newsapi_client import NewsAPIClient
+from .polygon_news import PolygonNewsClient
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +22,7 @@ class NewsAggregator:
         self,
         newsapi_key: Optional[str] = None,
         alpha_vantage_key: Optional[str] = None,
+        massive_api_key: Optional[str] = None,
         enable_caching: bool = True,
         cache_ttl_minutes: int = 30,
     ):
@@ -43,9 +46,88 @@ class NewsAggregator:
         if alpha_vantage_key:
             self.sources.append(AlphaVantageNewsClient(alpha_vantage_key))
             logger.info("Alpha Vantage News source enabled")
+        if massive_api_key:
+            self.sources.append(PolygonNewsClient(massive_api_key))
+            logger.info("Polygon News source enabled")
 
         if not self.sources:
             logger.warning("No news sources configured!")
+
+    async def fetch_articles(
+        self,
+        symbols: List[str],
+        lookback_hours: int = 48,
+        max_articles_per_symbol: int = 10,
+    ) -> NewsFetchResult:
+        """Fetch news for symbols from all sources.
+
+        This method is the primary entry point used by NewsAnalyzer.
+        It intentionally supports partial success: if one source fails,
+        we still return articles from other sources.
+        """
+        if not self.sources:
+            return NewsFetchResult(
+                articles=[],
+                source="aggregate",
+                symbols_requested=symbols,
+                success=False,
+                error_message="No news sources configured",
+            )
+
+        all_articles: List[NewsArticle] = []
+        errors: List[str] = []
+
+        for source in self.sources:
+            try:
+                result = await source.fetch_articles(
+                    symbols=symbols,
+                    lookback_hours=lookback_hours,
+                    max_articles_per_symbol=max_articles_per_symbol,
+                )
+
+                if result.success:
+                    all_articles.extend(result.articles)
+                    logger.info(f"Fetched {len(result.articles)} articles from {source.source_name}")
+                else:
+                    msg = result.error_message or "Unknown error"
+                    logger.warning(f"Failed to fetch from {source.source_name}: {msg}")
+                    errors.append(f"{source.source_name}: {msg}")
+                    # Still keep any articles that may have been returned
+                    if result.articles:
+                        all_articles.extend(result.articles)
+
+            except Exception as e:
+                logger.error(f"Error fetching from {source.source_name}: {e}")
+                errors.append(f"{source.source_name}: {e}")
+
+        deduplicated = self._deduplicate_articles(all_articles)
+
+        def _sort_key(article: NewsArticle) -> float:
+            dt = article.published_at
+            if dt is None:
+                return 0.0
+            try:
+                # Ensure comparable ordering regardless of tz-awareness
+                return dt.timestamp()
+            except Exception:
+                return 0.0
+
+        deduplicated.sort(key=_sort_key, reverse=True)
+
+        if self.enable_caching:
+            cache_key = self._make_cache_key(symbols, lookback_hours)
+            self._cache[cache_key] = (datetime.now(), deduplicated)
+
+        # Success if we got any articles OR if there were no errors
+        success = len(deduplicated) > 0 or len(errors) == 0
+
+        return NewsFetchResult(
+            articles=deduplicated,
+            source="aggregate",
+            symbols_requested=symbols,
+            success=success,
+            error_message="; ".join(errors) if errors else None,
+        )
 
     async def fetch_news_for_symbols(
         self,
@@ -70,38 +152,15 @@ class NewsAggregator:
             logger.info(f"Returning {len(cached)} cached articles")
             return cached
 
-        # Fetch from all sources
-        all_articles: List[NewsArticle] = []
-
-        for source in self.sources:
-            try:
-                result = await source.fetch_articles(
-                    symbols=symbols,
-                    lookback_hours=lookback_hours,
-                    max_articles_per_symbol=max_articles_per_symbol,
-                )
-
-                if result.success:
-                    all_articles.extend(result.articles)
-                    logger.info(f"Fetched {len(result.articles)} articles from {source.source_name}")
-                else:
-                    logger.warning(f"Failed to fetch from {source.source_name}: {result.error_message}")
-
-            except Exception as e:
-                logger.error(f"Error fetching from {source.source_name}: {e}")
-
-        # Deduplicate
-        deduplicated = self._deduplicate_articles(all_articles)
-
-        # Sort by published date (newest first)
-        deduplicated.sort(key=lambda a: a.published_at or datetime.min, reverse=True)
-
-        # Cache result
-        if self.enable_caching:
-            self._cache[cache_key] = (datetime.now(), deduplicated)
-
-        logger.info(f"Returning {len(deduplicated)} articles after deduplication")
-        return deduplicated
+        result = await self.fetch_articles(
+            symbols=symbols,
+            lookback_hours=lookback_hours,
+            max_articles_per_symbol=max_articles_per_symbol,
+        )
+        if result.error_message:
+            logger.warning(f"NewsAggregator partial errors: {result.error_message}")
+        logger.info(f"Returning {len(result.articles)} articles after deduplication")
+        return result.articles
 
     async def fetch_market_overview(
         self,

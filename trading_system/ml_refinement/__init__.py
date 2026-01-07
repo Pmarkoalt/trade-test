@@ -9,6 +9,13 @@ from trading_system.ml_refinement.config import (
     ModelType,
     TrainingConfig,
 )
+from trading_system.ml_refinement.continuous_learning import (
+    ContinuousLearningManager,
+    DriftReport,
+    ModelComparisonResult,
+    RetrainingResult,
+    run_scheduled_retrain,
+)
 
 __all__ = [
     "FeatureConfig",
@@ -18,4 +25,9 @@ __all__ = [
     "ModelMetadata",
     "ModelType",
     "TrainingConfig",
+    "ContinuousLearningManager",
+    "DriftReport",
+    "ModelComparisonResult",
+    "RetrainingResult",
+    "run_scheduled_retrain",
 ]
