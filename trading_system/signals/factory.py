@@ -27,13 +27,13 @@ def create_live_signal_generator(
     min_conviction: str = "MEDIUM",
 ) -> LiveSignalGenerator:
     """Create a LiveSignalGenerator with optional news integration.
-    
+
     This is a convenience factory that handles:
     - API key loading from environment variables
     - NewsAnalyzer initialization
     - SignalConfig creation
     - Proper error handling for missing dependencies
-    
+
     Args:
         strategies: List of strategy instances
         news_enabled: Whether to enable news sentiment integration
@@ -45,20 +45,20 @@ def create_live_signal_generator(
         tracking_db: Optional path to SQLite database for signal tracking
         max_recommendations: Maximum recommendations to return
         min_conviction: Minimum conviction level ("LOW", "MEDIUM", "HIGH")
-    
+
     Returns:
         Configured LiveSignalGenerator instance
-        
+
     Example:
         ```python
         from trading_system.signals.factory import create_live_signal_generator
-        
+
         generator = create_live_signal_generator(
             strategies=[equity_strategy],
             news_enabled=True,
             tracking_db="signals.db",
         )
-        
+
         recommendations = await generator.generate_recommendations(
             ohlcv_data=data,
             current_date=date.today(),
@@ -72,17 +72,18 @@ def create_live_signal_generator(
         alpha_vantage_key = os.getenv("ALPHA_VANTAGE_API_KEY")
     if massive_api_key is None:
         massive_api_key = os.getenv("MASSIVE_API_KEY")
-    
+
     # Create signal config
     config = SignalConfig(
         max_recommendations=max_recommendations,
         min_conviction=min_conviction,
         technical_weight=technical_weight,
         news_weight=news_weight,
-        news_enabled=news_enabled and (newsapi_key is not None or alpha_vantage_key is not None or massive_api_key is not None),
+        news_enabled=news_enabled
+        and (newsapi_key is not None or alpha_vantage_key is not None or massive_api_key is not None),
         news_lookback_hours=news_lookback_hours,
     )
-    
+
     # Initialize news analyzer if enabled and keys available
     news_analyzer = None
     if news_enabled:
@@ -96,16 +97,16 @@ def create_live_signal_generator(
             try:
                 from ..research.config import ResearchConfig
                 from ..research.news_analyzer import NewsAnalyzer
-                
+
                 research_config = ResearchConfig(
                     newsapi_key=newsapi_key,
                     alpha_vantage_key=alpha_vantage_key,
                     massive_api_key=massive_api_key,
                     lookback_hours=news_lookback_hours,
                 )
-                
+
                 news_analyzer = NewsAnalyzer(research_config)
-                
+
                 sources = []
                 if newsapi_key:
                     sources.append("NewsAPI")
@@ -114,12 +115,12 @@ def create_live_signal_generator(
                 if massive_api_key:
                     sources.append("Polygon")
                 logger.info(f"News integration enabled with sources: {', '.join(sources)}")
-                
+
             except ImportError as e:
                 logger.warning(f"Failed to initialize news analyzer: {e}. Continuing without news.")
             except Exception as e:
                 logger.error(f"Error initializing news analyzer: {e}. Continuing without news.")
-    
+
     # Create and return the generator
     return LiveSignalGenerator(
         strategies=strategies,
@@ -134,14 +135,14 @@ def create_backtest_signal_generator(
     tracking_db: Optional[str] = None,
 ) -> LiveSignalGenerator:
     """Create a signal generator for backtesting (no news integration).
-    
+
     For backtesting, use synthetic sentiment in the backtest engine instead.
     This generator uses only technical signals.
-    
+
     Args:
         strategies: List of strategy instances
         tracking_db: Optional path to SQLite database for signal tracking
-    
+
     Returns:
         LiveSignalGenerator configured for backtesting
     """
@@ -150,7 +151,7 @@ def create_backtest_signal_generator(
         technical_weight=1.0,
         news_weight=0.0,
     )
-    
+
     return LiveSignalGenerator(
         strategies=strategies,
         signal_config=config,

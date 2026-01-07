@@ -350,7 +350,11 @@ async def generate_daily_recommendations(
                     try:
                         breakout_type, clearance = st.check_entry_triggers(feat_row)
                         has_trigger = breakout_type is not None
-                        trigger_type = breakout_type.value if breakout_type is not None and hasattr(breakout_type, "value") else str(breakout_type)
+                        trigger_type = (
+                            breakout_type.value
+                            if breakout_type is not None and hasattr(breakout_type, "value")
+                            else str(breakout_type)
+                        )
                     except Exception as e:
                         has_trigger = False
                         trigger_type = None
@@ -479,7 +483,9 @@ async def generate_daily_recommendations(
                             "eligible": bool(eligible),
                             "eligibility_reasons": reasons,
                             "has_trigger": bool(has_trigger),
-                            "trigger_type": breakout_type.value if breakout_type is not None and hasattr(breakout_type, "value") else str(breakout_type),
+                            "trigger_type": breakout_type.value
+                            if breakout_type is not None and hasattr(breakout_type, "value")
+                            else str(breakout_type),
                             "clearance": float(clearance),
                         }
                     )

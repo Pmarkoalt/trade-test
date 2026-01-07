@@ -433,7 +433,7 @@ python scripts/optimize_strategy.py --config configs/test_equity_strategy.yaml -
 - `exit.hard_stop_atr_mult` - Stop loss ATR multiplier
 - `exit.exit_ma` - Exit moving average period
 - `entry.fast_clearance` - Fast breakout clearance
-- `entry.slow_clearance` - Slow breakout clearance  
+- `entry.slow_clearance` - Slow breakout clearance
 - `risk.risk_per_trade` - Risk per trade percentage
 - `risk.max_positions` - Maximum concurrent positions
 - `eligibility.trend_ma` - Trend filter MA period

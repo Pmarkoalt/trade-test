@@ -7,8 +7,7 @@ from typing import Dict, List, Optional, Tuple
 
 from .alpha_vantage_news import AlphaVantageNewsClient
 from .base_news_source import BaseNewsSource
-from .models import NewsArticle
-from .models import NewsFetchResult
+from .models import NewsArticle, NewsFetchResult
 from .newsapi_client import NewsAPIClient
 from .polygon_news import PolygonNewsClient
 

@@ -4,15 +4,12 @@ Simple FastAPI wrapper for n8n integration.
 Run with: uvicorn trading_system.api.server:app --host 0.0.0.0 --port 8000
 """
 
-import os
 import json
-import glob
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
-from fastapi.responses import JSONResponse
+from fastapi import BackgroundTasks, FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI(
@@ -142,8 +139,8 @@ async def generate_daily_signals_html(request: DailySignalsRequest):
     try:
         from jinja2 import Environment, FileSystemLoader
 
-        from trading_system.signals.daily_runner import generate_daily_recommendations
         from trading_system.output.formatters.recommendation_formatter import RecommendationFormatter
+        from trading_system.signals.daily_runner import generate_daily_recommendations
 
         payload = await generate_daily_recommendations(
             asset_class=request.asset_class,
@@ -251,18 +248,9 @@ async def start_backtest(request: BacktestRequest, background_tasks: BackgroundT
         "started_at": datetime.now().isoformat(),
     }
 
-    background_tasks.add_task(
-        run_backtest_job,
-        request.config_path,
-        request.period,
-        job_id
-    )
+    background_tasks.add_task(run_backtest_job, request.config_path, request.period, job_id)
 
-    return BacktestResponse(
-        status="queued",
-        run_id=job_id,
-        message=f"Backtest queued for period '{request.period}'"
-    )
+    return BacktestResponse(status="queued", run_id=job_id, message=f"Backtest queued for period '{request.period}'")
 
 
 @app.post("/backtest/sync")
@@ -300,10 +288,7 @@ async def get_job_status(job_id: str):
 async def list_jobs():
     """List all jobs."""
     return {
-        "jobs": [
-            {"job_id": k, "status": v["status"], "started_at": v.get("started_at")}
-            for k, v in _running_jobs.items()
-        ]
+        "jobs": [{"job_id": k, "status": v["status"], "started_at": v.get("started_at")} for k, v in _running_jobs.items()]
     }
 
 
@@ -316,20 +301,18 @@ async def list_results(limit: int = 10):
         return {"results": []}
 
     # Get directories sorted by modification time
-    dirs = sorted(
-        results_dir.iterdir(),
-        key=lambda x: x.stat().st_mtime if x.is_dir() else 0,
-        reverse=True
-    )
+    dirs = sorted(results_dir.iterdir(), key=lambda x: x.stat().st_mtime if x.is_dir() else 0, reverse=True)
 
     results = []
     for d in dirs[:limit]:
         if d.is_dir() and d.name.startswith("run_"):
-            results.append({
-                "run_id": d.name,
-                "path": str(d),
-                "periods": [p.name for p in d.iterdir() if p.is_dir()],
-            })
+            results.append(
+                {
+                    "run_id": d.name,
+                    "path": str(d),
+                    "periods": [p.name for p in d.iterdir() if p.is_dir()],
+                }
+            )
 
     return {"results": results}
 
@@ -386,4 +369,5 @@ async def get_trades(run_id: str, period: str, limit: Optional[int] = None):
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

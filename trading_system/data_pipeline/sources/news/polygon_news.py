@@ -164,7 +164,11 @@ class PolygonNewsClient(BaseNewsSource):
                     # Polygon returns ISO strings like 2024-01-01T12:00:00Z
                     published_at = datetime.fromisoformat(published_str.replace("Z", "+00:00"))
 
-                article_id = raw.get("id") or raw.get("article_id") or f"polygon_{abs(hash(raw.get('article_url', '') or raw.get('id', '')))}"
+                article_id = (
+                    raw.get("id")
+                    or raw.get("article_id")
+                    or f"polygon_{abs(hash(raw.get('article_url', '') or raw.get('id', '')))}"
+                )
                 url = raw.get("article_url") or raw.get("url") or ""
                 title = raw.get("title") or ""
                 summary = raw.get("description") or raw.get("summary")

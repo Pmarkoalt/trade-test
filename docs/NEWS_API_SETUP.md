@@ -196,10 +196,10 @@ async def get_sentiment(symbol: str):
         alpha_vantage_key="your_key",
         lookback_hours=48,
     )
-    
+
     analyzer = NewsAnalyzer(config)
     result = await analyzer.analyze_symbols([symbol])
-    
+
     score, reasoning = analyzer.get_news_score_for_signal(symbol, result)
     return score, reasoning
 

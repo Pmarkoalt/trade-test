@@ -1,0 +1,5890 @@
+{
+  "study_name": "strategy_opt_20260106_105736",
+  "best_params": {
+    "exit.hard_stop_atr_mult": 2.5,
+    "exit.exit_ma": 200,
+    "entry.fast_clearance": 0.01,
+    "entry.slow_clearance": 0.015,
+    "risk.risk_per_trade": 0.0125,
+    "risk.max_positions": 4,
+    "eligibility.trend_ma": 50
+  },
+  "best_value": 3.5176591377487942,
+  "objective": "sharpe_ratio",
+  "n_trials": 500,
+  "n_completed": 451,
+  "optimization_time_seconds": 38817.183383,
+  "trials_summary": [
+    {
+      "number": 0,
+      "value": 2.300749836893611,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.002,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 2,
+      "value": 2.0341018486347044,
+      "params": {
+        "exit.hard_stop_atr_mult": 4.0,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.0,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.005,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 3,
+      "value": 2.6527793797864128,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 4,
+      "value": 1.6685926312879729,
+      "params": {
+        "exit.hard_stop_atr_mult": 4.0,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.018000000000000002,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 5,
+      "value": 1.6811577549578927,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 6,
+      "value": 2.593706144463014,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.0,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.005,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 7,
+      "value": 2.6220893983619686,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 8,
+      "value": 2.27334843630515,
+      "params": {
+        "exit.hard_stop_atr_mult": 4.0,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 9,
+      "value": 3.3421482174985337,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.016,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 12,
+      "value": 2.4691327546730553,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.021,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 13,
+      "value": 3.3432204087970865,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 15,
+      "value": 3.3432204087970865,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.019,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 17,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 18,
+      "value": 2.877755078881746,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.02,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 19,
+      "value": 2.695896215139823,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 21,
+      "value": 2.8155332517166234,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.019,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 23,
+      "value": 2.6227984369157817,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.019,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 25,
+      "value": 2.8237380536708048,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.018000000000000002,
+        "entry.slow_clearance": 0.019,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 27,
+      "value": 2.9325028026168076,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.018000000000000002,
+        "entry.slow_clearance": 0.023000000000000003,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 28,
+      "value": 2.8498346444609832,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 29,
+      "value": 2.3199624480483227,
+      "params": {
+        "exit.hard_stop_atr_mult": 4.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 30,
+      "value": 2.619569325826981,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 31,
+      "value": 3.3421482174985337,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.016,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 32,
+      "value": 3.3421482174985337,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.016,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 33,
+      "value": 2.8155332517166234,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.019,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 34,
+      "value": 3.0272848567943433,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.018000000000000002,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0075,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 35,
+      "value": 3.3421482174985337,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.016,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 36,
+      "value": 0.9359317074657851,
+      "params": {
+        "exit.hard_stop_atr_mult": 4.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 37,
+      "value": 2.8199369851906746,
+      "params": {
+        "exit.hard_stop_atr_mult": 4.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.018000000000000002,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 38,
+      "value": 2.29271716179618,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.021,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 39,
+      "value": 1.5185268547335469,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.016,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 40,
+      "value": 3.3907176113781237,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.002,
+        "entry.slow_clearance": 0.023000000000000003,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 41,
+      "value": 3.3907176113781237,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.002,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 42,
+      "value": 3.3907176113781237,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.002,
+        "entry.slow_clearance": 0.023000000000000003,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 43,
+      "value": 3.3907176113781237,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.002,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 44,
+      "value": 3.3907176113781237,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.002,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 45,
+      "value": 3.101632879742546,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.002,
+        "entry.slow_clearance": 0.023000000000000003,
+        "risk.risk_per_trade": 0.0075,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 46,
+      "value": 2.979440903879545,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.0,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 47,
+      "value": 3.4135047567006267,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.004,
+        "entry.slow_clearance": 0.023000000000000003,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 48,
+      "value": 3.1645157317876738,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.004,
+        "entry.slow_clearance": 0.023000000000000003,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 50,
+      "value": 2.463568276855873,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.004,
+        "entry.slow_clearance": 0.023000000000000003,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 51,
+      "value": 3.3907176113781237,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.002,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 52,
+      "value": 2.979440903879545,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.0,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 53,
+      "value": 2.979440903879545,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.0,
+        "entry.slow_clearance": 0.023000000000000003,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 54,
+      "value": 2.7800371159513757,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.002,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.0075,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 55,
+      "value": 2.2847429720771375,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.004,
+        "entry.slow_clearance": 0.021,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 56,
+      "value": 2.4995056904207655,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.0,
+        "entry.slow_clearance": 0.023000000000000003,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 57,
+      "value": 3.040085313332662,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.002,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.005,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 58,
+      "value": 2.463568276855873,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.004,
+        "entry.slow_clearance": 0.023000000000000003,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 60,
+      "value": 3.4911360529943676,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.006,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 61,
+      "value": 3.4911360529943676,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.006,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 62,
+      "value": 3.4911360529943676,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.006,
+        "entry.slow_clearance": 0.023000000000000003,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 63,
+      "value": 2.222226575642008,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.006,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 64,
+      "value": 3.4911360529943676,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.006,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 65,
+      "value": 2.7874005263895363,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.006,
+        "entry.slow_clearance": 0.023000000000000003,
+        "risk.risk_per_trade": 0.0075,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 66,
+      "value": 2.520456330735503,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 67,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 68,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.025,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 69,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 70,
+      "value": 2.6527793797864128,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 12,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 71,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 72,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 73,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 74,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 75,
+      "value": 2.6220893983619686,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 76,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 77,
+      "value": 2.6220893983619686,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 78,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 79,
+      "value": 1.5739052473080442,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 80,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 81,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 82,
+      "value": 3.0041584676376045,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 83,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 84,
+      "value": 3.0041584676376045,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 85,
+      "value": 2.6227984369157817,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 86,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 88,
+      "value": 1.6607647123894806,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 89,
+      "value": 3.0041584676376045,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 91,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 92,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 93,
+      "value": 3.0041584676376045,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 94,
+      "value": 2.6220893983619686,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 95,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 10,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 96,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 97,
+      "value": 2.6227984369157817,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 98,
+      "value": 3.0041584676376045,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.005,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 99,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 100,
+      "value": 1.8792523998765878,
+      "params": {
+        "exit.hard_stop_atr_mult": 4.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 101,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 102,
+      "value": 2.6227984369157817,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 103,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 104,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 105,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 106,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 107,
+      "value": 2.6227984369157817,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 108,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 109,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 110,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 111,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 112,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 114,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 115,
+      "value": 2.6227984369157817,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 116,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 117,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 118,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 120,
+      "value": 2.6227984369157817,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 121,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 122,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 123,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 124,
+      "value": 3.5121962498332233,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 125,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 126,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 127,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 128,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 129,
+      "value": 2.615331502816087,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 130,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 131,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 132,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 133,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 134,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 136,
+      "value": 3.5121962498332233,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 137,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 139,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 140,
+      "value": 2.6227984369157817,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 141,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 142,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 143,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 144,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 145,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 146,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 148,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 149,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 150,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 151,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 153,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 154,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 155,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 156,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 157,
+      "value": 2.994368315855231,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 158,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 159,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 160,
+      "value": 2.6227984369157817,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 161,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 162,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 163,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 164,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 165,
+      "value": 1.0047995496520625,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.005,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 166,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 167,
+      "value": 3.5121962498332233,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 168,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 169,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 170,
+      "value": 2.6220893983619686,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 171,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 172,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 173,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 174,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 175,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 176,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 177,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 178,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 179,
+      "value": 2.234128024644678,
+      "params": {
+        "exit.hard_stop_atr_mult": 4.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 180,
+      "value": 2.8549919952529437,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 181,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 182,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 183,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 184,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 185,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 186,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 187,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 188,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 189,
+      "value": 2.6527793797864128,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 191,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 192,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 193,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 194,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 195,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 196,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 197,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 198,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 199,
+      "value": 2.877755078881746,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.02,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 200,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 201,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 202,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 203,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 204,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 205,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 206,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 207,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 208,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 209,
+      "value": 2.6227984369157817,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 210,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 211,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 212,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 213,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 214,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 215,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 216,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 217,
+      "value": 2.4180366457413744,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 218,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 219,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 220,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 221,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 222,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 223,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 224,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 225,
+      "value": 2.5957435336135863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 226,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 227,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 228,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 229,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 230,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 231,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 232,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 233,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 234,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 235,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 236,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 238,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 239,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 240,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 241,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 242,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 243,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 244,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 245,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 246,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 247,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 248,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 249,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 250,
+      "value": 2.4180366457413744,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 251,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 252,
+      "value": 3.416261861709508,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.009000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 253,
+      "value": 1.9729672246852794,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 254,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 255,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 256,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 257,
+      "value": 2.5957435336135863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 258,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 259,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 260,
+      "value": 2.868328232624506,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.014,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 261,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.011,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 262,
+      "value": 2.6227984369157817,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.007,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 264,
+      "value": 3.5172777020998467,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.012,
+        "entry.slow_clearance": 0.013000000000000001,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 6,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 265,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 266,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 267,
+      "value": 3.5160236004277863,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 8,
+        "eligibility.trend_ma": 200
+      }
+    },
+    {
+      "number": 268,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 270,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 271,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 50
+      }
+    },
+    {
+      "number": 272,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 273,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 274,
+      "value": 2.398531318302361,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 275,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 276,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 277,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 278,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 279,
+      "value": 2.8945734317866294,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.005,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 280,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 281,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 283,
+      "value": 1.670201802296219,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 284,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 285,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 286,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 287,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 288,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 289,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 290,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 291,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 292,
+      "value": 2.6248330713884123,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 293,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 295,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 296,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 297,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 298,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 299,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 300,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 301,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 302,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 303,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 304,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 305,
+      "value": 3.4934729636110786,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 306,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 307,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 308,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 309,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 310,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 311,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 312,
+      "value": 1.8369097823568303,
+      "params": {
+        "exit.hard_stop_atr_mult": 5.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 313,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 314,
+      "value": 2.894140676875475,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0075,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 315,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 316,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 317,
+      "value": 2.6248330713884123,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 318,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 319,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 320,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 321,
+      "value": 2.6248330713884123,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 322,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 323,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.019,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 324,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 325,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 326,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 329,
+      "value": 2.398531318302361,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 330,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 331,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 332,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 334,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 335,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 337,
+      "value": 2.658580526527557,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 338,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 339,
+      "value": 2.6248330713884123,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 340,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 341,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 342,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.019,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 343,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 344,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 345,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 346,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 347,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 349,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 351,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 352,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 353,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 354,
+      "value": 2.520520766710187,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 355,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 356,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 357,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 358,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 359,
+      "value": 2.658580526527557,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 360,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 361,
+      "value": 2.6248330713884123,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 362,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 363,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 364,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 365,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 366,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 369,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 370,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 371,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 372,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 373,
+      "value": 2.6248330713884123,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 374,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 375,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 376,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 377,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 378,
+      "value": 2.398531318302361,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 379,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 380,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 382,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 383,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 384,
+      "value": 2.070663504360988,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 386,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 387,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 388,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 389,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 390,
+      "value": 2.6248330713884123,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 392,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 393,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 394,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 395,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 396,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 397,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 398,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 399,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 400,
+      "value": 2.398531318302361,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 402,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 404,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.019,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 405,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 406,
+      "value": 2.658580526527557,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 407,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 408,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 409,
+      "value": 2.895002262392332,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.005,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 410,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 411,
+      "value": 2.924491232210797,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 412,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 413,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 414,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 415,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 416,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 417,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 418,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 419,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 420,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 422,
+      "value": 2.7070993982992237,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.01,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 423,
+      "value": 2.520520766710187,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 424,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 425,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.021,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 426,
+      "value": 2.6248330713884123,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 427,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 428,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 429,
+      "value": 2.59623870680098,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.018000000000000002,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 430,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 432,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 433,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 434,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 435,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 436,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 437,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 438,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 439,
+      "value": 2.6248330713884123,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 440,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 441,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 442,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 443,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 444,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 445,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 446,
+      "value": 2.9778635061065866,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 447,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 448,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 449,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 451,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 452,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 453,
+      "value": 2.658580526527557,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 454,
+      "value": 2.877755078881746,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.02,
+        "entry.slow_clearance": 0.019,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 455,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 456,
+      "value": 2.6248330713884123,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 458,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 459,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 461,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 463,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 464,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 466,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 467,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 469,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 470,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 471,
+      "value": 2.481416192115478,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.0,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 472,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 473,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 474,
+      "value": 2.92590923623364,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.015,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 475,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 476,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 477,
+      "value": 2.6536566814970994,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.0,
+        "exit.exit_ma": 50,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 478,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 479,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 480,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 481,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 482,
+      "value": 3.4190765536880607,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.016,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 483,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 484,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 485,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 488,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 489,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 490,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 492,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 493,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 494,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 100,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 495,
+      "value": 2.398531318302361,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 20,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 496,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.017,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 497,
+      "value": 3.5176591377487942,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 498,
+      "value": 3.0064737375352815,
+      "params": {
+        "exit.hard_stop_atr_mult": 2.5,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.008,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    },
+    {
+      "number": 499,
+      "value": 2.6248330713884123,
+      "params": {
+        "exit.hard_stop_atr_mult": 3.0,
+        "exit.exit_ma": 200,
+        "entry.fast_clearance": 0.01,
+        "entry.slow_clearance": 0.015,
+        "risk.risk_per_trade": 0.0125,
+        "risk.max_positions": 4,
+        "eligibility.trend_ma": 100
+      }
+    }
+  ],
+  "validation_metrics": {},
+  "holdout_metrics": {
+    "sharpe_ratio": 0.4569370883262406,
+    "calmar_ratio": 0,
+    "total_return": 0.014264360204104376,
+    "total_trades": 5,
+    "max_drawdown": 0.045325547270888396
+  }
+}

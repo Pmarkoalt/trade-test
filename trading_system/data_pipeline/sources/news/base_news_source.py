@@ -13,11 +13,11 @@ logger = logging.getLogger(__name__)
 
 class RateLimitError(Exception):
     """Raised when rate limit is exceeded and cannot wait."""
-    pass
 
 
 class NewsAPIError(Exception):
     """Base exception for news API errors."""
+
     def __init__(self, message: str, source: str, status_code: Optional[int] = None):
         self.message = message
         self.source = source
@@ -87,20 +87,20 @@ class BaseNewsSource(ABC):
 
     async def _respect_rate_limit(self, max_wait_seconds: int = 120) -> None:
         """Wait if necessary to respect rate limits.
-        
+
         Args:
             max_wait_seconds: Maximum time to wait for rate limit reset
-            
+
         Raises:
             RateLimitError: If wait time exceeds max_wait_seconds
         """
         now = datetime.now()
-        
+
         # Reset daily counter if a day has passed
         if self._daily_reset_time is None or now - self._daily_reset_time > timedelta(days=1):
             self._daily_request_count = 0
             self._daily_reset_time = now
-        
+
         if self._last_request_time is None:
             self._last_request_time = now
             self._request_count = 1
@@ -133,19 +133,19 @@ class BaseNewsSource(ABC):
 
     async def _retry_with_backoff(self, coro_factory, operation_name: str = "request"):
         """Execute a coroutine with exponential backoff retry.
-        
+
         Args:
             coro: Coroutine to execute
             operation_name: Name for logging
-            
+
         Returns:
             Result of the coroutine
-            
+
         Raises:
             Exception: If all retries fail
         """
         last_error = None
-        
+
         for attempt in range(self.max_retries):
             try:
                 return await coro_factory()
@@ -154,19 +154,19 @@ class BaseNewsSource(ABC):
             except Exception as e:
                 last_error = e
                 if attempt < self.max_retries - 1:
-                    delay = self.retry_delay_seconds * (2 ** attempt)
+                    delay = self.retry_delay_seconds * (2**attempt)
                     logger.warning(
                         f"{self.source_name}: {operation_name} failed (attempt {attempt + 1}/{self.max_retries}): {e}. "
                         f"Retrying in {delay:.1f}s"
                     )
                     await asyncio.sleep(delay)
-        
+
         logger.error(f"{self.source_name}: {operation_name} failed after {self.max_retries} attempts")
         raise last_error
 
     def get_rate_limit_status(self) -> dict:
         """Get current rate limit status.
-        
+
         Returns:
             Dictionary with rate limit information
         """

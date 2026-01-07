@@ -184,7 +184,7 @@ ml_data_collection:
 # Accumulate training data from backtests
 python scripts/ml_training_pipeline.py --accumulate
 
-# Train model on accumulated data  
+# Train model on accumulated data
 python scripts/ml_training_pipeline.py --train
 
 # Evaluate on holdout

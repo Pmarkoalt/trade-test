@@ -17,7 +17,7 @@ from ..ml.predictor import MLPredictor
 from ..models.market_data import MarketData
 from ..models.positions import Position
 from ..portfolio.portfolio import Portfolio
-from ..research.sentiment.synthetic_generator import SentimentConfig, SyntheticSentimentGenerator, generate_sentiment_for_backtest
+from ..research.sentiment.synthetic_generator import generate_sentiment_for_backtest
 from ..strategies.base.strategy_interface import StrategyInterface
 from .event_loop import DailyEventLoop
 from .ml_data_collector import MLDataCollector
@@ -44,21 +44,21 @@ class _MLModelAdapter:
 
     def __init__(self, model):
         """Wrap a SignalQualityModel or similar model.
-        
+
         Args:
             model: Model with predict() and predict_proba() methods
         """
         self._model = model
         # Get feature names the model was trained with
-        self._feature_names = getattr(model, '_feature_names', None)
+        self._feature_names = getattr(model, "_feature_names", None)
         if self._feature_names:
             logger.info(f"ML model expects {len(self._feature_names)} features")
 
     def _align_features(self, X: pd.DataFrame) -> np.ndarray:
         """Align input features with model's expected features."""
-        if self._feature_names and hasattr(X, 'columns'):
+        if self._feature_names and hasattr(X, "columns"):
             # Filter to only features the model knows
-            available = [f for f in self._feature_names if f in X.columns]
+            [f for f in self._feature_names if f in X.columns]
             missing = [f for f in self._feature_names if f not in X.columns]
             if missing:
                 # Add missing features as zeros
@@ -67,7 +67,7 @@ class _MLModelAdapter:
                     X[f] = 0.0
             # Reorder to match training order
             X = X[self._feature_names]
-        return X.values if hasattr(X, 'values') else X
+        return X.values if hasattr(X, "values") else X
 
     def predict(self, X: pd.DataFrame) -> np.ndarray:
         """Make predictions."""
@@ -427,6 +427,7 @@ class BacktestEngine:
                     # SignalQualityModel format - load the most recent .pkl file
                     latest_pkl = max(pkl_files, key=lambda p: p.stat().st_mtime)
                     from ..ml_refinement.models.base_model import SignalQualityModel
+
                     model = SignalQualityModel()
                     if not model.load(str(latest_pkl)):
                         logger.warning(f"Failed to load SignalQualityModel from {latest_pkl}")
@@ -438,6 +439,7 @@ class BacktestEngine:
             elif model_path.suffix == ".pkl":
                 # Direct .pkl file path
                 from ..ml_refinement.models.base_model import SignalQualityModel
+
                 model = SignalQualityModel()
                 if not model.load(str(model_path)):
                     logger.warning(f"Failed to load SignalQualityModel from {model_path}")
@@ -448,9 +450,12 @@ class BacktestEngine:
                 return None
 
             # Load feature engineer or create default
-            feature_engineer_path = model_path / "feature_engineer.pkl" if model_path.is_dir() else model_path.parent / "feature_engineer.pkl"
+            feature_engineer_path = (
+                model_path / "feature_engineer.pkl" if model_path.is_dir() else model_path.parent / "feature_engineer.pkl"
+            )
             if feature_engineer_path.exists():
                 import pickle as pickle_module
+
                 with open(feature_engineer_path, "rb") as f:
                     feature_engineer = pickle_module.load(f)
             else:
@@ -479,7 +484,7 @@ class BacktestEngine:
             SentimentConfig if any strategy has sentiment enabled, None otherwise
         """
         for strategy in self.strategies:
-            if hasattr(strategy.config, 'sentiment') and strategy.config.sentiment.enabled:
+            if hasattr(strategy.config, "sentiment") and strategy.config.sentiment.enabled:
                 return strategy.config.sentiment
         return None
 
@@ -508,7 +513,8 @@ class BacktestEngine:
             end_date = max(all_dates)
 
             # Create sentiment config for generator
-            from ..research.sentiment.synthetic_generator import SentimentConfig as GenSentimentConfig, SentimentMode
+            from ..research.sentiment.synthetic_generator import SentimentConfig as GenSentimentConfig
+            from ..research.sentiment.synthetic_generator import SentimentMode
 
             mode_map = {
                 "random_walk": SentimentMode.RANDOM_WALK,
@@ -523,7 +529,7 @@ class BacktestEngine:
                 correlation_lag=self._sentiment_config.correlation_lag,
                 noise_std=self._sentiment_config.noise_std,
                 event_calendar_path=self._sentiment_config.event_calendar_path,
-                seed=self._sentiment_config.seed if hasattr(self._sentiment_config, 'seed') else 42,
+                seed=self._sentiment_config.seed if hasattr(self._sentiment_config, "seed") else 42,
             )
 
             # Generate sentiment
@@ -535,8 +541,10 @@ class BacktestEngine:
                 config=gen_config,
             )
 
-            logger.info(f"Generated synthetic sentiment for {len(all_symbols)} symbols, "
-                       f"{len(sentiment_df)} records ({start_date.date()} to {end_date.date()})")
+            logger.info(
+                f"Generated synthetic sentiment for {len(all_symbols)} symbols, "
+                f"{len(sentiment_df)} records ({start_date.date()} to {end_date.date()})"
+            )
 
             return sentiment_df
 
@@ -824,8 +832,8 @@ def create_backtest_engine_from_config(
     logger.info("Creating backtest engine...")
 
     # Get ML data collection config
-    ml_data_collection = config.ml_data_collection.enabled if hasattr(config, 'ml_data_collection') else False
-    ml_feature_db_path = config.ml_data_collection.db_path if hasattr(config, 'ml_data_collection') else "features.db"
+    ml_data_collection = config.ml_data_collection.enabled if hasattr(config, "ml_data_collection") else False
+    ml_feature_db_path = config.ml_data_collection.db_path if hasattr(config, "ml_data_collection") else "features.db"
 
     engine = BacktestEngine(
         market_data=market_data,
