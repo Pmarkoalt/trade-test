@@ -103,6 +103,15 @@ def main():
         help="Directory for results",
     )
 
+    # Parallel processing
+    parser.add_argument(
+        "--jobs",
+        "-j",
+        type=int,
+        default=1,
+        help="Number of parallel jobs (default: 1, use -1 for all CPUs)",
+    )
+
     # Misc options
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
     parser.add_argument("--quick", action="store_true", help="Quick mode with reduced search space")
@@ -150,6 +159,7 @@ def main():
     print(f"Config: {args.config}")
     print(f"Objective: {args.objective}")
     print(f"Trials: {args.trials}")
+    print(f"Parallel Jobs: {args.jobs}")
     print(f"Output: {args.output_dir}")
     print("=" * 60 + "\n")
 
@@ -157,6 +167,7 @@ def main():
         result = optimizer.optimize(
             n_trials=args.trials,
             timeout=args.timeout,
+            n_jobs=args.jobs,
             show_progress=True,
         )
 

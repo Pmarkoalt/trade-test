@@ -158,16 +158,30 @@ class SignalQualityModel(BaseModel):
         """
         super().__init__(ModelType.SIGNAL_QUALITY, version)
 
-        self.params = {
-            "n_estimators": kwargs.get("n_estimators", 100),
-            "max_depth": kwargs.get("max_depth", 5),
-            "learning_rate": kwargs.get("learning_rate", 0.1),
-            "min_samples_leaf": kwargs.get("min_samples_leaf", 20),
-            "subsample": kwargs.get("subsample", 0.8),
-            "random_state": kwargs.get("random_state", 42),
-        }
+        # Use HistGradientBoosting for faster training (native histogram-based)
+        self._use_hist = kwargs.get("use_hist", True)
+        
+        if self._use_hist:
+            self.params = {
+                "max_iter": kwargs.get("n_estimators", 100),
+                "max_depth": kwargs.get("max_depth", 5),
+                "learning_rate": kwargs.get("learning_rate", 0.1),
+                "min_samples_leaf": kwargs.get("min_samples_leaf", 20),
+                "random_state": kwargs.get("random_state", 42),
+                "early_stopping": kwargs.get("early_stopping", True),
+                "n_iter_no_change": kwargs.get("n_iter_no_change", 10),
+            }
+        else:
+            self.params = {
+                "n_estimators": kwargs.get("n_estimators", 100),
+                "max_depth": kwargs.get("max_depth", 5),
+                "learning_rate": kwargs.get("learning_rate", 0.1),
+                "min_samples_leaf": kwargs.get("min_samples_leaf", 20),
+                "subsample": kwargs.get("subsample", 0.8),
+                "random_state": kwargs.get("random_state", 42),
+            }
 
-        self._model: Optional["GradientBoostingClassifier"] = None
+        self._model = None
 
     def fit(
         self,
@@ -179,7 +193,7 @@ class SignalQualityModel(BaseModel):
     ) -> Dict[str, float]:
         """Train the signal quality model."""
         try:
-            from sklearn.ensemble import GradientBoostingClassifier
+            from sklearn.ensemble import GradientBoostingClassifier, HistGradientBoostingClassifier
             from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
         except ImportError:
             logger.error("scikit-learn required for ML models")
@@ -188,8 +202,11 @@ class SignalQualityModel(BaseModel):
         # Convert to binary classification (win/loss)
         y_train_binary = (y_train > 0).astype(int)
 
-        # Initialize model
-        self._model = GradientBoostingClassifier(**self.params)
+        # Initialize model - use HistGradientBoosting for 5-10x faster training
+        if self._use_hist:
+            self._model = HistGradientBoostingClassifier(**self.params)
+        else:
+            self._model = GradientBoostingClassifier(**self.params)
 
         # Fit
         self._model.fit(X_train, y_train_binary)

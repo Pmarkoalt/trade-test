@@ -327,6 +327,79 @@ class StrategyOptimizer:
 
         return value
 
+    def _run_parallel_optimization(
+        self,
+        study_name: str,
+        storage: str,
+        n_trials: int,
+        n_jobs: int,
+        timeout: Optional[int],
+    ) -> None:
+        """Run optimization with multiple parallel processes.
+        
+        Each process loads its own data and runs trials independently,
+        coordinated via SQLite storage.
+        """
+        import subprocess
+        import sys
+        
+        # Calculate trials per worker
+        trials_per_worker = n_trials // n_jobs
+        extra_trials = n_trials % n_jobs
+        
+        # Spawn worker processes using subprocess (avoids pickle issues)
+        processes = []
+        for i in range(n_jobs):
+            num_trials = trials_per_worker + (1 if i < extra_trials else 0)
+            if num_trials > 0:
+                # Run worker as subprocess
+                cmd = [
+                    sys.executable,
+                    "-c",
+                    f"""
+import optuna
+from trading_system.optimization import StrategyOptimizer
+
+optimizer = StrategyOptimizer(
+    base_config_path="{self.base_config_path}",
+    data_paths={self.data_paths},
+    objective="{self.objective}",
+    output_dir="{self.output_dir}",
+)
+
+study = optuna.load_study(
+    study_name="{study_name}",
+    storage="{storage}",
+)
+
+study.optimize(
+    optimizer._objective_fn,
+    n_trials={num_trials},
+    timeout={timeout if timeout else 'None'},
+    n_jobs=1,
+    show_progress_bar=False,
+)
+print(f"Worker completed {num_trials} trials")
+"""
+                ]
+                p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                processes.append((i, p, num_trials))
+                logger.info(f"Started worker {i+1}/{n_jobs} with {num_trials} trials (PID: {p.pid})")
+        
+        # Wait for all workers to complete
+        for i, p, num_trials in processes:
+            stdout, stderr = p.communicate()
+            if p.returncode == 0:
+                logger.info(f"Worker {i+1} completed ({num_trials} trials)")
+            else:
+                logger.error(f"Worker {i+1} failed: {stderr.decode()[:500]}")
+        
+        # Reload study to get all results
+        self._study = optuna.load_study(
+            study_name=study_name,
+            storage=storage,
+        )
+
     def optimize(
         self,
         n_trials: int = 50,
@@ -354,24 +427,38 @@ class StrategyOptimizer:
         logger.info(f"Trials: {n_trials}")
         logger.info("=" * 60)
 
-        # Create study
+        # For parallel execution, use SQLite storage to coordinate between processes
+        storage_path = self.output_dir / f"{study_name}.db"
+        storage = f"sqlite:///{storage_path}"
+        
+        # Create study with storage for persistence
         self._study = optuna.create_study(
             study_name=study_name,
             direction="maximize",
             sampler=TPESampler(seed=42),
             pruner=MedianPruner(n_startup_trials=5, n_warmup_steps=0),
+            storage=storage,
+            load_if_exists=True,
         )
 
         start_time = datetime.now()
 
-        # Run optimization
-        self._study.optimize(
-            self._objective_fn,
-            n_trials=n_trials,
-            timeout=timeout,
-            n_jobs=n_jobs,
-            show_progress_bar=show_progress,
-        )
+        # Pre-load market data before optimization
+        self._load_market_data()
+
+        if n_jobs > 1:
+            # Run multiple worker processes for true parallelism
+            logger.info(f"Starting {n_jobs} parallel optimization workers...")
+            self._run_parallel_optimization(study_name, storage, n_trials, n_jobs, timeout)
+        else:
+            # Single-threaded optimization
+            self._study.optimize(
+                self._objective_fn,
+                n_trials=n_trials,
+                timeout=timeout,
+                n_jobs=1,
+                show_progress_bar=show_progress,
+            )
 
         elapsed = (datetime.now() - start_time).total_seconds()
 
