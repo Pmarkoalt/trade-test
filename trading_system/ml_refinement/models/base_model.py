@@ -11,7 +11,7 @@ from loguru import logger
 from trading_system.ml_refinement.config import ModelMetadata, ModelType
 
 if TYPE_CHECKING:
-    from sklearn.ensemble import GradientBoostingClassifier
+    pass
 
 
 class BaseModel(ABC):
@@ -160,7 +160,7 @@ class SignalQualityModel(BaseModel):
 
         # Use HistGradientBoosting for faster training (native histogram-based)
         self._use_hist = kwargs.get("use_hist", True)
-        
+
         if self._use_hist:
             self.params = {
                 "max_iter": kwargs.get("n_estimators", 100),

@@ -115,9 +115,7 @@ class CSVDataSource(BaseDataSource):
         if parallel and len(symbols) > 1:
             with ThreadPoolExecutor(max_workers=min(max_workers, len(symbols))) as executor:
                 futures = {
-                    executor.submit(
-                        self._load_single_symbol, symbol, start_date, end_date, optimize_memory
-                    ): symbol
+                    executor.submit(self._load_single_symbol, symbol, start_date, end_date, optimize_memory): symbol
                     for symbol in symbols
                 }
 
@@ -130,9 +128,7 @@ class CSVDataSource(BaseDataSource):
         else:
             # Sequential loading for single symbol or when parallel=False
             for symbol in symbols:
-                symbol, df, error = self._load_single_symbol(
-                    symbol, start_date, end_date, optimize_memory
-                )
+                symbol, df, error = self._load_single_symbol(symbol, start_date, end_date, optimize_memory)
                 if error:
                     logger.warning(error)
                 elif df is not None:

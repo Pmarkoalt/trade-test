@@ -1,7 +1,8 @@
-# Crypto Strategy for Optimization
-# Designed to capture longer trends in crypto markets
+# Crypto Trend-Following Strategy
+# No position cap - hold any coin in uptrend
+# Simple approach: buy breakouts, ride trends, exit on MA cross
 
-name: "crypto_momentum_test"
+name: "crypto_trend_uncapped"
 asset_class: "crypto"
 universe: ["BTC", "ETH", "SOL", "XRP", "ADA", "DOT", "MATIC", "LTC", "LINK"]
 benchmark: "BTC"
@@ -16,34 +17,34 @@ indicators:
   adv_lookback: 20
   corr_lookback: 20
 
-# Eligibility filter
+# Eligibility filter - relaxed for more trades
 eligibility:
-  trend_ma: 200
-  ma_slope_lookback: 20
+  trend_ma: 50
+  ma_slope_lookback: 10
   ma_slope_min: 0.0
   require_close_above_trend_ma: false
-  require_close_above_ma200: true
+  require_close_above_ma200: false
   relative_strength_enabled: false
   relative_strength_min: 0.0
 
 # Entry trigger configuration
 entry:
-  fast_clearance: 0.005
-  slow_clearance: 0.010
+  fast_clearance: 0.0
+  slow_clearance: 0.005
 
-# Exit configuration - allow optimizer to find longer trend settings
+# Exit configuration - staged exit (required for crypto)
 exit:
   mode: "staged"
   exit_ma: 50
   hard_stop_atr_mult: 3.0
   tightened_stop_atr_mult: 2.0
 
-# Risk management
+# Risk management - NO POSITION CAP
 risk:
-  risk_per_trade: 0.0075
-  max_positions: 8
-  max_exposure: 0.80
-  max_position_notional: 0.15
+  risk_per_trade: 0.01
+  max_positions: 50
+  max_exposure: 1.0
+  max_position_notional: 0.20
 
 # Capacity constraints
 capacity:

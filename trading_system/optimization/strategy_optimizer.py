@@ -119,15 +119,14 @@ DEFAULT_EQUITY_PARAM_SPACES = [
 ]
 
 # Default parameter spaces for crypto strategies
-# Extended ranges for volatile crypto trends
+# Trend-following focused - no position cap, optimize entry/exit timing
 DEFAULT_CRYPTO_PARAM_SPACES = [
-    ParameterSpace("exit.hard_stop_atr_mult", "float", 2.5, 7.0, 0.5),  # Very wide for crypto volatility
-    ParameterSpace("exit.exit_ma", "categorical", choices=[20, 50, 100]),  # Allow slower exits
-    ParameterSpace("exit.tightened_stop_atr_mult", "float", 1.5, 4.0, 0.5),  # Staged exit stop
-    ParameterSpace("entry.fast_clearance", "float", 0.0, 0.03, 0.005),
-    ParameterSpace("entry.slow_clearance", "float", 0.005, 0.03, 0.005),
+    ParameterSpace("exit.hard_stop_atr_mult", "float", 2.0, 5.0, 0.5),  # Protect against reversals
+    ParameterSpace("exit.exit_ma", "categorical", choices=[20, 50, 100, 200]),  # MA cross exit
+    ParameterSpace("entry.fast_clearance", "float", 0.0, 0.02, 0.005),  # Breakout sensitivity
+    ParameterSpace("entry.slow_clearance", "float", 0.0, 0.02, 0.005),
     ParameterSpace("risk.risk_per_trade", "float", 0.005, 0.02, 0.0025),
-    ParameterSpace("risk.max_positions", "int", 3, 10, 1),
+    ParameterSpace("eligibility.trend_ma", "categorical", choices=[20, 50, 100]),  # Trend filter
 ]
 
 
@@ -336,17 +335,17 @@ class StrategyOptimizer:
         timeout: Optional[int],
     ) -> None:
         """Run optimization with multiple parallel processes.
-        
+
         Each process loads its own data and runs trials independently,
         coordinated via SQLite storage.
         """
         import subprocess
         import sys
-        
+
         # Calculate trials per worker
         trials_per_worker = n_trials // n_jobs
         extra_trials = n_trials % n_jobs
-        
+
         # Spawn worker processes using subprocess (avoids pickle issues)
         processes = []
         for i in range(n_jobs):
@@ -380,12 +379,12 @@ study.optimize(
     show_progress_bar=False,
 )
 print(f"Worker completed {num_trials} trials")
-"""
+""",
                 ]
                 p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 processes.append((i, p, num_trials))
                 logger.info(f"Started worker {i+1}/{n_jobs} with {num_trials} trials (PID: {p.pid})")
-        
+
         # Wait for all workers to complete
         for i, p, num_trials in processes:
             stdout, stderr = p.communicate()
@@ -393,7 +392,7 @@ print(f"Worker completed {num_trials} trials")
                 logger.info(f"Worker {i+1} completed ({num_trials} trials)")
             else:
                 logger.error(f"Worker {i+1} failed: {stderr.decode()[:500]}")
-        
+
         # Reload study to get all results
         self._study = optuna.load_study(
             study_name=study_name,
@@ -430,7 +429,7 @@ print(f"Worker completed {num_trials} trials")
         # For parallel execution, use SQLite storage to coordinate between processes
         storage_path = self.output_dir / f"{study_name}.db"
         storage = f"sqlite:///{storage_path}"
-        
+
         # Create study with storage for persistence
         self._study = optuna.create_study(
             study_name=study_name,
