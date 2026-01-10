@@ -156,21 +156,17 @@ class TradePlan:
 
     symbol: str
     signal_timestamp: pd.Timestamp
-
     entry_method: OrderMethod
     entry_price: float  # Expected entry price
-
     stop_logic: StopLogicType
     stop_price: float  # Initial stop price
-    stop_params: Dict = field(default_factory=dict)  # e.g., {"atr_mult": 2.5}
-
     exit_logic: ExitLogicType
+
+    # Fields with defaults must come after fields without defaults
+    stop_params: Dict = field(default_factory=dict)  # e.g., {"atr_mult": 2.5}
     exit_params: Dict = field(default_factory=dict)  # e.g., {"ma_period": 20}
-
     time_stop_days: Optional[int] = None  # Optional max holding period
-
     allocation: Optional[Allocation] = None  # Link to allocation recommendation
-
     notes: str = ""
 
     def __post_init__(self):

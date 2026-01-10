@@ -1,0 +1,14 @@
+{
+  "cached_at": "2026-01-10T00:21:52.561763",
+  "ttl_hours": 24,
+  "rows": 173,
+  "columns": [
+    "date",
+    "symbol",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume"
+  ]
+}

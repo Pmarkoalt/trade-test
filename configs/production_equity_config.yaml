@@ -4,7 +4,7 @@
 
 name: "equity_momentum"
 asset_class: "equity"
-universe: "NASDAQ-100"  # or "SP500" or explicit list: ["AAPL", "MSFT", ...]
+universe: "SP500"  # Using SP500 universe from data/equity/universe/SP500.csv
 benchmark: "SPY"
 
 # Indicator calculation parameters

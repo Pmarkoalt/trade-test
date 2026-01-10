@@ -155,24 +155,44 @@ class DailySignalService:
             logger.warning(f"No symbols found for {asset_class} universe: {universe_type}")
             return DailySignalBatch(generation_date=pd.Timestamp(current_date))
 
+        print(f"📊 Loaded {len(symbols)} symbols from {universe_type} universe")
         logger.info(f"Fetching data for {len(symbols)} symbols")
 
         # Fetch data
+        print(f"🔄 Fetching market data for {len(symbols)} symbols (this may take 2-5 minutes)...")
         ohlcv_data = await self.data_fetcher.fetch_daily_data(symbols=symbols, asset_class=asset_class, lookback_days=252)
 
         if not ohlcv_data:
             logger.warning(f"No data fetched for {asset_class}")
             return DailySignalBatch(generation_date=pd.Timestamp(current_date))
 
+        # CRITICAL FIX: Use the most recent date available in the data, not today's date
+        # This handles cases where today's data isn't available yet (before market close, weekends, holidays)
+        most_recent_dates = [df["date"].max() for df in ohlcv_data.values() if not df.empty and "date" in df.columns]
+        if most_recent_dates:
+            most_recent_date = max(most_recent_dates)
+            if isinstance(most_recent_date, str):
+                most_recent_date = pd.to_datetime(most_recent_date).date()
+            elif isinstance(most_recent_date, pd.Timestamp):
+                most_recent_date = most_recent_date.date()
+
+            if most_recent_date < current_date:
+                print(f"⚠️  Today's data not available yet. Using most recent date: {most_recent_date}")
+                logger.info(f"Adjusting signal date from {current_date} to {most_recent_date} (most recent available data)")
+                current_date = most_recent_date
+
+        print(f"✅ Fetched data for {len(ohlcv_data)} symbols")
         logger.info(f"Fetched data for {len(ohlcv_data)} symbols")
 
         # Generate recommendations using existing signal generator
+        print(f"🧮 Generating trading signals...")
         recommendations = await signal_generator.generate_recommendations(
             ohlcv_data=ohlcv_data,
             current_date=current_date,
             portfolio_state=None,
         )
 
+        print(f"✅ Generated {len(recommendations)} recommendations")
         logger.info(f"Generated {len(recommendations)} recommendations")
 
         # Convert to canonical contracts

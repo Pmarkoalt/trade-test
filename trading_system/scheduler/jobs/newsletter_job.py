@@ -6,7 +6,7 @@ This job generates and sends daily newsletters with signals organized by strateg
 import os
 from datetime import date
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 

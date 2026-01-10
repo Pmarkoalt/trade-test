@@ -177,8 +177,13 @@ class DataCache:
         cache_path = self._get_cache_path(key)
 
         try:
+            # Convert date column to datetime if it exists and is not already datetime
+            data_to_cache = data.copy()
+            if "date" in data_to_cache.columns and not pd.api.types.is_datetime64_any_dtype(data_to_cache["date"]):
+                data_to_cache["date"] = pd.to_datetime(data_to_cache["date"])
+
             # Save DataFrame to parquet
-            data.to_parquet(cache_path, index=False)
+            data_to_cache.to_parquet(cache_path, index=False)
 
             # Save metadata
             metadata = {

@@ -4,6 +4,14 @@ import importlib.util
 import sys
 from pathlib import Path
 
+# Load .env file before running CLI
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass  # dotenv not installed, environment variables must be set manually
+
 # Import from cli.py directly (not from cli/ package)
 # Since we have both cli.py and cli/ directory, we need to load cli.py explicitly
 _module_dir = Path(__file__).parent
