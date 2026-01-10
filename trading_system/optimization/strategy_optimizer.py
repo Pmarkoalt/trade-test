@@ -145,6 +145,7 @@ class StrategyOptimizer:
         objective: str = "sharpe_ratio",
         n_validation_splits: int = 3,
         output_dir: str = "optimization_results",
+        storage_url: Optional[str] = None,
     ):
         """Initialize optimizer.
 
@@ -189,6 +190,10 @@ class StrategyOptimizer:
         self._study: Optional["optuna.Study"] = None
         self._market_data = None
         self._cached_results: Dict[str, float] = {}
+
+        # Storage URL for Optuna (PostgreSQL recommended for parallel workers)
+        # Format: postgresql://user:password@host:port/database
+        self.storage_url = storage_url
 
     def _load_market_data(self):
         """Load market data once for reuse."""
@@ -352,6 +357,7 @@ class StrategyOptimizer:
             num_trials = trials_per_worker + (1 if i < extra_trials else 0)
             if num_trials > 0:
                 # Run worker as subprocess
+                storage_arg = f'"{self.storage_url}"' if self.storage_url else "None"
                 cmd = [
                     sys.executable,
                     "-c",
@@ -364,6 +370,7 @@ optimizer = StrategyOptimizer(
     data_paths={self.data_paths},
     objective="{self.objective}",
     output_dir="{self.output_dir}",
+    storage_url={storage_arg},
 )
 
 study = optuna.load_study(
@@ -426,9 +433,16 @@ print(f"Worker completed {num_trials} trials")
         logger.info(f"Trials: {n_trials}")
         logger.info("=" * 60)
 
-        # For parallel execution, use SQLite storage to coordinate between processes
-        storage_path = self.output_dir / f"{study_name}.db"
-        storage = f"sqlite:///{storage_path}"
+        # For parallel execution, use database storage to coordinate between processes
+        # PostgreSQL is much better for parallel workers than SQLite
+        if self.storage_url:
+            storage = self.storage_url
+            logger.info(f"Using PostgreSQL storage for parallel optimization")
+        else:
+            storage_path = self.output_dir / f"{study_name}.db"
+            storage = f"sqlite:///{storage_path}"
+            if n_jobs > 3:
+                logger.warning("SQLite storage with >3 workers may cause lock contention. Consider using PostgreSQL.")
 
         # Create study with storage for persistence
         self._study = optuna.create_study(

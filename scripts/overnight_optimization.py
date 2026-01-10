@@ -22,11 +22,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
-def run_optimization(config_path: str, trials: int, jobs: int, output_dir: str) -> dict:
+def run_optimization(config_path: str, trials: int, jobs: int, output_dir: str, storage_url: str = None) -> dict:
     """Run strategy optimization."""
     print(f"\n{'='*60}")
     print(f"OPTIMIZING: {config_path}")
     print(f"Trials: {trials}, Jobs: {jobs}")
+    if storage_url:
+        print(f"Storage: PostgreSQL")
     print(f"{'='*60}\n")
 
     try:
@@ -42,6 +44,7 @@ def run_optimization(config_path: str, trials: int, jobs: int, output_dir: str) 
             base_config_path=config_path,
             data_paths=data_paths,
             output_dir=output_dir,
+            storage_url=storage_url,
         )
 
         result = optimizer.optimize(n_trials=trials, n_jobs=jobs)
@@ -225,8 +228,19 @@ def main():
         action="store_true",
         help="Only run crypto optimization",
     )
+    parser.add_argument(
+        "--postgres",
+        type=str,
+        default=None,
+        help="PostgreSQL URL (e.g., postgresql://optuna:optuna123@localhost/optuna_db)",
+    )
 
     args = parser.parse_args()
+
+    # Check for PostgreSQL URL in environment variable if not provided
+    import os
+
+    storage_url = args.postgres or os.environ.get("OPTUNA_STORAGE_URL")
 
     # Auto-detect jobs
     if args.jobs <= 0:
@@ -244,6 +258,7 @@ def main():
     print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"Trials per strategy: {args.trials}")
     print(f"Parallel jobs: {args.jobs}")
+    print(f"Storage: {'PostgreSQL' if storage_url else 'SQLite'}")
     print(f"Output: {output_dir}")
     print("=" * 70)
 
@@ -258,13 +273,13 @@ def main():
     opt_results_files = []
 
     if not args.crypto_only:
-        equity_result = run_optimization(args.equity_config, args.trials, args.jobs, str(output_dir))
+        equity_result = run_optimization(args.equity_config, args.trials, args.jobs, str(output_dir), storage_url)
         results["optimizations"].append(equity_result)
         if "study_name" in equity_result:
             opt_results_files.append(output_dir / f"{equity_result['study_name']}.json")
 
     if not args.equity_only:
-        crypto_result = run_optimization(args.crypto_config, args.trials, args.jobs, str(output_dir))
+        crypto_result = run_optimization(args.crypto_config, args.trials, args.jobs, str(output_dir), storage_url)
         results["optimizations"].append(crypto_result)
         if "study_name" in crypto_result:
             opt_results_files.append(output_dir / f"{crypto_result['study_name']}.json")
