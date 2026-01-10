@@ -2,11 +2,10 @@
 
 import logging
 import sqlite3
-import uuid
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 import pandas as pd
 
@@ -375,7 +374,9 @@ class ManualTradeDatabase:
         finally:
             conn.close()
 
-    def get_closed_trades(self, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None) -> List[ManualTrade]:
+    def get_closed_trades(
+        self, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None
+    ) -> List[ManualTrade]:
         """Get closed manual trades within date range.
 
         Args:

@@ -29,10 +29,10 @@ eligibility:
   require_close_above_ma200: true  # STRICT: Must be above MA200
   relative_strength_enabled: false  # MVP: off, can enable for testing
   relative_strength_min: 0.0  # Must outperform SPY if enabled
-  
+
   # Market regime filter (custom for Safe S&P)
   market_regime_enabled: true  # Require SPY > MA50 (risk-off gating)
-  
+
   # News sentiment filter (optional, requires news data)
   news_sentiment_enabled: false  # Set to true when news data available
   news_sentiment_min: 0.0  # Minimum sentiment score (0-1 scale)

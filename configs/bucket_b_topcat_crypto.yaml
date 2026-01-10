@@ -35,7 +35,7 @@ eligibility:
   require_close_above_ma200: true  # STRICT: Must be above MA200
   relative_strength_enabled: false  # MVP: off, can enable to filter vs BTC
   relative_strength_min: 0.0  # Must outperform BTC if enabled
-  
+
   # Volatility filter (custom for Top-Cap Crypto)
   volatility_filter_enabled: false  # Set to true to filter high volatility
   max_volatility_ratio: 0.15  # Maximum ATR14/close ratio (15%)

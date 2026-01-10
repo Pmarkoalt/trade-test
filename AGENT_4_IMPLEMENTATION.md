@@ -48,11 +48,11 @@ runner = PaperTradingRunner(config=paper_config, adapter=adapter)
 # Submit orders
 with adapter:
     results = runner.submit_orders([order1, order2])
-    
+
     # Check status
     summary = runner.get_order_summary()
     print(f"Filled: {summary['filled']}, Pending: {summary['pending']}")
-    
+
     # Reconcile positions
     positions = runner.reconcile_positions()
 ```

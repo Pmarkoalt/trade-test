@@ -5,7 +5,7 @@ using the canonical Signal, Allocation, TradePlan, and DailySignalBatch contract
 """
 
 import os
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -21,7 +21,6 @@ from ..models.contracts import (
     AssetClass,
     DailySignalBatch,
     OrderMethod,
-    PositionSource,
     Signal,
     SignalIntent,
     StopLogicType,
@@ -159,9 +158,7 @@ class DailySignalService:
         logger.info(f"Fetching data for {len(symbols)} symbols")
 
         # Fetch data
-        ohlcv_data = await self.data_fetcher.fetch_daily_data(
-            symbols=symbols, asset_class=asset_class, lookback_days=252
-        )
+        ohlcv_data = await self.data_fetcher.fetch_daily_data(symbols=symbols, asset_class=asset_class, lookback_days=252)
 
         if not ohlcv_data:
             logger.warning(f"No data fetched for {asset_class}")
@@ -203,7 +200,8 @@ class DailySignalService:
             allocations=allocations,
             trade_plans=trade_plans,
             bucket_summaries={
-                bucket or "default": {
+                bucket
+                or "default": {
                     "total_signals": len(signals),
                     "asset_class": asset_class,
                     "avg_confidence": sum(s.confidence for s in signals) / len(signals) if signals else 0.0,

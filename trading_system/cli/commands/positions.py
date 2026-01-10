@@ -1,9 +1,7 @@
 """CLI commands for unified positions view."""
 
-import argparse
 import logging
 import os
-from pathlib import Path
 from typing import Optional
 
 from ...adapters.alpaca_adapter import AlpacaAdapter
@@ -138,10 +136,7 @@ def handle_positions_command(args) -> int:
         print("\n" + "-" * 80)
         print("POSITIONS")
         print("-" * 80)
-        print(
-            f"{'Source':<10} {'Symbol':<10} {'Side':<6} {'Qty':<8} {'Entry':<10} "
-            f"{'Stop':<10} {'Unrealized P&L':<15}"
-        )
+        print(f"{'Source':<10} {'Symbol':<10} {'Side':<6} {'Qty':<8} {'Entry':<10} " f"{'Stop':<10} {'Unrealized P&L':<15}")
         print("-" * 80)
 
         for unified_pos in positions:

@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import MagicMock, Mock
+from unittest.mock import MagicMock
 
 import pandas as pd
 import pytest
@@ -34,7 +34,7 @@ def mock_paper_adapter():
 def test_unified_position_view_initialization(temp_manual_db):
     """Test unified position view initialization."""
     view = UnifiedPositionView(manual_db=temp_manual_db)
-    
+
     assert view.manual_db == temp_manual_db
     assert view.paper_adapter is None
 
@@ -55,10 +55,10 @@ def test_get_manual_positions_only(temp_manual_db):
             initial_stop_price=95.0 + i,
         )
         temp_manual_db.create_trade(trade)
-    
+
     view = UnifiedPositionView(manual_db=temp_manual_db)
     positions = view.get_all_positions(include_paper=False, include_manual=True, open_only=True)
-    
+
     assert len(positions) == 3
     assert all(p.source == PositionSource.MANUAL for p in positions)
     assert all(p.position.is_open() for p in positions)
@@ -104,10 +104,10 @@ def test_get_paper_positions_only(temp_manual_db, mock_paper_adapter):
         ),
     }
     mock_paper_adapter.get_positions.return_value = mock_positions
-    
+
     view = UnifiedPositionView(manual_db=temp_manual_db, paper_adapter=mock_paper_adapter)
     positions = view.get_all_positions(include_paper=True, include_manual=False, open_only=True)
-    
+
     assert len(positions) == 2
     assert all(p.source == PositionSource.PAPER for p in positions)
 
@@ -128,7 +128,7 @@ def test_get_all_positions_mixed(temp_manual_db, mock_paper_adapter):
             initial_stop_price=95.0,
         )
         temp_manual_db.create_trade(trade)
-    
+
     # Mock paper positions
     mock_positions = {
         "PAPER1": Position(
@@ -150,14 +150,14 @@ def test_get_all_positions_mixed(temp_manual_db, mock_paper_adapter):
         ),
     }
     mock_paper_adapter.get_positions.return_value = mock_positions
-    
+
     view = UnifiedPositionView(manual_db=temp_manual_db, paper_adapter=mock_paper_adapter)
     positions = view.get_all_positions(include_paper=True, include_manual=True, open_only=True)
-    
+
     assert len(positions) == 3
     manual_positions = [p for p in positions if p.source == PositionSource.MANUAL]
     paper_positions = [p for p in positions if p.source == PositionSource.PAPER]
-    
+
     assert len(manual_positions) == 2
     assert len(paper_positions) == 1
 
@@ -178,7 +178,7 @@ def test_get_open_positions_by_symbol(temp_manual_db):
             initial_stop_price=145.0 + i,
         )
         temp_manual_db.create_trade(trade)
-    
+
     # Different symbol
     trade = ManualTrade(
         trade_id=str(uuid.uuid4()),
@@ -192,10 +192,10 @@ def test_get_open_positions_by_symbol(temp_manual_db):
         initial_stop_price=190.0,
     )
     temp_manual_db.create_trade(trade)
-    
+
     view = UnifiedPositionView(manual_db=temp_manual_db)
     by_symbol = view.get_open_positions_by_symbol()
-    
+
     assert len(by_symbol) == 2
     assert "AAPL" in by_symbol
     assert "TSLA" in by_symbol
@@ -219,7 +219,7 @@ def test_get_exposure_summary(temp_manual_db):
             initial_stop_price=95.0,
         )
         temp_manual_db.create_trade(trade)
-    
+
     # Create short position
     trade = ManualTrade(
         trade_id=str(uuid.uuid4()),
@@ -233,7 +233,7 @@ def test_get_exposure_summary(temp_manual_db):
         initial_stop_price=210.0,
     )
     temp_manual_db.create_trade(trade)
-    
+
     # Create crypto position
     trade = ManualTrade(
         trade_id=str(uuid.uuid4()),
@@ -247,10 +247,10 @@ def test_get_exposure_summary(temp_manual_db):
         initial_stop_price=38000.0,
     )
     temp_manual_db.create_trade(trade)
-    
+
     view = UnifiedPositionView(manual_db=temp_manual_db)
     exposure = view.get_exposure_summary()
-    
+
     assert exposure["total_positions"] == 4
     assert exposure["total_long_notional"] == 100.0 * 100 * 2 + 40000.0 * 1  # 60000
     assert exposure["total_short_notional"] == 200.0 * 50  # 10000
@@ -276,10 +276,10 @@ def test_get_positions_dataframe(temp_manual_db):
             initial_stop_price=95.0 + i,
         )
         temp_manual_db.create_trade(trade)
-    
+
     view = UnifiedPositionView(manual_db=temp_manual_db)
     df = view.get_positions_dataframe(open_only=True)
-    
+
     assert len(df) == 3
     assert "symbol" in df.columns
     assert "source" in df.columns
@@ -305,14 +305,14 @@ def test_export_to_csv(temp_manual_db):
                 initial_stop_price=95.0,
             )
             temp_manual_db.create_trade(trade)
-        
+
         view = UnifiedPositionView(manual_db=temp_manual_db)
         output_path = Path(tmpdir) / "positions.csv"
-        
+
         view.export_to_csv(str(output_path), open_only=True)
-        
+
         assert output_path.exists()
-        
+
         # Read back and verify
         df = pd.read_csv(output_path)
         assert len(df) == 2
@@ -335,7 +335,7 @@ def test_open_only_filter(temp_manual_db):
             initial_stop_price=95.0,
         )
         temp_manual_db.create_trade(trade)
-    
+
     # Create and close a trade
     closed_trade = ManualTrade(
         trade_id=str(uuid.uuid4()),
@@ -350,13 +350,13 @@ def test_open_only_filter(temp_manual_db):
     )
     closed_id = temp_manual_db.create_trade(closed_trade)
     temp_manual_db.close_trade(closed_id, datetime(2024, 1, 15), 105.0)
-    
+
     view = UnifiedPositionView(manual_db=temp_manual_db)
-    
+
     # Get all positions
     all_positions = view.get_all_positions(include_manual=True, open_only=False)
     assert len(all_positions) == 3
-    
+
     # Get open only
     open_positions = view.get_all_positions(include_manual=True, open_only=True)
     assert len(open_positions) == 2
@@ -376,15 +376,15 @@ def test_unified_position_to_dict(temp_manual_db):
         stop_price=145.0,
         initial_stop_price=145.0,
     )
-    
+
     unified = UnifiedPosition(
         position=trade.to_position(),
         source=PositionSource.MANUAL,
         source_id=trade.trade_id,
     )
-    
+
     data = unified.to_dict()
-    
+
     assert data["source"] == "manual"
     assert data["source_id"] == trade.trade_id
     assert data["symbol"] == "AAPL"

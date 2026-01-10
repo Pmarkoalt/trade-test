@@ -1,10 +1,10 @@
 """Data loading and validation module."""
 
 from .calendar import get_crypto_days, get_trading_calendar, get_trading_days
+from .equity_universe import load_sp500_universe, select_equity_universe
 from .lazy_loader import LazyMarketData
 from .loader import CRYPTO_UNIVERSE, load_all_data, load_benchmark, load_ohlcv_data, load_universe
 from .memory_profiler import MemoryProfiler, estimate_dataframe_memory, optimize_dataframe_dtypes
-from .equity_universe import load_sp500_universe, select_equity_universe
 from .universe import (
     FIXED_CRYPTO_UNIVERSE,
     CryptoUniverseManager,

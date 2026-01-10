@@ -310,7 +310,7 @@ batch = await service.generate_daily_signals(asset_class="equity")
 
 ## Migration from Legacy Models
 
-The canonical contracts coexist with the existing `Signal`, `Position`, `Order`, and `Fill` models in `trading_system/models/`. 
+The canonical contracts coexist with the existing `Signal`, `Position`, `Order`, and `Fill` models in `trading_system/models/`.
 
 - **Legacy Signal** (`trading_system.models.Signal`): Used internally by strategies
 - **Canonical Signal** (`trading_system.models.contracts.Signal`): Used for cross-component communication

@@ -99,14 +99,14 @@ adapter = AlpacaAdapter(adapter_config)
 
 with adapter:
     runner = PaperTradingRunner(config=paper_config, adapter=adapter)
-    
+
     # Submit orders (from signal generation)
     results = runner.submit_orders(orders)
-    
+
     # Check status
     summary = runner.get_order_summary()
     print(f"Filled: {summary['filled']}, Pending: {summary['pending']}")
-    
+
     # Reconcile positions
     positions = runner.reconcile_positions()
 ```
@@ -240,21 +240,21 @@ from trading_system.storage.manual_trades import ManualTradeDatabase
 
 def run_daily_workflow():
     """Run complete daily workflow."""
-    
+
     print(f"\n{'='*80}")
     print(f"DAILY TRADING WORKFLOW - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"{'='*80}\n")
-    
+
     # Step 1: Generate signals (Agent 1 + Agent 2)
     print("Step 1: Generating daily signals...")
     # This would call the signal generation service
     # signals = generate_daily_signals()
-    
+
     # Step 2: Send newsletter (Agent 3)
     print("Step 2: Sending newsletter...")
     # This would call the newsletter service
     # send_newsletter(signals)
-    
+
     # Step 3: Execute paper trading (Agent 4)
     print("Step 3: Executing paper trading orders...")
     adapter_config = AdapterConfig(
@@ -262,51 +262,51 @@ def run_daily_workflow():
         api_secret=os.getenv("ALPACA_API_SECRET"),
         paper_trading=True
     )
-    
+
     paper_config = PaperTradingConfig(adapter_config=adapter_config)
     adapter = AlpacaAdapter(adapter_config)
-    
+
     try:
         with adapter:
             runner = PaperTradingRunner(config=paper_config, adapter=adapter)
-            
+
             # Submit orders (would come from signal generation)
             # results = runner.submit_orders(orders)
-            
+
             # Reconcile positions
             positions = runner.reconcile_positions()
             print(f"  ✓ Reconciled {len(positions)} paper positions")
-            
+
             # Get account status
             account = runner.get_account_info()
             print(f"  ✓ Account equity: ${account.equity:,.2f}")
-            
+
     except Exception as e:
         print(f"  ✗ Error in paper trading: {e}")
         return 1
-    
+
     # Step 4: Update unified positions view
     print("Step 4: Updating unified positions view...")
     manual_db = ManualTradeDatabase()
     view = UnifiedPositionView(manual_db=manual_db, paper_adapter=adapter)
-    
+
     exposure = view.get_exposure_summary()
     print(f"  ✓ Total positions: {exposure['total_positions']}")
     print(f"  ✓ Gross exposure: ${exposure['gross_exposure']:,.2f}")
     print(f"  ✓ Net exposure: ${exposure['net_exposure']:,.2f}")
-    
+
     # Export daily snapshot
     output_dir = Path("results/daily_snapshots")
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     snapshot_file = output_dir / f"positions_{datetime.now().strftime('%Y%m%d')}.csv"
     view.export_to_csv(str(snapshot_file), open_only=True)
     print(f"  ✓ Exported snapshot to {snapshot_file}")
-    
+
     print(f"\n{'='*80}")
     print("DAILY WORKFLOW COMPLETE")
     print(f"{'='*80}\n")
-    
+
     return 0
 
 

@@ -13,13 +13,13 @@
         <p class="market-summary">
             {% if market %}
                 {% if market.spy_price %}
-                    <strong>SPY:</strong> ${{ "%.2f"|format(market.spy_price) }} 
+                    <strong>SPY:</strong> ${{ "%.2f"|format(market.spy_price) }}
                     <span class="{% if market.spy_pct >= 0 %}positive{% else %}negative{% endif %}">
                         ({{ "%+.2f"|format(market.spy_pct) }}%)
                     </span> |
                 {% endif %}
                 {% if market.btc_price %}
-                    <strong>BTC:</strong> ${{ "%.2f"|format(market.btc_price) }} 
+                    <strong>BTC:</strong> ${{ "%.2f"|format(market.btc_price) }}
                     <span class="{% if market.btc_pct >= 0 %}positive{% else %}negative{% endif %}">
                         ({{ "%+.2f"|format(market.btc_pct) }}%)
                     </span>
@@ -113,7 +113,7 @@
         <h2>📰 NEWS DIGEST</h2>
 
         <div class="market-sentiment">
-            <h3>Market Sentiment: 
+            <h3>Market Sentiment:
                 <span class="sentiment-{{ news_analysis.market_sentiment_label.value | lower }}">
                     {{ news_analysis.market_sentiment_label.value | title }}
                 </span>
@@ -193,8 +193,8 @@
                 {% for bucket in bucket_sections %}
                     {% for signal in bucket.buy_signals[:3] %}
                     <li>
-                        <strong>{{ signal.symbol }}</strong> ({{ bucket.name }}) - 
-                        Entry: ${{ "%.2f"|format(signal.entry_price) }}, 
+                        <strong>{{ signal.symbol }}</strong> ({{ bucket.name }}) -
+                        Entry: ${{ "%.2f"|format(signal.entry_price) }},
                         Stop: ${{ "%.2f"|format(signal.stop_price) }}
                     </li>
                     {% endfor %}

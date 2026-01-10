@@ -13,9 +13,9 @@ Both buckets generate signals with rationale tags for newsletter consumption and
 
 ## Bucket A: Safe S&P Strategy
 
-**File:** `bucket_a_safe_sp.py`  
-**Config:** `configs/bucket_a_safe_sp.yaml`  
-**Strategy Type:** `safe_sp`  
+**File:** `bucket_a_safe_sp.py`
+**Config:** `configs/bucket_a_safe_sp.yaml`
+**Strategy Type:** `safe_sp`
 **Asset Class:** `equity`
 
 ### Characteristics
@@ -57,9 +57,9 @@ Signals include rationale tags for newsletter:
 
 ## Bucket B: Top-Cap Crypto Strategy
 
-**File:** `bucket_b_crypto_topcat.py`  
-**Config:** `configs/bucket_b_topcat_crypto.yaml`  
-**Strategy Type:** `topcat_crypto`  
+**File:** `bucket_b_crypto_topcat.py`
+**Config:** `configs/bucket_b_topcat_crypto.yaml`
+**Strategy Type:** `topcat_crypto`
 **Asset Class:** `crypto`
 
 ### Characteristics

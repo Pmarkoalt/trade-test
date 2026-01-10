@@ -306,9 +306,7 @@ class UnifiedPositionView:
             print("\n" + "-" * 80)
             print("OPEN POSITIONS")
             print("-" * 80)
-            print(
-                f"{'Source':<10} {'Symbol':<10} {'Side':<6} {'Qty':<8} {'Entry':<10} {'Stop':<10} {'Unrealized P&L':<15}"
-            )
+            print(f"{'Source':<10} {'Symbol':<10} {'Side':<6} {'Qty':<8} {'Entry':<10} {'Stop':<10} {'Unrealized P&L':<15}")
             print("-" * 80)
 
             for unified_pos in positions:

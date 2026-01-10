@@ -1,18 +1,11 @@
 """CLI commands for paper trading execution."""
 
-import argparse
 import logging
 import os
-import sys
-from datetime import datetime
-from pathlib import Path
-from typing import Optional
 
 from ...adapters.alpaca_adapter import AlpacaAdapter
 from ...adapters.base_adapter import AdapterConfig
 from ...execution.paper_trading import PaperTradingConfig, PaperTradingRunner
-from ...models.orders import Order, OrderStatus, SignalSide
-from ...reporting.unified_positions import UnifiedPositionView
 
 logger = logging.getLogger(__name__)
 
@@ -160,8 +153,7 @@ def handle_paper_positions(args) -> int:
 
             print("-" * 80)
             print(
-                f"{'Symbol':<10} {'Side':<6} {'Qty':<8} {'Entry':<10} {'Stop':<10} "
-                f"{'Entry Date':<12} {'Asset Class':<12}"
+                f"{'Symbol':<10} {'Side':<6} {'Qty':<8} {'Entry':<10} {'Stop':<10} " f"{'Entry Date':<12} {'Asset Class':<12}"
             )
             print("-" * 80)
 

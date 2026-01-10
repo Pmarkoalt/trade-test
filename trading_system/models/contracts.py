@@ -12,7 +12,6 @@ These contracts ensure all layers speak the same language.
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
 from enum import Enum
 from typing import Dict, List, Optional
 
@@ -135,8 +134,7 @@ class Allocation:
         """Validate allocation data."""
         if self.recommended_position_size_dollars < 0:
             raise ValueError(
-                f"recommended_position_size_dollars must be non-negative, "
-                f"got {self.recommended_position_size_dollars}"
+                f"recommended_position_size_dollars must be non-negative, " f"got {self.recommended_position_size_dollars}"
             )
 
         if not 0.0 <= self.recommended_position_size_percent <= 100.0:

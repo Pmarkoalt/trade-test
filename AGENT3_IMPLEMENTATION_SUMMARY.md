@@ -276,9 +276,9 @@ The newsletter template (`newsletter_daily.html`) includes:
 
 ## Collaboration Rules Followed
 
-✅ **Single owner for contracts**: Newsletter uses Agent 1's `Signal` model  
-✅ **Folder ownership**: All changes in `trading_system/output/email/` and `trading_system/scheduler/`  
-✅ **Mock-first development**: Newsletter can work with mock signals for testing  
+✅ **Single owner for contracts**: Newsletter uses Agent 1's `Signal` model
+✅ **Folder ownership**: All changes in `trading_system/output/email/` and `trading_system/scheduler/`
+✅ **Mock-first development**: Newsletter can work with mock signals for testing
 ✅ **No merge conflicts**: No changes to strategy or data modules (Agent 2's domain)
 
 ## Next Steps for Other Agents

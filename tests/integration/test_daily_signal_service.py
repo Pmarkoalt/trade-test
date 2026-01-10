@@ -3,9 +3,7 @@
 Tests the golden path: signals -> newsletter payload -> artifacts
 """
 
-import json
 from datetime import date
-from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pandas as pd
@@ -112,10 +110,11 @@ class TestDailySignalService:
         """Test basic daily signal generation."""
         with patch("trading_system.integration.daily_signal_service.LiveDataFetcher") as mock_fetcher_class, patch(
             "trading_system.integration.daily_signal_service.LiveSignalGenerator"
-        ) as mock_generator_class, patch("trading_system.integration.daily_signal_service.load_universe") as mock_load_universe, patch(
+        ) as mock_generator_class, patch(
+            "trading_system.integration.daily_signal_service.load_universe"
+        ) as mock_load_universe, patch(
             "trading_system.integration.daily_signal_service.load_strategies_from_run_config"
         ) as mock_load_strategies:
-
             # Setup mocks
             mock_fetcher = AsyncMock()
             mock_fetcher.fetch_daily_data = AsyncMock(return_value=mock_ohlcv_data)
@@ -165,10 +164,11 @@ class TestDailySignalService:
         """Test that signal conversion preserves all important data."""
         with patch("trading_system.integration.daily_signal_service.LiveDataFetcher") as mock_fetcher_class, patch(
             "trading_system.integration.daily_signal_service.LiveSignalGenerator"
-        ) as mock_generator_class, patch("trading_system.integration.daily_signal_service.load_universe") as mock_load_universe, patch(
+        ) as mock_generator_class, patch(
+            "trading_system.integration.daily_signal_service.load_universe"
+        ) as mock_load_universe, patch(
             "trading_system.integration.daily_signal_service.load_strategies_from_run_config"
         ) as mock_load_strategies:
-
             # Setup mocks
             mock_fetcher = AsyncMock()
             mock_fetcher.fetch_daily_data = AsyncMock(return_value=mock_ohlcv_data)
@@ -202,10 +202,11 @@ class TestDailySignalService:
         """Test that batch summaries are correctly generated."""
         with patch("trading_system.integration.daily_signal_service.LiveDataFetcher") as mock_fetcher_class, patch(
             "trading_system.integration.daily_signal_service.LiveSignalGenerator"
-        ) as mock_generator_class, patch("trading_system.integration.daily_signal_service.load_universe") as mock_load_universe, patch(
+        ) as mock_generator_class, patch(
+            "trading_system.integration.daily_signal_service.load_universe"
+        ) as mock_load_universe, patch(
             "trading_system.integration.daily_signal_service.load_strategies_from_run_config"
         ) as mock_load_strategies:
-
             # Setup mocks
             mock_fetcher = AsyncMock()
             mock_fetcher.fetch_daily_data = AsyncMock(return_value=mock_ohlcv_data)
@@ -240,10 +241,11 @@ class TestDailySignalService:
         """Test getting top signals by confidence."""
         with patch("trading_system.integration.daily_signal_service.LiveDataFetcher") as mock_fetcher_class, patch(
             "trading_system.integration.daily_signal_service.LiveSignalGenerator"
-        ) as mock_generator_class, patch("trading_system.integration.daily_signal_service.load_universe") as mock_load_universe, patch(
+        ) as mock_generator_class, patch(
+            "trading_system.integration.daily_signal_service.load_universe"
+        ) as mock_load_universe, patch(
             "trading_system.integration.daily_signal_service.load_strategies_from_run_config"
         ) as mock_load_strategies:
-
             # Setup mocks
             mock_fetcher = AsyncMock()
             mock_fetcher.fetch_daily_data = AsyncMock(return_value=mock_ohlcv_data)

@@ -1,11 +1,8 @@
 """CLI commands for manual trade management."""
 
-import argparse
 import logging
 import uuid
 from datetime import datetime
-from pathlib import Path
-from typing import Optional
 
 from ...models.positions import PositionSide
 from ...storage.manual_trades import ManualTrade, ManualTradeDatabase
@@ -283,10 +280,7 @@ def handle_manual_list(args) -> int:
             print(f"Total Realized P&L: ${total_realized_pnl:,.2f}\n")
 
         print("-" * 80)
-        print(
-            f"{'Trade ID':<38} {'Symbol':<10} {'Side':<6} {'Qty':<8} {'Entry':<10} "
-            f"{'Status':<8} {'P&L':<12}"
-        )
+        print(f"{'Trade ID':<38} {'Symbol':<10} {'Side':<6} {'Qty':<8} {'Entry':<10} " f"{'Status':<8} {'P&L':<12}")
         print("-" * 80)
 
         for trade in trades:

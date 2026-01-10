@@ -437,13 +437,13 @@ def select_top_crypto_by_volume(
     reference_date: Optional[pd.Timestamp] = None,
 ) -> List[str]:
     """Select top N crypto by average dollar volume.
-    
+
     Args:
         available_data: Available OHLCV data
         top_n: Number of top coins to select
         lookback_days: Days to look back for volume calculation
         reference_date: Reference date for selection
-    
+
     Returns:
         List of top N symbols by volume
     """
@@ -453,6 +453,6 @@ def select_top_crypto_by_volume(
         max_symbols=top_n,
         rebalance_lookback_days=lookback_days,
     )
-    
+
     manager = CryptoUniverseManager(config)
     return manager.select_universe(available_data, reference_date)

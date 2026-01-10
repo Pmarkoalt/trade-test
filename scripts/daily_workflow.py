@@ -125,7 +125,7 @@ def run_daily_workflow():
         print(f"  ✓ Exported snapshot to {snapshot_file}\n")
 
         # Print summary
-        if exposure['total_positions'] > 0:
+        if exposure["total_positions"] > 0:
             print("Current Positions Summary:")
             view.print_summary()
 

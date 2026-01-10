@@ -1,7 +1,6 @@
 """Paper trading execution pipeline."""
 
 import logging
-import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -100,13 +99,9 @@ class PaperTradingRunner:
             raise ConnectionError("Adapter is not connected to broker")
 
         # Check daily order limit
-        today_orders = sum(
-            1 for ol in self.completed_orders.values() if ol.submitted_at.date() == datetime.now().date()
-        )
+        today_orders = sum(1 for ol in self.completed_orders.values() if ol.submitted_at.date() == datetime.now().date())
         if today_orders + len(orders) > self.config.max_orders_per_day:
-            raise ValueError(
-                f"Daily order limit exceeded: {today_orders + len(orders)} > {self.config.max_orders_per_day}"
-            )
+            raise ValueError(f"Daily order limit exceeded: {today_orders + len(orders)} > {self.config.max_orders_per_day}")
 
         results = {}
         for order in orders:

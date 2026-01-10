@@ -1,19 +1,9 @@
 """Trading system data models."""
 
 from .bar import Bar
-from .contracts import (
-    Allocation,
-    AssetClass,
-    DailySignalBatch,
-    ExitLogicType,
-    OrderMethod,
-    PositionRecord,
-    PositionSource,
-    SignalIntent,
-    StopLogicType,
-    TradePlan,
-)
+from .contracts import Allocation, AssetClass, DailySignalBatch, ExitLogicType, OrderMethod, PositionRecord, PositionSource
 from .contracts import Signal as ContractSignal
+from .contracts import SignalIntent, StopLogicType, TradePlan
 from .features import FeatureRow
 from .market_data import MarketData
 from .orders import Fill, Order, OrderStatus

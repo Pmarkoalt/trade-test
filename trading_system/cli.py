@@ -1667,12 +1667,12 @@ def cmd_send_test_email(args: argparse.Namespace) -> int:
 
         # Load email config from environment
         email_config = EmailConfig(
-            smtp_host=os.getenv("SMTP_HOST", "smtp.sendgrid.net"),
+            smtp_host=os.getenv("SMTP_HOST", "email-smtp.us-east-1.amazonaws.com"),
             smtp_port=int(os.getenv("SMTP_PORT", "587")),
-            smtp_user=os.getenv("SMTP_USER", "apikey"),
-            smtp_password=os.getenv("SMTP_PASSWORD", os.getenv("SENDGRID_API_KEY", "")),
-            from_email=os.getenv("FROM_EMAIL", "signals@yourdomain.com"),
-            from_name=os.getenv("FROM_NAME", "Trading Assistant"),
+            smtp_user=os.getenv("SMTP_USER", ""),
+            smtp_password=os.getenv("SMTP_PASSWORD", ""),
+            from_email=os.getenv("EMAIL_FROM", ""),
+            from_name=os.getenv("EMAIL_FROM_NAME", "Trading Assistant"),
             recipients=os.getenv("EMAIL_RECIPIENTS", "").split(",") if os.getenv("EMAIL_RECIPIENTS") else [],
         )
 
@@ -1743,12 +1743,12 @@ def cmd_send_newsletter(args: argparse.Namespace) -> int:
 
         # Load email config from environment
         email_config = EmailConfig(
-            smtp_host=os.getenv("SMTP_HOST", "smtp.sendgrid.net"),
+            smtp_host=os.getenv("SMTP_HOST", "email-smtp.us-east-1.amazonaws.com"),
             smtp_port=int(os.getenv("SMTP_PORT", "587")),
-            smtp_user=os.getenv("SMTP_USER", "apikey"),
-            smtp_password=os.getenv("SMTP_PASSWORD", os.getenv("SENDGRID_API_KEY", "")),
-            from_email=os.getenv("FROM_EMAIL", "signals@yourdomain.com"),
-            from_name=os.getenv("FROM_NAME", "Trading Assistant"),
+            smtp_user=os.getenv("SMTP_USER", ""),
+            smtp_password=os.getenv("SMTP_PASSWORD", ""),
+            from_email=os.getenv("EMAIL_FROM", ""),
+            from_name=os.getenv("EMAIL_FROM_NAME", "Trading Assistant"),
             recipients=os.getenv("EMAIL_RECIPIENTS", "").split(",") if os.getenv("EMAIL_RECIPIENTS") else [],
         )
 

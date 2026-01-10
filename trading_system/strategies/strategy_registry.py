@@ -27,7 +27,6 @@ except ImportError:
 from .buckets.bucket_a_safe_sp import SafeSPStrategy
 from .buckets.bucket_b_crypto_topcat import TopCapCryptoStrategy
 
-
 # Registry mapping: (strategy_type, asset_class) -> StrategyClass
 _STRATEGY_REGISTRY: Dict[tuple[str, str], Type[StrategyInterface]] = {
     ("momentum", "equity"): EquityMomentumStrategy,

@@ -21,7 +21,6 @@ class NewsletterGenerator:
 
     def __init__(self):
         """Initialize newsletter generator."""
-        pass
 
     def generate_newsletter_context(
         self,

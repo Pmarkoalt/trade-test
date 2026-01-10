@@ -203,7 +203,7 @@ The newsletter includes:
    - Sell signals table
 4. **News Digest**: Positive/negative sentiment articles
 5. **Current Positions**: Portfolio summary (if available)
-6. **Action Items**: 
+6. **Action Items**:
    - What to Buy (top picks)
    - What to Avoid (blockers)
 7. **Footer**: Timestamp and disclaimer
