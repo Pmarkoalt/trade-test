@@ -23,6 +23,7 @@ else:
 from ..logging.logger import get_logger
 from .config import SchedulerConfig
 from .jobs.daily_signals_job import daily_signals_job
+from .jobs.newsletter_job import newsletter_job
 
 logger = get_logger(__name__)
 
@@ -68,7 +69,20 @@ class CronRunner:
             replace_existing=True,
         )
 
-        logger.info("Registered scheduled jobs: daily_equity_signals (4:30 PM ET), daily_crypto_signals (midnight UTC)")
+        # Daily newsletter - 5:00 PM ET (after market close and signal generation)
+        self.scheduler.add_job(
+            newsletter_job,
+            CronTrigger(hour=17, minute=0, timezone="America/New_York"),
+            id="daily_newsletter",
+            replace_existing=True,
+        )
+
+        logger.info(
+            "Registered scheduled jobs: "
+            "daily_equity_signals (4:30 PM ET), "
+            "daily_crypto_signals (midnight UTC), "
+            "daily_newsletter (5:00 PM ET)"
+        )
 
     def start(self) -> None:
         """Start the scheduler."""

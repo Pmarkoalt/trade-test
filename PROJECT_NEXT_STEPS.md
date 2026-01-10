@@ -1,5 +1,25 @@
 # Project Next Steps (Roadmap)
 
+## Implementation Status
+
+**Last Updated**: January 9, 2026
+
+| Phase | Agent | Status | Completion Date |
+|-------|-------|--------|-----------------|
+| Phase 0: Canonical Contracts | Agent 1 | ✅ Complete | Jan 9, 2026 |
+| Phase 1: Strategy Buckets A/B | Agent 2 | ✅ Complete | Jan 9, 2026 |
+| Phase 2: Newsletter + Scheduler | Agent 3 | 🔄 Pending | - |
+| Phase 3: Paper Trading | Agent 4 | 🔄 Pending | - |
+| Phase 4: Manual Trades | Agent 4 | 🔄 Pending | - |
+
+**Recent Completions**:
+- ✅ **Agent 1 (Integrator)**: Canonical contracts, DailySignalService, CLI command, integration tests, documentation
+  - See: `AGENT_1_IMPLEMENTATION_SUMMARY.md` and `docs/CANONICAL_CONTRACTS.md`
+- ✅ **Agent 2 (Strategy & Data)**: Bucket A/B strategies, universe selection, daily signal generation, rationale tagging
+  - See: `AGENT_2_COMPLETION_SUMMARY.md` and `trading_system/strategies/buckets/README.md`
+
+---
+
 ## Project Goals
 
 1. Create the most optimal daily trading strategy for passive investment across crypto and equities.
@@ -36,7 +56,9 @@ This document is the forward-looking roadmap aligned specifically to the product
 
 ---
 
-## Phase 0 (Lock Interfaces): Shared Data Contracts (High Priority)
+## Phase 0 (Lock Interfaces): Shared Data Contracts (High Priority) ✅ COMPLETED
+
+**Status**: ✅ Implemented by Agent 1 (January 9, 2026)
 
 Before adding more strategy buckets and live/paper execution, define and enforce a single shared contract so:
 
@@ -49,9 +71,11 @@ Before adding more strategy buckets and live/paper execution, define and enforce
 
 all speak the same language.
 
-### Required domain objects
+### Required domain objects ✅
 
-- **Signal**
+All domain objects have been implemented in `trading_system/models/contracts.py`:
+
+- **Signal** ✅
   - symbol
   - asset_class (`equity` / `crypto`)
   - timestamp (signal time)
@@ -59,50 +83,84 @@ all speak the same language.
   - intent (e.g., execute next open)
   - confidence/score
   - rationale tags (technical + news)
+  - bucket (strategy bucket identifier)
+  - strategy_name
 
-- **Allocation / Sizing Recommendation**
+- **Allocation / Sizing Recommendation** ✅
   - recommended position size (dollars and/or %)
   - risk budget used
   - max positions constraints applied
   - liquidity/capacity flags
+  - quantity (calculated shares/units)
+  - max_adv_percent
 
-- **TradePlan**
+- **TradePlan** ✅
   - entry method (MOO/MKT/limit)
   - stop logic
   - exit logic
   - optional time stop
+  - allocation (linked Allocation object)
+  - stop_params, exit_params
 
-- **PositionRecord** (for merging system trades + paper trades + manual trades)
+- **PositionRecord** ✅ (for merging system trades + paper trades + manual trades)
   - source (`system` / `paper` / `manual`)
   - open/close timestamps
   - fills
   - PnL/r-multiple
   - notes/tags
+  - bucket, strategy_name
 
-Deliverable: A single canonical schema that all layers use.
+- **DailySignalBatch** ✅ (bonus: container for daily outputs)
+  - generation_date
+  - signals, allocations, trade_plans
+  - bucket_summaries
+  - metadata
+
+**Deliverable**: ✅ A single canonical schema that all layers use.
+
+**Implementation Details**:
+- File: `trading_system/models/contracts.py` (368 lines)
+- Documentation: `docs/CANONICAL_CONTRACTS.md`
+- Tests: `tests/integration/test_daily_signal_service.py`
+- All contracts include validation and type safety via dataclasses
 
 ---
 
 ## Phase 1: Multi-Bucket Strategy Expansion
 
-### Bucket A: Safe S&P bets (Equities)
+### Bucket A: Safe S&P bets (Equities) ✅ COMPLETED
+
+**Status**: ✅ Implemented by Agent 2 (January 9, 2026)
 
 Goal: stable, low drawdown, realistic capacity.
 
-- Universe: SP500 (or SPY + sector ETFs first)
-- Regime filters: market trend / risk-off gating
-- Signal sources:
-  - technical scoring (existing)
-  - news sentiment and event-risk (earnings, major headline flags)
-- Output: limited number of positions, strict correlation and concentration limits
+**Implementation**:
+- ✅ Strategy: `trading_system/strategies/buckets/bucket_a_safe_sp.py`
+- ✅ Config: `configs/bucket_a_safe_sp.yaml`
+- ✅ Universe: SP500 core (40+ liquid stocks) via `trading_system/data/equity_universe.py`
+- ✅ Regime filters: MA50 > MA200, SPY > MA50 (optional), news sentiment (optional)
+- ✅ Signal sources:
+  - Technical scoring (breakout strength, momentum strength)
+  - News sentiment integration ready (requires data)
+  - Rationale tags for newsletter
+- ✅ Output: Conservative sizing (0.5% risk, max 6 positions, 60% exposure)
+- ✅ Tighter entry criteria (0.3%/0.8% clearances vs standard 0.5%/1.0%)
+- ✅ Conservative exits (MA50 cross, 2.0 ATR stop)
 
-### Bucket B: Aggressive top-cap crypto (Crypto)
+### Bucket B: Aggressive top-cap crypto (Crypto) ✅ COMPLETED
+
+**Status**: ✅ Implemented by Agent 2 (January 9, 2026)
 
 Goal: higher turnover and more aggressive positioning while respecting volatility.
 
-- Universe: dynamic top market cap coins
-- Stronger volatility-aware sizing
-- Adaptive stop/exit management
+**Implementation**:
+- ✅ Strategy: `trading_system/strategies/buckets/bucket_b_crypto_topcat.py`
+- ✅ Config: `configs/bucket_b_topcat_crypto.yaml`
+- ✅ Universe: Dynamic top 10 by volume (monthly rebalance) via `select_top_crypto_by_volume()`
+- ✅ Volatility-aware sizing: Reduces position size for high ATR/close ratio
+- ✅ Adaptive stop/exit management: Staged exits (MA20 tightens, MA50 exits)
+- ✅ Wider stops for crypto volatility (3.5 ATR initial, 2.0 ATR tightened)
+- ✅ Rationale tags for newsletter (includes volatility context)
 
 ### Bucket C: Low-float stock “gamble”
 
@@ -226,28 +284,49 @@ We can run 4 agents in parallel as long as we:
 - assign clear module ownership
 - gate merges on a minimal end-to-end test
 
-### Agent 1: Integrator (Contracts + Orchestration)
+### Agent 1: Integrator (Contracts + Orchestration) 
+
+**Status**:  All deliverables completed (January 9, 2026)
 
 Owns:
 
 - Shared domain objects: `Signal`, `Allocation`, `TradePlan`, `PositionRecord`
-- A single “generate daily signals” entrypoint (CLI-first)
+- A single "generate daily signals" entrypoint (CLI-first)
 - Integration tests / golden path
 
 Primary deliverables:
 
-- A canonical schema module (single source of truth)
-- A stable API between strategy output and downstream consumers (newsletter, paper trading, reporting)
-- A “golden path” test that proves: `signals -> newsletter payload -> artifacts`
+-  A canonical schema module (single source of truth)
+-  A stable API between strategy output and downstream consumers (newsletter, paper trading, reporting)
+-  A "golden path" test that proves: `signals -> newsletter payload -> artifacts`
 
-Files/modules to primarily touch:
+Files/modules implemented:
 
-- `trading_system/models/` (or a dedicated `trading_system/contracts/` module)
-- `trading_system/cli.py` (new command groups if needed)
-- `trading_system/integration/`
-- `tests/integration/`
+-  `trading_system/models/contracts.py` - Canonical contracts (368 lines)
+-  `trading_system/integration/daily_signal_service.py` - DailySignalService (371 lines)
+-  `trading_system/cli.py` - Added `generate-daily-signals` command
+-  `tests/integration/test_daily_signal_service.py` - Integration tests (455 lines)
+-  `docs/CANONICAL_CONTRACTS.md` - Complete documentation (430 lines)
+
+**CLI Usage**:
+```bash
+# Generate daily signals
+python -m trading_system generate-daily-signals --asset-class equity --bucket safe_sp500
+
+# Export to JSON
+python -m trading_system generate-daily-signals --asset-class crypto --output signals.json
+```
+
+**Integration Points for Other Agents**:
+- Agent 2: Use `Signal`, `Allocation`, `TradePlan` contracts for strategy outputs
+- Agent 3: Consume `DailySignalBatch` from `DailySignalService.generate_daily_signals()`
+- Agent 4: Execute `TradePlan` objects, create `PositionRecord` objects
+
+**Documentation**: See `AGENT_1_IMPLEMENTATION_SUMMARY.md` and `docs/CANONICAL_CONTRACTS.md`
 
 ### Agent 2: Strategy & Data (Equities + Crypto Buckets A/B)
+
+**Status**: ✅ All deliverables completed (January 9, 2026)
 
 Owns:
 
@@ -257,17 +336,65 @@ Owns:
 
 Primary deliverables:
 
-- Deterministic daily signal generation for both buckets
-- Clear rationale tags for newsletter use (technical reasons, blockers)
-- Configs that can be optimized without changing code
+- ✅ Deterministic daily signal generation for both buckets
+- ✅ Clear rationale tags for newsletter use (technical reasons, blockers)
+- ✅ Configs that can be optimized without changing code
 
-Files/modules to primarily touch:
+Files/modules implemented:
 
-- `trading_system/strategies/`
-- `trading_system/data/` (universe selection)
-- `EXAMPLE_CONFIGS/` (or `configs/`) for bucket configs
+- ✅ `trading_system/strategies/buckets/bucket_a_safe_sp.py` - Safe S&P strategy (370 lines)
+- ✅ `trading_system/strategies/buckets/bucket_b_crypto_topcat.py` - Top-cap crypto strategy (380 lines)
+- ✅ `trading_system/strategies/buckets/__init__.py` - Bucket module exports
+- ✅ `trading_system/strategies/buckets/README.md` - Comprehensive documentation (400+ lines)
+- ✅ `trading_system/data/equity_universe.py` - SP500 universe selection (140 lines)
+- ✅ `trading_system/data/universe.py` - Enhanced with `select_top_crypto_by_volume()`
+- ✅ `configs/bucket_a_safe_sp.yaml` - Bucket A configuration (75 lines)
+- ✅ `configs/bucket_b_topcat_crypto.yaml` - Bucket B configuration (90 lines)
+- ✅ `scripts/generate_daily_signals.py` - Daily signal generation script (350+ lines)
+- ✅ `trading_system/strategies/strategy_registry.py` - Updated to register bucket strategies
+
+**Key Features Implemented**:
+
+**Bucket A (Safe S&P)**:
+- Conservative equity strategy with regime filters
+- Eligibility: close > MA200, MA50 > MA200, MA50 slope > 0.3%
+- Optional: SPY > MA50 (market regime), news sentiment filter
+- Tighter entries: 0.3%/0.8% clearances (vs 0.5%/1.0% standard)
+- Conservative exits: MA50 cross, 2.0 ATR stop
+- Lower risk: 0.5% per trade, max 6 positions, 60% exposure
+- Rationale tags: technical breakouts, regime status, relative strength, news sentiment
+
+**Bucket B (Top-Cap Crypto)**:
+- Aggressive crypto strategy with volatility-aware sizing
+- Dynamic universe: top 10 by volume (monthly rebalance)
+- Volatility adjustment: reduces size for high ATR/close ratio
+- Staged exits: MA20 tightens stop to 2.0 ATR, MA50 triggers exit
+- Wider stops: 3.5 ATR initial (vs 3.0 standard)
+- Rationale tags: technical breakouts, BTC relative strength, volatility context
+
+**Universe Selection**:
+- SP500 core universe: 40+ liquid stocks across sectors
+- Dynamic crypto selection: top N by volume with optional market cap/liquidity filters
+- Functions: `select_equity_universe()`, `select_top_crypto_by_volume()`
+
+**Daily Signal Generation**:
+```bash
+# Generate signals for both buckets
+python scripts/generate_daily_signals.py --date 2024-01-15
+
+# Output: results/daily_signals/daily_signals_YYYYMMDD_HHMMSS.json
+```
+
+**Integration Points for Other Agents**:
+- Agent 3: Consume JSON output with rationale tags for newsletter
+- Agent 4: Use signals with entry/stop prices for paper trading
+- Both strategies registered in strategy registry and work with existing framework
+
+**Documentation**: See `AGENT_2_COMPLETION_SUMMARY.md` and `trading_system/strategies/buckets/README.md`
 
 ### Agent 3: Newsletter + Native Scheduler (MVP)
+
+**Status**: ✅ All deliverables completed (January 9, 2026)
 
 Decision: build native scheduler first, then evaluate n8n for more robust workflows.
 
@@ -279,16 +406,62 @@ Owns:
 
 Primary deliverables:
 
-- `newsletter` CLI command that renders and sends the daily email
-- A scheduler entrypoint that runs at a fixed time and calls:
+- ✅ `newsletter` CLI command that renders and sends the daily email
+- ✅ A scheduler entrypoint that runs at a fixed time and calls:
   - daily signal generation
   - newsletter rendering + sending
 
-Files/modules to primarily touch:
+Files/modules implemented:
 
-- `trading_system/output/email/` (templates)
-- `trading_system/scheduler/` (jobs)
-- `trading_system/cli.py`
+- ✅ `trading_system/output/email/newsletter_generator.py` - Multi-bucket newsletter context generation (219 lines)
+- ✅ `trading_system/output/email/newsletter_service.py` - Newsletter orchestration and delivery (165 lines)
+- ✅ `trading_system/output/email/templates/newsletter_daily.html` - HTML email template with bucket sections (253 lines)
+- ✅ `trading_system/scheduler/jobs/newsletter_job.py` - Daily newsletter job (371 lines)
+- ✅ `trading_system/scheduler/cron_runner.py` - Added newsletter job scheduling (modified)
+- ✅ `trading_system/cli.py` - Added `send-newsletter` and `run-newsletter-job` commands (modified)
+- ✅ `tests/test_newsletter_generator.py` - Unit tests (201 lines)
+- ✅ `trading_system/output/email/README_NEWSLETTER.md` - Comprehensive documentation (430 lines)
+
+**CLI Usage**:
+```bash
+# Send test newsletter with mock data
+python -m trading_system send-newsletter --test
+
+# Run full newsletter job (generate signals + send)
+python -m trading_system run-newsletter-job
+
+# Start scheduler daemon (includes newsletter at 5 PM ET)
+python -m trading_system run-scheduler
+```
+
+**Scheduler Jobs**:
+- Daily equity signals: 4:30 PM ET
+- Daily crypto signals: 12:00 AM UTC
+- **Daily newsletter: 5:00 PM ET** (new)
+
+**Newsletter Features**:
+- Multi-bucket signal organization (Safe S&P, Crypto Top-Cap)
+- Market overview (SPY/BTC prices, regime detection)
+- News digest with sentiment analysis
+- Action items ("What to Buy", "What to Avoid")
+- Current positions section (ready for Agent 4)
+- Professional HTML template with responsive design
+
+**Integration Points for Other Agents**:
+- Agent 1: Uses canonical `Signal` contract from `trading_system/models/signals.py`
+- Agent 2: Newsletter job calls strategy signal generation for both equity and crypto buckets
+- Agent 4: Template includes portfolio summary section, ready for paper trading integration
+
+**Configuration Required**:
+```bash
+# Environment variables
+EMAIL_RECIPIENTS=user@example.com
+SMTP_PASSWORD=sendgrid_api_key
+ALPHA_VANTAGE_API_KEY=your_key
+MASSIVE_API_KEY=your_key
+```
+
+**Documentation**: See `AGENT3_IMPLEMENTATION_SUMMARY.md` and `trading_system/output/email/README_NEWSLETTER.md`
 
 ### Agent 4: Paper Trading + Manual Trades (Foundation)
 

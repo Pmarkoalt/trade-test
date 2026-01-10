@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="email-wrapper">
+    <div class="header">
+        <h1>📈 DAILY TRADING NEWSLETTER</h1>
+        <h2>{{ date }}</h2>
+        <p class="subtitle">{{ total_signals }} Signal{% if total_signals != 1 %}s{% endif %} Across All Buckets</p>
+    </div>
+
+    <div class="section market-overview">
+        <h2>📊 MARKET OVERVIEW</h2>
+        <p class="market-summary">
+            {% if market %}
+                {% if market.spy_price %}
+                    <strong>SPY:</strong> ${{ "%.2f"|format(market.spy_price) }} 
+                    <span class="{% if market.spy_pct >= 0 %}positive{% else %}negative{% endif %}">
+                        ({{ "%+.2f"|format(market.spy_pct) }}%)
+                    </span> |
+                {% endif %}
+                {% if market.btc_price %}
+                    <strong>BTC:</strong> ${{ "%.2f"|format(market.btc_price) }} 
+                    <span class="{% if market.btc_pct >= 0 %}positive{% else %}negative{% endif %}">
+                        ({{ "%+.2f"|format(market.btc_pct) }}%)
+                    </span>
+                {% endif %}
+                {% if market.regime %}
+                    <br><strong>Market Regime:</strong> {{ market.regime }}
+                {% endif %}
+            {% else %}
+                Market data will be displayed when available.
+            {% endif %}
+        </p>
+    </div>
+
+    {% for bucket in bucket_sections %}
+    <div class="section bucket-section bucket-{{ bucket.asset_class }}">
+        <h2>
+            {% if bucket.asset_class == 'equity' %}🎯{% else %}🚀{% endif %}
+            {{ bucket.name | upper }} - {{ bucket.description }}
+        </h2>
+        <p class="bucket-summary">
+            <strong>{{ bucket.total_signals }}</strong> signal{% if bucket.total_signals != 1 %}s{% endif %}
+            ({{ bucket.buy_signals|length }} BUY, {{ bucket.sell_signals|length }} SELL)
+        </p>
+
+        {% if bucket.buy_signals %}
+        <div class="signals-list buy-signals">
+            <h3>🟢 BUY SIGNALS</h3>
+            <table class="signals-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Symbol</th>
+                        <th>Entry</th>
+                        <th>Stop</th>
+                        <th>Risk %</th>
+                        <th>Score</th>
+                        <th>Rationale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for signal in bucket.buy_signals %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td><strong>{{ signal.symbol }}</strong></td>
+                        <td>${{ "%.2f"|format(signal.entry_price) }}</td>
+                        <td>${{ "%.2f"|format(signal.stop_price) }}</td>
+                        <td>{{ "%.1f"|format(((signal.entry_price - signal.stop_price) / signal.entry_price * 100)) }}%</td>
+                        <td>
+                            <span class="score-badge score-{{ (signal.score * 10)|int }}">
+                                {{ "%.2f"|format(signal.score) }}
+                            </span>
+                        </td>
+                        <td class="rationale">{{ signal.trigger_reason }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if bucket.sell_signals %}
+        <div class="signals-list sell-signals">
+            <h3>🔴 SELL SIGNALS</h3>
+            <table class="signals-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Symbol</th>
+                        <th>Exit Price</th>
+                        <th>Rationale</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for signal in bucket.sell_signals %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td><strong>{{ signal.symbol }}</strong></td>
+                        <td>${{ "%.2f"|format(signal.entry_price) }}</td>
+                        <td class="rationale">{{ signal.trigger_reason }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    {% if news_analysis %}
+    <div class="section news">
+        <h2>📰 NEWS DIGEST</h2>
+
+        <div class="market-sentiment">
+            <h3>Market Sentiment: 
+                <span class="sentiment-{{ news_analysis.market_sentiment_label.value | lower }}">
+                    {{ news_analysis.market_sentiment_label.value | title }}
+                </span>
+            </h3>
+            <p>Based on {{ news_analysis.total_articles }} articles analyzed</p>
+        </div>
+
+        {% if positive_news %}
+        <div class="news-section positive">
+            <h4>🟢 Positive Sentiment</h4>
+            <ul>
+                {% for article in positive_news[:5] %}
+                <li>
+                    <strong>{{ article.symbols | join(', ') if article.symbols else 'Market' }}</strong>:
+                    {{ article.title }}
+                    <span class="source">({{ article.source }})</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if negative_news %}
+        <div class="news-section negative">
+            <h4>🔴 Negative Sentiment</h4>
+            <ul>
+                {% for article in negative_news[:5] %}
+                <li>
+                    <strong>{{ article.symbols | join(', ') if article.symbols else 'Market' }}</strong>:
+                    {{ article.title }}
+                    <span class="source">({{ article.source }})</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if portfolio and portfolio.positions %}
+    <div class="section portfolio">
+        <h2>📈 CURRENT POSITIONS</h2>
+        <table class="portfolio-table">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Entry</th>
+                    <th>Current</th>
+                    <th>P&L</th>
+                    <th>Days</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pos in portfolio.positions %}
+                <tr>
+                    <td><strong>{{ pos.symbol }}</strong></td>
+                    <td>${{ "%.2f"|format(pos.entry_price) }}</td>
+                    <td>${{ "%.2f"|format(pos.current_price) }}</td>
+                    <td class="{% if pos.pnl_pct >= 0 %}positive{% else %}negative{% endif %}">
+                        {{ "%+.2f"|format(pos.pnl_pct) }}%
+                    </td>
+                    <td>{{ pos.days_held }}</td>
+                    <td>{{ pos.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <div class="section action-items">
+        <h2>✅ ACTION ITEMS</h2>
+        <div class="action-list">
+            <h3>What to Buy:</h3>
+            <ul>
+                {% for bucket in bucket_sections %}
+                    {% for signal in bucket.buy_signals[:3] %}
+                    <li>
+                        <strong>{{ signal.symbol }}</strong> ({{ bucket.name }}) - 
+                        Entry: ${{ "%.2f"|format(signal.entry_price) }}, 
+                        Stop: ${{ "%.2f"|format(signal.stop_price) }}
+                    </li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+
+            <h3>What to Avoid:</h3>
+            <ul>
+                {% if news_analysis and negative_news %}
+                    {% for article in negative_news[:3] %}
+                        {% if article.symbols %}
+                            <li>{{ article.symbols | join(', ') }} - Negative news sentiment</li>
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <li>No specific blockers identified</li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>Trading Assistant</strong> - Automated Daily Signals</p>
+        <p>Generated at: {{ generated_at }}</p>
+        <p style="font-size: 0.9em; color: #666;">
+            <em>This newsletter is for informational purposes only. Always do your own research before trading.</em>
+        </p>
+    </div>
+</div>
+
+<style>
+.bucket-section {
+    border-left: 4px solid #3498db;
+    padding-left: 15px;
+    margin-bottom: 30px;
+}
+
+.bucket-equity {
+    border-left-color: #2ecc71;
+}
+
+.bucket-crypto {
+    border-left-color: #f39c12;
+}
+
+.bucket-summary {
+    font-size: 1.1em;
+    color: #555;
+    margin-bottom: 15px;
+}
+
+.signals-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+.signals-table th,
+.signals-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.signals-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.signals-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.rationale {
+    font-size: 0.9em;
+    color: #666;
+    max-width: 300px;
+}
+
+.score-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-weight: bold;
+    color: white;
+}
+
+.score-0, .score-1, .score-2, .score-3 {
+    background-color: #e74c3c;
+}
+
+.score-4, .score-5, .score-6 {
+    background-color: #f39c12;
+}
+
+.score-7, .score-8, .score-9, .score-10 {
+    background-color: #2ecc71;
+}
+
+.action-items {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.action-list h3 {
+    color: #2c3e50;
+    margin-top: 15px;
+}
+
+.action-list ul {
+    margin: 10px 0;
+}
+
+.action-list li {
+    margin: 5px 0;
+}
+
+.sentiment-positive, .sentiment-very_positive {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.sentiment-negative, .sentiment-very_negative {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.sentiment-neutral {
+    color: #95a5a6;
+    font-weight: bold;
+}
+</style>
+{% endblock %}

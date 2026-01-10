@@ -23,6 +23,10 @@ try:
 except ImportError:
     PairsTradingStrategy = None  # type: ignore[misc, assignment]  # Pairs strategy may not exist yet
 
+# Import bucket strategies
+from .buckets.bucket_a_safe_sp import SafeSPStrategy
+from .buckets.bucket_b_crypto_topcat import TopCapCryptoStrategy
+
 
 # Registry mapping: (strategy_type, asset_class) -> StrategyClass
 _STRATEGY_REGISTRY: Dict[tuple[str, str], Type[StrategyInterface]] = {
@@ -31,6 +35,8 @@ _STRATEGY_REGISTRY: Dict[tuple[str, str], Type[StrategyInterface]] = {
     ("mean_reversion", "equity"): EquityMeanReversionStrategy,
     ("multi_timeframe", "equity"): EquityMultiTimeframeStrategy,
     ("factor", "equity"): EquityFactorStrategy,
+    ("safe_sp", "equity"): SafeSPStrategy,
+    ("topcat_crypto", "crypto"): TopCapCryptoStrategy,
 }
 if PairsTradingStrategy is not None:
     _STRATEGY_REGISTRY[("pairs", "equity")] = PairsTradingStrategy
@@ -129,7 +135,11 @@ def _infer_strategy_type(config: StrategyConfig) -> str:
     # Check if config name contains strategy type hints
     name_lower = config.name.lower()
 
-    if "pairs" in name_lower or "pair" in name_lower:
+    if "bucket_a" in name_lower or "safe_sp" in name_lower:
+        return "safe_sp"
+    elif "bucket_b" in name_lower or "topcat_crypto" in name_lower:
+        return "topcat_crypto"
+    elif "pairs" in name_lower or "pair" in name_lower:
         return "pairs"
     elif "mean_reversion" in name_lower or "mean-reversion" in name_lower or "meanreversion" in name_lower:
         return "mean_reversion"

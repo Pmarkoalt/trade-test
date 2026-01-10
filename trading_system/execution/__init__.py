@@ -4,6 +4,7 @@ from .borrow_costs import compute_borrow_cost_bps, compute_borrow_cost_dollars, 
 from .capacity import check_capacity_constraint, check_capacity_constraint_with_quantity
 from .fees import compute_fee_bps, compute_fee_cost
 from .fill_simulator import reject_order_missing_data, simulate_fill
+from .paper_trading import PaperTradingConfig, PaperTradingRunner
 from .slippage import (
     compute_size_penalty,
     compute_slippage_bps,
@@ -37,4 +38,7 @@ __all__ = [
     "compute_borrow_cost_bps",
     "compute_borrow_cost_dollars",
     "is_hard_to_borrow",
+    # Paper trading
+    "PaperTradingConfig",
+    "PaperTradingRunner",
 ]

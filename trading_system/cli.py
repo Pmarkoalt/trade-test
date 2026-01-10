@@ -1551,6 +1551,103 @@ def cmd_run_signals_now(args: argparse.Namespace) -> int:
         return 1
 
 
+def cmd_generate_daily_signals(args: argparse.Namespace) -> int:
+    """Generate daily signals using canonical contracts.
+
+    Args:
+        args: Command line arguments
+
+    Returns:
+        Exit code (0 for success, non-zero for error)
+    """
+    import asyncio
+    import json
+
+    asset_class = args.asset_class
+    bucket = args.bucket
+    output_path = args.output
+
+    print_banner("Generate Daily Signals", f"Asset class: {asset_class}, Bucket: {bucket or 'default'}")
+
+    try:
+        from .integration.daily_signal_service import DailySignalService
+
+        service = DailySignalService(config_path=args.config)
+        batch = asyncio.run(service.generate_daily_signals(asset_class=asset_class, bucket=bucket))
+
+        print_info(f"Generated {len(batch.signals)} signals")
+
+        if batch.signals:
+            if console:
+                table = Table(title="Generated Signals", box=box.ROUNDED)
+                table.add_column("Symbol", style="cyan")
+                table.add_column("Side", style="green")
+                table.add_column("Confidence", style="yellow")
+                table.add_column("Entry", style="blue")
+                table.add_column("Stop", style="red")
+
+                for signal in batch.get_top_signals(10):
+                    table.add_row(
+                        signal.symbol,
+                        signal.side,
+                        f"{signal.confidence:.2f}",
+                        f"${signal.entry_price:.2f}",
+                        f"${signal.stop_price:.2f}",
+                    )
+
+                console.print(table)
+            else:
+                print("\nTop Signals:")
+                for signal in batch.get_top_signals(10):
+                    print(
+                        f"  {signal.symbol}: {signal.side} @ ${signal.entry_price:.2f} "
+                        f"(stop: ${signal.stop_price:.2f}, conf: {signal.confidence:.2f})"
+                    )
+
+        if output_path:
+            output_data = {
+                "generation_date": str(batch.generation_date),
+                "signals": [
+                    {
+                        "symbol": s.symbol,
+                        "asset_class": s.asset_class.value,
+                        "timestamp": str(s.timestamp),
+                        "side": s.side,
+                        "confidence": s.confidence,
+                        "entry_price": s.entry_price,
+                        "stop_price": s.stop_price,
+                        "bucket": s.bucket,
+                        "rationale_tags": s.rationale_tags,
+                    }
+                    for s in batch.signals
+                ],
+                "allocations": [
+                    {
+                        "symbol": a.symbol,
+                        "position_size_dollars": a.recommended_position_size_dollars,
+                        "position_size_percent": a.recommended_position_size_percent,
+                        "quantity": a.quantity,
+                    }
+                    for a in batch.allocations
+                ],
+                "bucket_summaries": batch.bucket_summaries,
+                "metadata": batch.metadata,
+            }
+
+            with open(output_path, "w") as f:
+                json.dump(output_data, f, indent=2)
+
+            print_success(f"Saved signal batch to {output_path}")
+
+        print_success(f"Daily signal generation completed: {len(batch.signals)} signals generated")
+        return 0
+    except Exception:
+        print_error("Daily signal generation failed")
+        if console:
+            console.print_exception()
+        return 1
+
+
 def cmd_send_test_email(args: argparse.Namespace) -> int:
     """Send a test email to verify configuration.
 
@@ -1621,6 +1718,91 @@ def cmd_send_test_email(args: argparse.Namespace) -> int:
             return 1
     except Exception:
         print_error("Failed to send test email")
+        if console:
+            console.print_exception()
+        return 1
+
+
+def cmd_send_newsletter(args: argparse.Namespace) -> int:
+    """Send daily newsletter with multi-bucket signals.
+
+    Args:
+        args: Command line arguments
+
+    Returns:
+        Exit code (0 for success, non-zero for error)
+    """
+    import asyncio
+    import os
+
+    print_banner("Send Newsletter", "Sending daily newsletter with multi-bucket signals")
+
+    try:
+        from .output.email.config import EmailConfig
+        from .output.email.newsletter_service import NewsletterService
+
+        # Load email config from environment
+        email_config = EmailConfig(
+            smtp_host=os.getenv("SMTP_HOST", "smtp.sendgrid.net"),
+            smtp_port=int(os.getenv("SMTP_PORT", "587")),
+            smtp_user=os.getenv("SMTP_USER", "apikey"),
+            smtp_password=os.getenv("SMTP_PASSWORD", os.getenv("SENDGRID_API_KEY", "")),
+            from_email=os.getenv("FROM_EMAIL", "signals@yourdomain.com"),
+            from_name=os.getenv("FROM_NAME", "Trading Assistant"),
+            recipients=os.getenv("EMAIL_RECIPIENTS", "").split(",") if os.getenv("EMAIL_RECIPIENTS") else [],
+        )
+
+        if not email_config.recipients:
+            print_error("No email recipients configured. Set EMAIL_RECIPIENTS environment variable.")
+            return 1
+
+        # Create newsletter service
+        newsletter_service = NewsletterService(email_config)
+
+        # Send test or real newsletter
+        if args.test:
+            print_info("Sending test newsletter with mock data...")
+            success = asyncio.run(newsletter_service.send_test_newsletter())
+        else:
+            print_error("Real newsletter sending requires signal generation. Use 'run-newsletter-job' instead.")
+            return 1
+
+        if success:
+            print_success(f"Newsletter sent successfully to {', '.join(email_config.recipients)}")
+            return 0
+        else:
+            print_error("Failed to send newsletter. Check SMTP configuration.")
+            return 1
+    except Exception:
+        print_error("Failed to send newsletter")
+        if console:
+            console.print_exception()
+        return 1
+
+
+def cmd_run_newsletter_job(args: argparse.Namespace) -> int:
+    """Run newsletter job (generate signals and send newsletter).
+
+    Args:
+        args: Command line arguments
+
+    Returns:
+        Exit code (0 for success, non-zero for error)
+    """
+    import asyncio
+
+    print_banner("Newsletter Job", "Generating signals and sending daily newsletter")
+
+    try:
+        from .scheduler.jobs.newsletter_job import newsletter_job
+
+        # Run the newsletter job
+        asyncio.run(newsletter_job())
+
+        print_success("Newsletter job completed successfully")
+        return 0
+    except Exception:
+        print_error("Newsletter job failed")
         if console:
             console.print_exception()
         return 1
@@ -2120,6 +2302,44 @@ def main() -> int:
     )
     signals_now_parser.set_defaults(func=cmd_run_signals_now)
 
+    # Generate daily signals command (using canonical contracts)
+    generate_signals_parser = subparsers.add_parser(
+        "generate-daily-signals",
+        aliases=["gen-signals"],
+        help="Generate daily signals using canonical contracts",
+        description="Generate daily signals using the canonical Signal, Allocation, and TradePlan contracts",
+    )
+    generate_signals_parser.add_argument(
+        "--asset-class",
+        "-a",
+        type=str,
+        choices=["equity", "crypto"],
+        required=True,
+        help="Asset class to generate signals for",
+    )
+    generate_signals_parser.add_argument(
+        "--bucket",
+        "-b",
+        type=str,
+        default=None,
+        help="Strategy bucket (e.g., 'safe_sp500', 'aggressive_crypto')",
+    )
+    generate_signals_parser.add_argument(
+        "--config",
+        "-c",
+        type=str,
+        default=None,
+        help="Path to run configuration file",
+    )
+    generate_signals_parser.add_argument(
+        "--output",
+        "-o",
+        type=str,
+        default=None,
+        help="Output file path for signal batch JSON",
+    )
+    generate_signals_parser.set_defaults(func=cmd_generate_daily_signals)
+
     # Send test email command
     test_email_parser = subparsers.add_parser(
         "send-test-email",
@@ -2128,6 +2348,29 @@ def main() -> int:
         description="Send a test email to verify SMTP and email configuration",
     )
     test_email_parser.set_defaults(func=cmd_send_test_email)
+
+    # Send newsletter command
+    newsletter_parser = subparsers.add_parser(
+        "send-newsletter",
+        aliases=["newsletter"],
+        help="Send daily newsletter with multi-bucket signals",
+        description="Generate and send daily newsletter with signals organized by strategy buckets",
+    )
+    newsletter_parser.add_argument(
+        "--test",
+        action="store_true",
+        help="Send test newsletter with mock data",
+    )
+    newsletter_parser.set_defaults(func=cmd_send_newsletter)
+
+    # Run newsletter job command
+    newsletter_job_parser = subparsers.add_parser(
+        "run-newsletter-job",
+        aliases=["newsletter-job"],
+        help="Run newsletter job (generate signals and send newsletter)",
+        description="Run the complete newsletter job: generate signals for all buckets and send newsletter",
+    )
+    newsletter_job_parser.set_defaults(func=cmd_run_newsletter_job)
 
     # Trading dashboard command (live signals dashboard)
     trading_dashboard_parser = subparsers.add_parser(

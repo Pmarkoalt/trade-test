@@ -428,3 +428,31 @@ def select_crypto_universe(
 
     manager = CryptoUniverseManager(config)
     return manager.select_universe(available_data, reference_date)
+
+
+def select_top_crypto_by_volume(
+    available_data: Dict[str, pd.DataFrame],
+    top_n: int = 10,
+    lookback_days: int = 30,
+    reference_date: Optional[pd.Timestamp] = None,
+) -> List[str]:
+    """Select top N crypto by average dollar volume.
+    
+    Args:
+        available_data: Available OHLCV data
+        top_n: Number of top coins to select
+        lookback_days: Days to look back for volume calculation
+        reference_date: Reference date for selection
+    
+    Returns:
+        List of top N symbols by volume
+    """
+    config = UniverseConfig(
+        mode="dynamic",
+        min_volume_usd=0.0,
+        max_symbols=top_n,
+        rebalance_lookback_days=lookback_days,
+    )
+    
+    manager = CryptoUniverseManager(config)
+    return manager.select_universe(available_data, reference_date)

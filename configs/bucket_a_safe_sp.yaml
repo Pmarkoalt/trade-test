@@ -1,0 +1,78 @@
+# Bucket A: Safe S&P Strategy Configuration
+# Conservative equity strategy for S&P 500 universe
+# Focus: low drawdown, stable returns, regime-aware
+
+name: "bucket_a_safe_sp"
+asset_class: "equity"
+universe: "SP500"  # Will use SP500 core universe
+benchmark: "SPY"
+
+# Optional: Custom universe file (CSV with 'symbol' column)
+# universe_file: "data/equity/universe/sp500.csv"
+
+# Indicator calculation parameters
+indicators:
+  ma_periods: [20, 50, 200]
+  atr_period: 14
+  roc_period: 60
+  breakout_fast: 20
+  breakout_slow: 55
+  adv_lookback: 20
+  corr_lookback: 20
+
+# Eligibility filter (conservative, regime-aware)
+eligibility:
+  trend_ma: 200  # Reference MA (not used directly, see below)
+  ma_slope_lookback: 20  # Days to compute MA50 slope
+  ma_slope_min: 0.003  # Minimum 0.3% rise over 20 days (tighter than standard)
+  require_close_above_trend_ma: true  # Must be above MA200
+  require_close_above_ma200: true  # STRICT: Must be above MA200
+  relative_strength_enabled: false  # MVP: off, can enable for testing
+  relative_strength_min: 0.0  # Must outperform SPY if enabled
+  
+  # Market regime filter (custom for Safe S&P)
+  market_regime_enabled: true  # Require SPY > MA50 (risk-off gating)
+  
+  # News sentiment filter (optional, requires news data)
+  news_sentiment_enabled: false  # Set to true when news data available
+  news_sentiment_min: 0.0  # Minimum sentiment score (0-1 scale)
+
+# Entry trigger configuration (tighter than standard)
+entry:
+  fast_clearance: 0.003  # 0.3% above prior 20D high (vs 0.5% standard)
+  slow_clearance: 0.008  # 0.8% above prior 55D high (vs 1.0% standard)
+
+# Exit configuration (conservative)
+exit:
+  mode: "ma_cross"  # MA cross exit (not staged)
+  exit_ma: 50  # Exit on MA50 cross (slower than MA20)
+  hard_stop_atr_mult: 2.0  # Stop = entry - 2.0 * ATR14 (tighter than standard 2.5)
+  tightened_stop_atr_mult: null  # Not used for equity
+
+# Risk management (conservative sizing)
+risk:
+  risk_per_trade: 0.005  # 0.5% of equity per trade (vs 0.75% standard)
+  max_positions: 6  # Maximum 6 positions (vs 8 standard)
+  max_exposure: 0.60  # 60% maximum gross exposure (vs 80% standard)
+  max_position_notional: 0.12  # 12% maximum per position (vs 15% standard)
+
+# Capacity constraints (same as standard equity)
+capacity:
+  max_order_pct_adv: 0.005  # 0.5% of 20D average dollar volume
+
+# Execution costs
+costs:
+  fee_bps: 1  # 1 basis point per side
+  slippage_base_bps: 8  # Base slippage (8 bps for equity)
+  slippage_std_mult: 0.75  # Standard deviation multiplier
+  weekend_penalty: 1.0  # Not used for equity (always 1.0)
+  stress_threshold: -0.03  # SPY weekly return < -3% triggers stress
+  stress_slippage_mult: 2.0  # Double slippage during stress
+
+# ML model integration (optional)
+ml:
+  enabled: false  # Set to true to enable ML signal enhancement
+  model_path: null  # Path to saved ML model directory (required if enabled)
+  prediction_mode: "score_enhancement"  # Options: "score_enhancement", "filter", "replace"
+  ml_weight: 0.3  # Weight for ML prediction in score_enhancement mode (0.0-1.0)
+  confidence_threshold: 0.5  # Minimum confidence for filtering mode (0.0-1.0)
